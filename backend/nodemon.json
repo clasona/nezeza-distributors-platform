@@ -1,0 +1,31 @@
+{
+    "watch": [
+      "src/",
+      "routes/",
+      "models/",
+      "utils/",
+      "helpers/",
+      "middleware/",
+      "controllers/",
+      "app.js",
+      "app.js",
+      "index.js"
+    ],
+    "ext": "js,json,ejs,html,css",
+    "ignore": [
+      "node_modules/",
+      "public/",
+      "dist/",
+      ".git",
+      "coverage/",
+      "build/"
+    ],
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "verbose": true,
+    "restartable": "rs",
+    "execMap": {
+      "js": "node"
+    }
+  }
