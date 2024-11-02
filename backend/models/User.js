@@ -14,6 +14,7 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Please provide name'],
     minlength: 3,
     maxlength: 50,
+    default: '',
   },
   email: {
     type: String,
@@ -44,8 +45,27 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId, 
     ref: 'Store', 
     },  // Link user to store
+  // NEW FIELDS
+  verificationToken: String,
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verified: Date,
+  passwordToken: {
+    type: String,
+  },
+  passwordToken: {
+    type: String,
+  },
+  passwordTokenExpirationDate: {
+    type: Date,
+  },
+  
 
 });
+
+
 
 UserSchema.pre('save', async function () {
   // console.log(this.modifiedPaths());

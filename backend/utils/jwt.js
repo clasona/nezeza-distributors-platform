@@ -7,20 +7,46 @@ const createJWT = ({ payload }) => {
   return token;
 };
 
-const isTokenValid = ({ token }) => jwt.verify(token, process.env.JWT_SECRET);
+const isTokenValid = ( token ) => jwt.verify(token, process.env.JWT_SECRET);
 
-const attachCookiesToResponse = ({ res, user }) => {
-  const token = createJWT({ payload: user });
+const attachCookiesToResponse = ({ res, user, refreshToken }) => {
+  // Create JWT tokens for access and refresh tokens
+  const accessTokenJWT = createJWT({ payload: {user} });
+  const refreshTokenJWT = createJWT({ payload: {user, refreshToken} });
 
-  const oneDay = 1000 * 60 * 60 * 24;
+  const oneDay = 1000 * 60 * 60 * 24; // 1 day for access token
+  const longerExp = 1000 * 60 * 60 * 24 * 30; // 30 days for refresh token
 
-  res.cookie('token', token, {
+  res.cookie('accessToken', accessTokenJWT, {
     httpOnly: true,
     expires: new Date(Date.now() + oneDay),
     secure: process.env.NODE_ENV === 'production',
     signed: true,
+    maxAge: 1000 * 60 * 15, // 24 hours
   });
+
+  res.cookie('refreshToken', refreshTokenJWT, {
+    httpOnly: true,
+    expires: new Date(Date.now() + longerExp),
+    secure: process.env.NODE_ENV === 'production',
+    signed: true,
+  });
+
 };
+
+
+// const attachSingleCookieToResponse = ({ res, user }) => {
+//   const token = createJWT({ payload: user });
+
+//   const oneDay = 1000 * 60 * 60 * 24;
+
+//   res.cookie('token', token, {
+//     httpOnly: true,
+//     expires: new Date(Date.now() + oneDay),
+//     secure: process.env.NODE_ENV === 'production',
+//     signed: true,
+//   });
+// };
 
 module.exports = {
   createJWT,
