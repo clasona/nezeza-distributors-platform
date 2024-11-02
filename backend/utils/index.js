@@ -5,6 +5,10 @@ const checkPermission = require('./checkPermission');
 const checkWhoIsTheBuyer = require('./checkWhoIsTheBuyer');
 const updateOrderFulfillmentStatus = require('./updateFulfillmentStatus');
 const cancelFullOrder = require('./cancelOrder');
+const sendEmail = require('./sendEmail');
+const sendVerificationEmail = require('./sendVerificationEmail');
+const sendResetPasswordEmail = require('./sendResetPasswordEmail');
+const createHash = require('./createHash');
 
 module.exports = {
   createJWT,
@@ -16,4 +20,8 @@ module.exports = {
   cancelFullOrder,
   checkWhoIsTheBuyer,
   checkPermission,
+  sendEmail,
+  sendVerificationEmail,
+  sendResetPasswordEmail,
+  createHash,
 };
