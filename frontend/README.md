@@ -10,7 +10,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies with `yarn install`. 
+Note: Delete node_modules/ fodler if extists already before running above command.
+
+then run the development server:
 
 ```bash
 npm run dev
