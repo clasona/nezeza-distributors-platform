@@ -23,6 +23,7 @@ const attachCookiesToResponse = ({ res, user, refreshToken }) => {
     secure: process.env.NODE_ENV === 'production',
     signed: true,
     maxAge: 1000 * 60 * 15, // 24 hours
+    sameSite: 'none'
   });
 
   res.cookie('refreshToken', refreshTokenJWT, {

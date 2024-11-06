@@ -80,7 +80,7 @@ const register = async (req, res) => {
   // Add the current password to the previousPasswords array
   user.previousPasswords.push(user.password); 
   await user.save();
-  const origin = 'http://localhost:3000'; // server where the frontend is running
+  const origin = process.env.SERVER_URL; // server where the frontend is running
   // send verification email
   await sendVerificationEmail({ name: user.name, email: user.email, verificationToken, origin });
 

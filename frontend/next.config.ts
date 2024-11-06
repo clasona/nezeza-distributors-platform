@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // add any domains/routes that we should allow images to be fetched from
   images: {
-    domains: ["fakestoreapi.com"],
+    domains: ['fakestoreapi.com', 'dl.airtable.com'],
   },
 };
 
