@@ -12,7 +12,13 @@ const {
     
   } = require('../controllers/wholesalerController');
 
-router.route('/').get(authenticateUser,authorizePermissions('view_manufacturer_products'),getAllProducts);
+// router.route('/').get(authenticateUser, authorizePermissions('view_manufacturer_products'), getAllProducts);
+// Just for retrieving products for main home page without auth
+router
+  .route('/')
+  .get(
+    getAllProducts
+  );
 
 router.route('/:id').get(authenticateUser, authorizePermissions('view_manufacturer_product'), getSingleProduct);
 

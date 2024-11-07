@@ -57,7 +57,7 @@ const authorizePermissions = (...requiredPermissions) => {
 
     // Fetch user from database and check if they have the required permission
     const user = await User.findById(req.user.userId).populate('roles');  // req.userId is set after auth
-     
+    
     // Collect all permissions from the user's roles
     if(!user || user.roles.length < 1) {
       throw new CustomError.NotFoundError('User not found or no roles assigned.');
