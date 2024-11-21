@@ -1,4 +1,5 @@
 // models imports
+const User = require('../models/User');
 const Inventory = require('../models/Inventory');
 const SubOrder = require('../models/SubOrder');
 const Product = require('../models/Product');
@@ -11,8 +12,6 @@ updateProductInventory
 viewInventory
 DeleteProductFromInventory */
 
-
-
 const addProductInventory = async (subOrderId) => {
   try {
     // Find the suborder by its ID to confirm it's delivered)
@@ -23,22 +22,25 @@ const addProductInventory = async (subOrderId) => {
     }
 
     const buyerId = subOrder.buyerId; // Assuming the wholesaler is the buyer
-    const buyerStoreId = subOrder.buyerStoreId; 
-    const sellerStoreId = subOrder.sellerStoreId;   
+    const buyerStoreId = subOrder.buyerStoreId;
+    const sellerStoreId = subOrder.sellerStoreId;
     const products = subOrder.products;
-    
+
     for (const product of products) {
       // Check if the product is already in the wholesaler's inventory
-      let inventoryItem = await Inventory.find({productId: product.productId});
+      let inventoryItem = await Inventory.find({
+        productId: product.productId,
+      });
 
-    
       if (inventoryItem.length < 0) {
         // If the product is already in inventory, update the quantity
         inventoryItem.stock += product.quantity; // Assuming product has a quantity field
         inventoryItem.lastUpdated = Date.now();
       } else {
         // If the product is not in inventory, create a new inventory entry
-        const {description, image, seller} = await Product.findById(product.productId);
+        const { description, image, seller } = await Product.findById(
+          product.productId
+        );
 
         inventoryItem = new Inventory({
           owner: buyerId,
@@ -47,14 +49,12 @@ const addProductInventory = async (subOrderId) => {
           description,
           price: 0,
           image,
-          productId:product.productId,
+          productId: product.productId,
           stock: product.quantity,
           averageRating: 0,
           numOfReviews: 0,
           lastUpdated: Date.now(),
-
         });
-
       }
       // Save the inventory item (either updated or new)
       await inventoryItem.save();
@@ -67,25 +67,43 @@ const addProductInventory = async (subOrderId) => {
   }
 };
 
+const getInventory = async (req, res) => {
+  const { storeId } = await User.findById(req.params.userId);
+
+  // const { storeId } = req.user; // the user's store must be already linked
+  const inventoryItems = await Inventory.find({ storeId });
+  if (!inventoryItems) {
+    throw new CustomError.NotFoundError('No inventory items found');
+  }
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    count: inventoryItems.length,
+    data: inventoryItems,
+  });
+};
+
 /*
   Get all inventory items in the inventory 
  */
 const viewInventory = async (req, res) => {
-    console.log(req.user);
-   
-    // Fetch all inventory items
-    const inventory = await Inventory.find({owner: req.user.userId}).populate('productId', '-price -stock');
+  console.log(req.user);
 
-    if(!inventory) {
+  // Fetch all inventory items
+  const inventory = await Inventory.find({ owner: req.user.userId }).populate(
+    'productId',
+    '-price -stock'
+  );
+
+  if (!inventory) {
     throw new CustomError.NotFoundError('No inventory items found');
-    };
+  }
 
-    res.status(StatusCodes.OK).json({ inventory });
-          
-}
-
+  res.status(StatusCodes.OK).json({ inventory });
+};
 
 module.exports = {
-    addProductInventory,
-    viewInventory,
-}
+  addProductInventory,
+  viewInventory,
+  getInventory,
+};
