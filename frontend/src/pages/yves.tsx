@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { FaGoogle } from 'react-icons/fa';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  //initialize loginData as an object
   const [loginData, setLoginData] = useState<any | null>(null);
+
   const handleGoogleLogin = async () => {
     try {
-      // signin with google and redirect to homepage
-      await signIn('google', { callbackUrl: '/' });
+      await signIn('google', { callbackUrl: '/browse-or-setup-store' });
     } catch (error) {
       console.error('Error during Google login:', error);
     }
@@ -20,50 +17,34 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // console.log("Email:", email);
-    // console.log("Password:", password);
     try {
       const response = await fetch('http://localhost:8000/api/v1/auth/login', {
-        credentials: 'include', // Include credentials in the request
+        credentials: 'include',
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
       });
       const loginData = await response.json();
-      // console.log(response)
-      // console.log(response.ok)
       if (!response.ok) {
-        setSuccessMessage(''); // Clear any previous error message
         setErrorMessage(loginData.msg);
-        //TODO: Do not redirect
+        setSuccessMessage('');
       } else {
-        console.log(loginData);
         setLoginData(loginData);
-        setErrorMessage(''); // Clear any previous error message
-        setSuccessMessage('Login successful. Redirecting to home page...'); //for testing
-        setTimeout(() => {
-          // Redirect to home page
-          window.location.href = '/browse-or-setup-store';
-        }, 2000); // Simulate delay for testing purposes
-
-        //TODO: save and carry some of the userInfo details
+        setErrorMessage('');
+        setSuccessMessage('Login successful. Redirecting to home page...');
+        setTimeout(
+          () => (window.location.href = '/browse-or-setup-store'),
+          2000
+        );
       }
     } catch (error) {
       console.error('Error fetching login data:', error);
-      //add other errors, such as unauthorized, etc
     }
   };
 
   return (
     <div className='w-full bg-gray-100 min-h-screen flex items-center justify-center'>
       <div className='bg-nezeza_light_blue p-4'>
-        {/* <div className='bg-white shadow-lg rounded-lg p-6'> */}
-        {/* TODO: add shadow such as: shadow-lg shadow-nezeza_light_blue-200 */}
         <form
           onSubmit={handleSubmit}
           className='w-full bg-white p-6 rounded-lg shadow-lg'
@@ -95,17 +76,16 @@ const LoginPage = () => {
           </div>
           <button
             type='submit'
-            className='w-full h-10 rounded-md font-medium bg-nezeza_dark_blue text-white hover:bg-nezeza_yellow 
-            hover:text-black transition-colors duration-300 mt-2'
+            className='w-full h-10 rounded-md font-medium bg-nezeza_dark_blue text-white hover:bg-nezeza_yellow hover:text-black transition-colors duration-300 mt-2'
           >
             Login
           </button>
+
           <button
             type='button'
             onClick={handleGoogleLogin}
-            className='w-full h-10 flex items-center justify-center gap-2 rounded-md font-medium bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 mt-2'
+            className='w-full h-10 rounded-md font-medium bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 mt-2'
           >
-            <FaGoogle className='w-5 h-5' />
             Login with Google
           </button>
 
@@ -115,9 +95,8 @@ const LoginPage = () => {
           <p className='text-center mt-6 text-gray-600'>
             New to Nezeza?{' '}
             <a
-              className='text-nezeza_yellow hover:text-nezeza_dark_blue hoverunderline transition-colors
-            cursor-pointer duration-250'
-              href='http://localhost:3000/register' //TODO: put real address
+              className='text-nezeza_yellow hover:text-nezeza_dark_blue hoverunderline transition-colors cursor-pointer duration-250'
+              href='http://localhost:3000/register'
             >
               Signup
             </a>
@@ -128,6 +107,6 @@ const LoginPage = () => {
   );
 };
 
-LoginPage.noLayout = true; // this will prevent Next.js from wrapping the component in a layout
+LoginPage.noLayout = true;
 
 export default LoginPage;
