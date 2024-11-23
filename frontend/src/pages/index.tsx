@@ -6,14 +6,16 @@ import HeaderBottom from "@/components/header/HeaderBottom";
 import Footer from "@/components/Footer";
 import Banner from "@/components/Banner";
 import Products from "@/components/Products";
-import {ProductProps} from "../../type"
+import { ProductProps } from "../../type"
+// import { getServerSideProps } from './utils/fetchProducts';
 
 interface Props{
   productData: ProductProps;
 }
 
 export default function Home({ productData }: Props) {
-  console.log(productData)
+  // productData = getServerSideProps;
+  // console.log(productData)
   return (
     <main> 
       <div>

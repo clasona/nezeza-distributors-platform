@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
     "@reduxjs/toolkit": "^2.3.0",
+    "@stripe/stripe-js": "^4.9.0",
+    "axios": "^1.7.7",
     "next": "15.0.2",
     "next-auth": "^4.24.10",
     "react": "19.0.0-rc-02c0e824-20241028",
