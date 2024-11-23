@@ -51,7 +51,7 @@ app.use(cors({
 app.use(xss());
 app.use(mongoSanitize());
 
-app.use(morgan('dev'))
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
 
@@ -67,9 +67,8 @@ app.use('/api/v1/manufacturers', productRouter);
 app.use('/api/v1/marketplace/products', wholesalerRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/orders', orderRouter);
+app.use('/api/v1/suborders', orderRouter);
 app.use('/api/v1/inventory', inventoryRouter);
-
-
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

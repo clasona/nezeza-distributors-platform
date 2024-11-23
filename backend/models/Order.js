@@ -14,29 +14,28 @@ const SingleOrderItemSchema = mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Store',
     required: true,
-  },// Can be wholesaler or retailer or manufacturer
+  }, // Can be wholesaler or retailer or manufacturer
 });
 
 const OrderSchema = mongoose.Schema(
   {
-    
     // TODO: add transaction fee field // converse with nezeza
     total: {
       type: Number,
       required: true,
     },
-   totalTax: { 
-    type: Number, 
-    required: true 
-  }, // Sum of sub-order taxes
-   totalShipping: { 
-    type: Number, 
-    required: true 
-  },// Sum of sub-order shipping costs
-   transactionFee: { 
-    type: Number, 
-    required: true 
-   },
+    totalTax: {
+      type: Number,
+      required: true,
+    }, // Sum of sub-order taxes
+    totalShipping: {
+      type: Number,
+      required: true,
+    }, // Sum of sub-order shipping costs
+    transactionFee: {
+      type: Number,
+      required: true,
+    },
     orderItems: [SingleOrderItemSchema],
     paymentStatus: {
       type: String,
@@ -45,35 +44,47 @@ const OrderSchema = mongoose.Schema(
     },
     fulfillmentStatus: {
       type: String,
-      enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled' ],
-      default: 'Pending'
+      enum: [
+        'Pending',
+        'Partially Fulfilled',
+        'Fulfilled',
+        'Partially Shipped',
+        'Shipped',
+        'Partially Delivered',
+        'Delivered',
+        'Partially Cancelled',
+        'Cancelled',
+      ],
+      default: 'Pending',
     },
-    buyerStoreId: { 
-      type: mongoose.Schema.ObjectId, 
+    buyerStoreId: {
+      type: mongoose.Schema.ObjectId,
       ref: 'Store',
-      required: true, 
+      required: true,
     },
-    buyerId: { 
-      type: mongoose.Schema.ObjectId, 
+    buyerId: {
+      type: mongoose.Schema.ObjectId,
       ref: 'User',
-      required: true, 
-    },  // Can be wholesaler or retailer or customer
+      required: true,
+    }, // Can be wholesaler or retailer or customer
     shippingAddress: {
       type: String,
-      required: true
+      required: true,
     },
     billingAddress: {
       type: String,
-      required: true
+      required: true,
     },
-    subOrders: [{
-      type: mongoose.Schema.ObjectId,
-      ref: 'SubOrder',  // Link to each sub-order
-    }],
+    subOrders: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'SubOrder', // Link to each sub-order
+      },
+    ],
     paymentMethod: {
       type: String,
       enum: ['credit_card', 'bank_transfer', 'paypal'],
-      required: true
+      required: true,
     },
     clientSecret: {
       type: String,
@@ -82,7 +93,11 @@ const OrderSchema = mongoose.Schema(
     paymentIntentId: {
       type: String,
     },
-    
+    sellerPayoutStatus: {
+      type: String,
+      enum: ['Pending', 'Completed'],
+      default: 'Pending',
+    },
   },
   { timestamps: true }
 );
