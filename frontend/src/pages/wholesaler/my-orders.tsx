@@ -165,9 +165,9 @@ const WholesalerMyOrders = () => {
           </thead>
           <tbody>
             {filteredOrders.map((order) => (
-              <tr key={order.id} className='border-b hover:bg-gray-100'>
+              <tr key={order._id} className='border-b hover:bg-gray-100'>
                 <td className='px-4 py-2'>{order.status}</td>
-                <td className='px-4 py-2'>{order.id}</td>
+                <td className='px-4 py-2'>{order._id}</td>
                 <td className='px-4 py-2'>{order.items[0].title}</td>
                 <td className='px-4 py-2'>{order.items[0].price}</td>
                 <td className='px-4 py-2'>{order.items[0].quantity}</td>

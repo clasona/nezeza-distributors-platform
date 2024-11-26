@@ -11,9 +11,10 @@
 
 export interface ProductProps {
   // we can add as many keys as we want from the product
-  id: number;
+  _id: number;
   title: string;
   price: number;
+  quantity: number;
   description: string;
   category: string;
   // storeId: number;
@@ -22,7 +23,8 @@ export interface ProductProps {
 
 export interface OrderProps {
   // we can add as many keys as we want from the orders
-  id: number;
+  _id: number;
+  status: string;
   items: [ProductProps];
   quantity: number;
   tax: number;

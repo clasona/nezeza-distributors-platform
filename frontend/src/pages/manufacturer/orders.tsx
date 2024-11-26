@@ -70,8 +70,8 @@ const ManufacturerCustomerOrders = () => {
       {successMessage && (
         <p className='text-center text-green-500'>{successMessage}</p>
       )}
-      {/* Overview section */}
 
+      {/* Overview section */}
       <div className='flex flex-wrap gap-2 mb-6 justify-between'>
         <div className='flex items-center justify-between bg-gray-100 border border-gray-500 p-4 rounded-md shadow-md flex-grow'>
           <span className='text-lg font-bold text-gray-700'>Total Orders</span>
@@ -166,9 +166,9 @@ const ManufacturerCustomerOrders = () => {
           </thead>
           <tbody>
             {filteredOrders.map((order) => (
-              <tr key={order.id} className='border-b hover:bg-gray-100'>
+              <tr key={order._id} className='border-b hover:bg-gray-100'>
                 <td className='px-4 py-2'>{order.status}</td>
-                <td className='px-4 py-2'>{order.id}</td>
+                <td className='px-4 py-2'>{order._id}</td>
 
                 {/* <td className='px-4 py-2'>{order.items[0].title}</td>
                 <td className='px-4 py-2'>{order.items[0].price}</td>

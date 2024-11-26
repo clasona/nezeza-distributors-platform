@@ -48,7 +48,7 @@ const LoginPage = () => {
         setSuccessMessage('Login successful. Redirecting to home page...'); //for testing
         setTimeout(() => {
           // Redirect to home page
-          window.location.href = '/browse-or-setup-store';
+          window.location.href = '/';
         }, 2000); // Simulate delay for testing purposes
 
         //TODO: save and carry some of the userInfo details
