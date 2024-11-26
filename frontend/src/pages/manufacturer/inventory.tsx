@@ -24,6 +24,7 @@ const ManufacturerInventory = () => {
       try {
         const productsData = await fetchProducts();
         setExistingProducts(productsData);
+        console.log('existing products fetched successfully.');
       } catch (error) {
         console.error('Error fetching existing products data:', error);
       }
@@ -70,7 +71,7 @@ const ManufacturerInventory = () => {
         setExistingProducts([
           ...existingProducts,
           {
-            id: response.data.product._id,
+            _id: response.data.product._id,
             title: newProductTitle,
             price: newProductPrice,
             description: newProductDescription,
@@ -124,7 +125,7 @@ const ManufacturerInventory = () => {
         console.log('Product deleted successfully');
         // Optimistic update (optional): Add the new product to the local state or redux persist
         setExistingProducts(
-          existingProducts.filter((product) => product.id !== productIdToDelete)
+          existingProducts.filter((product) => product._id !== productIdToDelete)
         );
         setSuccessMessage('');
 
@@ -298,12 +299,12 @@ const ManufacturerInventory = () => {
           <tbody>
             {existingProducts.map((product: ProductProps) => (
               <tr
-                key={product.id}
+                key={product._id}
                 className=' border-b border-nezeza_light dark:border-white/10 hover:bg-nezeza_light_blue'
                 // onClick={() => setIsOptionsOpen(true)}
               >
                 {/* <td className='border border-slate-600'>{id}</td> */}
-                <td className='px-6 py-2 font-medium'>{product.id}</td>
+                <td className='px-6 py-2 font-medium'>{product._id}</td>
                 <td className='px-6 py-2 '>{product.title}</td>
                 <td className='px-6 py-2 '>{product.price}</td>
                 <td className='px-6 py-2 '>{product.description}</td>
@@ -314,7 +315,7 @@ const ManufacturerInventory = () => {
                   <button
                     className='bg-red-600 text-white px-4 rounded-md hover:bg-red-700'
                     type='button'
-                    onClick={() => handleDeleteProduct(product.id)}
+                    onClick={() => handleDeleteProduct(product._id)}
                   >
                     Delete
                   </button>
@@ -323,7 +324,7 @@ const ManufacturerInventory = () => {
                   <button
                     className='bg-nezeza_light text-white px-4 rounded-md hover:bg-nezeza_light'
                     type='button'
-                    onClick={() => handleDeleteProduct(product.id)}
+                    onClick={() => handleDeleteProduct(product._id)}
                   >
                     Update
                   </button>
