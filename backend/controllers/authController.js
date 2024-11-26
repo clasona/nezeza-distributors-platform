@@ -34,7 +34,8 @@ const register = async (req, res) => {
  
   switch (businessType) {
       case 'E-commerce Marketplace':
-        roleNames[0] = 'admin';
+      roleNames[0] = 'admin';
+      roleNames[1] = 'wholesaler'; //yves for testing, might remove it
         break;
       case 'manufacturing':
         roleNames[0] = 'owner';

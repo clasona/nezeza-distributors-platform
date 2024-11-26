@@ -47,6 +47,7 @@ app.use(cors({
   //   'Content-Type',
   //   'Authorization',
   //   'Origin',
+  // ]
 }));
 app.use(xss());
 app.use(mongoSanitize());
@@ -73,7 +74,7 @@ app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URL);

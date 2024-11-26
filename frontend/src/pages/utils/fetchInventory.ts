@@ -1,13 +1,17 @@
 
-export const fetchInventory= async () => {
-  try {
-    const response = await fetch(
-      'http://localhost:8000/api/v1/inventory/'
-    );
-    const data = await response.json();
-    const productsData = data.inventory;
+import axios from 'axios';
 
-    if (!response.ok) {
+export const fetchInventory = async () => {
+  try {
+    const response = await axios.get(
+      'http://localhost:8000/api/v1/inventory/',
+      {
+        withCredentials: true, // Include credentials like cookies for authorization
+      }
+    );
+    const productsData = response.data.inventory;
+
+    if (response.status !== 200) {
       console.log('inventory data not fetched.');
       // console.log(productsData);
     } else {

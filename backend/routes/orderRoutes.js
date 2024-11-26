@@ -28,7 +28,7 @@ router
   .route('/selling')
   .get(
     authenticateUser,
-    authorizePermissions('view_current_orders'),
+    authorizePermissions('view_all_orders'),
     getAllOrders
   );
 

@@ -12,6 +12,7 @@ const ManufacturerInventory = () => {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [newProductTitle, setNewProductTitle] = useState('');
   const [newProductPrice, setNewProductPrice] = useState(0);
+  const [newProductQuantity, setNewProductQuantity] = useState(0);
   const [newProductDescription, setNewProductDescription] = useState('');
   const [newProductCategory, setNewProductCategory] = useState('');
   const [newProductStoreId, setNewProductStoreId] = useState(0); //must get from current logged in
@@ -74,6 +75,7 @@ const ManufacturerInventory = () => {
             _id: response.data.product._id,
             title: newProductTitle,
             price: newProductPrice,
+            quantity: newProductQuantity,
             description: newProductDescription,
             category: newProductCategory,
             // storeId: newProductStoreId,
@@ -200,6 +202,14 @@ const ManufacturerInventory = () => {
                   onChange={(e) => setNewProductDescription(e.target.value)}
                   required
                 />
+                <input
+                  type='number'
+                  placeholder='Product Quantity'
+                  value={newProductQuantity}
+                  className='max-w-screen-sm px-3 py-1 text-gray-800 bg-white rounded-md border-2 border-gray-300 focus:outline-none focus:border-blue-500 shadow-sm'
+                  onChange={(e) => setNewProductQuantity(Number(e.target.value))}
+                  required
+                />
               </div>
               <div className='mb-2 grid grid-cols-2 '>
                 <input
@@ -276,14 +286,15 @@ const ManufacturerInventory = () => {
         </div>
       )}
 
-
       <div className='py-4'>
         <table className=' w-full table-auto border-collapse border border-slate-500 shadow-xl'>
           {/* <thead className=' hover:bg-nezeza_light_blue'> */}
           <thead className='hover:bg-nezeza_dark_blue border-b border-neutral-200 bg-nezeza_light font-medium text-white dark:border-white/10'>
             <tr>
               {/* <th className='border border-slate-600'>ID</th> */}
-              <th scope='col' className='px-6 py-2'>Product ID</th>
+              <th scope='col' className='px-6 py-2'>
+                Product ID
+              </th>
               <th className='border border-slate-600'>Title</th>
               <th className='border border-slate-600'>Price</th>
               <th className='border border-slate-600'>Description</th>

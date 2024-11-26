@@ -1,10 +1,18 @@
+import axios from 'axios';
+
 export const fetchOrders = async () => {
   try {
-    const response = await fetch('http://localhost:8000/api/v1/orders/selling');
-    const data = await response.json();
-    const ordersData = data.orders;
+    const response = await axios.get(
+      'http://localhost:8000/api/v1/orders/selling',
+      {
+        withCredentials: true, // Include credentials like cookies for authorization
+      }
+    );
+    const ordersData = response.data.orders;
 
-    if (!response.ok) {
+    console.log(response);
+
+    if (response.status !== 200) {
       console.log('orders data not fetched.');
       // console.log(ordersData);
     } else {
