@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Products from '@/components/Products';
-// import { ProductProps } from '../../type';
 import { fetchInventory } from '../utils/fetchInventory';
 import { ProductProps } from '../../../type';
 import axios from 'axios';
 import { MdClose } from 'react-icons/md';
 
 const WholesalerInventory = () => {
-  const [existingInventory, setExistingInventory] = useState<ProductProps[]>([]); //TODO: change to InventoryProps 
+  const [existingInventory, setExistingInventory] = useState<ProductProps[]>(
+    []
+  ); //TODO: change to InventoryProps
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductProps | null>(
+    null
+  );
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [newProductTitle, setNewProductTitle] = useState('');
   const [newProductPrice, setNewProductPrice] = useState(0);
@@ -34,90 +38,26 @@ const WholesalerInventory = () => {
 
   const handleUpdateProduct = async (productId: number, newPrice: number) => {
     setExistingInventory(
-          existingInventory.map((product) =>
-            product.id === productId ? { ...product, price: newPrice } : product
-          )
+      existingInventory.map((product) =>
+        product._id === productId ? { ...product, price: newPrice } : product
+      )
     );
     setSuccessMessage('Price updated successfully');
 
     setNewProductPrice(0);
 
-      
-    // try {
-      // const response = await axios.post(
-      //   `http://localhost:8000/api/v1/inventory/`, //TODO: replace with updateInventory 
-      //   {
-      //     price: newProductPrice,
-      //     // Add other product properties as needed
-      //   }
-      // );
-
-  //     if (response.status === 201) {
-  //       console.log(response.data);
-  //       setErrorMessage(''); // Clear any previous error message
-  //       setSuccessMessage('Product created successfully');
-  //       console.log('Product created successfully');
-  //       // Optimistic update (optional): Add the new product to the local state or redux persist
-  //       setExistingInventory(
-  //         existingInventory.map((product) =>
-  //           product.id === productId ? { ...product, price: newPrice } : product
-  //         )
-  //       );
-  //       handleCloseModal; //to close the form - NOT WORKING, maybe use setIsModalOpen(false);
-  //     } else {
-  //       setSuccessMessage(''); // Clear any previous error message
-  //       setErrorMessage(response.data);
-  //       console.error('Error creating product:', response.data);
-  //       // Handle specific error messages from the backend if applicable
-  //     }
-  //   } catch (error) {
-  //     console.error('Error creating product:', error);
-  //   }
+    // TODO: update product to inventory as well
   };
-
-  // const handleRemoveProduct = async (productIdToDelete: Number) => {
-  //   // const productIdToDelete = '673c195619ad4e8efaad11ba';
-  //   const manufacturerId = '673c171bfd6cd3ad5f89ab06';
-  //   try {
-  //     const response = await axios.delete(
-  //       `http://localhost:8000/api/v1/manufacturers/${manufacturerId}/products/${productIdToDelete}`
-  //       // {
-  //       //   params: {
-  //       //     manufacturerId: '673c171bfd6cd3ad5f89ab06',
-  //       //     id: '673d675c938ed942121297c7',
-  //       //   },
-  //       // }
-  //     );
-
-  //     if (response.status === 200) {
-  //       console.log(response.data);
-  //       setErrorMessage(''); // Clear any previous error message
-  //       setSuccessMessage('Product deleted successfully');
-  //       console.log('Product deleted successfully');
-  //       // Optimistic update (optional): Add the new product to the local state or redux persist
-  //       setExistingProducts(
-  //         existingProducts.filter((product) => product.id !== productIdToDelete)
-  //       );
-  //       setSuccessMessage('');
-
-  //       handleCloseModal; //to close the form - NOT WORKING, maybe use setIsModalOpen(false);
-  //     } else {
-  //       setSuccessMessage(''); // Clear any previous error message
-  //       setErrorMessage(response.data);
-  //       console.error('Error deleting product:', response.data);
-  //       // Handle specific error messages from the backend if applicable
-  //     }
-  //   } catch (error) {
-  //     console.error('Error deleting product:', error);
-  //   }
-  // };
 
   const handleCloseModal = () => {
     setSuccessMessage('');
     setIsModalOpen(false);
   };
 
-
+  const handleSelectProduct = (product: ProductProps) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className='container mx-auto p-4'>
@@ -140,9 +80,9 @@ const WholesalerInventory = () => {
             <h2 className='text-xl font-bold mb-4'>
               Enter Updated Product Details
             </h2>
-            {existingInventory.map((product: ProductProps) => (
+            {selectedProduct && (
               <form
-                key={product.id}
+                key={selectedProduct._id}
                 className=''
                 onSubmit={(e) => e.preventDefault()}
               >
@@ -164,7 +104,7 @@ const WholesalerInventory = () => {
                   className='mt-4 bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700'
                   type='button'
                   onClick={() =>
-                    handleUpdateProduct(product.id, newProductPrice)
+                    handleUpdateProduct(selectedProduct._id, newProductPrice)
                   } //get id from product
                 >
                   Update Product
@@ -176,7 +116,7 @@ const WholesalerInventory = () => {
                   </p>
                 )}
               </form>
-            ))}
+            )}
             <button
               className='flex  mb-2 justify-start items-center gap-4 pl-5 hover:bg-gray-900 p-2 rounded-md group cursor-pointer hover:shadow-lg m-auto'
               onClick={handleCloseModal}
@@ -214,12 +154,12 @@ const WholesalerInventory = () => {
           <tbody>
             {existingInventory.map((product: ProductProps) => (
               <tr
-                key={product.id}
+                key={product._id}
                 className=' border-b border-nezeza_light dark:border-white/10 hover:bg-nezeza_light_blue'
                 // onClick={() => setIsOptionsOpen(true)}
               >
                 {/* <td className='border border-slate-600'>{id}</td> */}
-                <td className='px-6 py-2 font-medium'>{product.id}</td>
+                <td className='px-6 py-2 font-medium'>{product._id}</td>
                 <td className='px-6 py-2 '>{product.title}</td>
                 <td className='px-6 py-2 '>{product.price}</td>
                 <td className='px-6 py-2 '>{product.description}</td>
@@ -241,8 +181,8 @@ const WholesalerInventory = () => {
                   <button
                     className='bg-nezeza_light text-white px-4 rounded-md hover:bg-nezeza_light'
                     type='button'
-                    // onClick={() => handleUpdateProduct(product.id, product.price)}
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => handleSelectProduct(product)}
+                    // onClick={() => setIsModalOpen(true)}
                   >
                     Update
                   </button>
