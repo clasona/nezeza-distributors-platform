@@ -6,17 +6,21 @@ import SideNavbar from '@/components/SideNavbar';
 import TopNavbar from '@/components/TopNavbar';
 
 const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
-  return (
-    <div className='flex'>
-      <SideNavbar />
-      <div className='w-full'>
-        <TopNavbar storeName='(Wholesaler Store Name)'/> 
-        <main className='ml-60 p-8 bg-slate-900 text-slate-50 min-h-screen mt-16'>
-          {children}
+  
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const toggleSidebar = () => {
+      setIsSidebarOpen(!isSidebarOpen);
+    };
+
+      return (
+        <main>
+          <div>
+            <button onClick={toggleSidebar}>Toggle Sidebar</button>
+            <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
+          </div>
         </main>
-      </div>
-    </div>
-  );
+      );
 };
 WholesalerLayout.noLayout = true;
 export default WholesalerLayout;

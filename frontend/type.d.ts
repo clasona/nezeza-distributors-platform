@@ -24,11 +24,11 @@ export interface ProductProps {
 export interface OrderProps {
   // we can add as many keys as we want from the orders
   _id: number;
-  status: string;
-  items: [ProductProps];
+  fulfillmentStatus: string;
+  oirderItems: [ProductProps];
   quantity: number;
-  tax: number;
-  shippingFee: number;
+  totalTax: number;
+  totalShipping: number;
   paymentMethod: string;
 }
 

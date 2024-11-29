@@ -36,7 +36,7 @@ router
   .route('/buying')
   .get(
     authenticateUser,
-    authorizePermissions('view_current_order'),
+    authorizePermissions('view_current_orders'),
     getCurrentUserOrders
   );
 router

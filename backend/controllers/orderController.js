@@ -119,7 +119,7 @@ const createOrder = async (req, res) => {
     }
 
     const {
-      name,
+      title,
       price,
       image,
       _id,
@@ -143,7 +143,7 @@ const createOrder = async (req, res) => {
     // Add the product as an order item
     const singleOrderItem = {
       quantity: item.amount,
-      name,
+      title,
       price,
       image,
       product: _id,

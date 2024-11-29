@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-export const fetchOrders = async () => {
+export const fetchOrders = async (status?: string) => {
   try {
     const response = await axios.get(
-      'http://localhost:8000/api/v1/orders/selling',
+      'http://localhost:8000/api/v1/orders/buying',
       {
         withCredentials: true, // Include credentials like cookies for authorization
       }
@@ -19,7 +19,27 @@ export const fetchOrders = async () => {
       console.log('orders data fetched successfully...');
       // console.log(ordersData);
       return ordersData;
-      // return { props: { ordersData } };
+
+      // const validStatuses = [
+      //   'Pending',
+      //   'Fulfilled',
+      //   'Shipped',
+      //   'Delivered',
+      //   'Complete',
+      // ];
+      // if (status && !validStatuses.includes(status)) {
+      //   throw new Error(`Invalid status: ${status}`);
+      // }
+
+      // // If a status is provided, filter the orders by fulfillmentStatus
+      // const filteredOrders = status
+      //   ? ordersData.filter(
+      //       (order: { fulfillmentStatus: string }) =>
+      //         order.fulfillmentStatus === status
+      //     )
+      //   : ordersData;
+
+      // return filteredOrders;
     }
   } catch (error) {
     console.error('Error fetching orders data:', error);
