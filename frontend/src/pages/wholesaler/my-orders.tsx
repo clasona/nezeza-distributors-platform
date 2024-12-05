@@ -110,7 +110,7 @@ const WholesalerMyOrders = () => {
         </div>
 
         {/* Orders Table */}
-        <div className='overflow-x-auto'>
+        <div className='w-full overflow-x-auto'>
           <table className='w-full border-collapse border border-slate-500 shadow-lg'>
             <thead className='bg-nezeza_dark_blue text-white'>
               <tr>
