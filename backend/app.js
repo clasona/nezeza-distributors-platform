@@ -61,7 +61,7 @@ app.use('/api/v1/marketplace/products', wholesalerRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/orders', orderRouter);
 app.use('/api/v1/suborders', orderRouter);
-app.use('/api/v1/inventory', inventoryRouter);
+app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
