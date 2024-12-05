@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { fetchOrders } from '../utils/fetchOrders';
-import { OrderProps } from '../../../type';
+import { fetchOrders } from '../../utils/fetchOrders';
+import { OrderProps } from '../../../../type';
 import axios from 'axios';
-import WholesalerLayout from './index';
+import WholesalerLayout from '../index';
 import SmallCards from '@/components/SmallCards';
-import { calculateOrderStats } from '../utils/orderUtils';
+import { calculateOrderStats } from '../../utils/orderUtils';
 import Heading from '@/components/Heading';
 
 const WholesalerMyOrders = () => {

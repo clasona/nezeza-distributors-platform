@@ -46,7 +46,7 @@ const SideNavbar = ({ showSidebar, setShowSidebar }: SideNavbarProps) => {
     },
     {
       title: 'My Orders',
-      href: `${basePath}/my-orders`,
+      href: `${basePath}/orders/my-orders`,
       icon: HiOutlineTruck,
     },
     {
@@ -83,7 +83,7 @@ const SideNavbar = ({ showSidebar, setShowSidebar }: SideNavbarProps) => {
         // TODO: add some styling for the sidebar side scroll at some point?
         showSidebar
           ? 'sm:block bg-nezeza_dark_blue space-y-6 w-60 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
-          : 'hidden sm:block bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+          : ' sm:block bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll' // add hidden to hide it
       }`}
     >
       <Link className=' px-6 py-2 ' href='#'>
@@ -93,7 +93,7 @@ const SideNavbar = ({ showSidebar, setShowSidebar }: SideNavbarProps) => {
       <div className='flex flex-col space-y-3 mt-14'>
         {items.map((item) => (
           <Link
-            onClick={() => setShowSidebar(false)} // collapses side bar when item clicked, might remove
+            onClick={() => setShowSidebar(true)} // make false: collapses side bar when item clicked, might remove
             key={item.title}
             href={item.href}
             className={`${

@@ -11,7 +11,7 @@ import { ThemeProvider } from '@/context/Providers';
 // import { AppSidebar } from '@/components/app-sidebar';
 
 const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
-  const [showSidebar, setShowSidebar] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);  //TODO: make false
 
   return (
     <div className='flex'>
