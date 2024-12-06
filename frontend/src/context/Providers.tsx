@@ -1,12 +1,24 @@
 'use client';
 
-import * as React from 'react';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import React from 'react';
+import { ThemeProvider } from 'next-themes';
+import { Toaster } from 'react-hot-toast';
 
-export function ThemeProvider({
+const Providers = ({
   children,
-  ...props
-}: React.ComponentProps<typeof NextThemesProvider>) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
-}
-  
+}: React.ComponentProps<typeof ThemeProvider>) => {
+  return (
+    <ThemeProvider
+      attribute='class'
+      defaultTheme='dark'
+      enableSystem
+      disableTransitionOnChange
+    >
+      <Toaster position='top-center' reverseOrder={false} />
+
+      {children}
+    </ThemeProvider>
+  );
+};
+
+export default Providers;

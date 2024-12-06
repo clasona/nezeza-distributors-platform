@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { fetchOrders } from '../../utils/fetchOrders';
-import { OrderProps } from '../../../../type';
+import { OrderProps, ProductProps } from '../../../../type';
 import axios from 'axios';
 import WholesalerLayout from '../index';
 import SmallCards from '@/components/SmallCards';
 import { calculateOrderStats } from '../../utils/orderUtils';
 import Heading from '@/components/Heading';
+import Pagination from '@/components/Table/Pagination';
+import PageHeader from '@/components/PageHeader';
+import TableActions from '@/components/Table/TableActions';
+import TableHead from '@/components/Table/TableHead';
+import TableRow from '@/components/Table/TableRow';
+import RowActionDropdown from '@/components/Table/RowActionDropdown';
+import Link from 'next/link';
+import mockOrders from '../mock-data/mockOrders';
 
 const WholesalerMyOrders = () => {
-  const [currentPage, setCurrentPage] = useState(1);
   const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
   // const [orderStats, setOrdersStats] = useState<OrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [statusFilter, setStatusFilter] = useState('All orders');
-
-  //For paginated table
-  const PAGE_SIZE = 2;
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
-  const endIndex = startIndex + PAGE_SIZE;
-  const currentlyDisplayedData = existingOrders.slice(startIndex, endIndex);
-  const numberOfPages = Math.ceil(existingOrders.length / PAGE_SIZE);
-  const itemStartIndex = startIndex + 1;
-  const itemEndIndex = Math.min(startIndex + PAGE_SIZE, existingOrders.length);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,34 +38,6 @@ const WholesalerMyOrders = () => {
 
   const orderStats = calculateOrderStats(existingOrders);
 
-  const handleAddProductToInventory = async (order: OrderProps) => {
-    try {
-      const response = await axios.post(
-        'http://localhost:8000/api/v1/inventory/inventory',
-        {
-          owner: '6738cce73fd00e8f4df9d802',
-          buyerStoreId: '6738cce73fd00e8f4df9d802',
-          seller: '673c171bfd6cd3ad5f89ab06',
-          description: order.orderItems[0].description,
-          price: order.orderItems[0].price,
-          image: order.orderItems[0].image,
-          productId: order.orderItems[0]._id,
-          stock: order.orderItems[0].quantity,
-          averageRating: 0,
-          numOfReviews: 0,
-        }
-      );
-
-      if (response.status === 201) {
-        setSuccessMessage('Product added to stock successfully');
-      } else {
-        console.error('Error adding product to inventory:', response.data);
-      }
-    } catch (error) {
-      console.error('Error adding product to inventory:', error);
-    }
-  };
-
   const handleStatusFilterChange = (status: string) => {
     setStatusFilter(status);
 
@@ -79,22 +49,44 @@ const WholesalerMyOrders = () => {
     setFilteredOrders(filtered);
   };
 
+  //sample orders
+  const sampleOrders = mockOrders;
+
+  const tableColumns = [
+    { title: 'Select', srOnly: true },
+    { title: 'Status' },
+    { title: 'ID' },
+    { title: '# of Products' },
+    { title: 'Total Price' },
+    { title: 'Order Date' },
+
+    { title: 'Action' },
+  ];
+
+  //for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 2; // Adjust the page size as needed
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <WholesalerLayout>
-      <Heading title='My Orders'></Heading>
-      <div className='container mx-auto py-4'>
-        {/* <h2 className='text-3xl font-bold text-center mb-4 text-nezeza_dark_blue'>
-          Wholesaler Store Name's Orders
-        </h2> */}
-        {successMessage && (
-          <p className='text-center text-green-500'>{successMessage}</p>
-        )}
+      <div className=''>
+        <PageHeader
+          heading='My Orders'
+          href='./orders/new'
+          linkTitle='Create New Order'
+        />
 
         {/* Replacing Overview Section with SmallCards */}
         <SmallCards orderStats={orderStats} />
 
+        <TableActions />
+
         {/* Filter Dropdown and Orders Table */}
-        <div className='flex justify-start mb-4'>
+        <div className='flex justify-start mb-4 mt-4'>
           <select
             className='p-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 focus:outline-none'
             value={statusFilter}
@@ -110,122 +102,55 @@ const WholesalerMyOrders = () => {
         </div>
 
         {/* Orders Table */}
-        <div className='w-full overflow-x-auto'>
-          <table className='w-full border-collapse border border-slate-500 shadow-lg'>
-            <thead className='bg-nezeza_dark_blue text-white'>
-              <tr>
-                <th className='px-4 py-2'>Status</th>
-                <th className='px-4 py-2'>Order ID</th>
-                <th className='px-4 py-2'>Title</th>
-                <th className='px-4 py-2'>Price</th>
-                <th className='px-4 py-2'>Quantity</th>
-                <th className='px-4 py-2'>Description</th>
-                <th className='px-4 py-2'>Image</th>
-                <th className='px-4 py-2'>Tax</th>
-                <th className='px-4 py-2'>Shipping Fee</th>
-                <th className='px-4 py-2'>Payment Method</th>
-                <th className='px-4 py-2'>Order Date</th>
-                <th className='px-4 py-2'>Actions</th>
-              </tr>
-            </thead>
+        <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
+          <table className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
+            {/* Rest of your table code */}
+            <TableHead columns={tableColumns} />
+
             <tbody>
-              {currentlyDisplayedData.map((order) => (
-                <tr key={order._id} className='border-b hover:bg-gray-100'>
-                  <td className='px-4 py-2'>{order.fulfillmentStatus}</td>
-                  <td className='px-4 py-2'>{order._id}</td>
-                  <td className='px-4 py-2'>{order.orderItems[0].title}</td>
-                  <td className='px-4 py-2'>{order.orderItems[0].price}</td>
-                  <td className='px-4 py-2'>{order.orderItems[0].quantity}</td>
-                  <td className='px-4 py-2'>
-                    {order.orderItems[0].description}
-                  </td>
-                  <td className='px-4 py-2'>
-                    <img
-                      src={order.orderItems[0].image}
-                      alt={order.orderItems[0].title}
-                      className='w-16 h-16 object-cover'
-                    />
-                  </td>
-                  <td className='px-4 py-2'>{order.totalTax}</td>
-                  <td className='px-4 py-2'>{order.totalShipping}</td>
-                  <td className='px-4 py-2'>{order.paymentMethod}</td>
-                  <td className='px-4 py-2'>
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className='px-4 py-2'>
-                    <button
-                      className='bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'
-                      onClick={() => handleAddProductToInventory(order)}
-                    >
-                      Add to Inventory
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {sampleOrders
+                .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+                .map((order) => (
+                  <TableRow
+                    key={order._id} // Important for performance
+                    rowValues={[
+                      { content: <input type='checkbox' /> }, // Assuming you want a checkbox
+                      { content: order.fulfillmentStatus },
+                      { content: order._id },
+                      {
+                        content: (
+                          <Link href='#' className='text-nezeza_dark_blue'>
+                            {order.orderItems.length}{' '}
+                          </Link>
+                        ),
+                      }, //TODO: make it show order products
+                      { content: `$${order.orderItems[0].price.toFixed(2)}` },
+                      { content: order.totalTax },
+
+                      {
+                        content: (
+                          <RowActionDropdown
+                            actions={[
+                              {
+                                href: './orders/new',
+                                label: 'Add to inventory',
+                              },
+                              { href: '#', label: 'Update' },
+                            ]}
+                          />
+                        ),
+                      },
+                    ]}
+                  />
+                ))}
+              ;
             </tbody>
           </table>
-          {/* TODO: make this as a component instead? */}
-          <nav
-            className='flex items-center flex-column flex-wrap md:flex-row justify-between pt-4'
-            aria-label='Table navigation'
-          >
-            <span className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
-              Showing {''}
-              <span className='font-semibold text-gray-50 dark:text-white'>
-                {itemStartIndex}-{itemEndIndex}
-              </span>{' '}
-              {''}
-              of {''}
-              <span className='font-semibold text-gray-50 dark:text-white'>
-                {existingOrders.length}
-              </span>
-            </span>
-            <ul className='inline-flex -space-x-px rtl:space-x-reverse test-sm h-14'>
-              <li>
-                <button
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  disabled={currentPage == 1}
-                  className='flex items-center justify-center px-3 h-10 leading-tight text-gray-500 bg-white 
-                  border borger-gray-300 rounded-s-lg hover:bg-gray-100 hover:ext-gray-700 dark:bg-gray-800
-                  dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
-                >
-                  &#8592; Previous
-                </button>
-              </li>
-              {Array.from({ length: numberOfPages }, (_, index) => {
-                return (
-                  <li key={index}>
-                    <button
-                      onClick={() => setCurrentPage(index + 1)}
-                      // disabled={currentPage == index + 1}
-                      // TODO: currently current page number doesnt get blue properties
-                      className={`flex items-center justify-center px-3 h-10 leading-tight    
-  border 
-     
-  ${
-    currentPage == index + 1
-      ? 'text-gray-50 bg-blue-600 border-blue-300 dark:bg-blue-600 dark:border-gray-700  dark:text-gray-50 dark:hover:bg-blue-900 dark:hover:text-white hover:bg-blue-900 hover:text-white'
-      : 'text-gray-500 bg-white border-gray-300 dark:bg-gray-800 dark:border-gray-700  dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white hover:bg-gray-100 hover:text-gray-700'
-  }`}
-                    >
-                      {index + 1}
-                    </button>
-                  </li>
-                );
-              })}
-              <li>
-                <button
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  disabled={currentPage == numberOfPages}
-                  className='flex items-center justify-center px-3 h-10 leading-tight text-gray-500 bg-white 
-                  border borger-gray-300 rounded-e-lg hover:bg-gray-100 hover:ext-gray-700 dark:bg-gray-800
-                  dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
-                >
-                  Next &#8594;
-                </button>
-              </li>
-            </ul>
-          </nav>
+          <Pagination
+            data={sampleOrders}
+            pageSize={PAGE_SIZE}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </WholesalerLayout>

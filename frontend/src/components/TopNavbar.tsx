@@ -96,7 +96,7 @@ const TopNavbar = ({
                 <div className='flex flex-col space-y-1'>
                   <p> Banana Stock out</p>
                   <div className='flex items-center space-x-2'>
-                    <p className='px-3 py-0.5 bg-red-700 text-nezeza_dark_slate rounded-full text-sm'>
+                    <p className='px-3 py-0.5 bg-red-700 text-nezeza_dark_slate rounded-full text-sm text-white'>
                       {' '}
                       Stock out
                     </p>
@@ -120,7 +120,7 @@ const TopNavbar = ({
                 <div className='flex flex-col space-y-1'>
                   <p> Banana Stock out</p>
                   <div className='flex items-center space-x-2'>
-                    <p className='px-3 py-0.5 bg-red-700 text-nezeza_dark_slate rounded-full text-sm'>
+                    <p className='px-3 py-0.5 bg-red-700 text-nezeza_dark_slate rounded-full text-sm text-white'>
                       {' '}
                       Stock out
                     </p>

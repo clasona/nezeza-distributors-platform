@@ -4,8 +4,10 @@ import axios from 'axios';
 export const fetchInventory = async () => {
   try {
     const response = await axios.get(
-      'http://localhost:8000/api/v1/inventory/',
+      'http://localhost:8000/api/v1/wholesaler/inventory-items',
+
       {
+        params: { storeId: '674685e88b8fabe86cb33be4' }, //TODO: get this from redux user info
         withCredentials: true, // Include credentials like cookies for authorization
       }
     );

@@ -25,7 +25,7 @@ export interface OrderProps {
   // we can add as many keys as we want from the orders
   _id: number;
   fulfillmentStatus: string;
-  oirderItems: [ProductProps];
+  orderItems: ProductProps[];
   quantity: number;
   totalTax: number;
   totalShipping: number;

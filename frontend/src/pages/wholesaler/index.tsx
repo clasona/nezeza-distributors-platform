@@ -7,7 +7,7 @@ import Sidebar from '../../components/Sidebar';
 import SideNavbar from '@/components/SideNavbar';
 import TopNavbar from '@/components/TopNavbar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { ThemeProvider } from '@/context/Providers';
+import Providers from '@/context/Providers';
 // import { AppSidebar } from '@/components/app-sidebar';
 
 const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
@@ -30,6 +30,7 @@ const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
           }`}
         >
           {children}
+          {/* <Providers> {children} </Providers> */}
 
           {/* For the dark mode in sellers dashboard using next-themes
 

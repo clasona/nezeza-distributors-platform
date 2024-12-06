@@ -14,7 +14,7 @@ const PageHeader = ({
     href,
 }: PageHeaderProps) => {
     return (
-        <div className='flex justify-between'>
+        <div className='flex justify-between py-4 '>
             <Heading title={heading}></Heading>
 
             <Link

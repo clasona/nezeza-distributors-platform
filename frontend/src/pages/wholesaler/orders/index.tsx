@@ -10,12 +10,11 @@ export default function index() {
       <WholesalerLayout>
         <div>
           <PageHeader
-            heading='Customer Orders'
+            heading='Orders Home'
             href='./orders/new-order'
             linkTitle='Create Order'
           />
-
-          <h2>Customer Orders</h2>
+          <h2>Orders Home</h2>
         </div>
       </WholesalerLayout>
     );

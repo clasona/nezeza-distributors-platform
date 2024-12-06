@@ -25,8 +25,9 @@ const config: Config = {
         nezeza_light: '#232F3E',
         nezeza_yellow: '#febd69',
         lightText: '#ccc',
-        nezeza_dark_slate: 'text-slate-800',
-        nezeza_light_slate: 'text-slate-50',
+        nezeza_dark_slate: 'slate-700',
+        nezeza_light_slate: 'slate-50',
+        nezeza_green: 'green-500',
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',
@@ -48,6 +49,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), require('@tailwindcss/forms')],
 };
 export default config;

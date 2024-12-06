@@ -27,6 +27,7 @@ import Image from 'next/image';
 
 import logo from '@/images/logo.jpg';
 import { usePathname } from 'next/navigation';
+import { ChartBarStacked } from 'lucide-react';
 
 interface SideNavbarProps {
   showSidebar: boolean;
@@ -51,13 +52,20 @@ const SideNavbar = ({ showSidebar, setShowSidebar }: SideNavbarProps) => {
     },
     {
       title: 'Customer Orders',
-      href: `${basePath}/orders`,
+      href: `${basePath}/orders/customer-orders`,
       icon: HiOutlineTruck,
     },
     {
       title: 'Inventory',
       href: `${basePath}/inventory`,
       icon: MdInventory,
+    },
+    // TODO: Not sure if needed for MVP but definetely for future, could have it with submenu items
+    // Link at 1:21 - https://www.youtube.com/watch?v=lnRe9qHFQlQ&list=PLDn5_2K0bUmfREsFv1nSHDbmHEX5oqI3Z&index=6&ab_channel=JBWEBDEVELOPER
+    {
+      title: 'Categories ??',
+      href: `${basePath}/categories`,
+      icon: ChartBarStacked,
     },
     {
       title: 'Shopping',
