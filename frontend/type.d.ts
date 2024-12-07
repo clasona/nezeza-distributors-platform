@@ -29,6 +29,7 @@ export interface OrderProps {
   quantity: number;
   totalTax: number;
   totalShipping: number;
+  // orderDate
   paymentMethod: string;
 }
 

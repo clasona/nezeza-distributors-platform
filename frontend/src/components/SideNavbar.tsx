@@ -27,7 +27,7 @@ import Image from 'next/image';
 
 import logo from '@/images/logo.jpg';
 import { usePathname } from 'next/navigation';
-import { ChartBarStacked } from 'lucide-react';
+import { Boxes, ChartBarStacked, Inbox, LayoutDashboard, ShoppingCart, Truck, Users, Warehouse } from 'lucide-react';
 
 interface SideNavbarProps {
   showSidebar: boolean;
@@ -43,22 +43,22 @@ const SideNavbar = ({ showSidebar, setShowSidebar }: SideNavbarProps) => {
     {
       title: 'Dashboard',
       href: `${basePath}/dashboard`,
-      icon: MdOutlineSpaceDashboard,
+      icon: LayoutDashboard,
     },
     {
       title: 'My Orders',
       href: `${basePath}/orders/my-orders`,
-      icon: HiOutlineTruck,
+      icon: Truck,
     },
     {
       title: 'Customer Orders',
       href: `${basePath}/orders/customer-orders`,
-      icon: HiOutlineTruck,
+      icon: Truck,
     },
     {
       title: 'Inventory',
       href: `${basePath}/inventory`,
-      icon: MdInventory,
+      icon: Warehouse,
     },
     // TODO: Not sure if needed for MVP but definetely for future, could have it with submenu items
     // Link at 1:21 - https://www.youtube.com/watch?v=lnRe9qHFQlQ&list=PLDn5_2K0bUmfREsFv1nSHDbmHEX5oqI3Z&index=6&ab_channel=JBWEBDEVELOPER
@@ -70,19 +70,19 @@ const SideNavbar = ({ showSidebar, setShowSidebar }: SideNavbarProps) => {
     {
       title: 'Shopping',
       href: `${basePath}/`,
-      icon: MdShoppingCart,
+      icon: ShoppingCart,
     },
 
     {
       title: 'Inbox',
       href: `${basePath}/inbox`,
-      icon: MdInbox,
+      icon: Inbox,
     },
 
     {
-      title: 'Settings',
-      href: `${basePath}/settings`,
-      icon: MdOutlineSettings,
+      title: 'Staff',
+      href: `${basePath}/staff`,
+      icon: Users,
     },
   ];
   return (

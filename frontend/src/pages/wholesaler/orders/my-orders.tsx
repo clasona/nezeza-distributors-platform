@@ -83,7 +83,7 @@ const WholesalerMyOrders = () => {
         {/* Replacing Overview Section with SmallCards */}
         <SmallCards orderStats={orderStats} />
 
-        <TableActions />
+        <TableActions searchFieldPlaceholder='orders' />
 
         {/* Filter Dropdown and Orders Table */}
         <div className='flex justify-start mb-4 mt-4'>

@@ -38,7 +38,7 @@ const RowActionDropdown = ({ actions }: RowActionDropdownProps) => {
                 <Link
                   key={index}
                   href={action.href}
-                  className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                  className='block px-4 py-2 bg-nezeza_light_blue text-sm text-gray-700 hover:bg-gray-300 hover:text-gray-900'
                 >
                   {action.label}
                 </Link>

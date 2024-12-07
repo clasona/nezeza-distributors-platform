@@ -15,16 +15,13 @@ import RowActionDropdown from '@/components/Table/RowActionDropdown';
 import Link from 'next/link';
 import mockOrders from '../mock-data/mockOrders';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
-import SearchField from '@/components/Table/SearchField';
+import TableFilters from '@/components/Table/TableFilters';
 
 const WholesalerCustomerOrders = () => {
   const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
   const [sampleOrders, setSampleOrders] = useState<OrderProps[]>([]);
-
   const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
-  // const [orderStats, setOrdersStats] = useState<OrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [statusFilter, setStatusFilter] = useState('Status');
 
@@ -54,7 +51,7 @@ const WholesalerCustomerOrders = () => {
         ? sampleOrders
         : sampleOrders.filter((order) => order.fulfillmentStatus === status);
 
-    console.log('yves', filtered);
+    console.log('Filtered Orders:', filtered);
 
     setFilteredOrders(filtered);
   };
@@ -90,39 +87,28 @@ const WholesalerCustomerOrders = () => {
         {/* Replacing Overview Section with SmallCards */}
         <SmallCards orderStats={orderStats} />
 
-        {/* <TableActions /> */}
-
-        {/* Filter Dropdown and Orders Table */}
-        <TableFilters>
-          <SearchField searchFieldPlaceholder='orders' />
-          {/* Filter by status */}
+        <TableActions searchFieldPlaceholder='orders'>
           <StatusFilters
             label='Filter by Status'
-            options={[
-              'Status',
-              'Pending',
-              'Fulfilled',
-              'Shipped',
-              'Delivered',
-              'Completed',
-              'Canceled',
-            ]}
+            options={['Status', 'Pending', 'Completed', 'Canceled']}
             selectedOption={statusFilter}
             onChange={handleStatusFilterChange}
           />
-        </TableFilters>
+        </TableActions>
 
         {/* Orders Table */}
         <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
           <table className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
+            {/* Rest of your table code */}
             <TableHead columns={tableColumns} />
+
             <tbody>
               {filteredOrders
                 .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
                 .map((order) => (
                   <TableRow
                     key={order._id} // Important for performance
-                    rowValues={[
+                    rowValues=[
                       { content: <input type='checkbox' /> }, // Assuming you want a checkbox
                       { content: order.fulfillmentStatus },
                       { content: order._id },
@@ -140,24 +126,24 @@ const WholesalerCustomerOrders = () => {
                       {
                         content: (
                           <RowActionDropdown
-                            actions={[
+                            actions=[
                               {
-                                href: '#',
-                                label: 'Remove',
+                                href: './orders/new',
+                                label: 'Add to inventory',
                               },
                               { href: '#', label: 'Update' },
-                            ]}
+                            ]
                           />
                         ),
                       },
-                    ]}
+                    ]
                   />
                 ))}
               ;
             </tbody>
           </table>
           <Pagination
-            data={filteredOrders}
+            data={sampleOrders}
             pageSize={PAGE_SIZE}
             onPageChange={handlePageChange}
           />
