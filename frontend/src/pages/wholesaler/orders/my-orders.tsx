@@ -6,115 +6,164 @@ import WholesalerLayout from '../index';
 import SmallCards from '@/components/SmallCards';
 import { calculateOrderStats } from '../../utils/orderUtils';
 import Heading from '@/components/Heading';
-import Pagination from '@/components/Table/Pagination';
 import PageHeader from '@/components/PageHeader';
 import TableActions from '@/components/Table/TableActions';
 import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
 import RowActionDropdown from '@/components/Table/RowActionDropdown';
 import Link from 'next/link';
-import mockOrders from '../mock-data/mockOrders';
+import Pagination from '@/components/Table/Pagination';
+import mockMyOrders from '../mock-data/mockMyOrders';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import TableFilters from '@/components/Table/TableFilters';
+import StatusFilters from '@/components/Table/Filters/StatusFilters';
+import SearchField from '@/components/Table/SearchField';
+import { sortItems } from '@/pages/utils/sortItems';
 
 const WholesalerMyOrders = () => {
   const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
+  const [sampleOrders, setSampleOrders] = useState<OrderProps[]>([]);
+
   const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
   // const [orderStats, setOrdersStats] = useState<OrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All orders');
+  const [statusFilter, setStatusFilter] = useState('Status');
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
+  const orderStats = calculateOrderStats(filteredOrders);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const ordersData = await fetchOrders();
-        setExistingOrders(ordersData);
-        setFilteredOrders(ordersData); // Initially show all orders
+        //sample orders
+        const sampleOrdersData = mockMyOrders;
+        // const ordersData = await fetchOrders();
+        // setExistingOrders(ordersData);
+        setSampleOrders(sampleOrdersData);
+        setFilteredOrders(sampleOrdersData); // Initially show all orders
       } catch (error) {
-        console.error('Error fetching existing orders data:', error);
+        console.error('Error fetching existing my orders data:', error);
       }
     };
 
     fetchData();
   }, []);
 
-  const orderStats = calculateOrderStats(existingOrders);
+  // Filter orders based on search query and selected status
+  useEffect(() => {
+    const flteredBySearching = sampleOrders.filter((order) => {
+      const searchMatch = Object.values(order)
+        .join(' ')
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const statusMatch =
+        statusFilter === 'Status' || order.fulfillmentStatus === statusFilter;
+      return searchMatch && statusMatch;
+    });
+
+    setFilteredOrders(flteredBySearching);
+  }, [searchQuery, statusFilter, sampleOrders]);
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query); // Update the search query
+  };
 
   const handleStatusFilterChange = (status: string) => {
     setStatusFilter(status);
+    const filteredByStatusFiltering =
+      status === 'Status'
+        ? sampleOrders
+        : sampleOrders.filter((order) => order.fulfillmentStatus === status);
 
-    const filtered =
-      status === 'All orders'
-        ? existingOrders
-        : existingOrders.filter((order) => order.fulfillmentStatus === status);
-
-    setFilteredOrders(filtered);
+    setFilteredOrders(filteredByStatusFiltering);
   };
 
-  //sample orders
-  const sampleOrders = mockOrders;
-
   const tableColumns = [
-    { title: 'Select', srOnly: true },
-    { title: 'Status' },
-    { title: 'ID' },
-    { title: '# of Products' },
-    { title: 'Total Price' },
-    { title: 'Order Date' },
-
-    { title: 'Action' },
+    { title: 'Select', srOnly: true, id: 'select' },
+    { title: 'Status', id: 'fulfillmentStatus', sortable: true },
+    { title: 'Order ID', id: '_id', sortable: true },
+    { title: 'Items', id: 'orderItems', sortable: true },
+    { title: 'Total Price', id: 'totalPrice', sortable: true },
+    { title: 'Order Date', id: 'orderDate', sortable: true },
+    { title: 'Action', id: 'action' },
   ];
 
   //for pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 2; // Adjust the page size as needed
+  const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  const handleSort = (column: string) => {
+    // Pre compute the next sort order and column to ensure that sortItems uses the updated values of sortColumn and sortOrder.
+    // React state updates are asynchronous, which means that the updated sortColumn() and sortOrder()
+    // may not immediately reflect in the subsequent sortItems call.
+    const newSortOrder =
+      sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    const newSortColumn = column;
+
+    // Update state
+    setSortColumn(newSortColumn);
+    setSortOrder(newSortOrder);
+
+    // Use the new values to sort immediately
+    const sortedOrders = sortItems(filteredOrders, newSortColumn, newSortOrder);
+    setFilteredOrders(sortedOrders);
+  };
 
   return (
     <WholesalerLayout>
-      <div className=''>
+      <div>
         <PageHeader
           heading='My Orders'
           href='./orders/new'
           linkTitle='Create New Order'
         />
-
         {/* Replacing Overview Section with SmallCards */}
         <SmallCards orderStats={orderStats} />
 
-        <TableActions searchFieldPlaceholder='orders' />
+        {/* <TableActions /> */}
 
-        {/* Filter Dropdown and Orders Table */}
-        <div className='flex justify-start mb-4 mt-4'>
-          <select
-            className='p-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-300 focus:outline-none'
-            value={statusFilter}
-            onChange={(e) => handleStatusFilterChange(e.target.value)}
-          >
-            <option value='All orders'>All orders</option>
-            <option value='Pending'>Pending</option>
-            <option value='Fulfilled'>Fulfilled</option>
-            <option value='Shipped'>Shipped</option>
-            <option value='Delivered'>Delivered</option>
-            <option value='Complete'>Complete</option>
-          </select>
-        </div>
+        {/* Table Search field and Filter Dropdown*/}
+        <TableFilters>
+          <SearchField
+            searchFieldPlaceholder='my orders'
+            onSearchChange={handleSearchChange}
+          />
+          {/* Filter by status */}
+          <StatusFilters
+            label='Filter by Status'
+            options={[
+              'Status',
+              'Pending',
+              'Fulfilled',
+              'Shipped',
+              'Delivered',
+              'Completed',
+              'Canceled',
+            ]}
+            selectedOption={statusFilter}
+            onChange={handleStatusFilterChange}
+          />
+        </TableFilters>
 
-        {/* Orders Table */}
+        {/* My Orders Table */}
         <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
-          <table className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
-            {/* Rest of your table code */}
-            <TableHead columns={tableColumns} />
-
+          <table
+            id='my-orders-table'
+            className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'
+          >
+            <TableHead columns={tableColumns} handleSort={handleSort} />
             <tbody>
-              {sampleOrders
+              {filteredOrders
                 .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
                 .map((order) => (
                   <TableRow
-                    key={order._id} // Important for performance
+                    key={order._id} 
                     rowValues={[
-                      { content: <input type='checkbox' /> }, // Assuming you want a checkbox
+                      { content: <input type='checkbox' /> },
                       { content: order.fulfillmentStatus },
                       { content: order._id },
                       {
@@ -123,9 +172,9 @@ const WholesalerMyOrders = () => {
                             {order.orderItems.length}{' '}
                           </Link>
                         ),
-                      }, //TODO: make it show order products
-                      { content: `$${order.orderItems[0].price.toFixed(2)}` },
-                      { content: order.totalTax },
+                      }, //TODO: make it show order products details when clicked
+                      { content: order.totalPrice },
+                      { content: order.orderDate },
 
                       {
                         content: (
@@ -135,7 +184,7 @@ const WholesalerMyOrders = () => {
                                 href: './orders/new',
                                 label: 'Add to inventory',
                               },
-                              { href: '#', label: 'Update' },
+                              { href: '#', label: 'Remove' },
                             ]}
                           />
                         ),
@@ -147,7 +196,7 @@ const WholesalerMyOrders = () => {
             </tbody>
           </table>
           <Pagination
-            data={sampleOrders}
+            data={filteredOrders}
             pageSize={PAGE_SIZE}
             onPageChange={handlePageChange}
           />

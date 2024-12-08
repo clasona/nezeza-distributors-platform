@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Products from '@/components/Products';
 import { fetchInventory } from '../../utils/fetchInventory';
-import { ProductProps } from '../../../../type';
+import { InventoryProps, ProductProps } from '../../../../type';
 import axios from 'axios';
 import { MdClose } from 'react-icons/md';
-import WholesalerLayout from '..';
+import WholesalerLayout from '../index';
 import Heading from '@/components/Heading';
 import PageHeader from '@/components/PageHeader';
 import TableActions from '@/components/Table/TableActions';
@@ -14,16 +14,23 @@ import RowActionDropdown from '@/components/Table/RowActionDropdown';
 import Image from 'next/image';
 import Pagination from '@/components/Table/Pagination';
 import mockProducts from '../mock-data/mockProducts';
+import mockInventory from '../mock-data/mockInventory';
+import TableFilters from '@/components/Table/TableFilters';
+import StatusFilters from '@/components/Table/Filters/StatusFilters';
+import SearchField from '@/components/Table/SearchField';
+import { sortItems } from '@/pages/utils/sortItems';
+
 
 
 const WholesalerInventory = () => {
-  const [existingInventory, setExistingInventory] = useState<ProductProps[]>(
+  const [existingInventory, setExistingInventory] = useState<ProductProps[]>([]);
+  const [sampleInventory, setSampleInventory] = useState<InventoryProps[]>([]);
+
+  const [filteredInventory, setFilteredInventory] = useState<InventoryProps[]>(
     []
-  ); //TODO: change to InventoryProps
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<ProductProps | null>(
-    null
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductProps | null>(null);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [newProductTitle, setNewProductTitle] = useState('');
   const [newProductPrice, setNewProductPrice] = useState(0);
@@ -33,12 +40,20 @@ const WholesalerInventory = () => {
   const [newProductImage, setNewProductImage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [statusFilter, setStatusFilter] = useState('Status');
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const inventoryData = await fetchInventory();
-        setExistingInventory(inventoryData);
+        // const inventoryData = await fetchInventory();
+        // setExistingInventory(inventoryData);
+        //sample inventory
+        const sampleInventoryData = mockInventory;
+        setSampleInventory(sampleInventoryData);
+        setFilteredInventory(sampleInventoryData); // Initially show all inventory
       } catch (error) {
         console.error('Error fetching existing inventory data:', error);
       }
@@ -46,6 +61,24 @@ const WholesalerInventory = () => {
 
     fetchData();
   }, []);
+  // Filter Inventory based on search query and selected status
+  useEffect(() => {
+    const flteredBySearching = sampleInventory.filter((inventory) => {
+      const searchMatch = Object.values(inventory)
+        .join(' ')
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      // const statusMatch =
+      // statusFilter === 'Status' || inventory.fulfillmentStatus === statusFilter;
+      // return searchMatch && statusMatch;
+      return searchMatch;
+    });
+
+    setFilteredInventory(flteredBySearching);
+  }, [searchQuery, statusFilter, sampleInventory]);
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query); // Update the search query
+  };
 
   const handleUpdateProduct = async (productId: number, newPrice: number) => {
     setExistingInventory(
@@ -70,24 +103,44 @@ const WholesalerInventory = () => {
     setIsModalOpen(true);
   };
 
-  //sample products
-  const sampleProducts = mockProducts;
-
   const tableColumns = [
-    { title: 'Select', srOnly: true },
-    { title: 'Image' },
-    { title: 'Title' },
-    { title: 'Qty' },
-    { title: 'Price' },
-    { title: 'Action' },
+    { title: 'Select', srOnly: true, id: 'select' },
+    { title: 'ID', id: '_id', sortable: true },
+    { title: 'Image', id: 'image' },
+    { title: 'Title', id: 'title', sortable: true },
+    { title: 'Qty', id: 'quantity', sortable: true },
+    { title: 'Price', id: 'price', sortable: true },
+    { title: 'Created', id: 'createdAt', sortable: true },
+    { title: 'Updated', id: 'updatedAt', sortable: true },
+    { title: 'Action', id: 'action' },
   ];
 
   //for pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 2; // Adjust the page size as needed
+  const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+  const handleSort = (column: string) => {
+    // Pre compute the next sort order and column to ensure that sortItems uses the updated values of sortColumn and sortOrder.
+    // React state updates are asynchronous, which means that the updated sortColumn() and sortOrder()
+    // may not immediately reflect in the subsequent sortItems call.
+    const newSortOrder =
+      sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    const newSortColumn = column;
+
+    // Update state
+    setSortColumn(newSortColumn);
+    setSortOrder(newSortOrder);
+
+    // Use the new values to sort immediately
+    const sortedInventory = sortItems(
+      filteredInventory,
+      newSortColumn,
+      newSortOrder
+    );
+    setFilteredInventory(sortedInventory);
   };
 
   return (
@@ -99,24 +152,32 @@ const WholesalerInventory = () => {
           href='./inventory/new-inventory'
           linkTitle='Add New Product to Inventory'
         />
-        {/* Table Actions */}
-        {/* Export \\ Search \\ Delete bulk */}
-        <TableActions />
+        {/* <TableActions /> */}
 
-        {/* Table */}
+        {/* Table Search field and Filter Dropdown*/}
+        <TableFilters>
+          <SearchField
+            searchFieldPlaceholder='inventory products'
+            onSearchChange={handleSearchChange}
+          />
+          {/*TODO: Add filter by stock status */}
+        </TableFilters>
         <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
-          <table className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
-            {/* Rest of your table code */}
-            <TableHead columns={tableColumns} />
-
+          <table
+            id='inventory-table'
+            className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'
+          >
+            <TableHead columns={tableColumns} handleSort={handleSort} />
             <tbody>
-              {sampleProducts
+              {filteredInventory
                 .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
                 .map((product) => (
                   <TableRow
-                    key={product._id} // Important for performance
+                    key={product._id}
                     rowValues={[
-                      { content: <input type='checkbox' /> }, // Assuming you want a checkbox
+                      { content: <input type='checkbox' /> }, 
+                      { content: product._id },
+
                       {
                         content: (
                           <Image
@@ -129,13 +190,15 @@ const WholesalerInventory = () => {
                         ),
                       },
                       { content: product.title },
-                      { content: product.quantity },
+                      { content: product.stock },
                       { content: `$${product.price.toFixed(2)}` },
+                      { content: product.createdAt },
+                      { content: product.updatedAt },
                       {
                         content: (
                           <RowActionDropdown
                             actions={[
-                              { href: './orders/new', label: 'Remove' },
+                              { href: './Inventory/new', label: 'Remove' },
                               { href: '#', label: 'Update' },
                             ]}
                           />
@@ -147,7 +210,7 @@ const WholesalerInventory = () => {
             </tbody>
           </table>
           <Pagination
-            data={sampleProducts}
+            data={filteredInventory}
             pageSize={PAGE_SIZE}
             onPageChange={handlePageChange}
           />

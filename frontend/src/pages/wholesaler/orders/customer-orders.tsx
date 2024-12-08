@@ -13,7 +13,7 @@ import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
 import RowActionDropdown from '@/components/Table/RowActionDropdown';
 import Link from 'next/link';
-import mockOrders from '../mock-data/mockOrders';
+import mockCustomerOrders from '../mock-data/mockCustomerOrders';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
@@ -32,19 +32,19 @@ const WholesalerCustomerOrders = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchQuery, setSearchQuery] = useState(''); // New state for search query
 
-  const orderStats = calculateOrderStats(existingOrders);
+  const orderStats = calculateOrderStats(filteredOrders);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         //sample orders
-        const sampleOrdersData = mockOrders;
+        const sampleOrdersData = mockCustomerOrders;
         // const ordersData = await fetchOrders();
         // setExistingOrders(ordersData);
         setSampleOrders(sampleOrdersData);
         setFilteredOrders(sampleOrdersData); // Initially show all orders
       } catch (error) {
-        console.error('Error fetching existing orders data:', error);
+        console.error('Error fetching existing customer orders data:', error);
       }
     };
 
@@ -72,12 +72,12 @@ const WholesalerCustomerOrders = () => {
 
   const handleStatusFilterChange = (status: string) => {
     setStatusFilter(status);
-    const filteredByFiltering =
+    const filteredByStatusFiltering =
       status === 'Status'
         ? sampleOrders
         : sampleOrders.filter((order) => order.fulfillmentStatus === status);
 
-    setFilteredOrders(filteredByFiltering);
+    setFilteredOrders(filteredByStatusFiltering);
   };
 
   const tableColumns = [
@@ -113,7 +113,6 @@ const WholesalerCustomerOrders = () => {
 
     // Use the new values to sort immediately
     const sortedOrders = sortItems(filteredOrders, newSortColumn, newSortOrder);
-    console.log(sortedOrders);
     setFilteredOrders(sortedOrders);
   };
 
@@ -134,7 +133,7 @@ const WholesalerCustomerOrders = () => {
         {/* Filter Dropdown and Orders Table */}
         <TableFilters>
           <SearchField
-            searchFieldPlaceholder='orders'
+            searchFieldPlaceholder='customer orders'
             onSearchChange={handleSearchChange}
           />
           {/* Filter by status */}
@@ -178,11 +177,8 @@ const WholesalerCustomerOrders = () => {
                             {order.orderItems.length}{' '}
                           </Link>
                         ),
-                      }, //TODO: make it show order products
-
-                      {
-                        content: order.totalPrice,
-                      },
+                      }, //TODO: make it show order products details when clicked
+                      { content: order.totalPrice },
                       { content: order.orderDate },
 
                       {

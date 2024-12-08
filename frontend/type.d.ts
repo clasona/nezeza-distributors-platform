@@ -34,6 +34,25 @@ export interface OrderProps {
   paymentMethod: string;
 }
 
+export interface InventoryProps {
+  _id: number;
+  title: string;
+  description: string;
+  image: string;
+  owner: number;
+  buyerStoreId: number;
+  productId: number;
+  stock: number;
+  price: number;
+  freeShipping: boolean;
+  availability: boolean;
+  averageRating: number;
+  numOfReviews: number;
+  lastUpdated: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 //passed into redux stat for add to cart
 export interface StoreProduct {
   id: number;

@@ -22,7 +22,7 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
 
   return (
     <nav
-      className='flex items-center flex-column flex-wrap md:flex-row justify-between py-2 px-4'
+      className='flex items-center flex-column flex-wrap md:flex-row justify-between py-1 px-4'
       aria-label='Table navigation'
     >
       <span className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>

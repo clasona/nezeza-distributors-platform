@@ -33,64 +33,30 @@ const mockOrders: OrderProps[] = [
 
     totalTax: 750,
     totalShipping: 200,
-    orderDate: '12/24/2024',
+    orderDate: '2024-12-15',
     paymentMethod: 'Credit Card',
   },
-  {
-    _id: 2,
-    fulfillmentStatus: 'Shipped',
-    orderItems: mockProducts,
-    quantity: 60,
-    totalPrice: mockProducts.reduce((total, item) => total + item.price, 0),
-    totalTax: 350,
-    totalShipping: 40,
-    orderDate: '02/06/2021',
-    paymentMethod: 'Credit Card',
-  },
-  {
-    _id: 3,
-    fulfillmentStatus: 'Delivered',
-    orderItems: mockProducts,
-    quantity: 3,
-        totalPrice: mockProducts.reduce((total, item) => total + item.price, 0)
-,
-    totalTax: 123,
-    totalShipping: 56,
-    orderDate: '10/15/2001',
-    paymentMethod: 'Cash',
-  },
-  {
-    _id: 4,
-    fulfillmentStatus: 'Processing',
-    orderItems: [mockProducts[0], mockProducts[1]], // Select specific products
-    quantity: 2,
-        totalPrice: mockProducts.reduce((total, item) => total + item.price, 0)
-,
-    totalTax: 20,
-    totalShipping: 15,
-    orderDate: new Date().toLocaleDateString(), // Use today's date
-    paymentMethod: 'Debit Card',
-  },
-  // ... additional orders
 ];
 
 // Loop to generate remaining orders (12 more)
-for (let i = 5; i <= 18; i++) {
+for (let i = 2; i <= 17; i++) {
   const randomQuantity = Math.floor(Math.random() * 10) + 1; // Random quantity between 1 and 10
-  const randomProducts = mockProducts.slice(
-    0,
-    Math.floor(Math.random() * mockProducts.length)
-  ); // Random subset of products
-  const randomStatus = ['Pending', 'Shipped', 'Delivered'][
-    Math.floor(Math.random() * 3)
-  ]; // Random fulfillment status
+  const randomProducts = mockProducts.slice(0, Math.floor(Math.random() * 14)); // Random subset of products
+  const randomStatus = [
+    'Pending',
+    'Fulfilled',
+    'Shipped',
+    'Delivered',
+    'Completed',
+  ][Math.floor(Math.random() * 3)]; // Random fulfillment status
   const randomTax = Math.random() * 100; // Random tax value
   const randomShipping = Math.random() * 50; // Random shipping cost
   const randomDate = new Date(
-    2023,
+    2013,
     Math.floor(Math.random() * 12),
     Math.floor(Math.random() * 28) + 1
   ); // Random date between 2023-01-01 and 2023-12-31
+  const formattedDate = randomDate.toISOString().split('T')[0]; // format to this format: 2024-12-06
 
   mockOrders.push({
     _id: i,
@@ -100,8 +66,8 @@ for (let i = 5; i <= 18; i++) {
     totalPrice: randomProducts.reduce((total, item) => total + item.price, 0),
     totalTax: randomTax,
     totalShipping: randomShipping,
-    orderDate: randomDate.toLocaleDateString(),
-    paymentMethod: ['Credit Card', 'Cash', 'Debit Card'][
+    orderDate: formattedDate,
+    paymentMethod: ['Credit Card', 'Apple Pay', 'Debit Card'][
       Math.floor(Math.random() * 3)
     ], // Random payment method
   });
