@@ -38,7 +38,7 @@ export const calculateOrderStats = (existingOrders: OrderProps[]) => {
       className: 'bg-teal-600',
     },
     {
-      status: 'Complete',
+      status: 'Completed',
       count: existingOrders.filter(
         (order) => order.fulfillmentStatus === 'Complete'
       ).length,

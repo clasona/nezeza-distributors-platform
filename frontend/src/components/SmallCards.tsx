@@ -13,7 +13,7 @@ type SmallCardsProps = {
 
 export default function SmallCards({ orderStats }: SmallCardsProps) {
   return (
-    <div className="flex flex-wrap gap-2 mb-6 justify-between">
+    <div className="flex flex-wrap gap-2 mb-2 justify-between">
       {orderStats.map((stat) => (
         <SmallCard
           key={stat.status}

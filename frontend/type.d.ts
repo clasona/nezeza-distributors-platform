@@ -27,9 +27,10 @@ export interface OrderProps {
   fulfillmentStatus: string;
   orderItems: ProductProps[];
   quantity: number;
+  totalPrice: number;
   totalTax: number;
   totalShipping: number;
-  // orderDate
+  orderDate: string;
   paymentMethod: string;
 }
 

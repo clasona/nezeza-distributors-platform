@@ -1,10 +1,19 @@
 import { Search } from 'lucide-react';
-import React from 'react'
+import React, { ChangeEvent } from 'react';
 
-interface SearchFieldProps{
+interface SearchFieldProps {
   searchFieldPlaceholder: string;
+  onSearchChange: (query: string) => void; // New prop for handling search input changes
 }
-const SearchField = ({ searchFieldPlaceholder }: SearchFieldProps) => {
+const SearchField = ({
+  searchFieldPlaceholder,
+  onSearchChange,
+}: SearchFieldProps) => {
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onSearchChange(e.target.value); // Pass the query back to the parent
+  };
+
   return (
     <div className='flex-grow '>
       <label htmlFor='table-search' className='sr-only'>
@@ -19,6 +28,7 @@ const SearchField = ({ searchFieldPlaceholder }: SearchFieldProps) => {
           id='table-search'
           className='block w-full py-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500'
           placeholder={`Search for ${searchFieldPlaceholder}`}
+          onChange={handleInputChange}
         />
       </div>
     </div>

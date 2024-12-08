@@ -18,6 +18,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import SearchField from '@/components/Table/SearchField';
+import { sortItems } from '@/pages/utils/sortItems';
 
 const WholesalerCustomerOrders = () => {
   const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
@@ -27,6 +28,9 @@ const WholesalerCustomerOrders = () => {
   // const [orderStats, setOrdersStats] = useState<OrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [statusFilter, setStatusFilter] = useState('Status');
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
 
   const orderStats = calculateOrderStats(existingOrders);
 
@@ -47,35 +51,70 @@ const WholesalerCustomerOrders = () => {
     fetchData();
   }, []);
 
+  // Filter orders based on search query and selected status
+  useEffect(() => {
+    const flteredBySearching = sampleOrders.filter((order) => {
+      const searchMatch = Object.values(order)
+        .join(' ')
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const statusMatch =
+        statusFilter === 'Status' || order.fulfillmentStatus === statusFilter;
+      return searchMatch && statusMatch;
+    });
+
+    setFilteredOrders(flteredBySearching);
+  }, [searchQuery, statusFilter, sampleOrders]);
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query); // Update the search query
+  };
+
   const handleStatusFilterChange = (status: string) => {
     setStatusFilter(status);
-    const filtered =
+    const filteredByFiltering =
       status === 'Status'
         ? sampleOrders
         : sampleOrders.filter((order) => order.fulfillmentStatus === status);
 
-    console.log('yves', filtered);
-
-    setFilteredOrders(filtered);
+    setFilteredOrders(filteredByFiltering);
   };
 
   const tableColumns = [
-    { title: 'Select', srOnly: true },
-    { title: 'Status' },
-    { title: 'Order ID' },
-    { title: 'Customer' },
-    { title: 'Items' },
-    { title: 'Total Price' },
-    { title: 'Order Date' },
-    { title: 'Action' },
+    { title: 'Select', srOnly: true, id: 'select' },
+    { title: 'Status', id: 'fulfillmentStatus', sortable: true },
+    { title: 'Order ID', id: '_id', sortable: true },
+    { title: 'Customer', id: 'customer', sortable: true },
+    { title: 'Items', id: 'orderItems', sortable: true },
+    { title: 'Total Price', id: 'totalPrice', sortable: true },
+    { title: 'Order Date', id: 'orderDate', sortable: true },
+    { title: 'Action', id: 'action' },
   ];
 
   //for pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 2; // Adjust the page size as needed
+  const PAGE_SIZE = 10; // Adjust the page size as needed
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleSort = (column: string) => {
+    // Pre compute the next sort order and column to ensure that sortItems uses the updated values of sortColumn and sortOrder.
+    // React state updates are asynchronous, which means that the updated sortColumn() and sortOrder()
+    // may not immediately reflect in the subsequent sortItems call.
+    const newSortOrder =
+      sortColumn === column && sortOrder === 'asc' ? 'desc' : 'asc';
+    const newSortColumn = column;
+
+    // Update state
+    setSortColumn(newSortColumn);
+    setSortOrder(newSortOrder);
+
+    // Use the new values to sort immediately
+    const sortedOrders = sortItems(filteredOrders, newSortColumn, newSortOrder);
+    console.log(sortedOrders);
+    setFilteredOrders(sortedOrders);
   };
 
   return (
@@ -94,7 +133,10 @@ const WholesalerCustomerOrders = () => {
 
         {/* Filter Dropdown and Orders Table */}
         <TableFilters>
-          <SearchField searchFieldPlaceholder='orders' />
+          <SearchField
+            searchFieldPlaceholder='orders'
+            onSearchChange={handleSearchChange}
+          />
           {/* Filter by status */}
           <StatusFilters
             label='Filter by Status'
@@ -114,8 +156,11 @@ const WholesalerCustomerOrders = () => {
 
         {/* Orders Table */}
         <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
-          <table className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
-            <TableHead columns={tableColumns} />
+          <table
+            id='customer-orders-table'
+            className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'
+          >
+            <TableHead columns={tableColumns} handleSort={handleSort} />
             <tbody>
               {filteredOrders
                 .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
@@ -134,8 +179,11 @@ const WholesalerCustomerOrders = () => {
                           </Link>
                         ),
                       }, //TODO: make it show order products
-                      { content: `$${order.orderItems[0].price.toFixed(2)}` },
-                      { content: '12/23/2024' },
+
+                      {
+                        content: order.totalPrice,
+                      },
+                      { content: order.orderDate },
 
                       {
                         content: (

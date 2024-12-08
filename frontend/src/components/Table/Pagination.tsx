@@ -1,3 +1,4 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface PaginationProps {
@@ -21,7 +22,7 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
 
   return (
     <nav
-      className='flex items-center flex-column flex-wrap md:flex-row justify-between pt-4 px-4'
+      className='flex items-center flex-column flex-wrap md:flex-row justify-between py-2 px-4'
       aria-label='Table navigation'
     >
       <span className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
@@ -35,16 +36,16 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
           {data.length}
         </span>
       </span>
-      <ul className='inline-flex -space-x-px rtl:space-x-reverse test-sm h-14'>
+      <ul className='inline-flex -space-x-px rtl:space-x-reverse test-sm '>
         <li>
           <button
             onClick={() => handlePageClick(currentPage - 1)}
             disabled={currentPage === 1}
-            className='flex items-center justify-center px-3 h-10 leading-tight text-gray-500 bg-white 
+            className='flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white 
                   border borger-gray-300 rounded-s-lg hover:bg-gray-100 hover:ext-gray-700 dark:bg-gray-800
                   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
           >
-            &#8592; Previous
+            <ChevronLeft />
           </button>
         </li>
         {Array.from({ length: totalPages }, (_, index) => {
@@ -52,7 +53,7 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
             <li key={index}>
               <button
                 onClick={() => handlePageClick(index + 1)}
-                className={`flex items-center justify-center px-3 h-10 leading-tight    
+                className={`flex items-center justify-center px-3 h-8 leading-tight    
   border 
      
   ${
@@ -70,11 +71,11 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
           <button
             onClick={() => handlePageClick(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className='flex items-center justify-center px-3 h-10 leading-tight text-gray-500 bg-white 
+            className='flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white 
                   border borger-gray-300 rounded-e-lg hover:bg-gray-100 hover:ext-gray-700 dark:bg-gray-800
                   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
           >
-            Next &#8594;
+            <ChevronRight/>
           </button>
         </li>
       </ul>
