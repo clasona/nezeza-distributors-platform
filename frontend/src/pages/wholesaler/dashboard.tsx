@@ -6,15 +6,20 @@ import SmallCards from '@/components/SmallCards';
 import { fetchOrders } from '../utils/fetchOrders';
 import { calculateOrderStats } from '../utils/orderUtils';
 import { OrderProps } from '../../../type';
+import mockMyOrders from './mock-data/mockMyOrders';
 
 const Dashboard = () => {
   const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
+  const [sampleOrders, setSampleOrders] = useState<OrderProps[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const ordersData = await fetchOrders();
-        setExistingOrders(ordersData);
+        // const ordersData = await fetchOrders();
+        // setExistingOrders(ordersData);
+
+        const sampleOrdersData = mockMyOrders;
+        setSampleOrders(sampleOrdersData);
       } catch (error) {
         console.error('Error fetching existing orders data:', error);
       }
@@ -23,7 +28,7 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  const orderStats = calculateOrderStats(existingOrders);
+  const orderStats = calculateOrderStats(sampleOrders);
 
   return (
     <WholesalerLayout>

@@ -33,6 +33,7 @@ import { FaRegComments } from 'react-icons/fa';
 import { BiMessageSquareDots } from 'react-icons/bi';
 import Link from 'next/link';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
+import { CircleUserRound, LayoutDashboard, LogOut } from 'lucide-react';
 // import { SidebarTrigger } from '@/components/ui/sidebar';
 
 interface TopNavbarProps {
@@ -140,27 +141,34 @@ const TopNavbar = ({
           <DropdownMenuTrigger>
             <button>
               {/* <Image src='' alt='User profile' width={200}  height={200} className='w-8 h-8 rounded-full'/> */}
-              <MdAccountCircle className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate '></MdAccountCircle>
+              <MdAccountCircle className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate ' />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className='px-2 py-4 pr-8'>
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <button className='flex items-center space-x-2'>
-                <MdOutlineDashboard className='mr-2 h-4 w-4' />
+              <Link
+                href='/wholesaler/dashboard'
+                className='flex items-center space-x-2'
+              >
+                <LayoutDashboard />
                 <span>Dashboard</span>
-              </button>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <button className='flex items-center space-x-2'>
-                <CgProfile />
+              <Link
+                href='/wholesaler/account'
+                className='flex items-center space-x-2'
+              >
+                {/* <CgProfile /> */}
+                <CircleUserRound />
                 <span>Edit Profile</span>
-              </button>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
               <button className='flex items-center space-x-2'>
-                <MdOutlineLogout />
+                <LogOut />
                 <span>Logout</span>
               </button>
             </DropdownMenuItem>

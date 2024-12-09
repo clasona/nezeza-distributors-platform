@@ -1,130 +1,158 @@
-const WholesalerCustomerOrders = () => {
-  const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
-  const [sampleOrders, setSampleOrders] = useState<OrderProps[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
-  const [statusFilter, setStatusFilter] = useState('Status');
-  const [sortColumn, setSortColumn] = useState('');
-  const [sortOrder, setSortOrder] = useState('asc');
-  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
+import Heading from '@/components/Heading';
+import React from 'react';
+import WholesalerLayout from '..';
+import FormHeader from '@/components/FormHeader';
+import TextInput from '@/components/FormInputs/TextInput';
+import SubmitButton from '@/components/FormInputs/SubmitButton';
+import { useForm } from 'react-hook-form';
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const sampleOrdersData = mockOrders;
-        setSampleOrders(sampleOrdersData);
-        setFilteredOrders(sampleOrdersData); // Initially show all orders
-      } catch (error) {
-        console.error('Error fetching existing orders data:', error);
-      }
-    };
+const WholesalerAccount = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-    fetchData();
-  }, []);
-
-  // Filter orders based on search query and status
-  useEffect(() => {
-    const filtered = sampleOrders.filter((order) => {
-      const searchMatch = Object.values(order)
-        .join(' ')
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const statusMatch =
-        statusFilter === 'Status' || order.fulfillmentStatus === statusFilter;
-      return searchMatch && statusMatch;
-    });
-
-    setFilteredOrders(filtered);
-  }, [searchQuery, statusFilter, sampleOrders]);
-
-  const handleSearchChange = (query: string) => {
-    setSearchQuery(query); // Update the search query
+  const onSubmit = (data: any) => {
+    console.log('Profile Data:', data);
+    alert('Profile updated successfully!');
   };
 
   return (
-    <WholesalerLayout>
-      <div className=''>
-        <PageHeader
-          heading='Customer Orders'
-          href='./orders/new'
-          linkTitle='Create New Order'
-        />
+    <div>
+      <WholesalerLayout>
+        <Heading title='My Account' />
 
-        <SmallCards orderStats={calculateOrderStats(existingOrders)} />
-
-        <TableFilters>
-          <SearchField
-            searchFieldPlaceholder='orders'
-            onSearchChange={handleSearchChange} // Pass the handler to SearchField
-          />
-          <StatusFilters
-            label='Filter by Status'
-            options={[
-              'Status',
-              'Pending',
-              'Fulfilled',
-              'Shipped',
-              'Delivered',
-              'Completed',
-              'Canceled',
-            ]}
-            selectedOption={statusFilter}
-            onChange={(status) => setStatusFilter(status)} // Update status filter
-          />
-        </TableFilters>
-
-        {/* Orders Table */}
-        <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
-          <table
-            id='customer-orders-table'
-            className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'
+        <div className='mt-6'>
+          <FormHeader title='Edit My Account' />
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className='w-full max-w-4xl p-4 bg-nezeza_light_blue border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 mx-auto my-3'
           >
-            <TableHead columns={tableColumns} handleSort={handleSort} />
-            <tbody>
-              {filteredOrders
-                .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-                .map((order) => (
-                  <TableRow
-                    key={order._id}
-                    rowValues={[
-                      { content: <input type='checkbox' /> },
-                      { content: order.fulfillmentStatus },
-                      { content: order._id },
-                      { content: '' },
-                      {
-                        content: (
-                          <Link href='#' className='text-nezeza_dark_blue'>
-                            {order.orderItems.length}
-                          </Link>
-                        ),
-                      },
-                      {
-                        content: `$${order.orderItems
-                          .reduce((total, item) => total + item.price, 0)
-                          .toFixed(2)}`,
-                      },
-                      { content: order.orderDate },
-                      {
-                        content: (
-                          <RowActionDropdown
-                            actions={[
-                              { href: '#', label: 'Remove' },
-                              { href: '#', label: 'Update' },
-                            ]}
-                          />
-                        ),
-                      },
-                    ]}
-                  />
-                ))}
-            </tbody>
-          </table>
-          <Pagination
-            data={filteredOrders}
-            pageSize={PAGE_SIZE}
-            onPageChange={handlePageChange}
-          />
+            {/* Profile Picture */}
+            <div className='flex justify-center mb-6'>
+              <div className='relative'>
+                <img
+                  src='/path-to-profile-pic.jpg'
+                  alt='Profile'
+                  className='w-32 h-32 rounded-full object-cover'
+                />
+                <button
+                  type='button'
+                  className='absolute bottom-0 right-0 bg-green-500 text-white rounded-full p-2 shadow-md'
+                  title='Change Profile Picture'
+                >
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth={1.5}
+                    stroke='currentColor'
+                    className='w-5 h-5'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      d='M15.232 5.232l3.536 3.536M9 13.5l3.536-3.536m-7.072 7.072a2.121 2.121 0 01-3 3L2 21.5m6.5-6.5a2.121 2.121 0 013-3l3.536-3.536'
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Name Inputs */}
+            <TextInput
+              label='First Name'
+              id='firstName'
+              name='firstName'
+              register={register}
+              errors={errors}
+              type='text'
+            />
+            <TextInput
+              label='Last Name'
+              id='lastName'
+              name='lastName'
+              register={register}
+              errors={errors}
+              type='text'
+            />
+
+            {/* Email (Uneditable) */}
+            <TextInput
+              label='Email'
+              id='email'
+              name='email'
+              register={register}
+              errors={errors}
+              type='email'
+              disabled={true}
+              defaultValue='johndoe@example.com'
+            />
+
+            {/* Phone (Uneditable) */}
+            <TextInput
+              label='Phone'
+              id='phone'
+              name='phone'
+              register={register}
+              errors={errors}
+              type='text'
+              disabled={true}
+              defaultValue='+123456789'
+            />
+
+            {/* Address */}
+            <TextInput
+              label='Address'
+              id='address'
+              name='address'
+              register={register}
+              errors={errors}
+              type='text'
+            />
+
+            {/* Change Password Section */}
+            <FormHeader title='Change Password' />
+            <TextInput
+              label='Current Password'
+              id='currentPassword'
+              name='currentPassword'
+              register={register}
+              errors={errors}
+              type='password'
+            />
+            <TextInput
+              label='New Password'
+              id='newPassword'
+              name='newPassword'
+              register={register}
+              errors={errors}
+              type='password'
+            />
+            <TextInput
+              label='Confirm New Password'
+              id='confirmPassword'
+              name='confirmPassword'
+              register={register}
+              errors={errors}
+              type='password'
+            />
+
+            {/* Submit Button */}
+            <div className='text-center'>
+              <SubmitButton
+                isLoading={false}
+                buttonTitle='Save Changes'
+                loadingButtonTitle='Saving updated info...'
+              />
+            </div>
+          </form>
         </div>
-      </div>
-    </WholesalerLayout>
+      </WholesalerLayout>
+    </div>
   );
 };
+
+WholesalerAccount.noLayout = true;
+export default WholesalerAccount;

@@ -34,6 +34,7 @@ const NewInventory = () => {
           <div className='flex flex-col'>
             <TextInput
               label='Product Title'
+              id='title'
               name='title'
               register={register}
               errors={errors}
@@ -43,6 +44,7 @@ const NewInventory = () => {
           <div className='flex flex-col'>
             <TextInput
               label='Product ID'
+              id='productId'
               name='productId'
               register={register}
               errors={errors}
@@ -59,6 +61,7 @@ const NewInventory = () => {
           <div className='flex flex-col'>
             <TextInput
               label='Buyer Store ID' //TODO: we might not need this cause should be own store
+              id='buyerStoreId'
               name='buyerStoreId'
               register={register}
               errors={errors}
@@ -68,6 +71,7 @@ const NewInventory = () => {
           <div className='flex flex-col'>
             <TextInput
               label='Seller Store ID' //TODO: we might not need this cause should be own store
+              id='sellerStoreId'
               name='sellerStoreId'
               register={register}
               errors={errors}
@@ -77,6 +81,7 @@ const NewInventory = () => {
           <div className='flex flex-col'>
             <TextInput
               label='Stock'
+              id='stock'
               name='stock'
               register={register}
               errors={errors}
@@ -86,6 +91,7 @@ const NewInventory = () => {
           <div className='flex flex-col'>
             <TextInput
               label='Unit Price'
+              id='price'
               name='price'
               register={register}
               errors={errors}
@@ -95,6 +101,7 @@ const NewInventory = () => {
         </div>
         <p className='mt-4'>(Product Image goes here)</p>
         <div className='flex items-center justify-center'>
+          
           <SubmitButton
             isLoading={false}
             buttonTitle='Create Product'

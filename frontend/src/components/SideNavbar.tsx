@@ -27,7 +27,7 @@ import Image from 'next/image';
 
 import logo from '@/images/logo.jpg';
 import { usePathname } from 'next/navigation';
-import { Boxes, ChartBarStacked, Inbox, LayoutDashboard, ShoppingCart, Truck, Users, Warehouse } from 'lucide-react';
+import { Boxes, ChartBarStacked, Inbox, LayoutDashboard, ShoppingCart, Truck, UserRoundPen, Users, Warehouse } from 'lucide-react';
 
 interface SideNavbarProps {
   showSidebar: boolean;
@@ -72,17 +72,21 @@ const SideNavbar = ({ showSidebar, setShowSidebar }: SideNavbarProps) => {
       href: `${basePath}/`,
       icon: ShoppingCart,
     },
+    {
+      title: 'Staff',
+      href: `${basePath}/staff`,
+      icon: Users,
+    },
 
     {
       title: 'Inbox',
       href: `${basePath}/inbox`,
       icon: Inbox,
     },
-
     {
-      title: 'Staff',
-      href: `${basePath}/staff`,
-      icon: Users,
+      title: 'Account',
+      href: `${basePath}/account`,
+      icon: UserRoundPen,
     },
   ];
   return (
