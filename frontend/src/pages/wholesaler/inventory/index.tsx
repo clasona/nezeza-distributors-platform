@@ -19,18 +19,23 @@ import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import SearchField from '@/components/Table/SearchField';
 import { sortItems } from '@/pages/utils/sortItems';
-
-
+import UpdateRowModal from '@/components/Table/UpdateRowModal';
+import RemoveRowModal from '@/components/Table/RemoveRowModal';
+import { FaProductHunt } from 'react-icons/fa';
+import formatPrice from '@/pages/utils/formatPrice';
 
 const WholesalerInventory = () => {
-  const [existingInventory, setExistingInventory] = useState<ProductProps[]>([]);
+  const [existingInventory, setExistingInventory] = useState<ProductProps[]>(
+    []
+  );
   const [sampleInventory, setSampleInventory] = useState<InventoryProps[]>([]);
-
   const [filteredInventory, setFilteredInventory] = useState<InventoryProps[]>(
     []
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<ProductProps | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductProps | null>(
+    null
+  );
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [newProductTitle, setNewProductTitle] = useState('');
   const [newProductPrice, setNewProductPrice] = useState(0);
@@ -39,7 +44,6 @@ const WholesalerInventory = () => {
   const [newProductStoreId, setNewProductStoreId] = useState(0); //must get from current logged in
   const [newProductImage, setNewProductImage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const [statusFilter, setStatusFilter] = useState('Status');
   const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
@@ -108,7 +112,7 @@ const WholesalerInventory = () => {
     { title: 'ID', id: '_id', sortable: true },
     { title: 'Image', id: 'image' },
     { title: 'Title', id: 'title', sortable: true },
-    { title: 'Qty', id: 'quantity', sortable: true },
+    { title: 'Qty', id: 'stock', sortable: true },
     { title: 'Price', id: 'price', sortable: true },
     { title: 'Created', id: 'createdAt', sortable: true },
     { title: 'Updated', id: 'updatedAt', sortable: true },
@@ -140,7 +144,78 @@ const WholesalerInventory = () => {
       newSortColumn,
       newSortOrder
     );
+    console.log(sortedInventory);
     setFilteredInventory(sortedInventory);
+  };
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState<string>('');
+
+  const [currentRowData, setCurrentRowData] = useState<InventoryProps>({
+    _id: 0,
+    title: '',
+    description: '',
+    image: '',
+    owner: 0,
+    buyerStoreId: 0,
+    productId: 0,
+    stock: 0,
+    price: 0,
+    freeShipping: false,
+    availability: false,
+    averageRating: 0,
+    numOfReviews: 0,
+    lastUpdated: '',
+    createdAt: '',
+    updatedAt: '',
+  });
+
+  const handleUpdate = (rowData: InventoryProps) => {
+    setCurrentRowData(rowData);
+    // console.log(rowData);
+    setIsUpdateModalOpen(true);
+  };
+  const handleSaveUpdatedRow = (updatedRow: InventoryProps) => {
+    // Update filteredInventorys to reflect the updated row
+    setFilteredInventory((prevProduct) =>
+      prevProduct.map((product) =>
+        product._id === updatedRow._id
+          ? { ...product, ...updatedRow }
+          : product
+      )
+    );
+    // Show success message
+    setSuccessMessage(`Inventory item # ${updatedRow._id} updated successfully.`);
+    setIsUpdateModalOpen(false);
+    setTimeout(() => setSuccessMessage(''), 4000);
+  };
+
+  const handleCloseUpdateModal = () => {
+    setIsUpdateModalOpen(false);
+  };
+
+  const handleRemove = (id: number) => {
+    setFilteredInventory((prevInventory) =>
+      prevInventory.filter((inventory) => inventory._id !== id)
+    );
+  };
+
+  const handleRemoveClick = (rowData: InventoryProps) => {
+    setCurrentRowData(rowData); // Set the selected row data
+    setIsRemoveModalOpen(true); // Open the modal
+  };
+
+  const handleConfirmRemove = (id: number) => {
+    setFilteredInventory((prevInventory) =>
+      prevInventory.filter((inventory) => inventory._id !== id)
+    );
+    //TODO: Remove from database
+
+    // Show success message
+    setSuccessMessage(`Inventory item # ${id} deleted successfully.`);
+    setIsRemoveModalOpen(false); // Close the modal after deletion
+    // Clear the message after 3 seconds
+    setTimeout(() => setSuccessMessage(''), 4000);
   };
 
   return (
@@ -174,8 +249,9 @@ const WholesalerInventory = () => {
                 .map((product) => (
                   <TableRow
                     key={product._id}
+                    rowData={product}
                     rowValues={[
-                      { content: <input type='checkbox' /> }, 
+                      { content: <input type='checkbox' /> },
                       { content: product._id },
 
                       {
@@ -190,21 +266,29 @@ const WholesalerInventory = () => {
                         ),
                       },
                       { content: product.title },
-                      { content: product.stock },
-                      { content: `$${product.price.toFixed(2)}` },
+                      { content: product.stock, isStock: true },
+                      { content: `$${formatPrice(product.price)}` },
                       { content: product.createdAt },
                       { content: product.updatedAt },
                       {
                         content: (
                           <RowActionDropdown
                             actions={[
-                              { href: './Inventory/new', label: 'Remove' },
-                              { href: '#', label: 'Update' },
+                              {
+                                label: 'Update',
+                                onClick: () => handleUpdate(product),
+                              },
+                              {
+                                label: 'Remove',
+                                onClick: () => handleRemoveClick(product),
+                              },
                             ]}
                           />
                         ),
                       },
                     ]}
+                    onUpdate={handleSaveUpdatedRow}
+                    onRemove={handleRemove}
                   />
                 ))}
             </tbody>
@@ -214,6 +298,26 @@ const WholesalerInventory = () => {
             pageSize={PAGE_SIZE}
             onPageChange={handlePageChange}
           />
+          {/* Update Row Modal */}
+          <UpdateRowModal
+            isOpen={isUpdateModalOpen}
+            rowData={currentRowData}
+            onClose={handleCloseUpdateModal}
+            onSave={handleSaveUpdatedRow}
+          />
+          {/* Remove Row Modal */}
+          <RemoveRowModal
+            isOpen={isRemoveModalOpen}
+            rowData={currentRowData}
+            onClose={() => setIsRemoveModalOpen(false)}
+            onDelete={() => handleConfirmRemove(currentRowData._id)}
+          />
+          {/* Success Message */}
+          {successMessage && (
+            <div className='fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-md shadow-md'>
+              {successMessage}
+            </div>
+          )}
         </div>
       </div>
     </WholesalerLayout>

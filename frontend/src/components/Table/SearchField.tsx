@@ -9,7 +9,6 @@ const SearchField = ({
   searchFieldPlaceholder,
   onSearchChange,
 }: SearchFieldProps) => {
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     onSearchChange(e.target.value); // Pass the query back to the parent
   };
@@ -26,7 +25,7 @@ const SearchField = ({
         <input
           type='text'
           id='table-search'
-          className='block w-full py-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500'
+          className='block w-full py-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-nezeza_green_600 focus:border-nezeza_green_600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-nezeza_green_600 dark:focus:border-nezeza_green_600'
           placeholder={`Search for ${searchFieldPlaceholder}`}
           onChange={handleInputChange}
         />

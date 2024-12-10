@@ -72,7 +72,7 @@ const WholesalerInventory = () => {
         Create New Product
       </button>
       {successMessage && (
-        <p className='text-center text-green-500'>{successMessage}</p>
+        <p className='text-center text-nezeza_green_600'>{successMessage}</p>
       )} */}
 
         {isModalOpen && (
@@ -104,7 +104,7 @@ const WholesalerInventory = () => {
                   </div>
 
                   <button
-                    className='mt-4 bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700'
+                    className='mt-4 bg-nezeza_green_600  text-white px-4 py-1 rounded-md hover:bg-green-700'
                     type='button'
                     onClick={() =>
                       handleUpdateProduct(selectedProduct._id, newProductPrice)
@@ -114,7 +114,7 @@ const WholesalerInventory = () => {
                   </button>
 
                   {successMessage && (
-                    <p className='mt-4 text-center text-green-500'>
+                    <p className='mt-4 text-center text-nezeza_green_600'>
                       {successMessage}
                     </p>
                   )}
@@ -190,7 +190,7 @@ const WholesalerInventory = () => {
                       Update
                     </button>
                     {successMessage && (
-                      <p className='mt-4 text-center text-green-500'>
+                      <p className='mt-4 text-center text-nezeza_green_600'>
                         {successMessage}
                       </p>
                     )}

@@ -42,7 +42,7 @@ const WholesalerAccount = () => {
                 />
                 <button
                   type='button'
-                  className='absolute bottom-0 right-0 bg-green-500 text-white border rounded-full p-1 shadow-sm'
+                  className='absolute bottom-0 right-0 bg-nezeza_green_600 text-white border rounded-full p-1 shadow-sm'
                   title='Change profile picture'
                 >
                   <Edit3 className='w-4 h-4 text-white' />

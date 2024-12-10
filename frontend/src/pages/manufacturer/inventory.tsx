@@ -60,7 +60,7 @@ const ManufacturerInventory = () => {
           //   storeId: newProductStoreId,
           image: newProductImage,
           // Add other product properties as needed
-        },
+        }
       );
 
       if (response.status === 201) {
@@ -127,7 +127,9 @@ const ManufacturerInventory = () => {
         console.log('Product deleted successfully');
         // Optimistic update (optional): Add the new product to the local state or redux persist
         setExistingProducts(
-          existingProducts.filter((product) => product._id !== productIdToDelete)
+          existingProducts.filter(
+            (product) => product._id !== productIdToDelete
+          )
         );
         setSuccessMessage('');
 
@@ -165,7 +167,7 @@ const ManufacturerInventory = () => {
         Create New Product
       </button>
       {successMessage && (
-        <p className='text-center text-green-500'>{successMessage}</p>
+        <p className='text-center text-nezeza_green_600'>{successMessage}</p>
       )}
 
       {isModalOpen && (
@@ -207,7 +209,9 @@ const ManufacturerInventory = () => {
                   placeholder='Product Quantity'
                   value={newProductQuantity}
                   className='max-w-screen-sm px-3 py-1 text-gray-800 bg-white rounded-md border-2 border-gray-300 focus:outline-none focus:border-blue-500 shadow-sm'
-                  onChange={(e) => setNewProductQuantity(Number(e.target.value))}
+                  onChange={(e) =>
+                    setNewProductQuantity(Number(e.target.value))
+                  }
                   required
                 />
               </div>
@@ -261,14 +265,14 @@ const ManufacturerInventory = () => {
               </div>
 
               <button
-                className='mt-4 bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700'
+                className='mt-4 bg-nezeza_green_600  text-white px-4 py-1 rounded-md hover:bg-green-700'
                 type='button'
                 onClick={handleCreateProduct}
               >
                 Create Product
               </button>
               {successMessage && (
-                <p className='mt-4 text-center text-green-500'>
+                <p className='mt-4 text-center text-nezeza_green_600'>
                   {successMessage}
                 </p>
               )}

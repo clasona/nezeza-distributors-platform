@@ -12,7 +12,6 @@ for (let i = 0; i < numInventoryItems; i++) {
     'Akabanga',
   ][Math.floor(Math.random() * 3)];
     const randomDescription = generateRandomDescription(); // Function to generate random descriptions
-  // const randomImage = `https://nezeza-products.s3.us-east-2.amazonaws.com/image${i}.png`; // Random image URL pattern
   const randomImage = [
     'akanozo.png',
     'kinazi.jpg',
@@ -23,7 +22,7 @@ for (let i = 0; i < numInventoryItems; i++) {
   const randomOwner = Math.floor(Math.random() * 100) + 1; // Random owner ID
   const randomBuyerStoreId = Math.floor(Math.random() * 50) + 1; // Random buyer store ID
   const randomProductId = Math.floor(Math.random() * 1000) + 1; // Random product ID
-  const randomStock = Math.floor(Math.random() * 100) + 1; // Random stock quantity
+  const randomStock = Math.floor(Math.random() * 50) + 1; // Random stock quantity
   const randomPrice = Math.floor(Math.random() * 10000) + 100; // Random price (cents)
   const randomFreeShipping = Math.random() < 0.5; // Random boolean for free shipping
   const randomAvailability = Math.random() < 0.8; // Random boolean for availability

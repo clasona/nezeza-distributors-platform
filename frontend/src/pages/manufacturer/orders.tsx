@@ -68,7 +68,7 @@ const ManufacturerCustomerOrders = () => {
         Wholesaler Store Name's Orders
       </h2>
       {successMessage && (
-        <p className='text-center text-green-500'>{successMessage}</p>
+        <p className='text-center text-nezeza_green_600'>{successMessage}</p>
       )}
 
       {/* Overview section */}
@@ -115,9 +115,9 @@ const ManufacturerCustomerOrders = () => {
             }
           </span>
         </div>
-        <div className='flex items-center justify-between bg-green-100 border border-green-500 p-4 rounded-md shadow-md flex-grow'>
+        <div className='flex items-center justify-between bg-green-100 border border-nezeza_green_600 p-4 rounded-md shadow-md flex-grow'>
           <span className='text-lg font-bold text-green-700'>Complete</span>
-          <span className='text-xl font-semibold text-green-800'>
+          <span className='text-xl font-semibold text-nezeza_green_800'>
             {
               existingOrders.filter((order) => order.status === 'Complete')
                 .length

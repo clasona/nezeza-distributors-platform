@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addUser } from '@/store/nextSlice';
 import axios from 'axios';
 
-
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -120,14 +119,16 @@ const LoginPage = () => {
           <button
             type='button'
             onClick={handleGoogleLogin}
-            className='w-full h-10 flex items-center justify-center gap-2 rounded-md font-medium bg-red-500 text-white hover:bg-red-600 transition-colors duration-300 mt-2'
+            className='w-full h-10 flex items-center justify-center gap-2 rounded-md font-medium bg-nezeza_red_600 text-white hover:bg-red-600 transition-colors duration-300 mt-2'
           >
             <FaGoogle className='w-5 h-5' />
             Login with Google
           </button>
 
           {errorMessage && (
-            <p className='mt-4 text-center text-red-500'>{errorMessage}</p>
+            <p className='mt-4 text-center text-nezeza_red_600'>
+              {errorMessage}
+            </p>
           )}
           <p className='text-center mt-6 text-gray-600'>
             New to Nezeza?{' '}

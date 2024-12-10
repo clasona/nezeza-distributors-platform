@@ -19,6 +19,9 @@ import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import SearchField from '@/components/Table/SearchField';
 import { sortItems } from '@/pages/utils/sortItems';
+import UpdateRowModal from '@/components/Table/UpdateRowModal';
+import RemoveRowModal from '@/components/Table/RemoveRowModal';
+import formatPrice from '@/pages/utils/formatPrice';
 
 const WholesalerCustomerOrders = () => {
   const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
@@ -26,7 +29,7 @@ const WholesalerCustomerOrders = () => {
 
   const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
   // const [orderStats, setOrdersStats] = useState<OrderProps[]>([]);
-  const [successMessage, setSuccessMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState('Status');
   const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
@@ -116,9 +119,76 @@ const WholesalerCustomerOrders = () => {
     setFilteredOrders(sortedOrders);
   };
 
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+
+  const [currentRowData, setCurrentRowData] = useState<OrderProps>({
+    _id: 0,
+    fulfillmentStatus: '',
+    orderItems: [],
+    quantity: 0,
+    totalPrice: 0,
+    totalTax: 0,
+    totalShipping: 0,
+    orderDate: '',
+    paymentMethod: '',
+  });
+
+  const handleUpdate = (rowData: OrderProps) => {
+    
+    setCurrentRowData(rowData);
+    // console.log(rowData);
+    setIsUpdateModalOpen(true);
+  };
+  const handleSaveUpdatedRow = (updatedRow: OrderProps) => {
+    // Update filteredOrders to reflect the updated row
+    setFilteredOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order._id === updatedRow._id ? { ...order, ...updatedRow } : order
+      )
+    );
+        setSuccessMessage(
+          `Order # ${updatedRow._id} updated successfully.`
+        );
+
+    setIsUpdateModalOpen(false); // Close the modal after saving
+        setTimeout(() => setSuccessMessage(''), 4000);
+
+  };
+
+  const handleCloseUpdateModal = () => {
+    setIsUpdateModalOpen(false);
+  };
+
+  const handleRemove = (id: number) => {
+    setFilteredOrders((prevOrders) =>
+      prevOrders.filter((order) => order._id !== id)
+    );
+  };
+
+  const handleRemoveClick = (rowData: OrderProps) => {
+    setCurrentRowData(rowData); // Set the selected row data
+    setIsRemoveModalOpen(true); // Open the modal
+  };
+
+  const handleConfirmRemove = (id: number) => {
+    setFilteredOrders((prevOrders) =>
+      prevOrders.filter((order) => order._id !== id)
+    );
+        setSuccessMessage(
+          `Order # ${id} deleted successfully.`
+        );
+
+    //TODO: Remove from database
+    setIsRemoveModalOpen(false); // Close the modal after deletion
+        setTimeout(() => setSuccessMessage(''), 4000);
+
+  };
+
+
   return (
     <WholesalerLayout>
-      <div className=''>
+      <div>
         <PageHeader
           heading='Customer Orders'
           href='./orders/new'
@@ -130,7 +200,7 @@ const WholesalerCustomerOrders = () => {
 
         {/* <TableActions /> */}
 
-        {/* Filter Dropdown and Orders Table */}
+        {/* Table Search field and Filter Dropdown*/}
         <TableFilters>
           <SearchField
             searchFieldPlaceholder='customer orders'
@@ -153,7 +223,7 @@ const WholesalerCustomerOrders = () => {
           />
         </TableFilters>
 
-        {/* Orders Table */}
+        {/* Customer Orders Table */}
         <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
           <table
             id='customer-orders-table'
@@ -165,10 +235,11 @@ const WholesalerCustomerOrders = () => {
                 .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
                 .map((order) => (
                   <TableRow
-                    key={order._id} // Important for performance
+                    key={order._id}
+                    rowData={order}
                     rowValues={[
-                      { content: <input type='checkbox' /> }, // Assuming you want a checkbox
-                      { content: order.fulfillmentStatus },
+                      { content: <input type='checkbox' /> },
+                      { content: order.fulfillmentStatus, isStatus: true },
                       { content: order._id },
                       { content: '' },
                       {
@@ -178,7 +249,7 @@ const WholesalerCustomerOrders = () => {
                           </Link>
                         ),
                       }, //TODO: make it show order products details when clicked
-                      { content: order.totalPrice },
+                      { content: `$${formatPrice(order.totalPrice)}` },
                       { content: order.orderDate },
 
                       {
@@ -186,15 +257,20 @@ const WholesalerCustomerOrders = () => {
                           <RowActionDropdown
                             actions={[
                               {
-                                href: '#',
-                                label: 'Remove',
+                                label: 'Update',
+                                onClick: () => handleUpdate(order),
                               },
-                              { href: '#', label: 'Update' },
+                              {
+                                label: 'Remove',
+                                onClick: () => handleRemoveClick(order),
+                              },
                             ]}
                           />
                         ),
                       },
                     ]}
+                    onUpdate={handleSaveUpdatedRow}
+                    onRemove={handleRemove}
                   />
                 ))}
               ;
@@ -205,6 +281,26 @@ const WholesalerCustomerOrders = () => {
             pageSize={PAGE_SIZE}
             onPageChange={handlePageChange}
           />
+          {/* Update Row Modal */}
+          <UpdateRowModal
+            isOpen={isUpdateModalOpen}
+            rowData={currentRowData}
+            onClose={handleCloseUpdateModal}
+            onSave={handleSaveUpdatedRow}
+          />
+          {/* Remove Row Modal */}
+          <RemoveRowModal
+            isOpen={isRemoveModalOpen}
+            rowData={currentRowData}
+            onClose={() => setIsRemoveModalOpen(false)}
+            onDelete={() => handleConfirmRemove(currentRowData._id)}
+          />
+          {/* Success Message */}
+          {successMessage && (
+            <div className='fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-md shadow-md'>
+              {successMessage}
+            </div>
+          )}
         </div>
       </div>
     </WholesalerLayout>

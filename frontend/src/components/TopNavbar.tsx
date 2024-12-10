@@ -76,7 +76,7 @@ const TopNavbar = ({
             >
               <MdOutlineNotifications className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate '></MdOutlineNotifications>
               <span className='sr-only'>Notifications</span>
-              <div className='absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2  rounded-full -top-0 end-6 dark:border-gray-900'>
+              <div className='absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-nezeza_red_600 border-2  rounded-full -top-0 end-6 dark:border-gray-900'>
                 20
               </div>
             </button>

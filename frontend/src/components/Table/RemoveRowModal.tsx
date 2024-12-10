@@ -1,13 +1,14 @@
 import React from 'react';
+import { InventoryProps, OrderProps } from '../../../type';
 
-interface RemoveModalProps<T> {
+interface RemoveModalProps<T extends object> {
   isOpen: boolean;
   rowData: T;
   onClose: () => void;
   onDelete: (id: number | string) => void;
 }
 
-const RemoveRowModal = <T,>({
+const RemoveRowModal = <T extends { _id: number | string }>({
   isOpen,
   rowData,
   onClose,
@@ -26,12 +27,13 @@ const RemoveRowModal = <T,>({
     data: any
   ): data is { _id: number; stock?: number; price?: number } =>
     'stock' in data && 'price' in data;
-
+  
   const handleDelete = () => {
     if ('_id' in rowData) {
       onDelete(rowData._id); // Execute delete with the row's ID
       onClose(); // Close the modal after deletion
     }
+    
   };
 
   return (

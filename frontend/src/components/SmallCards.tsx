@@ -13,7 +13,7 @@ type SmallCardsProps = {
 
 export default function SmallCards({ orderStats }: SmallCardsProps) {
   return (
-    <div className="flex flex-wrap gap-2 mb-2 justify-between">
+    <div className='flex flex-wrap gap-2 mb-2 justify-between'>
       {orderStats.map((stat) => (
         <SmallCard
           key={stat.status}
@@ -25,7 +25,6 @@ export default function SmallCards({ orderStats }: SmallCardsProps) {
     </div>
   );
 }
-
 
 // export default function SmallCards() {
 //     const orderStats = [{
@@ -40,7 +39,7 @@ export default function SmallCards({ orderStats }: SmallCardsProps) {
 //       <SmallCard className='bg-purple-600' />
 //       <SmallCard className='bg-blue-600' />
 //       <SmallCard className='bg-teal-600' />
-//       <SmallCard className='bg-green-600' />
+//       <SmallCard className='bg-nezeza_green_600 ' />
 //     </div>
 //   );
 // }

@@ -187,7 +187,9 @@ const RegisterSellerPage = () => {
               </button>
 
               {errorMessage && (
-                <p className='mt-4 text-center text-red-500'>{errorMessage}</p>
+                <p className='mt-4 text-center text-nezeza_red_600'>
+                  {errorMessage}
+                </p>
               )}
               <p className='text-center mt-6 text-gray-600'>
                 Already have an account?{' '}
@@ -201,10 +203,10 @@ const RegisterSellerPage = () => {
               </p>
             </>
           ) : (
-              //TODO: Add a resend email button
+            //TODO: Add a resend email button
             // **Email verification prompt**
             <div className='text-center mt-6'>
-              <h3 className='text-xl font-semibold text-green-500'>
+              <h3 className='text-xl font-semibold text-nezeza_green_600'>
                 Verify Your Email
               </h3>
               <p className='mt-4 text-gray-600'>

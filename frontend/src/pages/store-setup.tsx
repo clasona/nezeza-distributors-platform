@@ -13,8 +13,7 @@ type FormData = {
   primaryContactInfo: PrimaryContactInfo;
   // businessInfo: BusinessInfo;
   // billingInfo: BillingInfo;
-
-}
+};
 const StoreSetupPage = ({
   user,
 }: {
@@ -71,11 +70,16 @@ const StoreSetupPage = ({
       cardNumber: '',
       expirationDate: '',
       cvv: '',
-    
     },
   });
 
-  const sections = ['Primary Contact Info', 'Business Info', 'Billing Info', 'Verification Docs', 'Review & Submit'];
+  const sections = [
+    'Primary Contact Info',
+    'Business Info',
+    'Billing Info',
+    'Verification Docs',
+    'Review & Submit',
+  ];
   const handleAccountNumberChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -755,7 +759,9 @@ const StoreSetupPage = ({
                   </div>
                   <div>
                     {errorMessage && (
-                      <p className='text-center text-red-500'>{errorMessage}</p>
+                      <p className='text-center text-nezeza_red_600'>
+                        {errorMessage}
+                      </p>
                     )}
                   </div>
 
@@ -861,7 +867,7 @@ const StoreSetupPage = ({
                   </button>
                 ) : (
                   <button
-                    className='bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700'
+                    className='bg-nezeza_green_600  text-white px-4 py-1 rounded-md hover:bg-green-700'
                     onClick={() =>
                       (window.location.href =
                         '/post-store-application-submission')

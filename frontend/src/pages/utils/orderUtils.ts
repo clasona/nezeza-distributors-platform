@@ -42,7 +42,7 @@ export const calculateOrderStats = (existingOrders: OrderProps[]) => {
       count: existingOrders.filter(
         (order) => order.fulfillmentStatus === 'Complete'
       ).length,
-      className: 'bg-green-600',
+      className: 'bg-nezeza_green_600 ',
     },
   ];
 };
