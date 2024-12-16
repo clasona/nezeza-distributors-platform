@@ -149,7 +149,7 @@ const WholesalerInventory = () => {
   };
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-    const [successMessage, setSuccessMessage] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
 
   const [currentRowData, setCurrentRowData] = useState<InventoryProps>({
     _id: 0,
@@ -179,13 +179,13 @@ const WholesalerInventory = () => {
     // Update filteredInventorys to reflect the updated row
     setFilteredInventory((prevProduct) =>
       prevProduct.map((product) =>
-        product._id === updatedRow._id
-          ? { ...product, ...updatedRow }
-          : product
+        product._id === updatedRow._id ? { ...product, ...updatedRow } : product
       )
     );
     // Show success message
-    setSuccessMessage(`Inventory item # ${updatedRow._id} updated successfully.`);
+    setSuccessMessage(
+      `Inventory item # ${updatedRow._id} updated successfully.`
+    );
     setIsUpdateModalOpen(false);
     setTimeout(() => setSuccessMessage(''), 4000);
   };
@@ -240,7 +240,7 @@ const WholesalerInventory = () => {
         <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
           <table
             id='inventory-table'
-            className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'
+            className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
           >
             <TableHead columns={tableColumns} handleSort={handleSort} />
             <tbody>

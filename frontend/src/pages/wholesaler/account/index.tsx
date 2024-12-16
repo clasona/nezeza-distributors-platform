@@ -48,7 +48,7 @@ const WholesalerAccount = () => {
                   <Edit3 className='w-4 h-4 text-white' />
                 </button>
               </div>
-              <p className='text-sm text-gray-500 mt-2'>
+              <p className='text-sm text-nezeza_gray_600 mt-2'>
                 Change profile picture
               </p>
             </div>

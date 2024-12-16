@@ -49,7 +49,7 @@ const SuccessPage = () => {
         Thank you for shopping with Nezeza!
       </h1>
       <Link
-        className='text-lg text-gray-500 hover:underline underline-offset-4 decoration-[1px] hover:text-blue-600 duration-300'
+        className='text-lg text-nezeza_gray_600 hover:underline underline-offset-4 decoration-[1px] hover:text-blue-600 duration-300'
         href={'/'}
         onClick={() => dispatch(resetCart())}
       >

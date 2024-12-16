@@ -20,7 +20,7 @@ const SearchField = ({
       </label>
       <div className='relative'>
         <div className='absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none'>
-          <Search className='w-4 h-4 text-gray-500 dark:text-gray-400' />
+          <Search className='w-4 h-4 text-nezeza_gray_600 dark:text-gray-400' />
         </div>
         <input
           type='text'

@@ -140,7 +140,7 @@ const StoreSetupPage = ({
       <h2 className='text-3xl text-nezeza_dark_blue font-bold text-center mb-4'>
         Nezeza Store Setup
       </h2>
-      <p className='text-center mb-4 text-gray-500'>
+      <p className='text-center mb-4 text-nezeza_gray_600'>
         Please fill in information as it appears on your official ID and
         registered business documents.
       </p>

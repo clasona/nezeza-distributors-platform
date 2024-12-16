@@ -2,6 +2,7 @@ import { ChevronDown, ChevronsUpDown, ChevronUp } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface TableHeadProps {
+  hasCollapsibleContent?: boolean;
   columns: {
     title: string;
     id?: string;
@@ -11,7 +12,11 @@ interface TableHeadProps {
   handleSort: (column: string) => void; // Pass the sort function as a prop
 }
 
-const TableHead = ({ columns, handleSort }: TableHeadProps) => {
+const TableHead = ({
+  hasCollapsibleContent,
+  columns,
+  handleSort,
+}: TableHeadProps) => {
   // const [sortColumn, setSortColumn] = useState('');
   // const [sortOrder, setSortOrder] = useState('asc');
   // const [sortBy, setSortBy] = useState('_id'); // Default sorting by ID
@@ -41,6 +46,12 @@ const TableHead = ({ columns, handleSort }: TableHeadProps) => {
             </span>
           </th>
         ))}
+        {hasCollapsibleContent && (
+          <td className='px-6 py-3 text-right'>
+            <span>▲▼</span>
+            {/* {isExpanded ? '▲' : '▼'} */}
+          </td>
+        )}
       </tr>
     </thead>
   );

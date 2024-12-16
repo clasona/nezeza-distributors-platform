@@ -53,7 +53,11 @@ const TextInput = ({
             errors[name]
               ? 'border-nezeza_red_600 text-nezeza_red_600'
               : 'focus:border-nezeza_green_600'
-          } ${disabled ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : ''}`}
+          } ${
+            disabled
+              ? 'bg-gray-200 text-nezeza_gray_600 cursor-not-allowed'
+              : ''
+          }`}
           placeholder={`Enter the ${label.toLowerCase()}`}
         />
         {errors[name] && (

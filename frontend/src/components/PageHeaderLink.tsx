@@ -4,21 +4,14 @@ import Heading from './Heading';
 import Link from 'next/link';
 import Export from './Table/CustomExport';
 import Import from './Table/CustomImport';
-import PageHeaderLink from './PageHeaderLink';
 
-interface PageHeaderProps {
-  heading: string;
-  // linkTitle?: string;
-  // href?: string;
-  extraComponent?: React.ReactNode;
+interface PageHeaderLinkProps {
+  linkTitle?: string;
+  href: string;
 }
-const PageHeader = ({ heading, extraComponent }: PageHeaderProps) => {
+const PageHeaderLink = ({ linkTitle, href }: PageHeaderLinkProps) => {
   return (
-    <div className='flex justify-between py-4 '>
-      <Heading title={heading}></Heading>
-      {extraComponent && <div>{extraComponent}</div>}
-      {/* {extraComponent: <PageHeaderLink linkTitle={linkTitle} href={href} />} */}
-      {/* <div className='space-x-3'>
+      <div className='space-x-3'>
         <Export />
         <Import />
         <Link
@@ -28,9 +21,8 @@ const PageHeader = ({ heading, extraComponent }: PageHeaderProps) => {
           <Plus />
           <span>{linkTitle}</span>
         </Link>
-      </div> */}
     </div>
   );
 };
 
-export default PageHeader;
+export default PageHeaderLink;

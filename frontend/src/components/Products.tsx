@@ -7,7 +7,7 @@ import { HiShoppingCart } from 'react-icons/hi';
 import { FaHeart } from 'react-icons/fa';
 import FormattedPrice from './FormattedPrice';
 import { useDispatch } from 'react-redux';
-import { addToCart, addToFavorite } from "@/store/nextSlice";
+import { addToCart, addToFavorite } from '@/store/nextSlice';
 
 const Products = ({ productData }: any) => {
   const dispatch = useDispatch();
@@ -16,9 +16,9 @@ const Products = ({ productData }: any) => {
     <div className='w-full px-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6'>
       {/* choose whichever fileds you wanna drab from the product */}
       {productData.map(
-        ({ id, title, price, description, category, image }: ProductProps) => (
+        ({ _id, title, price, description, category, image }: ProductProps) => (
           <div
-            key={id}
+            key={_id}
             className='w-full bg-white text-black p-4 border border-gray-300
                     rounded-lg group overflow-hidden'
           >
@@ -40,7 +40,7 @@ const Products = ({ productData }: any) => {
                   onClick={() =>
                     dispatch(
                       addToCart({
-                        id: id,
+                        id: _id,
                         title: title,
                         price: price,
                         description: description,
@@ -59,28 +59,32 @@ const Products = ({ productData }: any) => {
 
                 {/* TODO: Not sure if we need this favorotefunctionality tho  */}
                 <span
-                      onClick={() => dispatch(
+                  onClick={() =>
+                    dispatch(
                       addToFavorite({
-                          id : id,
-                          title:title,
-                          price:price,
-                          description:description,
-                          category:category,
-                          image:image,
-                          quantity:1,
-                  })
-                      )}
+                        id: _id,
+                        title: title,
+                        price: price,
+                        description: description,
+                        category: category,
+                        image: image,
+                        quantity: 1,
+                      })
+                    )
+                  }
                   className='w-full h-full border-b-[1px] border-b-gray-400 flex items-center justify-center 
                             text-xl bg-transparent hover:bg-nezeza_yellow cursor-pointer duration-300
                             '
                 >
                   <FaHeart />
-                </span>  
+                </span>
               </div>
             </div>
             <hr />
             <div className='px-4 py-3 flex flex-col gap-1'>
-              <p className='text-xs text-gray-500 tracking-wide'>{category}</p>
+              <p className='text-xs text-nezeza_gray_600 tracking-wide'>
+                {category}
+              </p>
               <p className='text-base font-medium'>{title}</p>
               <p className='flex items-center'>
                 <span className='text-nezeza_dark_blue font-bold'>
@@ -94,7 +98,7 @@ const Products = ({ productData }: any) => {
                 onClick={() =>
                   dispatch(
                     addToCart({
-                      id: id,
+                      id: _id,
                       title: title,
                       price: price,
                       description: description,

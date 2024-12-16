@@ -14,7 +14,7 @@ import RowActionDropdown from '@/components/Table/RowActionDropdown';
 import Link from 'next/link';
 import Pagination from '@/components/Table/Pagination';
 import mockMyOrders from '../mock-data/mockMyOrders';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, XCircle } from 'lucide-react';
 import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import SearchField from '@/components/Table/SearchField';
@@ -22,6 +22,8 @@ import { sortItems } from '@/pages/utils/sortItems';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
 import RemoveRowModal from '@/components/Table/RemoveRowModal';
 import formatPrice from '@/pages/utils/formatPrice';
+import PageHeaderLink from '@/components/PageHeaderLink';
+import DateFilters from '@/components/Table/Filters/DateFilters';
 
 const WholesalerMyOrders = () => {
   const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
@@ -35,6 +37,8 @@ const WholesalerMyOrders = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchQuery, setSearchQuery] = useState(''); // New state for search query
   const orderStats = calculateOrderStats(filteredOrders);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,6 +84,33 @@ const WholesalerMyOrders = () => {
         : sampleOrders.filter((order) => order.fulfillmentStatus === status);
 
     setFilteredOrders(filteredByStatusFiltering);
+  };
+
+  const handleStartDateChange = (value: string) => {
+    setStartDate(value);
+    applyDateFilter(value, endDate);
+  };
+
+  const handleEndDateChange = (value: string) => {
+    setEndDate(value);
+    applyDateFilter(startDate, value);
+  };
+
+  const applyDateFilter = (start: string, end: string) => {
+    const filtered = sampleOrders.filter((order) => {
+      const orderDate = order.orderDate; // YYYY-MM-DD format
+      const isAfterStart = start ? orderDate >= start : true;
+      const isBeforeEnd = end ? orderDate <= end : true;
+      return isAfterStart && isBeforeEnd;
+    });
+    setFilteredOrders(filtered);
+  };
+
+  const clearFilters = () => {
+    setStatusFilter('Status');
+    setStartDate('');
+    setEndDate('');
+    setFilteredOrders(sampleOrders); // Reset to all orders
   };
 
   const tableColumns = [
@@ -180,8 +211,12 @@ const WholesalerMyOrders = () => {
       <div>
         <PageHeader
           heading='My Orders'
-          href='./orders/new'
-          linkTitle='Create New Order'
+          extraComponent={
+            <PageHeaderLink
+              linkTitle={'Create New Order'}
+              href={'./orders/new'}
+            />
+          }
         />
         {/* Replacing Overview Section with SmallCards */}
         <SmallCards orderStats={orderStats} />
@@ -209,21 +244,49 @@ const WholesalerMyOrders = () => {
             selectedOption={statusFilter}
             onChange={handleStatusFilterChange}
           />
+          {/* Filter by dates */}
+          <DateFilters
+            label='Filter by Date Range'
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={handleStartDateChange}
+            onEndDateChange={handleEndDateChange}
+          />
+
+          {/* Clear Filters Button */}
+          {/* <button
+            onClick={clearFilters}
+            className='py-2 px-4 text-sm text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300'
+          >
+            Clear Filters
+          </button> */}
+          <button
+            onClick={clearFilters}
+            className='p-1 text-red-500 hover:text-nezeza_red_600 focus:outline-none focus:ring focus:ring-red-300 rounded-md'
+            title='Clear Filters'
+          >
+            <XCircle className='w-5 h-5' aria-hidden='true' />
+          </button>
         </TableFilters>
 
         {/* My Orders Table */}
         <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
           <table
             id='my-orders-table'
-            className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'
+            className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
           >
-            <TableHead columns={tableColumns} handleSort={handleSort} />
+            <TableHead
+              hasCollapsibleContent={true}
+              columns={tableColumns}
+              handleSort={handleSort}
+            />
             <tbody>
               {filteredOrders
                 .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
                 .map((order) => (
                   <TableRow
                     key={order._id}
+                    hasCollapsibleContent={true}
                     rowData={order}
                     rowValues={[
                       { content: <input type='checkbox' /> },
@@ -264,6 +327,39 @@ const WholesalerMyOrders = () => {
                     ]}
                     onUpdate={handleSaveUpdatedRow}
                     onRemove={handleRemove}
+                    // control collapsible section for order items
+                    renderCollapsibleContent={(order) => (
+                      <div className='flex flex-col gap-4'>
+                        {order.orderItems.map((item) => (
+                          <div
+                            key={item._id}
+                            className='flex items-center px-20 gap-4 border-b border-nezeza_light_blue pb-2'
+                          >
+                            <img
+                              src={item.image}
+                              alt={item.description}
+                              className='w-12 h-12 object-cover'
+                            />
+                            <div className=''>
+                              <p className='font-semibold'>
+                                {item.description}
+                              </p>
+                              <p className='text-nezeza_gray_600'>
+                                {item.quantity} x ${item.price}
+                              </p>
+                              {/* TODO: link to seller's store on platform */}
+                              <Link
+                                href='#'
+                                target='_blank'
+                                className='text-nezeza_gray_600'
+                              >
+                                (SELLER Name & LINK)
+                              </Link>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   />
                 ))}
               ;

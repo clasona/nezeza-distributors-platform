@@ -61,7 +61,7 @@ const RemoveRowModal = <T,>({
         <div className='flex justify-end space-x-4'>
           <button
             onClick={onClose}
-            className='px-4 py-2 text-gray-500 bg-gray-300 rounded-md'
+            className='px-4 py-2 text-nezeza_gray_600 bg-gray-300 rounded-md'
           >
             Cancel
           </button>

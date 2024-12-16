@@ -44,7 +44,7 @@ const UpdateRowModal = <T,>({
   const handleConfirmSave = () => {
     onSave(formData);
     //TODO: Save in the db as well
-console.log('sooo', formData)
+    console.log('sooo', formData);
     setShowConfirmDialog(false);
     onClose();
   };
@@ -54,8 +54,8 @@ console.log('sooo', formData)
   };
   //checks if the data is of type OrderProps by verifying the existence of the fulfillmentStatus field.
   const isOrderProps = (data: any): data is OrderProps =>
-      'fulfillmentStatus' in data;
-    
+    'fulfillmentStatus' in data;
+
   //checks if the data is of type InventoryProps by verifying the presence of stock and price.
   const isInventoryProps = (data: any): data is InventoryProps =>
     'stock' in data && 'price' in data;
@@ -140,7 +140,7 @@ console.log('sooo', formData)
                 <input
                   name='price'
                   type='number'
-                //   step='0.01'
+                  //   step='0.01'
                   value={formData.price || ''}
                   onChange={handleChange}
                   className='mt-1 px-3 py-2 border border-gray-300 rounded-md w-full'
@@ -152,7 +152,7 @@ console.log('sooo', formData)
             <button
               type='button'
               onClick={onClose}
-              className='mr-4 text-gray-500 hover:text-gray-700'
+              className='mr-4 text-nezeza_gray_600 hover:text-gray-700'
             >
               Cancel
             </button>
@@ -174,7 +174,7 @@ console.log('sooo', formData)
             <div className='flex justify-end space-x-4'>
               <button
                 onClick={handleCancelSave}
-                className='px-4 py-2 text-gray-500 bg-gray-300 rounded-md'
+                className='px-4 py-2 text-nezeza_gray_600 bg-gray-300 rounded-md'
               >
                 Cancel
               </button>

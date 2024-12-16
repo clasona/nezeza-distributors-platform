@@ -29,7 +29,7 @@ const WholesalerCustomerOrders = () => {
 
   const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
   // const [orderStats, setOrdersStats] = useState<OrderProps[]>([]);
-    const [successMessage, setSuccessMessage] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState('Status');
   const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
@@ -120,7 +120,7 @@ const WholesalerCustomerOrders = () => {
   };
 
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-    const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
 
   const [currentRowData, setCurrentRowData] = useState<OrderProps>({
     _id: 0,
@@ -135,7 +135,6 @@ const WholesalerCustomerOrders = () => {
   });
 
   const handleUpdate = (rowData: OrderProps) => {
-    
     setCurrentRowData(rowData);
     // console.log(rowData);
     setIsUpdateModalOpen(true);
@@ -147,13 +146,10 @@ const WholesalerCustomerOrders = () => {
         order._id === updatedRow._id ? { ...order, ...updatedRow } : order
       )
     );
-        setSuccessMessage(
-          `Order # ${updatedRow._id} updated successfully.`
-        );
+    setSuccessMessage(`Order # ${updatedRow._id} updated successfully.`);
 
     setIsUpdateModalOpen(false); // Close the modal after saving
-        setTimeout(() => setSuccessMessage(''), 4000);
-
+    setTimeout(() => setSuccessMessage(''), 4000);
   };
 
   const handleCloseUpdateModal = () => {
@@ -175,16 +171,12 @@ const WholesalerCustomerOrders = () => {
     setFilteredOrders((prevOrders) =>
       prevOrders.filter((order) => order._id !== id)
     );
-        setSuccessMessage(
-          `Order # ${id} deleted successfully.`
-        );
+    setSuccessMessage(`Order # ${id} deleted successfully.`);
 
     //TODO: Remove from database
     setIsRemoveModalOpen(false); // Close the modal after deletion
-        setTimeout(() => setSuccessMessage(''), 4000);
-
+    setTimeout(() => setSuccessMessage(''), 4000);
   };
-
 
   return (
     <WholesalerLayout>
@@ -227,7 +219,7 @@ const WholesalerCustomerOrders = () => {
         <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
           <table
             id='customer-orders-table'
-            className='w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'
+            className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
           >
             <TableHead columns={tableColumns} handleSort={handleSort} />
             <tbody>

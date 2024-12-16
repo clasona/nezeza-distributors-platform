@@ -25,7 +25,7 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
       className='flex items-center flex-column flex-wrap md:flex-row justify-between py-1 px-4'
       aria-label='Table navigation'
     >
-      <span className='text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
+      <span className='text-sm font-normal text-nezeza_gray_600 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto'>
         Showing {''}
         <span className='font-semibold text-gray-700 dark:text-white'>
           {itemStartIndex}-{itemEndIndex}
@@ -41,7 +41,7 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
           <button
             onClick={() => handlePageClick(currentPage - 1)}
             disabled={currentPage === 1}
-            className='flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white 
+            className='flex items-center justify-center px-3 h-8 leading-tight text-nezeza_gray_600 bg-white 
                   border borger-gray-300 rounded-s-lg hover:bg-gray-100 hover:ext-gray-700 dark:bg-gray-800
                   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
           >
@@ -59,7 +59,7 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
   ${
     currentPage === index + 1
       ? 'text-gray-50 bg-nezeza_dark_blue border-blue-300 dark:bg-nezeza_dark_blue dark:border-gray-700  dark:text-gray-50 dark:hover:bg-blue-900 dark:hover:text-white hover:bg-blue-900 hover:text-white'
-      : 'text-gray-500 bg-white border-gray-300 dark:bg-gray-800 dark:border-gray-700  dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white hover:bg-gray-100 hover:text-gray-700'
+      : 'text-nezeza_gray_600 bg-white border-gray-300 dark:bg-gray-800 dark:border-gray-700  dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white hover:bg-gray-100 hover:text-gray-700'
   }`}
               >
                 {index + 1}
@@ -71,11 +71,11 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
           <button
             onClick={() => handlePageClick(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className='flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white 
+            className='flex items-center justify-center px-3 h-8 leading-tight text-nezeza_gray_600 bg-white 
                   border borger-gray-300 rounded-e-lg hover:bg-gray-100 hover:ext-gray-700 dark:bg-gray-800
                   dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
           >
-            <ChevronRight/>
+            <ChevronRight />
           </button>
         </li>
       </ul>

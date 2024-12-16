@@ -27,13 +27,12 @@ const RemoveRowModal = <T extends { _id: number | string }>({
     data: any
   ): data is { _id: number; stock?: number; price?: number } =>
     'stock' in data && 'price' in data;
-  
+
   const handleDelete = () => {
     if ('_id' in rowData) {
       onDelete(rowData._id); // Execute delete with the row's ID
       onClose(); // Close the modal after deletion
     }
-    
   };
 
   return (
@@ -63,7 +62,7 @@ const RemoveRowModal = <T extends { _id: number | string }>({
         <div className='flex justify-end space-x-4'>
           <button
             onClick={onClose}
-            className='px-4 py-2 text-gray-500 bg-gray-300 rounded-md'
+            className='px-4 py-2 text-nezeza_gray_600 bg-gray-300 rounded-md'
           >
             Cancel
           </button>

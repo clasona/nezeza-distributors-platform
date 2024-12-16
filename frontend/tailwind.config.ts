@@ -32,6 +32,7 @@ const config: Config = {
         nezeza_green_800: '#2E7D32',
         nezeza_red_600: '#E53935',
         nezeza_red_700: '#D32F2F',
+        nezeza_gray_600: '#757575',
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',

@@ -73,7 +73,7 @@ const ManufacturerCustomerOrders = () => {
 
       {/* Overview section */}
       <div className='flex flex-wrap gap-2 mb-6 justify-between'>
-        <div className='flex items-center justify-between bg-gray-100 border border-gray-500 p-4 rounded-md shadow-md flex-grow'>
+        <div className='flex items-center justify-between bg-gray-100 border border-nezeza_gray_600 p-4 rounded-md shadow-md flex-grow'>
           <span className='text-lg font-bold text-gray-700'>Total Orders</span>
           <span className='text-xl font-semibold text-gray-800'>
             {existingOrders.length}
