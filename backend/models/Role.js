@@ -153,6 +153,8 @@ const initRoles = async () => {
         'update_report_notification_status',
         // Other permissions
         'view_store_details',
+        'update_store_details',
+        'delete_store',
         'view_store_logo',
         'view_store_banner',
         'view_store_hours',

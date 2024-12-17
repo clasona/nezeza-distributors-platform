@@ -2,6 +2,7 @@
 const User = require('../models/User');
 const Store = require('../models/Store');
 const Order = require('../models/Order');
+const Notification = require('../models/Notification');
 const SubOrder = require('../models/SubOrder');
 const Product = require('../models/Product');
 
@@ -518,18 +519,27 @@ const updateToFulfilled = async (req, res) => {
     await subOrder.save();
     // Update the fullOrder status
     updateOrderFulfillmentStatus(order);
-    await sendNotification({
-      email: subOrder.buyerId.email,
-      firstName: subOrder.buyerId.firstName,
-      subject: `Your ${storeId} Order Fulfilled!`,
-      message: `Your order: ${subOrder._id} from store: ${storeId} Fulfilled!`,
+    const notification = await Notification.create({
+      to: subOrder.buyerId.email,
+      channel: 'email',
+      provider_id: 'Ethereal',
+      template: 'order_template',
+      data: `Your order: ${subOrder._id} from store: ${storeId} Fulfilled!`,
+      trigger_type: 'order_fulfilled',
+      resource_typ: subOrder._id,
     });
+    //   const data = await sendNotification({
+    //     email: subOrder.buyerId.email,
+    //     firstName: subOrder.buyerId.firstName,
+    //     subject: `Your ${storeId} Order Fulfilled!`,
+    //     message: `Your order: ${subOrder._id} from store: ${storeId} Fulfilled!`,
+    //   });
 
-    await sendNotification({
-      email,
-      subject: `${subOrder.buyerStoreId} Order Fulfilled`,
-      message: `Your order: ${subOrder._id} from your store: ${storeId} has Fulfilled.`,
-    });
+    //   await sendNotification({
+    //     email,
+    //     subject: `${subOrder.buyerStoreId} Order Fulfilled`,
+    //     message: `Your order: ${subOrder._id} from your store: ${storeId} has Fulfilled.`,
+    //   });
   } else {
     throw new CustomError.BadRequestError(
       'Suborder cannot be marked as Fulfilled'
