@@ -13,8 +13,7 @@ type FormData = {
   primaryContactInfo: PrimaryContactInfo;
   // businessInfo: BusinessInfo;
   // billingInfo: BillingInfo;
-
-}
+};
 const StoreSetupPage = ({
   user,
 }: {
@@ -71,11 +70,16 @@ const StoreSetupPage = ({
       cardNumber: '',
       expirationDate: '',
       cvv: '',
-    
     },
   });
 
-  const sections = ['Primary Contact Info', 'Business Info', 'Billing Info', 'Verification Docs', 'Review & Submit'];
+  const sections = [
+    'Primary Contact Info',
+    'Business Info',
+    'Billing Info',
+    'Verification Docs',
+    'Review & Submit',
+  ];
   const handleAccountNumberChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -136,7 +140,7 @@ const StoreSetupPage = ({
       <h2 className='text-3xl text-nezeza_dark_blue font-bold text-center mb-4'>
         Nezeza Store Setup
       </h2>
-      <p className='text-center mb-4 text-gray-500'>
+      <p className='text-center mb-4 text-nezeza_gray_600'>
         Please fill in information as it appears on your official ID and
         registered business documents.
       </p>
@@ -755,7 +759,9 @@ const StoreSetupPage = ({
                   </div>
                   <div>
                     {errorMessage && (
-                      <p className='text-center text-red-500'>{errorMessage}</p>
+                      <p className='text-center text-nezeza_red_600'>
+                        {errorMessage}
+                      </p>
                     )}
                   </div>
 
@@ -861,7 +867,7 @@ const StoreSetupPage = ({
                   </button>
                 ) : (
                   <button
-                    className='bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700'
+                    className='bg-nezeza_green_600  text-white px-4 py-1 rounded-md hover:bg-green-700'
                     onClick={() =>
                       (window.location.href =
                         '/post-store-application-submission')

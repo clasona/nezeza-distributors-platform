@@ -12,6 +12,7 @@ const ManufacturerInventory = () => {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [newProductTitle, setNewProductTitle] = useState('');
   const [newProductPrice, setNewProductPrice] = useState(0);
+  const [newProductQuantity, setNewProductQuantity] = useState(0);
   const [newProductDescription, setNewProductDescription] = useState('');
   const [newProductCategory, setNewProductCategory] = useState('');
   const [newProductStoreId, setNewProductStoreId] = useState(0); //must get from current logged in
@@ -24,6 +25,7 @@ const ManufacturerInventory = () => {
       try {
         const productsData = await fetchProducts();
         setExistingProducts(productsData);
+        console.log('existing products fetched successfully.');
       } catch (error) {
         console.error('Error fetching existing products data:', error);
       }
@@ -58,7 +60,7 @@ const ManufacturerInventory = () => {
           //   storeId: newProductStoreId,
           image: newProductImage,
           // Add other product properties as needed
-        },
+        }
       );
 
       if (response.status === 201) {
@@ -70,9 +72,10 @@ const ManufacturerInventory = () => {
         setExistingProducts([
           ...existingProducts,
           {
-            id: response.data.product._id,
+            _id: response.data.product._id,
             title: newProductTitle,
             price: newProductPrice,
+            quantity: newProductQuantity,
             description: newProductDescription,
             category: newProductCategory,
             // storeId: newProductStoreId,
@@ -124,7 +127,9 @@ const ManufacturerInventory = () => {
         console.log('Product deleted successfully');
         // Optimistic update (optional): Add the new product to the local state or redux persist
         setExistingProducts(
-          existingProducts.filter((product) => product.id !== productIdToDelete)
+          existingProducts.filter(
+            (product) => product._id !== productIdToDelete
+          )
         );
         setSuccessMessage('');
 
@@ -162,7 +167,7 @@ const ManufacturerInventory = () => {
         Create New Product
       </button>
       {successMessage && (
-        <p className='text-center text-green-500'>{successMessage}</p>
+        <p className='text-center text-nezeza_green_600'>{successMessage}</p>
       )}
 
       {isModalOpen && (
@@ -197,6 +202,16 @@ const ManufacturerInventory = () => {
                   value={newProductDescription}
                   className='max-w-screen-sm px-3 py-1 text-gray-800 bg-white rounded-md border-2 border-gray-300 focus:outline-none focus:border-blue-500 shadow-sm'
                   onChange={(e) => setNewProductDescription(e.target.value)}
+                  required
+                />
+                <input
+                  type='number'
+                  placeholder='Product Quantity'
+                  value={newProductQuantity}
+                  className='max-w-screen-sm px-3 py-1 text-gray-800 bg-white rounded-md border-2 border-gray-300 focus:outline-none focus:border-blue-500 shadow-sm'
+                  onChange={(e) =>
+                    setNewProductQuantity(Number(e.target.value))
+                  }
                   required
                 />
               </div>
@@ -250,14 +265,14 @@ const ManufacturerInventory = () => {
               </div>
 
               <button
-                className='mt-4 bg-green-600 text-white px-4 py-1 rounded-md hover:bg-green-700'
+                className='mt-4 bg-nezeza_green_600  text-white px-4 py-1 rounded-md hover:bg-green-700'
                 type='button'
                 onClick={handleCreateProduct}
               >
                 Create Product
               </button>
               {successMessage && (
-                <p className='mt-4 text-center text-green-500'>
+                <p className='mt-4 text-center text-nezeza_green_600'>
                   {successMessage}
                 </p>
               )}
@@ -275,14 +290,15 @@ const ManufacturerInventory = () => {
         </div>
       )}
 
-
       <div className='py-4'>
         <table className=' w-full table-auto border-collapse border border-slate-500 shadow-xl'>
           {/* <thead className=' hover:bg-nezeza_light_blue'> */}
           <thead className='hover:bg-nezeza_dark_blue border-b border-neutral-200 bg-nezeza_light font-medium text-white dark:border-white/10'>
             <tr>
               {/* <th className='border border-slate-600'>ID</th> */}
-              <th scope='col' className='px-6 py-2'>Product ID</th>
+              <th scope='col' className='px-6 py-2'>
+                Product ID
+              </th>
               <th className='border border-slate-600'>Title</th>
               <th className='border border-slate-600'>Price</th>
               <th className='border border-slate-600'>Description</th>
@@ -298,12 +314,12 @@ const ManufacturerInventory = () => {
           <tbody>
             {existingProducts.map((product: ProductProps) => (
               <tr
-                key={product.id}
+                key={product._id}
                 className=' border-b border-nezeza_light dark:border-white/10 hover:bg-nezeza_light_blue'
                 // onClick={() => setIsOptionsOpen(true)}
               >
                 {/* <td className='border border-slate-600'>{id}</td> */}
-                <td className='px-6 py-2 font-medium'>{product.id}</td>
+                <td className='px-6 py-2 font-medium'>{product._id}</td>
                 <td className='px-6 py-2 '>{product.title}</td>
                 <td className='px-6 py-2 '>{product.price}</td>
                 <td className='px-6 py-2 '>{product.description}</td>
@@ -314,7 +330,7 @@ const ManufacturerInventory = () => {
                   <button
                     className='bg-red-600 text-white px-4 rounded-md hover:bg-red-700'
                     type='button'
-                    onClick={() => handleDeleteProduct(product.id)}
+                    onClick={() => handleDeleteProduct(product._id)}
                   >
                     Delete
                   </button>
@@ -323,7 +339,7 @@ const ManufacturerInventory = () => {
                   <button
                     className='bg-nezeza_light text-white px-4 rounded-md hover:bg-nezeza_light'
                     type='button'
-                    onClick={() => handleDeleteProduct(product.id)}
+                    onClick={() => handleDeleteProduct(product._id)}
                   >
                     Update
                   </button>

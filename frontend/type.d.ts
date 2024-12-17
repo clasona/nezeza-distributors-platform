@@ -11,9 +11,10 @@
 
 export interface ProductProps {
   // we can add as many keys as we want from the product
-  id: number;
+  _id: number;
   title: string;
   price: number;
+  quantity: number;
   description: string;
   category: string;
   // storeId: number;
@@ -22,12 +23,34 @@ export interface ProductProps {
 
 export interface OrderProps {
   // we can add as many keys as we want from the orders
-  id: number;
-  items: [ProductProps];
+  _id: number;
+  fulfillmentStatus: string;
+  orderItems: ProductProps[];
   quantity: number;
-  tax: number;
-  shippingFee: number;
+  totalPrice: number;
+  totalTax: number;
+  totalShipping: number;
+  orderDate: string;
   paymentMethod: string;
+}
+
+export interface InventoryProps {
+  _id: number;
+  title: string;
+  description: string;
+  image: string;
+  owner: number;
+  buyerStoreId: number;
+  productId: number;
+  stock: number;
+  price: number;
+  freeShipping: boolean;
+  availability: boolean;
+  averageRating: number;
+  numOfReviews: number;
+  lastUpdated: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 //passed into redux stat for add to cart

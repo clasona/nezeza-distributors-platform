@@ -7,7 +7,8 @@ import { loadStripe } from '@stripe/stripe-js';
 import { useSession } from 'next-auth/react';
 
 const CartPayment = () => {
-  const { productData, userInfo } = useSelector( //add orderData 
+  const { productData, userInfo } = useSelector(
+    //add orderData
     (state: stateProps) => state.next
   );
   const [totalAmount, setTotalAmount] = useState(0);
@@ -29,7 +30,7 @@ const CartPayment = () => {
 
   const handleCheckout = async () => {
     const stripe = await stripePromise;
-    
+
     //pass the cart products data to the stripe api
     const response = await fetch('/api/checkout', {
       method: 'POST',
@@ -48,12 +49,12 @@ const CartPayment = () => {
       alert(result?.error.message);
     }
   };
-    
+
   return (
     <div className='flex flex-col gap-4'>
       <div className='flex gap-2'>
         <span
-          className='bg-green-600 rounded-full p-1 h-6 w-6 text-sm
+          className='bg-nezeza_green_600  rounded-full p-1 h-6 w-6 text-sm
                  text-white flex items-center justify-center mt-1'
         >
           <SiMediamarkt />
@@ -86,7 +87,7 @@ const CartPayment = () => {
           >
             Proceed to Checkout
           </button>
-          <p className='text-xs mt-1 text-red-500 font-semibold animate-bounce'>
+          <p className='text-xs mt-1 text-nezeza_red_600 font-semibold animate-bounce'>
             Please Login to Continue
           </p>
         </div>

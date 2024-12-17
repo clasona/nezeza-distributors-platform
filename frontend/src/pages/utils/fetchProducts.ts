@@ -1,17 +1,16 @@
-// export const getServerSideProps = async () => {
-//   const productData = await fetchProducts();
-//   return { props: { productData } };
-// };
+import axios from 'axios';
 
 export const fetchProducts = async () => {
   try {
-    const response = await fetch(
-      'http://localhost:8000/api/v1/marketplace/products'
+    const response = await axios.get(
+      'http://localhost:8000/api/v1/marketplace/products',
+      {
+        withCredentials: true, // Include credentials like cookies for authorization
+      }
     );
-    const data = await response.json();
-    const productsData = data.products;
+    const productsData = response.data.products;
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       console.log('products data not fetched.');
       // console.log(productsData);
     } else {

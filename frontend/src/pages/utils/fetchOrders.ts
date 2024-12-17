@@ -1,17 +1,45 @@
-export const fetchOrders = async () => {
-  try {
-    const response = await fetch('http://localhost:8000/api/v1/orders/selling');
-    const data = await response.json();
-    const ordersData = data.orders;
+import axios from 'axios';
 
-    if (!response.ok) {
+export const fetchOrders = async (status?: string) => {
+  try {
+    const response = await axios.get(
+      'http://localhost:8000/api/v1/orders/buying',
+      {
+        withCredentials: true, // Include credentials like cookies for authorization
+      }
+    );
+    const ordersData = response.data.orders;
+
+    console.log(response);
+
+    if (response.status !== 200) {
       console.log('orders data not fetched.');
       // console.log(ordersData);
     } else {
       console.log('orders data fetched successfully...');
       // console.log(ordersData);
       return ordersData;
-      // return { props: { ordersData } };
+
+      // const validStatuses = [
+      //   'Pending',
+      //   'Fulfilled',
+      //   'Shipped',
+      //   'Delivered',
+      //   'Complete',
+      // ];
+      // if (status && !validStatuses.includes(status)) {
+      //   throw new Error(`Invalid status: ${status}`);
+      // }
+
+      // // If a status is provided, filter the orders by fulfillmentStatus
+      // const filteredOrders = status
+      //   ? ordersData.filter(
+      //       (order: { fulfillmentStatus: string }) =>
+      //         order.fulfillmentStatus === status
+      //     )
+      //   : ordersData;
+
+      // return filteredOrders;
     }
   } catch (error) {
     console.error('Error fetching orders data:', error);
