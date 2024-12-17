@@ -34,7 +34,8 @@ const register = async (req, res) => {
  
   switch (businessType) {
       case 'E-commerce Marketplace':
-        roleNames[0] = 'admin';
+      roleNames[0] = 'admin';
+      roleNames[1] = 'wholesaler'; //yves for testing, might remove it
         break;
       case 'manufacturing':
         roleNames[0] = 'owner';
@@ -80,7 +81,7 @@ const register = async (req, res) => {
   // Add the current password to the previousPasswords array
   user.previousPasswords.push(user.password); 
   await user.save();
-  const origin = 'http://localhost:3000'; // server where the frontend is running
+  const origin = process.env.SERVER_URL; // server where the frontend is running
   // send verification email
   await sendVerificationEmail({ name: user.name, email: user.email, verificationToken, origin });
 

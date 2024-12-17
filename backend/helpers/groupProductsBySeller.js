@@ -5,7 +5,7 @@ const groupProductsBySeller = (fullOrder) => {
     const {  
       product: productId,  
       price, 
-      name,
+      title,
       image,
       quantity,  
       sellerStoreId,
@@ -30,7 +30,7 @@ const groupProductsBySeller = (fullOrder) => {
     }
 
     // Add product details to sub-order products list
-    subOrders[sellerStoreId].products.push({ productId, quantity, price, name, image });
+    subOrders[sellerStoreId].products.push({ productId, quantity, price, title, image });
     
     // Calculate and add to the total amount for the seller's sub-order
     subOrders[sellerStoreId].totalAmount += price * quantity;

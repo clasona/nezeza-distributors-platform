@@ -12,7 +12,11 @@ const isTokenValid = ( token ) => jwt.verify(token, process.env.JWT_SECRET);
 const attachCookiesToResponse = ({ res, user, refreshToken }) => {
   // Create JWT tokens for access and refresh tokens
   const accessTokenJWT = createJWT({ payload: {user} });
-  const refreshTokenJWT = createJWT({ payload: {user, refreshToken} });
+  const refreshTokenJWT = createJWT({ payload: { user, refreshToken } });
+  
+  // console.log("tokenssss soooo")
+  // console.log(accessTokenJWT)
+  // console.log(refreshTokenJWT)
 
   const oneDay = 1000 * 60 * 60 * 24; // 1 day for access token
   const longerExp = 1000 * 60 * 60 * 24 * 30; // 30 days for refresh token
@@ -23,6 +27,7 @@ const attachCookiesToResponse = ({ res, user, refreshToken }) => {
     secure: process.env.NODE_ENV === 'production',
     signed: true,
     maxAge: 1000 * 60 * 15, // 24 hours
+    sameSite: 'none'
   });
 
   res.cookie('refreshToken', refreshTokenJWT, {
