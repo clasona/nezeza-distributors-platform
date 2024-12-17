@@ -14,10 +14,10 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
-"@effect/platform@0.69.24":
-  version "0.69.24"
-  resolved "https://registry.yarnpkg.com/@effect/platform/-/platform-0.69.24.tgz#d10930c7c17a3c26f363a5376c2d841809853899"
-  integrity sha512-SPQoIItSo6oFmCUcmnmEr9w+XH+IDOvgQI33kTw7Vjssm4ITfwx3BzMZl/M7Ozu9+g0IgE4SU/xRmW8YL3Z3BQ==
+"@effect/platform@0.70.7":
+  version "0.70.7"
+  resolved "https://registry.yarnpkg.com/@effect/platform/-/platform-0.70.7.tgz#b770e648b86a82f0bcaaa1fd1aa2fbc5758c4d2f"
+  integrity sha512-TbNwj/mOJhycPygbmicGBS7CNtv5Z8WVheRbLUdP3oPAe/nbSOJVLc8ZPvOejhquF/1vJMKuqY5MWfkcBpvi/g==
   dependencies:
     find-my-way-ts "^0.1.5"
     multipasta "^0.2.5"
@@ -899,21 +899,21 @@
   resolved "https://registry.yarnpkg.com/@uploadthing/mime-types/-/mime-types-0.3.2.tgz#b2f549be1c9847e6bd10e9ad9879091f17d7a5cc"
   integrity sha512-WP/K75S/649lM0GUcd9jq4RjeTIc/0bO2UmLx4+usTSNy/x0K8gV0JdLWeUUbmTQtJoHd4ZTSvAdG7ZQgcmXvA==
 
-"@uploadthing/react@^7.1.2":
-  version "7.1.2"
-  resolved "https://registry.yarnpkg.com/@uploadthing/react/-/react-7.1.2.tgz#91f76821c1e5f2c334be5ffda147e583068fbd9f"
-  integrity sha512-qH6A/s53DvqGJfSsRMfbum6Zc3CZ135BmL/qmguJdzA8wqWyMoi3dbHcCn3+gUldViVHUqiR324DzK4PlCQKIQ==
+"@uploadthing/react@^7.1.3":
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/@uploadthing/react/-/react-7.1.3.tgz#003b98f2f53969afe20a572a2b4b182af98602bb"
+  integrity sha512-oV8hhFtAl7I05mmop8zQSz1nIq5KamfSPYpFl0OU/61TcmEcXXISH6CshF/TMuHasvqvGpMVfW7meC8b7idxBA==
   dependencies:
-    "@uploadthing/shared" "7.1.2"
+    "@uploadthing/shared" "7.1.3"
     file-selector "0.6.0"
 
-"@uploadthing/shared@7.1.2":
-  version "7.1.2"
-  resolved "https://registry.yarnpkg.com/@uploadthing/shared/-/shared-7.1.2.tgz#4b41303002259f89a496fcb908000aafbab89688"
-  integrity sha512-RG26qUpPufDtuR6NQbFXIJAkkOLTgoU2pvF2MoUx3AsdCwM5/RrgwzsXudNBRER7rQQLg9/k8+Oq+jeVv30qhg==
+"@uploadthing/shared@7.1.3":
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/@uploadthing/shared/-/shared-7.1.3.tgz#089862fdc8c94662873084740310ad3b48dc3357"
+  integrity sha512-JlYz/JLZPrMAZRg7YPDUICodvIXLW9xS32aErqDvD76juq6nPRwFdwG5V089CY2kS5Ju9I0rGAu94hbJFqd9qQ==
   dependencies:
     "@uploadthing/mime-types" "0.3.2"
-    effect "3.10.15"
+    effect "3.11.5"
     sqids "^0.3.0"
 
 acorn-jsx@^5.3.2:
@@ -1091,6 +1091,11 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
+
+attr-accept@^2.2.4:
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/attr-accept/-/attr-accept-2.2.5.tgz#d7061d958e6d4f97bf8665c68b75851a0713ab5e"
+  integrity sha512-0bDNnY/u6pPwHDMoF0FieU354oBi0a8rD9FcsLwzcGWbc8KS8KPIi7y+s13OlVY+gMWc/9xEMUgNE6Qm8ZllYQ==
 
 available-typed-arrays@^1.0.7:
   version "1.0.7"
@@ -1410,10 +1415,10 @@ eastasianwidth@^0.2.0:
   resolved "https://registry.npmjs.org/eastasianwidth/-/eastasianwidth-0.2.0.tgz"
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
-effect@3.10.15:
-  version "3.10.15"
-  resolved "https://registry.yarnpkg.com/effect/-/effect-3.10.15.tgz#1596f6973a338c7334326b99b309306df5a5574f"
-  integrity sha512-LdczPAFbtij3xGr9i+8PyDtuWdlXjSY5UJ8PKrYrr0DClKfR/OW3j8sxtambWYljzJAYD865KFhv7LdbWdG7VQ==
+effect@3.11.5:
+  version "3.11.5"
+  resolved "https://registry.yarnpkg.com/effect/-/effect-3.11.5.tgz#48ca458df10955ac2597828b960e3f0a178c2b2a"
+  integrity sha512-oSzaR/S/2A/qDTnDqMWxQUNSjCG2sRLB4NEvTu+l9RqE122MTgKXOWzw0x4MHsdovRTzAihfkpgBj2aLFnH2+w==
   dependencies:
     fast-check "^3.21.0"
 
@@ -1832,6 +1837,13 @@ file-selector@0.6.0:
   integrity sha512-QlZ5yJC0VxHxQQsQhXvBaC7VRJ2uaxTf+Tfpu4Z/OcVQJVpZO+DGU0rkoVW5ce2SccxugvpBJoMvUs59iILYdw==
   dependencies:
     tslib "^2.4.0"
+
+file-selector@^2.1.0:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/file-selector/-/file-selector-2.1.2.tgz#fe7c7ee9e550952dfbc863d73b14dc740d7de8b4"
+  integrity sha512-QgXo+mXTe8ljeqUFaX3QVHc5osSItJ/Km+xpocx0aSqWGMSCf6qYs/VnzZgS864Pjn5iceMRFigeAV7AfTlaig==
+  dependencies:
+    tslib "^2.7.0"
 
 fill-range@^7.1.1:
   version "7.1.1"
@@ -2930,6 +2942,15 @@ react-dom@19.0.0-rc-02c0e824-20241028:
   dependencies:
     scheduler "0.25.0-rc-02c0e824-20241028"
 
+react-dropzone@^14.3.5:
+  version "14.3.5"
+  resolved "https://registry.yarnpkg.com/react-dropzone/-/react-dropzone-14.3.5.tgz#1a8bd312c8a353ec78ef402842ccb3589c225add"
+  integrity sha512-9nDUaEEpqZLOz5v5SUcFA0CjM4vq8YbqO0WRls+EYT7+DvxUdzDPKNCPLqGfj3YL9MsniCLCD4RFA6M95V6KMQ==
+  dependencies:
+    attr-accept "^2.2.4"
+    file-selector "^2.1.0"
+    prop-types "^15.8.1"
+
 react-easy-swipe@^0.0.21:
   version "0.0.21"
   resolved "https://registry.npmjs.org/react-easy-swipe/-/react-easy-swipe-0.0.21.tgz"
@@ -3507,7 +3528,7 @@ tsconfig-paths@^3.15.0:
     minimist "^1.2.6"
     strip-bom "^3.0.0"
 
-tslib@^2.0.0, tslib@^2.1.0, tslib@^2.4.0, tslib@^2.8.0:
+tslib@^2.0.0, tslib@^2.1.0, tslib@^2.4.0, tslib@^2.7.0, tslib@^2.8.0:
   version "2.8.1"
   resolved "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz"
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
@@ -3588,16 +3609,16 @@ undici-types@~6.19.2:
   resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.19.8.tgz"
   integrity sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==
 
-uploadthing@^7.4.0:
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/uploadthing/-/uploadthing-7.4.0.tgz#2da1b08fd16ec73a61adba07ce3b96eb0de4651c"
-  integrity sha512-sTiFvpyiVh8brUQ6z+94lJqEqk1i1G4j6qUO9ekUAdrIZge6jlHFDADiedN+QtqN5U24X32zFlgFsS2JYIVUwg==
+uploadthing@^7.4.1:
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/uploadthing/-/uploadthing-7.4.1.tgz#48851da716ff75361fcb975dcc935086e5704ec6"
+  integrity sha512-an/ENGUJ06Rg9eI2/bWOUsm+6iDlufDRggUsw6HR4mqhNa/aqLHj5KrWP1CuVHP70fXMCsSM+BgVm00y5wt6wg==
   dependencies:
-    "@effect/platform" "0.69.24"
+    "@effect/platform" "0.70.7"
     "@standard-schema/spec" "1.0.0-beta.3"
     "@uploadthing/mime-types" "0.3.2"
-    "@uploadthing/shared" "7.1.2"
-    effect "3.10.15"
+    "@uploadthing/shared" "7.1.3"
+    effect "3.11.5"
 
 uri-js@^4.2.2:
   version "4.4.1"

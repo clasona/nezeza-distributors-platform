@@ -22,21 +22,60 @@ import { sortItems } from '@/pages/utils/sortItems';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
 import RemoveRowModal from '@/components/Table/RemoveRowModal';
 import formatPrice from '@/pages/utils/formatPrice';
+import PageHeaderLink from '@/components/PageHeaderLink';
+import DateFilters from '@/components/Table/Filters/DateFilters';
+import ClearFilters from '@/components/Table/Filters/ClearFilters';
 
 const WholesalerCustomerOrders = () => {
   const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
   const [sampleOrders, setSampleOrders] = useState<OrderProps[]>([]);
 
   const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
-  // const [orderStats, setOrdersStats] = useState<OrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState<string>('');
+
+  // For sorting and filtering
   const [statusFilter, setStatusFilter] = useState('Status');
   const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
+  const [searchQuery, setSearchQuery] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
+  // for the small cards
   const orderStats = calculateOrderStats(filteredOrders);
 
+  //for defining what table headers needed
+  const tableColumns = [
+    { title: 'Select', srOnly: true, id: 'select' },
+    { title: 'Status', id: 'fulfillmentStatus', sortable: true },
+    { title: 'Order ID', id: '_id', sortable: true },
+    { title: 'Customer', id: 'customer', sortable: true },
+    { title: 'Items', id: 'orderItems', sortable: true },
+    { title: 'Total Price', id: 'totalPrice', sortable: true },
+    { title: 'Order Date', id: 'orderDate', sortable: true },
+    { title: 'Action', id: 'action' },
+  ];
+
+  //for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
+
+  //for table row dropdown actions i.e: update, remove
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState<OrderProps>({
+    _id: 0,
+    fulfillmentStatus: '',
+    orderItems: [],
+    quantity: 0,
+    totalPrice: 0,
+    totalTax: 0,
+    totalShipping: 0,
+    orderDate: '',
+    paymentMethod: '',
+  });
+
+  //setting customer orders data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,20 +122,32 @@ const WholesalerCustomerOrders = () => {
     setFilteredOrders(filteredByStatusFiltering);
   };
 
-  const tableColumns = [
-    { title: 'Select', srOnly: true, id: 'select' },
-    { title: 'Status', id: 'fulfillmentStatus', sortable: true },
-    { title: 'Order ID', id: '_id', sortable: true },
-    { title: 'Customer', id: 'customer', sortable: true },
-    { title: 'Items', id: 'orderItems', sortable: true },
-    { title: 'Total Price', id: 'totalPrice', sortable: true },
-    { title: 'Order Date', id: 'orderDate', sortable: true },
-    { title: 'Action', id: 'action' },
-  ];
+  const handleStartDateChange = (value: string) => {
+    setStartDate(value);
+    applyDateFilter(value, endDate);
+  };
 
-  //for pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 10; // Adjust the page size as needed
+  const handleEndDateChange = (value: string) => {
+    setEndDate(value);
+    applyDateFilter(startDate, value);
+  };
+
+  const applyDateFilter = (start: string, end: string) => {
+    const filtered = sampleOrders.filter((order) => {
+      const orderDate = order.orderDate; // YYYY-MM-DD format
+      const isAfterStart = start ? orderDate >= start : true;
+      const isBeforeEnd = end ? orderDate <= end : true;
+      return isAfterStart && isBeforeEnd;
+    });
+    setFilteredOrders(filtered);
+  };
+
+  const clearFilters = () => {
+    setStatusFilter('Status');
+    setStartDate('');
+    setEndDate('');
+    setFilteredOrders(sampleOrders); // Reset to all orders
+  };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -119,21 +170,6 @@ const WholesalerCustomerOrders = () => {
     setFilteredOrders(sortedOrders);
   };
 
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-
-  const [currentRowData, setCurrentRowData] = useState<OrderProps>({
-    _id: 0,
-    fulfillmentStatus: '',
-    orderItems: [],
-    quantity: 0,
-    totalPrice: 0,
-    totalTax: 0,
-    totalShipping: 0,
-    orderDate: '',
-    paymentMethod: '',
-  });
-
   const handleUpdate = (rowData: OrderProps) => {
     setCurrentRowData(rowData);
     // console.log(rowData);
@@ -147,7 +183,6 @@ const WholesalerCustomerOrders = () => {
       )
     );
     setSuccessMessage(`Order # ${updatedRow._id} updated successfully.`);
-
     setIsUpdateModalOpen(false); // Close the modal after saving
     setTimeout(() => setSuccessMessage(''), 4000);
   };
@@ -171,6 +206,7 @@ const WholesalerCustomerOrders = () => {
     setFilteredOrders((prevOrders) =>
       prevOrders.filter((order) => order._id !== id)
     );
+
     setSuccessMessage(`Order # ${id} deleted successfully.`);
 
     //TODO: Remove from database
@@ -183,10 +219,13 @@ const WholesalerCustomerOrders = () => {
       <div>
         <PageHeader
           heading='Customer Orders'
-          href='./orders/new'
-          linkTitle='Create New Order'
+          extraComponent={
+            <PageHeaderLink
+              linkTitle={'Create New Order'}
+              href={'./orders/new'}
+            />
+          }
         />
-
         {/* Replacing Overview Section with SmallCards */}
         <SmallCards orderStats={orderStats} />
 
@@ -213,6 +252,17 @@ const WholesalerCustomerOrders = () => {
             selectedOption={statusFilter}
             onChange={handleStatusFilterChange}
           />
+          {/* Filter by dates */}
+          <DateFilters
+            label='Filter by Date Range'
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={handleStartDateChange}
+            onEndDateChange={handleEndDateChange}
+          />
+
+          {/* Clear Filters Button */}
+          <ClearFilters clearFiltersFunction={clearFilters} />
         </TableFilters>
 
         {/* Customer Orders Table */}

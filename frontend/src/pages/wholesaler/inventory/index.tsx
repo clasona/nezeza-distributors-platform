@@ -23,6 +23,9 @@ import UpdateRowModal from '@/components/Table/UpdateRowModal';
 import RemoveRowModal from '@/components/Table/RemoveRowModal';
 import { FaProductHunt } from 'react-icons/fa';
 import formatPrice from '@/pages/utils/formatPrice';
+import PageHeaderLink from '@/components/PageHeaderLink';
+import DateFilters from '@/components/Table/Filters/DateFilters';
+import ClearFilters from '@/components/Table/Filters/ClearFilters';
 
 const WholesalerInventory = () => {
   const [existingInventory, setExistingInventory] = useState<ProductProps[]>(
@@ -44,10 +47,51 @@ const WholesalerInventory = () => {
   const [newProductStoreId, setNewProductStoreId] = useState(0); //must get from current logged in
   const [newProductImage, setNewProductImage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
+
   const [statusFilter, setStatusFilter] = useState('Status');
   const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
+  const [searchQuery, setSearchQuery] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  //for defining what table headers needed
+  const tableColumns = [
+    { title: 'Select', srOnly: true, id: 'select' },
+    { title: 'ID', id: '_id', sortable: true },
+    { title: 'Image', id: 'image' },
+    { title: 'Title', id: 'title', sortable: true },
+    { title: 'Qty', id: 'stock', sortable: true },
+    { title: 'Price', id: 'price', sortable: true },
+    { title: 'Created', id: 'createdAt', sortable: true },
+    { title: 'Updated', id: 'updatedAt', sortable: true },
+    { title: 'Action', id: 'action' },
+  ];
+
+  //for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+
+  const [currentRowData, setCurrentRowData] = useState<InventoryProps>({
+    _id: 0,
+    title: '',
+    description: '',
+    image: '',
+    owner: 0,
+    buyerStoreId: 0,
+    productId: 0,
+    stock: 0,
+    price: 0,
+    freeShipping: false,
+    availability: false,
+    averageRating: 0,
+    numOfReviews: 0,
+    lastUpdated: '',
+    createdAt: '',
+    updatedAt: '',
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -107,21 +151,32 @@ const WholesalerInventory = () => {
     setIsModalOpen(true);
   };
 
-  const tableColumns = [
-    { title: 'Select', srOnly: true, id: 'select' },
-    { title: 'ID', id: '_id', sortable: true },
-    { title: 'Image', id: 'image' },
-    { title: 'Title', id: 'title', sortable: true },
-    { title: 'Qty', id: 'stock', sortable: true },
-    { title: 'Price', id: 'price', sortable: true },
-    { title: 'Created', id: 'createdAt', sortable: true },
-    { title: 'Updated', id: 'updatedAt', sortable: true },
-    { title: 'Action', id: 'action' },
-  ];
+    const handleStartDateChange = (value: string) => {
+      setStartDate(value);
+      applyDateFilter(value, endDate);
+    };
 
-  //for pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
+    const handleEndDateChange = (value: string) => {
+      setEndDate(value);
+      applyDateFilter(startDate, value);
+    };
+
+    const applyDateFilter = (start: string, end: string) => {
+      const filtered = sampleInventory.filter((inventory) => {
+        const createdDate = inventory.createdAt; // YYYY-MM-DD format
+        const isAfterStart = start ? createdDate >= start : true;
+        const isBeforeEnd = end ? createdDate <= end : true;
+        return isAfterStart && isBeforeEnd;
+      });
+      setFilteredInventory(filtered);
+    };
+
+    const clearFilters = () => {
+      // setStatusFilter('Status');
+      setStartDate('');
+      setEndDate('');
+      setFilteredInventory(sampleInventory); // Reset to all inventory
+    };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -147,29 +202,8 @@ const WholesalerInventory = () => {
     console.log(sortedInventory);
     setFilteredInventory(sortedInventory);
   };
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string>('');
 
-  const [currentRowData, setCurrentRowData] = useState<InventoryProps>({
-    _id: 0,
-    title: '',
-    description: '',
-    image: '',
-    owner: 0,
-    buyerStoreId: 0,
-    productId: 0,
-    stock: 0,
-    price: 0,
-    freeShipping: false,
-    availability: false,
-    averageRating: 0,
-    numOfReviews: 0,
-    lastUpdated: '',
-    createdAt: '',
-    updatedAt: '',
-  });
-
+  //for defining what table headers needed
   const handleUpdate = (rowData: InventoryProps) => {
     setCurrentRowData(rowData);
     // console.log(rowData);
@@ -182,7 +216,6 @@ const WholesalerInventory = () => {
         product._id === updatedRow._id ? { ...product, ...updatedRow } : product
       )
     );
-    // Show success message
     setSuccessMessage(
       `Inventory item # ${updatedRow._id} updated successfully.`
     );
@@ -209,23 +242,24 @@ const WholesalerInventory = () => {
     setFilteredInventory((prevInventory) =>
       prevInventory.filter((inventory) => inventory._id !== id)
     );
-    //TODO: Remove from database
 
-    // Show success message
     setSuccessMessage(`Inventory item # ${id} deleted successfully.`);
-    setIsRemoveModalOpen(false); // Close the modal after deletion
-    // Clear the message after 3 seconds
+    //TODO: Remove from database
+    setIsRemoveModalOpen(false);
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
   return (
     <WholesalerLayout>
       <div>
-        {/* Header */}
         <PageHeader
           heading='Inventory'
-          href='./inventory/new-inventory'
-          linkTitle='Add New Product to Inventory'
+          extraComponent={
+            <PageHeaderLink
+              linkTitle={'Add New Product to Inventory'}
+              href={'./inventory/new-inventory'}
+            />
+          }
         />
         {/* <TableActions /> */}
 
@@ -235,7 +269,17 @@ const WholesalerInventory = () => {
             searchFieldPlaceholder='inventory products'
             onSearchChange={handleSearchChange}
           />
-          {/*TODO: Add filter by stock status */}
+          {/* TODO: Add filter by stock status */}
+          {/* Filter by dates */}
+          <DateFilters
+            label='Filter by Date Range'
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={handleStartDateChange}
+            onEndDateChange={handleEndDateChange}
+          />
+          {/* Clear Filters Button */}
+          <ClearFilters clearFiltersFunction={clearFilters} />
         </TableFilters>
         <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
           <table

@@ -33,7 +33,7 @@ const mockOrders: OrderProps[] = [
 
     totalTax: 750,
     totalShipping: 200,
-    orderDate: '2024-24-12',
+    orderDate: '2024-12-24',
     paymentMethod: 'Credit Card',
   },
 ];

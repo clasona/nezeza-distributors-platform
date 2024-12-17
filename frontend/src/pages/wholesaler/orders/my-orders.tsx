@@ -24,22 +24,58 @@ import RemoveRowModal from '@/components/Table/RemoveRowModal';
 import formatPrice from '@/pages/utils/formatPrice';
 import PageHeaderLink from '@/components/PageHeaderLink';
 import DateFilters from '@/components/Table/Filters/DateFilters';
+import ClearFilters from '@/components/Table/Filters/ClearFilters';
 
 const WholesalerMyOrders = () => {
   const [existingOrders, setExistingOrders] = useState<OrderProps[]>([]);
   const [sampleOrders, setSampleOrders] = useState<OrderProps[]>([]);
 
   const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
-  // const [orderStats, setOrdersStats] = useState<OrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState<string>('');
+
+  // For sorting and filtering
   const [statusFilter, setStatusFilter] = useState('Status');
   const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [searchQuery, setSearchQuery] = useState(''); // New state for search query
-  const orderStats = calculateOrderStats(filteredOrders);
+  const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  // for the small cards
+  const orderStats = calculateOrderStats(filteredOrders);
+
+  //for defining what table headers needed
+  const tableColumns = [
+    { title: 'Select', srOnly: true, id: 'select' },
+    { title: 'Status', id: 'fulfillmentStatus', sortable: true },
+    { title: 'Order ID', id: '_id', sortable: true },
+    { title: 'Seller', id: 'seller', sortable: true },
+    { title: 'Items', id: 'orderItems', sortable: true },
+    { title: 'Total Price', id: 'totalPrice', sortable: true },
+    { title: 'Order Date', id: 'orderDate', sortable: true },
+    { title: 'Action', id: 'action' },
+  ];
+
+  //for pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
+
+  //for table row dropdown actions i.e: update, remove
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState<OrderProps>({
+    _id: 0,
+    fulfillmentStatus: '',
+    orderItems: [],
+    quantity: 0,
+    totalPrice: 0,
+    totalTax: 0,
+    totalShipping: 0,
+    orderDate: '',
+    paymentMethod: '',
+  });
+
+  //setting my orders data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -113,24 +149,10 @@ const WholesalerMyOrders = () => {
     setFilteredOrders(sampleOrders); // Reset to all orders
   };
 
-  const tableColumns = [
-    { title: 'Select', srOnly: true, id: 'select' },
-    { title: 'Status', id: 'fulfillmentStatus', sortable: true },
-    { title: 'Order ID', id: '_id', sortable: true },
-    { title: 'Seller', id: 'seller', sortable: true },
-    { title: 'Items', id: 'orderItems', sortable: true },
-    { title: 'Total Price', id: 'totalPrice', sortable: true },
-    { title: 'Order Date', id: 'orderDate', sortable: true },
-    { title: 'Action', id: 'action' },
-  ];
-
-  //for pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
   const handleSort = (column: string) => {
     // Pre compute the next sort order and column to ensure that sortItems uses the updated values of sortColumn and sortOrder.
     // React state updates are asynchronous, which means that the updated sortColumn() and sortOrder()
@@ -147,21 +169,6 @@ const WholesalerMyOrders = () => {
     const sortedOrders = sortItems(filteredOrders, newSortColumn, newSortOrder);
     setFilteredOrders(sortedOrders);
   };
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-
-  // const [currentRowData, setCurrentRowData] = useState<OrderProps>();
-  const [currentRowData, setCurrentRowData] = useState<OrderProps>({
-    _id: 0,
-    fulfillmentStatus: '',
-    orderItems: [],
-    quantity: 0,
-    totalPrice: 0,
-    totalTax: 0,
-    totalShipping: 0,
-    orderDate: '',
-    paymentMethod: '',
-  });
 
   const handleUpdate = (rowData: OrderProps) => {
     setCurrentRowData(rowData);
@@ -199,10 +206,10 @@ const WholesalerMyOrders = () => {
     setFilteredOrders((prevOrders) =>
       prevOrders.filter((order) => order._id !== id)
     );
-    //TODO: Remove from database
-    setSuccessMessage(`Order # ${id} deleted successfully.`);
 
-    setIsRemoveModalOpen(false); // Close the modal after deletion
+    setSuccessMessage(`Order # ${id} deleted successfully.`);
+    //TODO: Remove from database
+    setIsRemoveModalOpen(false); 
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
@@ -252,21 +259,8 @@ const WholesalerMyOrders = () => {
             onStartDateChange={handleStartDateChange}
             onEndDateChange={handleEndDateChange}
           />
-
           {/* Clear Filters Button */}
-          {/* <button
-            onClick={clearFilters}
-            className='py-2 px-4 text-sm text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300'
-          >
-            Clear Filters
-          </button> */}
-          <button
-            onClick={clearFilters}
-            className='p-1 text-red-500 hover:text-nezeza_red_600 focus:outline-none focus:ring focus:ring-red-300 rounded-md'
-            title='Clear Filters'
-          >
-            <XCircle className='w-5 h-5' aria-hidden='true' />
-          </button>
+          <ClearFilters clearFiltersFunction={clearFilters} />
         </TableFilters>
 
         {/* My Orders Table */}
@@ -276,7 +270,7 @@ const WholesalerMyOrders = () => {
             className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
           >
             <TableHead
-              hasCollapsibleContent={true}
+              hasCollapsibleContent={true} // for adding arrow up&down in table columns
               columns={tableColumns}
               handleSort={handleSort}
             />
@@ -286,7 +280,7 @@ const WholesalerMyOrders = () => {
                 .map((order) => (
                   <TableRow
                     key={order._id}
-                    hasCollapsibleContent={true}
+                    hasCollapsibleContent={true} // for viewing order items as collapsible rows
                     rowData={order}
                     rowValues={[
                       { content: <input type='checkbox' /> },

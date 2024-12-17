@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import WholesalerLayout from '../index';
 import { X } from 'lucide-react';
 import FormHeader from '@/components/FormHeader';
@@ -9,6 +9,9 @@ import { useForm } from 'react-hook-form';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
 import TextAreaInput from '@/components/FormInputs/TextAreaInput';
 import { generateSlug } from '@/lib/generateSlug';
+import FileInput from '@/components/FormInputs/FileInput';
+import MultiImageInput from '@/components/FormInputs/MultipleImageInput';
+import ImageInput from '@/components/FormInputs/ImageInput';
 
 const NewInventory = () => {
   const {
@@ -16,11 +19,24 @@ const NewInventory = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const [imageUrl, setImageUrl] = useState('');
+  const [additionalImages, setAdditionalImages] = useState<File[]>([]);
 
   async function onSubmit(data: any) {
     const slug = generateSlug(data.title);
     data.slug = slug;
     console.log(data);
+
+    // Upload main product image
+    if (data.image?.[0]) {
+      const mainImage = data.image[0];
+      console.log('Main image:', mainImage);
+    }
+
+    // Upload additional images
+    if (additionalImages.length) {
+      console.log('Additional images:', additionalImages);
+    }
   }
 
   return (
@@ -99,9 +115,32 @@ const NewInventory = () => {
             />
           </div>
         </div>
-        <p className='mt-4'>(Product Image goes here)</p>
+        {/* <p className='mt-4'>(Product Image goes here)</p> */}
+        <ImageInput
+          imageUrl={imageUrl}
+          setImageUrl={setImageUrl}
+          endpoint='productImageUploader'
+          label='Main Product Image'
+        />
+        {/* Main product image */}
+        <FileInput
+          label='Main Product Image'
+          id='name'
+          name='image'
+          register={register}
+          errors={errors}
+          onFileChange={(file) => {
+            console.log('Selected file:', file);
+          }}
+        />
+        {/* upload more product images  */}
+        <div className='col-span-2'>
+          <label className='mb-2 font-medium text-gray-700'>
+            Additional Product Images
+          </label>
+          <MultiImageInput onFilesChange={setAdditionalImages} />
+        </div>
         <div className='flex items-center justify-center'>
-          
           <SubmitButton
             isLoading={false}
             buttonTitle='Create Product'

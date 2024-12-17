@@ -228,7 +228,7 @@ const SideNavbar = ({ showSidebar, setShowSidebar }: SideNavbarProps) => {
           href='/'
           target='_blank'
           className={`${
-            pathname == `${basePath}/dashboard`
+            pathname == `${basePath}/shopping`
               ? 'flex items-center space-x-3 px-6 py-1 bg-nezeza_green_600  rounded-md border-l-4 border-white'
               : 'flex items-center space-x-3 px-6 py-1 rounded-md'
           }`}
