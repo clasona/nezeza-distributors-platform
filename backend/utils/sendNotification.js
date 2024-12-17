@@ -1,6 +1,7 @@
 const sendEmail = require('./sendEmail');
 const sendNotification = async ({ email, firstName, subject, message }) => {
   const greeting = firstName ? `Hello, ${firstName}` : 'Store Order Shipped';
+
   return sendEmail({
     to: email,
     subject,

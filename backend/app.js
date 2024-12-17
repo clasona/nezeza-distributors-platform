@@ -19,6 +19,8 @@ const connectDB = require('./db/connect');
 
 //  routers
 const adminRouter = require('./routes/adminRoutes');
+const adminStoreRouter = require('./routes/adminStoreRoutes');
+const adminNotificationRouter = require('./routes/adminNotificationRoutes');
 const authRouter = require('./routes/authRoutes');
 const userRouter = require('./routes/userRoutes');
 const storeRouter = require('./routes/storeRoutes');
@@ -60,8 +62,12 @@ app.use(express.static('./public'));
 app.use(fileUpload());
 
 //app.use('/api/v1/admin/users', authRouter);
-app.use('/api/v1/auth', authRouter);
+// admin routes
 app.use('/api/v1/admin/users', adminRouter);
+app.use('/api/v1/admin/stores', adminStoreRouter);
+app.use('/api/v1/admin/notifications', adminNotificationRouter);
+// user routes
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/store', storeRouter);
 app.use('/api/v1/manufacturers', productRouter);
