@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator');
 
 const storeSchema = new mongoose.Schema({
-    storeName: {
+    name: {
         type: String,
         required: [true, 'Please provide store name'],
         default: 'My Store',
@@ -28,7 +28,7 @@ const storeSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId, 
         ref: 'User',  
       },
-      bussinessType: { 
+      businessType: { 
         type: String, 
         //TODOS: change 'platform' to 'platform' or 'e-commerce' when e-commerce platform is fully implemented
         enum: ['manufacturing', 'wholesale', 'retail','E-commerce Marketplace'],  // Type of the store

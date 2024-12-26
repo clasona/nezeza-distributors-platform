@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import WholesalerLayout from './index';
 import Heading from '@/components/Heading';
-import { fetchInventory } from '../utils/fetchInventory';
+import { fetchInventory } from '../utils/inventory/fetchInventory';
 import { InventoryProps } from '../../../type';
 import mockMyInventory from './mock-data/mockInventory';
 import Products from '@/components/Products';
 
 const Dashboard = () => {
-  const [existingInventory, setExistingInventory] = useState<InventoryProps[]>([]);
+  const [existingInventory, setExistingInventory] = useState<InventoryProps[]>(
+    []
+  );
   const [sampleInventory, setSampleInventory] = useState<InventoryProps[]>([]);
 
   useEffect(() => {
@@ -28,8 +30,8 @@ const Dashboard = () => {
 
   return (
     <WholesalerLayout>
-          <Heading title='Home'></Heading>
-          
+      <Heading title='Home'></Heading>
+
       {/* Show store products */}
       <Products productData={sampleInventory} />
     </WholesalerLayout>

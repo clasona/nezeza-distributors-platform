@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       'fakestoreapi.com',
       'dl.airtable.com',
       'nezeza-products.s3.us-east-2.amazonaws.com',
+      'res.cloudinary.com',
     ],
   },
 };

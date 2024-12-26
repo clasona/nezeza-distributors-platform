@@ -161,22 +161,22 @@ const createOrder = async (req, res) => {
   }
 
   // Calculate total
-  const total = totalTax + totalShipping + subtotal;
+  const totalPrice = totalTax + totalShipping + subtotal;
 
   // getting client secret from payment API
   const paymentIntent = await fakeStripeAPI({
-    amount: total,
+    amount: totalPrice,
     currency: 'usd',
   });
 
   // Create full order
   const order = await Order.create({
     orderItems,
-    total,
+    totalPrice,
     totalTax,
     totalShipping,
     paymentMethod,
-    transactionFee: total * 0.1, // Example platform fee
+    transactionFee: totalPrice * 0.1, // Example platform fee
     shippingAddress: '12345 Airport Blvd Blvd', // Mock data
     billingAddress: '12345 Airport Blvd', // Mock data
     clientSecret: paymentIntent.client_secret,

@@ -1,13 +1,14 @@
-
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { StoreProps } from '../../../../type';
 
-export const fetchInventory = async () => {
+export const fetchInventory = async (storeInfo: StoreProps) => {
   try {
     const response = await axios.get(
       'http://localhost:8000/api/v1/wholesaler/inventory-items',
 
       {
-        params: { storeId: '674685e88b8fabe86cb33be4' }, //TODO: get this from redux user info
+        params: { storeId: storeInfo._id }, //TODO: get this from redux user info
         withCredentials: true, // Include credentials like cookies for authorization
       }
     );

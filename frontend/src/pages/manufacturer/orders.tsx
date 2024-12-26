@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchOrders } from '../utils/fetchOrders';
+import { fetchOrders } from '../utils/order/fetchMyOrders';
 import { OrderProps } from '../../../type';
 import axios from 'axios';
 

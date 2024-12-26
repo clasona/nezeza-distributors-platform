@@ -3,7 +3,7 @@ import WholesalerLayout from './index';
 import Heading from '@/components/Heading';
 import LargeCards from '@/components/LargeCards';
 import SmallCards from '@/components/SmallCards';
-import { fetchOrders } from '../utils/fetchOrders';
+import { fetchOrders } from '../utils/order/fetchMyOrders';
 import { calculateOrderStats } from '../utils/orderUtils';
 import { OrderProps } from '../../../type';
 import mockMyOrders from './mock-data/mockMyOrders';

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { PropsWithChildren } from 'react';
 import Link from 'next/link';
@@ -8,17 +8,26 @@ import SideNavbar from '@/components/SideNavbar';
 import TopNavbar from '@/components/TopNavbar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import Providers from '@/context/Providers';
+import { useSelector } from 'react-redux';
+import { stateProps } from '../../../type';
 // import { AppSidebar } from '@/components/app-sidebar';
 
 const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
-  const [showSidebar, setShowSidebar] = useState(true);  //TODO: make false
+  const [showSidebar, setShowSidebar] = useState(true); //TODO: make false
+
+  // get store info from redux
+  const { storeInfo } = useSelector((state: stateProps) => state.next);
 
   return (
     <div className='flex'>
-      <SideNavbar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+      <SideNavbar
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+        basePath='/wholesaler'
+      />
       <div className='w-full'>
         <TopNavbar
-          storeName='(Wholesaler Store Name)'
+          storeName={storeInfo._id}
           showSidebar={showSidebar}
           setShowSidebar={setShowSidebar}
         />
@@ -30,30 +39,8 @@ const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
           }`}
         >
           {children}
-          {/* <Providers> {children} </Providers> */}
-
-          {/* For the dark mode in sellers dashboard using next-themes
-
-      {/* <ThemeProvider
-            attribute='class'
-            defaultTheme='dark'
-            // enableSystem
-            // disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider> */}
         </main>
       </div>
-      {/* <SidebarProvider>
-        <SideNavbar />
-
-        <div >
-          <TopNavbar storeName='(Wholesaler Store Name)' />
-        </div>
-        <main className='p-8 bg-slate-300 dark:bg-slate-900 text-nezeza_light_slate min-h-screen mt-16'>
-          {children}
-        </main>
-      </SidebarProvider> */}
     </div>
   );
 };

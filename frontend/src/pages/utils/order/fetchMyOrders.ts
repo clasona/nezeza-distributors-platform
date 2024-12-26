@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const fetchOrders = async (status?: string) => {
+export const fetchMyOrders = async (status?: string) => {
   try {
     const response = await axios.get(
       'http://localhost:8000/api/v1/orders/buying',
@@ -13,10 +13,10 @@ export const fetchOrders = async (status?: string) => {
     console.log(response);
 
     if (response.status !== 200) {
-      console.log('orders data not fetched.');
+      console.log('my orders data not fetched.');
       // console.log(ordersData);
     } else {
-      console.log('orders data fetched successfully...');
+      console.log('my orders data fetched successfully...');
       // console.log(ordersData);
       return ordersData;
 
@@ -42,6 +42,6 @@ export const fetchOrders = async (status?: string) => {
       // return filteredOrders;
     }
   } catch (error) {
-    console.error('Error fetching orders data:', error);
+    console.error('Error fetching my orders data:', error);
   }
 };

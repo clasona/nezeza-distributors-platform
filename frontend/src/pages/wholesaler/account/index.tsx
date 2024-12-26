@@ -3,9 +3,9 @@ import React from 'react';
 import WholesalerLayout from '..';
 import FormHeader from '@/components/FormHeader';
 import TextInput from '@/components/FormInputs/TextInput';
-import SubmitButton from '@/components/FormInputs/SubmitButton';
+import Button from '@/components/FormInputs/Button';
 import { useForm } from 'react-hook-form';
-import { Edit3 } from 'lucide-react';
+import { Edit3, Plus } from 'lucide-react';
 import yves from '@/images/yves.jpeg';
 import Image from 'next/image';
 
@@ -150,10 +150,12 @@ const WholesalerAccount = () => {
 
             {/* Submit Button */}
             <div className='text-center'>
-              <SubmitButton
+              <Button
                 isLoading={false}
                 buttonTitle='Save Changes'
                 loadingButtonTitle='Saving updated info...'
+                icon={Plus}
+                className='text-white bg-nezeza_green_600'
               />
             </div>
           </form>

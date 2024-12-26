@@ -38,6 +38,7 @@ const createInventory = async (req, res) => {
     !productId ||
     !stock
   ) {
+    console.log(owner, buyerStoreId, sellerStoreId, description, price, image, productId, stock);
     throw new CustomError.BadRequestError('All fields are required');
   }
 
