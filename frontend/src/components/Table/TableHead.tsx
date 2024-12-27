@@ -10,12 +10,16 @@ interface TableHeadProps {
     sortable?: boolean;
   }[];
   handleSort: (column: string) => void; // Pass the sort function as a prop
+  checked: boolean;
+  onChange: () => void;
 }
 
 const TableHead = ({
   hasCollapsibleContent,
   columns,
   handleSort,
+  checked,
+  onChange,
 }: TableHeadProps) => {
   // const [sortColumn, setSortColumn] = useState('');
   // const [sortOrder, setSortOrder] = useState('asc');
@@ -29,6 +33,13 @@ const TableHead = ({
   return (
     <thead className='text-xs text-white uppercase bg-nezeza_dark_blue hover:cursor-pointer dark:bg-gray-700 dark:text-gray-400'>
       <tr>
+        <th className='px-6 py-3'>
+          <input
+            type='checkbox'
+            checked={checked}
+            onChange={onChange}
+          />
+        </th>
         {columns.map((column) => (
           <th
             key={column.title}

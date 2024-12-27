@@ -13,7 +13,7 @@ interface TextInputProps {
   autoComplete?: string;
   maxLength?: number;
   className?: string;
-  defaultValue?: string;
+  // defaultValue?: string;
   register: UseFormRegister<FieldValues>;
   isRequired?: boolean;
   disabled?: boolean;
@@ -29,7 +29,7 @@ const TextInput = ({
   disabled = false,
   type = 'text',
   className = '',
-  defaultValue = '',
+  // defaultValue = '',
 }: TextInputProps) => {
   return (
     <div className={className}>
@@ -46,7 +46,7 @@ const TextInput = ({
           id={id}
           name={name}
           type={type}
-          defaultValue={defaultValue}
+          // defaultValue={defaultValue}
           autoComplete={name}
           disabled={disabled}
           className={`block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none ${

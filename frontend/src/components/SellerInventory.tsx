@@ -33,6 +33,8 @@ import { getAllProducts } from '@/pages/utils/product/getAllProducts';
 import { deleteProduct } from '@/pages/utils/product/deleteProduct';
 import { updateProduct } from '@/pages/utils/product/updateProduct';
 import SuccessMessageModal from './SuccessMessageModal';
+import BulkDeleteButton from './Table/BulkDeleteButton';
+import BulkDeleteModal from './Table/BulkDeleteModal';
 
 // interface SellerInventoryProps {
 //   inventoryData: InventoryProps[];
@@ -58,7 +60,6 @@ const SellerInventory = () => {
 
   //for defining what table headers needed
   const tableColumns = [
-    { title: 'Select', srOnly: true, id: 'select' },
     { title: 'ID', id: '_id', sortable: true },
     { title: 'Image', id: 'image' },
     { title: 'Title', id: 'title', sortable: true },
@@ -72,9 +73,15 @@ const SellerInventory = () => {
   //for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
+
+
+  //for bulk deleting
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+
+  //for table row dropdown actions i.e: update, remove
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-
   const [currentRowData, setCurrentRowData] = useState<InventoryProps>({
     _id: 0,
     title: '',
@@ -290,6 +297,40 @@ const SellerInventory = () => {
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
+  //for bulk deleting
+  const handleSelectRow = (id: number) => {
+    setSelectedRows((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((rowId) => rowId !== id)
+        : [...prevSelected, id]
+    );
+  };
+  const handleSelectAllRows = () => {
+    if (selectedRows.length === filteredInventory.length) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(filteredInventory.map((item) => item._id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      await Promise.all(selectedRows.map((id) => deleteProduct(userInfo, id)));
+
+      setFilteredInventory((prevInventory) =>
+        prevInventory.filter((item) => !selectedRows.includes(item._id))
+      );
+
+      setSelectedRows([]);
+      setSuccessMessage('Selected items deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting selected items:', error);
+      alert('Error deleting selected items.');
+    } finally {
+      setIsBulkDeleteModalOpen(false);
+    }
+  };
+
   return (
     <div>
       <PageHeader
@@ -305,6 +346,10 @@ const SellerInventory = () => {
 
       {/* Table Search field and Filter Dropdown*/}
       <TableFilters>
+        <BulkDeleteButton
+          onClick={() => setIsBulkDeleteModalOpen(true)}
+          isDisabled={selectedRows.length === 0}
+        />
         <SearchField
           searchFieldPlaceholder='inventory products'
           onSearchChange={handleSearchChange}
@@ -326,7 +371,12 @@ const SellerInventory = () => {
           id='inventory-table'
           className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
         >
-          <TableHead columns={tableColumns} handleSort={handleSort} />
+          <TableHead
+            checked={selectedRows.length === filteredInventory.length}
+            onChange={handleSelectAllRows}
+            columns={tableColumns}
+            handleSort={handleSort}
+          />
           <tbody>
             {filteredInventory
               .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
@@ -335,7 +385,15 @@ const SellerInventory = () => {
                   key={product._id}
                   rowData={product}
                   rowValues={[
-                    { content: <input type='checkbox' /> },
+                    {
+                      content: (
+                        <input
+                          type='checkbox'
+                          checked={selectedRows.includes(product._id)}
+                          onChange={() => handleSelectRow(product._id)}
+                        />
+                      ),
+                    },
                     { content: formatIdByShortening(product._id) },
 
                     {
@@ -396,12 +454,15 @@ const SellerInventory = () => {
           onClose={() => setIsRemoveModalOpen(false)}
           onDelete={() => handleConfirmRemove(currentRowData._id)}
         />
+        {/* Bulk Delete Confirmation Modal */}
+        <BulkDeleteModal
+          isOpen={isBulkDeleteModalOpen}
+          onClose={() => setIsBulkDeleteModalOpen(false)}
+          onConfirm={handleBulkDelete}
+        />
         {/* Success Message */}
         {successMessage && (
           <SuccessMessageModal successMessage={successMessage} />
-          // <div className='fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-md shadow-md'>
-          //   {successMessage}
-          // </div>
         )}
       </div>
     </div>

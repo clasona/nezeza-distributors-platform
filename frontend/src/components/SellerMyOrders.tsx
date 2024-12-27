@@ -27,6 +27,9 @@ import {
   formatIdByTimestamp,
   formatIdByShortening,
 } from '@/pages/utils/formatId';
+import BulkDeleteButton from './Table/BulkDeleteButton';
+import BulkDeleteModal from './Table/BulkDeleteModal';
+import SuccessMessageModal from './SuccessMessageModal';
 
 const SellerMyOrders = () => {
   const [myOrders, setMyOrders] = useState<OrderProps[]>([]);
@@ -48,7 +51,6 @@ const SellerMyOrders = () => {
 
   //for defining what table headers needed
   const tableColumns = [
-    { title: 'Select', srOnly: true, id: 'select' },
     { title: 'Status', id: 'fulfillmentStatus', sortable: true },
     { title: 'Order ID', id: '_id', sortable: true },
     { title: 'Seller', id: 'seller', sortable: true },
@@ -61,6 +63,10 @@ const SellerMyOrders = () => {
   //for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
+
+  //for bulk deleting
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
   //for table row dropdown actions i.e: update, remove
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -83,7 +89,6 @@ const SellerMyOrders = () => {
       try {
         //sample orders
         // const sampleOrdersData = mockMyOrders;
-
         const myOrdersData = await fetchMyOrders();
         setMyOrders(myOrdersData);
 
@@ -217,179 +222,220 @@ const SellerMyOrders = () => {
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
+  //for bulk deleting
+  const handleSelectRow = (id: number) => {
+    setSelectedRows((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((rowId) => rowId !== id)
+        : [...prevSelected, id]
+    );
+  };
+  const handleSelectAllRows = () => {
+    if (selectedRows.length === filteredOrders.length) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(filteredOrders.map((item) => item._id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      await Promise.all(selectedRows.map((id) => deleteMyOrder(userInfo, id)));
+
+      setFilteredOrders((prevInventory) =>
+        prevInventory.filter((item) => !selectedRows.includes(item._id))
+      );
+
+      setSelectedRows([]);
+      setSuccessMessage('Selected items deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting selected items:', error);
+      alert('Error deleting selected items.');
+    } finally {
+      setIsBulkDeleteModalOpen(false);
+    }
+  };
+
   return (
-      <div>
-        <PageHeader
-          heading='My Orders'
-          extraComponent={
-            <PageHeaderLink
-              linkTitle={'Create New Order'}
-              href={'./orders/new'}
-            />
-          }
+    <div>
+      <PageHeader
+        heading='My Orders'
+        extraComponent={
+          <PageHeaderLink
+            linkTitle={'Create New Order'}
+            href={'./orders/new'}
+          />
+        }
+      />
+      {/* Replacing Overview Section with SmallCards */}
+      <SmallCards orderStats={orderStats} />
+
+      {/* <TableActions /> */}
+
+      {/* Table Search field and Filter Dropdown*/}
+      <TableFilters>
+        <BulkDeleteButton
+          onClick={() => setIsBulkDeleteModalOpen(true)}
+          isDisabled={selectedRows.length === 0}
         />
-        {/* Replacing Overview Section with SmallCards */}
-        <SmallCards orderStats={orderStats} />
+        <SearchField
+          searchFieldPlaceholder='my orders'
+          onSearchChange={handleSearchChange}
+        />
+        {/* Filter by status */}
+        <StatusFilters
+          label='Filter by Status'
+          options={[
+            'Status',
+            'Pending',
+            'Fulfilled',
+            'Shipped',
+            'Delivered',
+            'Completed',
+            'Canceled',
+          ]}
+          selectedOption={statusFilter}
+          onChange={handleStatusFilterChange}
+        />
+        {/* Filter by dates */}
+        <DateFilters
+          label='Filter by Date Range'
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+        />
+        {/* Clear Filters Button */}
+        <ClearFilters clearFiltersFunction={clearFilters} />
+      </TableFilters>
 
-        {/* <TableActions /> */}
-
-        {/* Table Search field and Filter Dropdown*/}
-        <TableFilters>
-          <SearchField
-            searchFieldPlaceholder='my orders'
-            onSearchChange={handleSearchChange}
+      {/* My Orders Table */}
+      <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
+        <table
+          id='my-orders-table'
+          className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
+        >
+          <TableHead
+            checked={selectedRows.length === filteredOrders.length}
+            onChange={handleSelectAllRows}
+            hasCollapsibleContent={true} // for adding arrow up&down in table columns
+            columns={tableColumns}
+            handleSort={handleSort}
           />
-          {/* Filter by status */}
-          <StatusFilters
-            label='Filter by Status'
-            options={[
-              'Status',
-              'Pending',
-              'Fulfilled',
-              'Shipped',
-              'Delivered',
-              'Completed',
-              'Canceled',
-            ]}
-            selectedOption={statusFilter}
-            onChange={handleStatusFilterChange}
-          />
-          {/* Filter by dates */}
-          <DateFilters
-            label='Filter by Date Range'
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={handleStartDateChange}
-            onEndDateChange={handleEndDateChange}
-          />
-          {/* Clear Filters Button */}
-          <ClearFilters clearFiltersFunction={clearFilters} />
-        </TableFilters>
+          <tbody>
+            {filteredOrders
+              .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+              .map((order) => (
+                <TableRow
+                  key={order._id}
+                  hasCollapsibleContent={true} // for viewing order items as collapsible rows
+                  rowData={order}
+                  rowValues={[
+                    { content: <input type='checkbox' /> },
+                    { content: order.fulfillmentStatus, isStatus: true },
+                    { content: formatIdByShortening(order._id) },
+                    { content: '' },
+                    {
+                      content: (
+                        <Link href='#' className='text-nezeza_dark_blue'>
+                          {order.orderItems.length}{' '}
+                        </Link>
+                      ),
+                    }, //TODO: make it show order products details when clicked
+                    { content: `$${formatPrice(order.totalPrice)}` },
+                    { content: order.orderDate },
 
-        {/* My Orders Table */}
-        <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
-          <table
-            id='my-orders-table'
-            className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
-          >
-            <TableHead
-              hasCollapsibleContent={true} // for adding arrow up&down in table columns
-              columns={tableColumns}
-              handleSort={handleSort}
-            />
-            <tbody>
-              {filteredOrders
-                .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-                .map((order) => (
-                  <TableRow
-                    key={order._id}
-                    hasCollapsibleContent={true} // for viewing order items as collapsible rows
-                    rowData={order}
-                    rowValues={[
-                      { content: <input type='checkbox' /> },
-                      { content: order.fulfillmentStatus, isStatus: true },
-                      { content: formatIdByShortening(order._id) },
-                      { content: '' },
-                      {
-                        content: (
-                          <Link href='#' className='text-nezeza_dark_blue'>
-                            {order.orderItems.length}{' '}
-                          </Link>
-                        ),
-                      }, //TODO: make it show order products details when clicked
-                      { content: `$${formatPrice(order.totalPrice)}` },
-                      { content: order.orderDate },
-
-                      {
-                        content: (
-                          <RowActionDropdown
-                            actions={[
-                              {
-                                label: 'Add to inventory',
-                                onClick: () => handleUpdate(order), //TODO: replace with add to inventory
-                              },
-                              {
-                                label: 'Update',
-                                onClick: () => handleUpdate(order),
-                                //TODO: only allow them to modify it if order status is pending
-                              },
-                              {
-                                label: 'Remove',
-                                onClick: () => handleRemoveClick(order),
-                              },
-                            ]}
+                    {
+                      content: (
+                        <RowActionDropdown
+                          actions={[
+                            {
+                              label: 'Add to inventory',
+                              onClick: () => handleUpdate(order), //TODO: replace with add to inventory
+                            },
+                            {
+                              label: 'Update',
+                              onClick: () => handleUpdate(order),
+                              //TODO: only allow them to modify it if order status is pending
+                            },
+                            {
+                              label: 'Remove',
+                              onClick: () => handleRemoveClick(order),
+                            },
+                          ]}
+                        />
+                      ),
+                    },
+                  ]}
+                  onUpdate={handleSaveUpdatedRow}
+                  onRemove={handleRemove}
+                  // control collapsible section for order items
+                  renderCollapsibleContent={(order) => (
+                    <div className='flex flex-col gap-4'>
+                      {order.orderItems.map((item) => (
+                        <div
+                          key={item._id}
+                          className='flex items-center px-20 gap-4 border-b border-nezeza_light_blue pb-2'
+                        >
+                          <img
+                            src={item.image}
+                            alt={item.description}
+                            className='w-12 h-12 object-cover'
                           />
-                        ),
-                      },
-                    ]}
-                    onUpdate={handleSaveUpdatedRow}
-                    onRemove={handleRemove}
-                    // control collapsible section for order items
-                    renderCollapsibleContent={(order) => (
-                      <div className='flex flex-col gap-4'>
-                        {order.orderItems.map((item) => (
-                          <div
-                            key={item._id}
-                            className='flex items-center px-20 gap-4 border-b border-nezeza_light_blue pb-2'
-                          >
-                            <img
-                              src={item.image}
-                              alt={item.description}
-                              className='w-12 h-12 object-cover'
-                            />
-                            <div className=''>
-                              <p className='font-semibold'>
-                                {item.description}
-                              </p>
-                              <p className='text-nezeza_gray_600'>
-                                {item.quantity} x ${item.price}
-                              </p>
-                              {/* TODO: link to seller's store on platform */}
-                              <Link
-                                href='#'
-                                target='_blank'
-                                className='text-nezeza_gray_600'
-                              >
-                                (SELLER Name & LINK)
-                              </Link>
-                            </div>
+                          <div className=''>
+                            <p className='font-semibold'>{item.description}</p>
+                            <p className='text-nezeza_gray_600'>
+                              {item.quantity} x ${item.price}
+                            </p>
+                            {/* TODO: link to seller's store on platform */}
+                            <Link
+                              href='#'
+                              target='_blank'
+                              className='text-nezeza_gray_600'
+                            >
+                              (SELLER Name & LINK)
+                            </Link>
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  />
-                ))}
-              ;
-            </tbody>
-          </table>
-          <Pagination
-            data={filteredOrders}
-            pageSize={PAGE_SIZE}
-            onPageChange={handlePageChange}
-          />
-          {/* Update Row Modal */}
-          <UpdateRowModal
-            isOpen={isUpdateModalOpen}
-            rowData={currentRowData}
-            onClose={handleCloseUpdateModal}
-            onSave={handleSaveUpdatedRow}
-          />
-          {/* Remove Row Modal */}
-          <RemoveRowModal
-            isOpen={isRemoveModalOpen}
-            rowData={currentRowData}
-            onClose={() => setIsRemoveModalOpen(false)}
-            onDelete={() => handleConfirmRemove(currentRowData._id)}
-          />
-          {/* Success Message */}
-          {successMessage && (
-            <div className='fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-md shadow-md'>
-              {successMessage}
-            </div>
-          )}
-        </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                />
+              ))}
+            ;
+          </tbody>
+        </table>
+        <Pagination
+          data={filteredOrders}
+          pageSize={PAGE_SIZE}
+          onPageChange={handlePageChange}
+        />
+        {/* Update Row Modal */}
+        <UpdateRowModal
+          isOpen={isUpdateModalOpen}
+          rowData={currentRowData}
+          onClose={handleCloseUpdateModal}
+          onSave={handleSaveUpdatedRow}
+        />
+        {/* Remove Row Modal */}
+        <RemoveRowModal
+          isOpen={isRemoveModalOpen}
+          rowData={currentRowData}
+          onClose={() => setIsRemoveModalOpen(false)}
+          onDelete={() => handleConfirmRemove(currentRowData._id)}
+        />
+        {/* Bulk Delete Confirmation Modal */}
+        <BulkDeleteModal
+          isOpen={isBulkDeleteModalOpen}
+          onClose={() => setIsBulkDeleteModalOpen(false)}
+          onConfirm={handleBulkDelete}
+        />
+        {/* Success Message */}
+        {successMessage && (
+          <SuccessMessageModal successMessage={successMessage} />
+        )}
       </div>
-  
+    </div>
   );
 };
 

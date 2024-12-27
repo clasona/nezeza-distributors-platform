@@ -6,12 +6,13 @@ interface DropdownInputProps {
   label: string;
   id: string;
   name: string;
-  options: { value: string; label: string }[]; // Array of options
+  options: { value: string; label: string; [key: string]: any }[]; // Array of options
   errors: FieldErrors;
   className?: string;
   register: UseFormRegister<FieldValues>;
   isRequired?: boolean;
   disabled?: boolean;
+  isLoading?: boolean;
 }
 
 const DropdownInput = ({
@@ -23,6 +24,7 @@ const DropdownInput = ({
   errors,
   isRequired = true,
   disabled = false,
+  isLoading = false,
   className = '',
 }: DropdownInputProps) => {
   return (
@@ -56,7 +58,10 @@ const DropdownInput = ({
           </option>
 
           {options.map((option) => (
-            <option key={option.value} value={option.value}>
+            <option
+              key={option.value}
+              value={option.value}
+            >
               {option.label}
             </option>
           ))}

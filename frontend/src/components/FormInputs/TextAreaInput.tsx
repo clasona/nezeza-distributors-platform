@@ -4,6 +4,7 @@ import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form';
 
 interface TextAreaInputProps {
   label: string;
+  id: string;
   name: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -18,6 +19,7 @@ interface TextAreaInputProps {
 }
 const TextAreaInput = ({
   label,
+  id,
   name,
   register,
   errors,

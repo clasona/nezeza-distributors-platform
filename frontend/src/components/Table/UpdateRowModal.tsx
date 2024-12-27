@@ -174,7 +174,7 @@ const UpdateRowModal = <T,>({
             <div className='flex justify-end space-x-4'>
               <button
                 onClick={handleCancelSave}
-                className='px-4 py-2 text-nezeza_gray_600 bg-gray-300 rounded-md'
+                className='px-4 py-2 text-nezeza_gray_600 bg-gray-300 rounded-md hover:text-white hover:bg-gray-400'
               >
                 Cancel
               </button>

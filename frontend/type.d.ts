@@ -66,14 +66,14 @@ export interface StoreProduct {
 
 export interface StoreProps {
   _id: string; 
-  name: string; 
+  storeName: string; 
   description: string;
   email: string;
-  website: string;
-  logo: string;
-  products: StoreProduct[];
-  orders: OrderProps[];
-  inventory: InventoryProps[];
+  // website: string;
+  // logo: string;
+  // products: StoreProduct[];
+  // orders: OrderProps[];
+  // inventory: InventoryProps[];
   businessType: string;
   address: string;
   isActive: boolean;

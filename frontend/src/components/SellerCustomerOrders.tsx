@@ -23,6 +23,9 @@ import formatPrice from '@/pages/utils/formatPrice';
 import PageHeaderLink from '@/components/PageHeaderLink';
 import DateFilters from '@/components/Table/Filters/DateFilters';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
+import BulkDeleteButton from './Table/BulkDeleteButton';
+import BulkDeleteModal from './Table/BulkDeleteModal';
+import SuccessMessageModal from './SuccessMessageModal';
 
 const SellerCustomerOrders = () => {
   const [customerOrders, setCustomerOrders] = useState<OrderProps[]>([]);
@@ -44,7 +47,6 @@ const SellerCustomerOrders = () => {
 
   //for defining what table headers needed
   const tableColumns = [
-    { title: 'Select', srOnly: true, id: 'select' },
     { title: 'Status', id: 'fulfillmentStatus', sortable: true },
     { title: 'Order ID', id: '_id', sortable: true },
     { title: 'Customer', id: 'customer', sortable: true },
@@ -57,6 +59,10 @@ const SellerCustomerOrders = () => {
   //for pagination
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
+
+  //for bulk deleting
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
   //for table row dropdown actions i.e: update, remove
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -212,137 +218,183 @@ const SellerCustomerOrders = () => {
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
+  //for bulk deleting
+  const handleSelectRow = (id: number) => {
+    setSelectedRows((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((rowId) => rowId !== id)
+        : [...prevSelected, id]
+    );
+  };
+  const handleSelectAllRows = () => {
+    if (selectedRows.length === filteredOrders.length) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(filteredOrders.map((item) => item._id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      await Promise.all(selectedRows.map((id) => deleteCustomerOrder(userInfo, id)));
+
+      setFilteredOrders((prevInventory) =>
+        prevInventory.filter((item) => !selectedRows.includes(item._id))
+      );
+
+      setSelectedRows([]);
+      setSuccessMessage('Selected items deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting selected items:', error);
+      alert('Error deleting selected items.');
+    } finally {
+      setIsBulkDeleteModalOpen(false);
+    }
+  };
+
   return (
-      <div>
-        <PageHeader
-          heading='Customer Orders'
-          extraComponent={
-            <PageHeaderLink
-              linkTitle={'Create New Order'}
-              href={'./orders/new'}
-            />
-          }
+    <div>
+      <PageHeader
+        heading='Customer Orders'
+        extraComponent={
+          <PageHeaderLink
+            linkTitle={'Create New Order'}
+            href={'./orders/new'}
+          />
+        }
+      />
+      {/* Replacing Overview Section with SmallCards */}
+      <SmallCards orderStats={orderStats} />
+
+      {/* <TableActions /> */}
+
+      {/* Table Search field and Filter Dropdown*/}
+      <TableFilters>
+        <BulkDeleteButton
+          onClick={() => setIsBulkDeleteModalOpen(true)}
+          isDisabled={selectedRows.length === 0}
         />
-        {/* Replacing Overview Section with SmallCards */}
-        <SmallCards orderStats={orderStats} />
+        <SearchField
+          searchFieldPlaceholder='customer orders'
+          onSearchChange={handleSearchChange}
+        />
+        {/* Filter by status */}
+        <StatusFilters
+          label='Filter by Status'
+          options={[
+            'Status',
+            'Pending',
+            'Fulfilled',
+            'Shipped',
+            'Delivered',
+            'Completed',
+            'Canceled',
+          ]}
+          selectedOption={statusFilter}
+          onChange={handleStatusFilterChange}
+        />
+        {/* Filter by dates */}
+        <DateFilters
+          label='Filter by Date Range'
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+        />
 
-        {/* <TableActions /> */}
+        {/* Clear Filters Button */}
+        <ClearFilters clearFiltersFunction={clearFilters} />
+      </TableFilters>
 
-        {/* Table Search field and Filter Dropdown*/}
-        <TableFilters>
-          <SearchField
-            searchFieldPlaceholder='customer orders'
-            onSearchChange={handleSearchChange}
+      {/* Customer Orders Table */}
+      <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
+        <table
+          id='customer-orders-table'
+          className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
+        >
+          <TableHead
+            checked={selectedRows.length === filteredOrders.length}
+            onChange={handleSelectAllRows}
+            columns={tableColumns}
+            handleSort={handleSort}
           />
-          {/* Filter by status */}
-          <StatusFilters
-            label='Filter by Status'
-            options={[
-              'Status',
-              'Pending',
-              'Fulfilled',
-              'Shipped',
-              'Delivered',
-              'Completed',
-              'Canceled',
-            ]}
-            selectedOption={statusFilter}
-            onChange={handleStatusFilterChange}
-          />
-          {/* Filter by dates */}
-          <DateFilters
-            label='Filter by Date Range'
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={handleStartDateChange}
-            onEndDateChange={handleEndDateChange}
-          />
+          <tbody>
+            {filteredOrders
+              .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+              .map((order) => (
+                <TableRow
+                  key={order._id}
+                  rowData={order}
+                  rowValues={[
+                    { content: <input type='checkbox' /> },
+                    { content: order.fulfillmentStatus, isStatus: true },
+                    { content: order._id },
+                    { content: '' },
+                    {
+                      content: (
+                        <Link href='#' className='text-nezeza_dark_blue'>
+                          {order.orderItems.length}{' '}
+                        </Link>
+                      ),
+                    }, //TODO: make it show order products details when clicked
+                    { content: `$${formatPrice(order.totalPrice)}` },
+                    { content: order.orderDate },
 
-          {/* Clear Filters Button */}
-          <ClearFilters clearFiltersFunction={clearFilters} />
-        </TableFilters>
-
-        {/* Customer Orders Table */}
-        <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
-          <table
-            id='customer-orders-table'
-            className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
-          >
-            <TableHead columns={tableColumns} handleSort={handleSort} />
-            <tbody>
-              {filteredOrders
-                .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-                .map((order) => (
-                  <TableRow
-                    key={order._id}
-                    rowData={order}
-                    rowValues={[
-                      { content: <input type='checkbox' /> },
-                      { content: order.fulfillmentStatus, isStatus: true },
-                      { content: order._id },
-                      { content: '' },
-                      {
-                        content: (
-                          <Link href='#' className='text-nezeza_dark_blue'>
-                            {order.orderItems.length}{' '}
-                          </Link>
-                        ),
-                      }, //TODO: make it show order products details when clicked
-                      { content: `$${formatPrice(order.totalPrice)}` },
-                      { content: order.orderDate },
-
-                      {
-                        content: (
-                          <RowActionDropdown
-                            actions={[
-                              {
-                                label: 'Update',
-                                onClick: () => handleUpdate(order),
-                              },
-                              {
-                                label: 'Remove',
-                                onClick: () => handleRemoveClick(order),
-                              },
-                            ]}
-                          />
-                        ),
-                      },
-                    ]}
-                    onUpdate={handleSaveUpdatedRow}
-                    onRemove={handleRemove}
-                  />
-                ))}
-              ;
-            </tbody>
-          </table>
-          <Pagination
-            data={filteredOrders}
-            pageSize={PAGE_SIZE}
-            onPageChange={handlePageChange}
-          />
-          {/* Update Row Modal */}
-          <UpdateRowModal
-            isOpen={isUpdateModalOpen}
-            rowData={currentRowData}
-            onClose={handleCloseUpdateModal}
-            onSave={handleSaveUpdatedRow}
-          />
-          {/* Remove Row Modal */}
-          <RemoveRowModal
-            isOpen={isRemoveModalOpen}
-            rowData={currentRowData}
-            onClose={() => setIsRemoveModalOpen(false)}
-            onDelete={() => handleConfirmRemove(currentRowData._id)}
-          />
-          {/* Success Message */}
-          {successMessage && (
-            <div className='fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-md shadow-md'>
-              {successMessage}
-            </div>
-          )}
-        </div>
+                    {
+                      content: (
+                        <RowActionDropdown
+                          actions={[
+                            {
+                              label: 'Update',
+                              onClick: () => handleUpdate(order),
+                            },
+                            {
+                              label: 'Remove',
+                              onClick: () => handleRemoveClick(order),
+                            },
+                          ]}
+                        />
+                      ),
+                    },
+                  ]}
+                  onUpdate={handleSaveUpdatedRow}
+                  onRemove={handleRemove}
+                />
+              ))}
+            ;
+          </tbody>
+        </table>
+        <Pagination
+          data={filteredOrders}
+          pageSize={PAGE_SIZE}
+          onPageChange={handlePageChange}
+        />
+        {/* Update Row Modal */}
+        <UpdateRowModal
+          isOpen={isUpdateModalOpen}
+          rowData={currentRowData}
+          onClose={handleCloseUpdateModal}
+          onSave={handleSaveUpdatedRow}
+        />
+        {/* Remove Row Modal */}
+        <RemoveRowModal
+          isOpen={isRemoveModalOpen}
+          rowData={currentRowData}
+          onClose={() => setIsRemoveModalOpen(false)}
+          onDelete={() => handleConfirmRemove(currentRowData._id)}
+        />
+        {/* Bulk Delete Confirmation Modal */}
+        <BulkDeleteModal
+          isOpen={isBulkDeleteModalOpen}
+          onClose={() => setIsBulkDeleteModalOpen(false)}
+          onConfirm={handleBulkDelete}
+        />
+        {/* Success Message */}
+        {successMessage && (
+          <SuccessMessageModal successMessage={successMessage} />
+        )}
       </div>
-    
+    </div>
   );
 };
 

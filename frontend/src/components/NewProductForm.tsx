@@ -120,6 +120,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
         />
         <TextAreaInput
           label='Product Description'
+          id='description'
           name='description'
           register={register}
           errors={errors}
@@ -146,7 +147,6 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
         <CloudinaryImageUpload
           label='Main Product Image'
           className='sm:col-span-2' //span full row
-          setImageUrl={setImageUrl} // Optional for temporary URL display
           onResourceChange={setMainImageResource} // Set mainImageResource on upload success
         />
         {/* upload more product images  */}

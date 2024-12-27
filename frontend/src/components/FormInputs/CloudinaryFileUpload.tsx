@@ -3,39 +3,39 @@ import React, { useState } from 'react';
 import Button from './Button';
 import { Upload } from 'lucide-react';
 
-interface CloudinaryImageUploadProps {
+interface CloudinaryFileUploadProps {
   label?: string;
   className?: string;
   onResourceChange: (resource: any) => void; // Required: Callback to send resource to parent
 }
-const CloudinaryImageUpload = ({
+const CloudinaryFileUpload = ({
   label,
   className = '',
   onResourceChange,
-}: CloudinaryImageUploadProps) => {
+}: CloudinaryFileUploadProps) => {
   const [resource, setResource] = useState<any>(null);
 
   return (
     <div>
-      {label && ( // Only render the label if it's provided
+      {label && (
         <label
-          htmlFor='course-image'
-          className='block text-sm font-medium leading-6 text-gray-900 ' // Added margin-bottom
+          htmlFor='file-upload'
+          className='block text-sm font-medium leading-6 text-gray-900'
         >
           {label}
         </label>
       )}
-      {/* <CldUploadWidget uploadPreset='nezeza-preset-unsigned-1'> */}
       <CldUploadWidget
+        // signatureEndpoint='/api/cloudinary-sign-image/route' // Update to the endpoint for file signing
+        uploadPreset='nezeza-preset-unsigned-1'
         options={{
-          resourceType: 'image', // Cloudinary supports 'raw' for files
+          resourceType: 'raw', // Cloudinary supports 'raw' for files
           // sources: ['local', 'url'], // Restrict sources as needed
         }}
-        signatureEndpoint='/api/cloudinary-sign-image/route'
         onSuccess={(result, { widget }) => {
           if (result.info) {
-            setResource(result.info); // { public_id, secure_url, etc }
-            onResourceChange(result.info); // Call the callback with the resource
+            setResource(result.info); // Store file details locally
+            onResourceChange(result.info); // Send file details to parent
           }
         }}
         onQueuesEnd={(result, { widget }) => {
@@ -49,7 +49,7 @@ const CloudinaryImageUpload = ({
           }
           return (
             <Button
-              buttonTitle='Upload Image'
+              buttonTitle='Upload File'
               icon={Upload}
               className='space-x-3 px-6 py-2 text-white bg-nezeza_dark_blue hover:bg-nezeza_green_800'
               onClick={handleOnClick}
@@ -59,15 +59,24 @@ const CloudinaryImageUpload = ({
       </CldUploadWidget>
 
       {resource && (
-        <div>
-          <p className='mt-2 text-nezeza_green_600'>
-            Image uploaded successfully
+        <div className='mt-2'>
+          <p className='text-nezeza_green_600'>
+            File uploaded successfully: {resource.original_filename}
           </p>
-          <img src={resource.secure_url} alt='Uploaded Image' width='100' />
+          <p>
+            <a
+              href={resource.secure_url}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-nezeza_dark_blue underline'
+            >
+              Download File
+            </a>
+          </p>
         </div>
       )}
     </div>
   );
 };
 
-export default CloudinaryImageUpload;
+export default CloudinaryFileUpload;
