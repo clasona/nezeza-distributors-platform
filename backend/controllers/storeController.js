@@ -5,7 +5,7 @@ const CustomError = require('../errors');
 const { attachCookiesToResponse, createTokenUser } = require('../utils');
 
 const createStore = async (req, res) => {
-  const { email, storeName, address, description, bussinessType, isActive } =
+  const { email, storeName, address, description, businessType, isActive } =
     req.body;
 
   const emailAlreadyExists = await Store.findOne({ email });
@@ -20,7 +20,7 @@ const createStore = async (req, res) => {
     description,
     isActive,
     ownerId: req.user.userId, // Set the user as the owner
-    bussinessType,
+    businessType,
     members: [req.user.userId], // Add the user as a member
   });
 

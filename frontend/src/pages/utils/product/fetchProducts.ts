@@ -1,3 +1,5 @@
+//currently loading products for the main home page
+// TODO: replace with getAllInventory from the the retailers
 import axios from 'axios';
 
 export const fetchProducts = async () => {

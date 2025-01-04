@@ -4,6 +4,7 @@ import Link from 'next/link';
 import React from 'react'
 import WholesalerLayout from '../index';
 import PageHeader from '@/components/PageHeader';
+import PageHeaderLink from '@/components/PageHeaderLink';
 
 export default function index() {
     return (
@@ -11,8 +12,12 @@ export default function index() {
         <div>
           <PageHeader
             heading='Orders Home'
-            href='./orders/new-order'
-            linkTitle='Create Order'
+            extraComponent={
+              <PageHeaderLink
+                linkTitle={'Create Order'}
+                href={'./orders/new-order'}
+              />
+            }
           />
           <h2>Orders Home</h2>
         </div>

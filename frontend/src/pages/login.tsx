@@ -3,7 +3,7 @@ import { signIn } from 'next-auth/react';
 import { FaGoogle } from 'react-icons/fa';
 import { stateProps } from '../../type';
 import { useSelector, useDispatch } from 'react-redux';
-import { addUser } from '@/store/nextSlice';
+import { addUser, addStore } from '@/store/nextSlice';
 import axios from 'axios';
 
 const LoginPage = () => {
@@ -50,12 +50,34 @@ const LoginPage = () => {
       } else {
         setLoginData(response.data);
 
-        // set logged in user details to redux for further retreival
+        const userData = response.data.user;
+        const storeData = response.data.user.storeId;
+
+        console.log('yvess');
+        console.log(storeData);
+
+        // set logged in userInfo to redux for further retrieval
         dispatch(
           addUser({
-            name: response.data.user.firstName,
-            email: response.data.user.email,
+            userId: userData._id,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            email: userData.email,
+            storeId: userData.storeId
             // image: loginData.user.image,
+            //ADD MORE AS NEEDED
+          })
+        );
+
+        // for sellers. set logged in storeInfo to redux for further retrieval
+        //TODO: can be null for customers for now
+        dispatch(
+          addStore({
+            _id: storeData._id,
+            name: storeData.name,
+            email: storeData.email,
+            businessType: storeData.businessType,
+            // ADD MORE AS NEEDED
           })
         );
 
@@ -66,8 +88,6 @@ const LoginPage = () => {
           // window.location.href = '/browse-or-setup-store';
           window.location.href = '/';
         }, 2000); // Simulate delay for testing purposes
-
-        //TODO: save and carry some of the userInfo details
       }
     } catch (error) {
       console.error('Error fetching login data:', error);

@@ -64,11 +64,29 @@ export interface StoreProduct {
   quantity: number;
 }
 
-export interface stateProps { 
+export interface StoreProps {
+  _id: string; 
+  storeName: string; 
+  description: string;
+  email: string;
+  // website: string;
+  // logo: string;
+  // products: StoreProduct[];
+  // orders: OrderProps[];
+  // inventory: InventoryProps[];
+  businessType: string;
+  address: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface stateProps {
   productData: [];
   favoriteData: [];
   userInfo: [];
   userInfo: null | string;
+  storeInfo: StoreProps; //TODO: change this type to StoreProps
   next: any;
   //add orderData
 }

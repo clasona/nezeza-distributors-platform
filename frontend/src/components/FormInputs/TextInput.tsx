@@ -13,7 +13,7 @@ interface TextInputProps {
   autoComplete?: string;
   maxLength?: number;
   className?: string;
-  defaultValue?: string;
+  // defaultValue?: string;
   register: UseFormRegister<FieldValues>;
   isRequired?: boolean;
   disabled?: boolean;
@@ -28,28 +28,28 @@ const TextInput = ({
   isRequired = true,
   disabled = false,
   type = 'text',
-  className = 'sm:col-span-2',
-  defaultValue = '',
+  className = '',
+  // defaultValue = '',
 }: TextInputProps) => {
   return (
     <div className={className}>
       <label
         htmlFor={name}
-        className='block text-sm font-medium leading-6 text-gray-700 mb-2'
+        className='block text-sm font-medium leading-6 text-gray-700'
       >
         {label}
         {isRequired && <span className='text-nezeza_red_600'> *</span>}
       </label>
-      <div className='mt-2'>
+      <div>
         <input
           {...register(name, { required: isRequired })}
           id={id}
           name={name}
           type={type}
-          defaultValue={defaultValue}
+          // defaultValue={defaultValue}
           autoComplete={name}
           disabled={disabled}
-          className={`mt-1 block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none ${
+          className={`block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none ${
             errors[name]
               ? 'border-nezeza_red_600 text-nezeza_red_600'
               : 'focus:border-nezeza_green_600'

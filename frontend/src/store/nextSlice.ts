@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit"
-import { StoreProduct } from "../../type";
+import { createSlice } from '@reduxjs/toolkit';
+import { StoreProduct, StoreProps } from '../../type';
 
 interface NextState {
   productData: StoreProduct[];
@@ -7,16 +7,18 @@ interface NextState {
   // cartData: StoreProduct[];
   allProducts: StoreProduct[];
   userInfo: null | string;
+  storeInfo: null | StoreProps; //TODO: change this type to StoreProps
 }
 
 const initialState: NextState = {
-    productData: [],
-    favoriteData: [],
-    // cartData: [],
-    allProducts: [],
+  productData: [],
+  favoriteData: [],
+  // cartData: [],
+  allProducts: [],
   userInfo: null,
-    // orderData:[]
-}
+  storeInfo: null,
+  // orderData:[]
+};
 
 export const nextSlice = createSlice({
   name: 'next',
@@ -88,6 +90,16 @@ export const nextSlice = createSlice({
       state.userInfo = null;
     },
 
+    // add a store info to cart for checkout
+    addStore: (state, action) => {
+      state.storeInfo = action.payload;
+    },
+
+    // remove store info from cart
+    removeStore: (state) => {
+      state.storeInfo = null;
+    },
+
     // set all products data to cart
     setAllProducts: (state, action) => {
       state.allProducts = action.payload;
@@ -96,14 +108,16 @@ export const nextSlice = createSlice({
 });
 
 export const {
-    addToCart,
-    addToFavorite,
-    increaseQuantity,
-    decreaseQuantity,
-    deleteProduct,
-    resetCart,
-    addUser,
-    removeUser,
-    setAllProducts
+  addToCart,
+  addToFavorite,
+  increaseQuantity,
+  decreaseQuantity,
+  deleteProduct,
+  resetCart,
+  addUser,
+  removeUser,
+  addStore,
+  removeStore,
+  setAllProducts,
 } = nextSlice.actions;
 export default nextSlice.reducer;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Products from '@/components/Products';
-import { fetchInventory } from '../../utils/fetchInventory';
+import { fetchInventory } from '../../utils/inventory/fetchInventory';
 import { ProductProps } from '../../../../type';
 import axios from 'axios';
 import { MdClose } from 'react-icons/md';

@@ -1,4 +1,5 @@
 [
+  { "name": "Select a country", "code": "" },
   { "name": "Afghanistan", "code": "AF" },
   { "name": "Åland Islands", "code": "AX" },
   { "name": "Albania", "code": "AL" },
@@ -181,7 +182,7 @@
   { "name": "Reunion", "code": "RE" },
   { "name": "Romania", "code": "RO" },
   { "name": "Russian", "code": "RU" },
-  { "name": "Rwanda", "code": "RW" },
+  { "name": "Rwanda", "code": "RW", "states": "rwandan_provinces" },
   { "name": "Saint Helena", "code": "SH" },
   { "name": "Saint Kitts and Nevis", "code": "KN" },
   { "name": "Saint Lucia", "code": "LC" },
@@ -232,7 +233,7 @@
   { "name": "Ukraine", "code": "UA" },
   { "name": "United Arab Emirates", "code": "AE" },
   { "name": "United Kingdom", "code": "GB" },
-  { "name": "United States", "code": "US" },
+  { "name": "United States", "code": "US", "states":"us_states"},
   { "name": "United States Minor Outlying Islands", "code": "UM" },
   { "name": "Uruguay", "code": "UY" },
   { "name": "Uzbekistan", "code": "UZ" },

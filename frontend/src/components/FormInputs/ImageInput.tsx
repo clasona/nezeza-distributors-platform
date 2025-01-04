@@ -1,69 +1,83 @@
-import { UploadDropzone } from '@/lib/uploadthing';
-import { Pencil } from 'lucide-react';
-import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
+import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form';
 
-interface ImageInputProps{
-    label: string;
-    imageUrl?: string;
-    setImageUrl: (url: string) => void;
-    className?: string;
-    endpoint?: string;
-    // onUpload: (file: File) => void;
-    // accept?: string;
+
+interface ImageInputProps {
+  label: string;
+  id: string;
+  name: string;
+  register: UseFormRegister<FieldValues>; // This is passed from react-hook-form
+  errors: FieldErrors;
+  onFileChange?: (file: File | null) => void; // Optional callback for the parent
+  accept?: string; // Accept specific file types (e.g., images)
+  type?: string;
+  className?: string;
+  isRequired?: boolean;
 }
-const ImageInput = ({
+
+const ImageInput: React.FC<ImageInputProps> = ({
   label,
-  imageUrl = '',
-  setImageUrl,
-  className = 'col-span-full',
-  endpoint = 'imageUploader',
-}: ImageInputProps) => {
+  id,
+  name,
+  register,
+  errors,
+  isRequired = true,
+  onFileChange,
+  accept = 'image/*',
+  className = '',
+}) => {
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
+
+    if (file) {
+      setPreview(URL.createObjectURL(file));
+    } else {
+      setPreview(null);
+    }
+
+    if (onFileChange) {
+      onFileChange(file);
+    }
+  };
+
   return (
     <div className={className}>
-      <div className='flex justify-between items-center mb-4'>
-        <label
-          htmlFor='course-image'
-          className='block text-sm font-medium leading-6 text-gray-900'
-        >
-          {label}
-        </label>
-        {imageUrl && (
-          <button
-            onClick={() => setImageUrl('')}
-            type='button'
-            className='flex space-x-2  bg-slate-900 rounded-md shadow text-slate-50  py-2 px-4'
-          >
-            <Pencil className='w-5 h-5' />
-            <span>Change Image</span>
-          </button>
+      <label
+        htmlFor={name}
+        className='block text-sm font-medium leading-6 text-gray-700'
+      >
+        {label}
+        {isRequired && <span className='text-nezeza_red_600'> *</span>}
+      </label>
+      <div >
+        <input
+          {...register(name, { required: isRequired })}
+          type='file'
+          id={id}
+          name={name}
+          accept={accept}
+          onChange={handleFileChange}
+          className='block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none'
+        />
+        {/* For if we want ro see preivew */}
+        {/* {preview && (
+          <img
+            src={preview}
+            alt='Preview'
+            className='mt-2 max-w-full h-auto rounded-md'
+          />
+        )} */}
+        {errors[name] && (
+          <span className='text-sm text-nezeza_red_600'>
+            {label} is required
+          </span>
         )}
+        {/* {errors?.[name] && (
+        <p className='mt-1 text-sm text-red-600'>{errors[name].message}</p>
+      )} */}
       </div>
-      {imageUrl ? (
-        <Image
-          src={imageUrl}
-          alt='Item image'
-          width={1000}
-          height={667}
-          className='w-full h-64 object-cover'
-        />
-      ) : (
-        <UploadDropzone
-          endpoint={endpoint}
-          onClientUploadComplete={(res: any ) => {
-            setImageUrl(res[0].url);
-            // Do something with the response
-            // toast.success('Image uploaded successfully.');
-            console.log('Files: ', res);
-            console.log('Upload Completed');
-          }}
-          onUploadError={(error: Error) => {
-            // toast.error('Error uploading image. Try again.');
-            // Do something with the error.
-            console.log(`ERROR! ${error.message}`);
-          }}
-        />
-      )}
     </div>
   );
 };
