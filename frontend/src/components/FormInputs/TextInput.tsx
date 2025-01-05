@@ -6,7 +6,7 @@ interface TextInputProps {
   label: string;
   id: string;
   name: string;
-  value?: string;
+  value?: string|number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type: string;
   errors: FieldErrors;
@@ -29,7 +29,7 @@ const TextInput = ({
   disabled = false,
   type = 'text',
   className = '',
-  // defaultValue = '',
+  value,
 }: TextInputProps) => {
   return (
     <div className={className}>
@@ -46,7 +46,7 @@ const TextInput = ({
           id={id}
           name={name}
           type={type}
-          // defaultValue={defaultValue}
+          value={value}
           autoComplete={name}
           disabled={disabled}
           className={`block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none ${

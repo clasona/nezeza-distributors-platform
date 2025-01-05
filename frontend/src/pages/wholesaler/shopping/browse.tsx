@@ -2,17 +2,17 @@ import Banner from '@/components/Banner';
 import Products from '@/components/Products';
 import React from 'react';
 import mockProducts from '../mock-data/mockProducts';
-import WholesalerLayout from '..';
+import WholesalerLayout from '../layout';
 import Heading from '@/components/Heading';
 import HeaderBottom from '@/components/header/HeaderBottom';
-import Cart from '@/components/Cart';
+import Cart from '@/components/Cart/Cart';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../../../type';
 import PageHeader from '@/components/PageHeader';
 
 const Shopping = () => {
-    const productData = mockProducts;
-      const { cartProductData } = useSelector((state: stateProps) => state.next);
+  const productData = mockProducts;
+  const { cartProductData } = useSelector((state: stateProps) => state.next);
 
   return (
     <WholesalerLayout>

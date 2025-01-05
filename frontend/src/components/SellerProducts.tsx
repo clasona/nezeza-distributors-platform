@@ -14,22 +14,19 @@ import Pagination from '@/components/Table/Pagination';
 import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import SearchField from '@/components/Table/SearchField';
-import { sortItems } from '@/pages/utils/sortItems';
+import { sortItems } from '@/utils/sortItems';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
-import RemoveRowModal from '@/components/Table/RemoveRowModal';
+import RemoveRowModal from '@/components/Table/DeleteRowModal';
 import { FaProductHunt } from 'react-icons/fa';
-import formatPrice from '@/pages/utils/formatPrice';
-import formatDate from '@/pages/utils/formatDate';
+import formatPrice from '@/utils/formatPrice';
+import formatDate from '@/utils/formatDate';
 import PageHeaderLink from '@/components/PageHeaderLink';
 import DateFilters from '@/components/Table/Filters/DateFilters';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
 import { useSelector } from 'react-redux';
-import {
-  formatIdByShortening,
-  formatIdByTimestamp,
-} from '@/pages/utils/formatId';
-import { fetchInventory } from '@/pages/utils/inventory/fetchInventory';
-import { getAllProducts } from '@/pages/utils/product/getAllProducts';
+import { formatIdByShortening, formatIdByTimestamp } from '@/utils/formatId';
+import { fetchInventory } from '@/utils/inventory/fetchInventory';
+import { getAllProducts } from '@/utils/product/getAllProducts';
 
 // interface SellerInventoryProps {
 //   inventoryData: InventoryProps[];
@@ -59,7 +56,7 @@ const SellerInventory = () => {
     { title: 'ID', id: '_id', sortable: true },
     { title: 'Image', id: 'image' },
     { title: 'Title', id: 'title', sortable: true },
-    { title: 'Qty', id: 'stock', sortable: true },
+    { title: 'Qty', id: 'quantity', sortable: true },
     { title: 'Price', id: 'price', sortable: true },
     { title: 'Created', id: 'createdAt', sortable: true },
     { title: 'Updated', id: 'updatedAt', sortable: true },
@@ -80,7 +77,7 @@ const SellerInventory = () => {
     owner: 0,
     buyerStoreId: 0,
     productId: 0,
-    stock: 0,
+    quantity: 0,
     price: 0,
     freeShipping: false,
     availability: false,
@@ -259,7 +256,7 @@ const SellerInventory = () => {
         extraComponent={
           <PageHeaderLink
             linkTitle={'Add New Product to Inventory'}
-            href={'./inventory/new-inventory'}
+            href={'./inventory/new-product'}
           />
         }
       />
@@ -271,7 +268,7 @@ const SellerInventory = () => {
           searchFieldPlaceholder='inventory products'
           onSearchChange={handleSearchChange}
         />
-        {/* TODO: Add filter by stock status */}
+        {/* TODO: Add filter by quantity status */}
         {/* Filter by dates */}
         <DateFilters
           label='Filter by Date Range'
@@ -312,7 +309,7 @@ const SellerInventory = () => {
                       ),
                     },
                     { content: product.title },
-                    { content: product.stock, isStock: true },
+                    { content: product.quantity, isStock: true },
                     { content: `$${formatPrice(product.price)}` },
                     { content: formatDate(product.createdAt) },
                     { content: formatDate(product.updatedAt) },

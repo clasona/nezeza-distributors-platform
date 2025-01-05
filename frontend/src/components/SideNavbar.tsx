@@ -1,28 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import logo from '@/images/logo.jpg';
 import { usePathname } from 'next/navigation';
 import {
-  Boxes,
+  Archive,
   ChartBarStacked,
-  ChevronDown,
-  ChevronRight,
-  ChevronUp,
   CircleDollarSign,
   House,
   Inbox,
   LayoutDashboard,
-  LayoutGrid,
-  LogOut,
-  Minus,
-  Search,
+  ListOrdered,
   ShoppingCart,
   SquareArrowOutUpRight,
   Truck,
-  TruckIcon,
   UserRoundPen,
   Users,
   Warehouse,
@@ -30,6 +23,8 @@ import {
 import Button from './FormInputs/Button';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../type';
+import { useRouter } from 'next/router';
+import { LogoutButton } from './LogoutButton';
 
 interface SideNavbarProps {
   showSidebar: boolean;
@@ -45,22 +40,33 @@ const SideNavbar = ({
   const [openSubMenu, setOpenSubMenu] = useState(false);
   const pathname = usePathname();
   const { storeInfo } = useSelector((state: stateProps) => state.next);
+  const router = useRouter();
+
+  const [storeType, setStoreType] = useState('');
+
+  useEffect(() => {
+    if (storeInfo) {
+      setStoreType(storeInfo.storeType);
+    } else {
+      setStoreType(''); // Reset to default if storeInfo is null
+    }
+  }, [storeInfo]);
 
   const sidebarLinks = [
     {
-      title: 'Home',
-      href: `${basePath}/home`,
-      icon: House,
-    },
-    {
       title: 'Dashboard',
-      href: `${basePath}/dashboard`,
+      href: `${basePath}`,
       icon: LayoutDashboard,
     },
+    // {
+    //   title: 'Dashboard',
+    //   href: `${basePath}/dashboard`,
+    //   icon: LayoutDashboard,
+    // },
     {
       title: 'My Orders',
       href: `${basePath}/orders/my-orders`,
-      icon: Truck,
+      icon: ListOrdered,
     },
     {
       title: 'Customer Orders',
@@ -79,29 +85,29 @@ const SideNavbar = ({
     },
     // TODO: Not sure if needed for MVP but definetely for future, could have it with submenu items
     // Link at 1:21 - https://www.youtube.com/watch?v=lnRe9qHFQlQ&list=PLDn5_2K0bUmfREsFv1nSHDbmHEX5oqI3Z&index=6&ab_channel=JBWEBDEVELOPER
-    {
-      title: 'Categories ??',
-      href: `${basePath}/categories`,
-      icon: ChartBarStacked,
-    },
-    {
-      title: 'Staff',
-      href: `${basePath}/staff`,
-      icon: Users,
-    },
+    // {
+    //   title: 'Categories ??',
+    //   href: `${basePath}/categories`,
+    //   icon: ChartBarStacked,
+    // },
+    // {
+    //   title: 'Staff',
+    //   href: `${basePath}/staff`,
+    //   icon: Users,
+    // },
     {
       title: 'Customers',
       href: `${basePath}/customers`,
       icon: Users,
     },
     {
-      title: 'Inbox',
-      href: `${basePath}/inbox`,
+      title: 'Notifications',
+      href: `${basePath}/notifications`,
       icon: Inbox,
     },
     {
-      title: 'User Account',
-      href: `${basePath}/user-account`,
+      title: 'My Account',
+      href: `${basePath}/my-account`,
       icon: UserRoundPen,
     },
     {
@@ -116,30 +122,42 @@ const SideNavbar = ({
       extraIcon: SquareArrowOutUpRight,
       target: '_blank',
     },
+    {
+      title: 'Archived',
+      href: `${basePath}/orders/archived`,
+      icon: Archive,
+    },
   ];
 
-  // Filter sidebar links based on business type to exclude My Orders and SHopping for the manufacturers
+  // Filter sidebar links based on store type to exclude My Orders and SHopping for the manufacturers
   const filteredLinks = sidebarLinks.filter(
     (link) =>
       !(
-        storeInfo.businessType === 'manufacturing' &&
+        storeType === 'manufacturing' &&
         (link.title === 'My Orders' || link.title === 'Shopping')
       )
   );
-  
+
+  const handleLogoutClick = () => {
+    router.push('/logout'); // Replace '/logout' with your target route
+  };
+
   return (
     <div
       className={`${
         // TODO: add some styling for the sidebar side scroll at some point?
         showSidebar
-          ? 'sm:block bg-nezeza_dark_blue space-y-6 w-64 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+          ? 'sm:block bg-nezeza_dark_blue space-y-6 w-60 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
           : ' sm:block bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll' // add hidden to hide it
       }`}
     >
-      <Link className=' px-6 py-2 ' href='#'>
-        <Image className='w-36 ' src={logo} alt='logoImg ' />
-      </Link>
-      <div className='flex flex-col space-y-2 mt-14'>
+      <div className=' px-6 py-2'>
+        <Link href='#'>
+          <Image className='w-36 ' src={logo} alt='logoImg ' />
+        </Link>
+      </div>
+
+      <div className='flex flex-col space-y-2'>
         {/* TODO: We could group the related sidebar menu items, check SidebarNav Copy.tsx */}
         {filteredLinks.map((item) => (
           <Link
@@ -149,7 +167,7 @@ const SideNavbar = ({
             target={item.target}
             className={`${
               item.href == pathname
-                ? 'flex items-center space-x-3 px-6 py-1 bg-nezeza_green_600  rounded-md border-l-4 border-white'
+                ? 'flex items-center space-x-3 px-6 py-1 bg-nezeza_green_600 rounded-md border-l-4 border-white'
                 : 'flex items-center space-x-3 px-6 py-1 rounded-md'
             }`}
           >
@@ -160,11 +178,7 @@ const SideNavbar = ({
         ))}
 
         <div className='flex px-6 py-8'>
-          <Button
-            buttonTitle='Logout'
-            icon={LogOut}
-            className='space-x-3 px-6 py-2 text-white bg-nezeza_red_600 hover:bg-nezeza_red_700'
-          />
+          <LogoutButton className='py-2' redirectTo='login' />
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import ManufacturerLayout from '..';
+import ManufacturerLayout from '../layout';
 import SellerCustomerOrders from '@/components/SellerCustomerOrders';
 import SellerProducts from '@/components/SellerProducts';
 

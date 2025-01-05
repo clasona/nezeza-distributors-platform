@@ -1,0 +1,46 @@
+import { calculateOrderItemsSubtotal } from '@/utils/order/calculateOrderItemsSubtotal';
+import { OrderProps } from '../../../type';
+import FormattedStatus from '../Table/FormattedStatus';
+import formatDate from '@/utils/formatDate';
+import OrderTotals from './OrderTotals';
+
+interface OrderDetailsProps {
+  order: OrderProps;
+}
+
+const OrderDetails = ({ order }: OrderDetailsProps) => {
+  return (
+    <div className='space-y-4'>
+      {/* Order Header */}
+      <div className='flex justify-between'>
+        <p className='text-l font-semibold'>
+          Order #{' '}
+          <span className='font-bold text-nezeza_dark_blue'>{order._id}</span>
+        </p>
+        <p className='text-l font-semibold'>
+          Status: <FormattedStatus status={order.fulfillmentStatus} />
+        </p>
+        <p className='text-l font-semibold'>
+          Date:{' '}
+          <span className='font-bold text-nezeza_dark_blue'>
+            {formatDate(order.createdAt)}
+          </span>
+        </p>
+      </div>
+
+      <OrderTotals order={order} />
+
+      {/* Shipping Address */}
+      <div className='mt-4'>
+        <h4 className='text-md font-semibold mb-2'>Shipping Address</h4>
+        <p className='text-sm'>
+          {/* {order.shippingAddress.street}, {order.shippingAddress.city},{' '}
+          {order.shippingAddress.state} {order.shippingAddress.zipCode},{' '}
+          {order.shippingAddress.country} */}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default OrderDetails;

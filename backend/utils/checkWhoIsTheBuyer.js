@@ -4,16 +4,16 @@ const CustomError = require('../errors');
 const whoIsTheBuyer = (buyerStore, sellerStore) => {
   // Example: if buyer is a wholesaler, they can only buy from manufacturers
   if (
-    buyerStore.businessType === 'manufacturing' &&
-    sellerStore.businessType !== 'manufacturing'
+    buyerStore.storeType === 'manufacturing' &&
+    sellerStore.storeType !== 'manufacturing'
   ) {
     throw new CustomError.BadRequestError(
       'Buying is not allow for manufacturers'
     );
   }
   if (
-    buyerStore.businessType === 'wholesale' &&
-    sellerStore.businessType !== 'manufacturing'
+    buyerStore.storeType === 'wholesale' &&
+    sellerStore.storeType !== 'manufacturing'
   ) {
     throw new CustomError.BadRequestError(
       'Wholesalers can only buy from manufacturers'
@@ -22,8 +22,8 @@ const whoIsTheBuyer = (buyerStore, sellerStore) => {
 
   // if buyer is a retailer, they can only buy from wholesalers
   if (
-    buyerStore.businessType === 'retail' &&
-    sellerStore.businessType !== 'wholesale'
+    buyerStore.storeType === 'retail' &&
+    sellerStore.storeType !== 'wholesale'
   ) {
     throw new CustomError.BadRequestError(
       'Retailers can only buy from wholesalers'
@@ -31,8 +31,8 @@ const whoIsTheBuyer = (buyerStore, sellerStore) => {
   }
 
   if (
-    buyerStore.businessType === 'customer' &&
-    sellerStore.businessType !== 'retail'
+    buyerStore.storeType === 'customer' &&
+    sellerStore.storeType !== 'retail'
   ) {
     throw new CustomError.UnauthorizedError(
       'Customers can only buy from retailers'

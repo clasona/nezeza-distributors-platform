@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Products from '@/components/Products';
-import { InventoryProps, ProductProps, stateProps } from '../../type';
+import { ProductProps, stateProps } from '../../type';
 import axios from 'axios';
 import { MdClose } from 'react-icons/md';
 import Heading from '@/components/Heading';
@@ -14,41 +14,43 @@ import Pagination from '@/components/Table/Pagination';
 import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import SearchField from '@/components/Table/SearchField';
-import { sortItems } from '@/pages/utils/sortItems';
+import { sortItems } from '@/utils/sortItems';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
-import RemoveRowModal from '@/components/Table/RemoveRowModal';
+import DeleteRowModal from '@/components/Table/DeleteRowModal';
 import { FaProductHunt } from 'react-icons/fa';
-import formatPrice from '@/pages/utils/formatPrice';
-import formatDate from '@/pages/utils/formatDate';
+import formatPrice from '@/utils/formatPrice';
+import formatDate from '@/utils/formatDate';
 import PageHeaderLink from '@/components/PageHeaderLink';
 import DateFilters from '@/components/Table/Filters/DateFilters';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
 import { useSelector } from 'react-redux';
-import {
-  formatIdByShortening,
-  formatIdByTimestamp,
-} from '@/pages/utils/formatId';
-import { fetchInventory } from '@/pages/utils/inventory/fetchInventory';
-import { getAllProducts } from '@/pages/utils/product/getAllProducts';
-import { deleteProduct } from '@/pages/utils/product/deleteProduct';
-import { updateProduct } from '@/pages/utils/product/updateProduct';
+import { formatIdByShortening, formatIdByTimestamp } from '@/utils/formatId';
+import { fetchInventory } from '@/utils/inventory/fetchInventory';
+import { getAllProducts } from '@/utils/product/getAllProducts';
+import { deleteProduct } from '@/utils/product/deleteProduct';
+import { updateProduct } from '@/utils/product/updateProduct';
 import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
+import Button from './FormInputs/Button';
+import { useRouter } from 'next/router';
+import Loading from './Loaders/Loading';
 
-// interface SellerInventoryProps {
-//   inventoryData: InventoryProps[];
+// interface SellerProductProps {
+//   inventoryData: ProductProps[];
 // }
 const SellerInventory = () => {
-  const [inventoryData, setInventoryData] = useState<InventoryProps[]>([]);
-  const [sampleInventory, setSampleInventory] = useState<InventoryProps[]>([]);
-  const [filteredInventory, setFilteredInventory] = useState<InventoryProps[]>(
+  const [inventoryData, setInventoryData] = useState<ProductProps[]>([]);
+  const [sampleInventory, setSampleInventory] = useState<ProductProps[]>([]);
+  const [filteredInventory, setFilteredInventory] = useState<ProductProps[]>(
     []
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductProps | null>(
     null
   );
+      const [showMoreFilters, setshowMoreFilters] = useState(false);
+      const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
   const [successMessage, setSuccessMessage] = useState<string>('');
 
   const [statusFilter, setStatusFilter] = useState('Status');
@@ -63,7 +65,7 @@ const SellerInventory = () => {
     { title: 'ID', id: '_id', sortable: true },
     { title: 'Image', id: 'image' },
     { title: 'Title', id: 'title', sortable: true },
-    { title: 'Qty', id: 'stock', sortable: true },
+    { title: 'Qty', id: 'quantity', sortable: true },
     { title: 'Price', id: 'price', sortable: true },
     { title: 'Created', id: 'createdAt', sortable: true },
     { title: 'Updated', id: 'updatedAt', sortable: true },
@@ -74,32 +76,18 @@ const SellerInventory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
 
-
   //for bulk deleting
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
-  //for table row dropdown actions i.e: update, remove
+  //for table row dropdown actions i.e: update, Delete
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-  const [currentRowData, setCurrentRowData] = useState<InventoryProps>({
-    _id: 0,
-    title: '',
-    description: '',
-    image: '',
-    owner: 0,
-    buyerStoreId: 0,
-    productId: 0,
-    stock: 0,
-    price: 0,
-    freeShipping: false,
-    availability: false,
-    averageRating: 0,
-    numOfReviews: 0,
-    lastUpdated: '',
-    createdAt: '',
-    updatedAt: '',
-  });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState<ProductProps | null>(
+    null
+  );
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false); // State for loading
 
   // get store info from redux
   const { userInfo, storeInfo } = useSelector(
@@ -107,28 +95,20 @@ const SellerInventory = () => {
   );
 
   // fetch store inventory data
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const inventoryData = await getAllProducts();
+      setInventoryData(inventoryData);
+      setFilteredInventory(inventoryData);
+    } catch (error) {
+      console.error('Error fetching inventory data:', error);
+    } finally {
+      setIsLoading(false); // Set loading to false *after* fetch completes (success or error)
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      let inventoryData;
-      try {
-        // separate getting invtory data for manufacturers vs other sellers since they use a separate api endpoint
-        if (storeInfo.businessType === 'manufacturing') {
-          inventoryData = await getAllProducts(userInfo);
-        } else {
-          inventoryData = await fetchInventory(storeInfo);
-        }
-        setInventoryData(inventoryData);
-        setFilteredInventory(inventoryData);
-
-        //sample inventory
-        // const sampleInventoryData = mockInventory;
-        // setSampleInventory(sampleInventoryData);
-        // setFilteredInventory(sampleInventoryData); // Initially show all inventory
-      } catch (error) {
-        console.error('Error fetching inventory data:', error);
-      }
-    };
-
     fetchData();
   }, []);
 
@@ -151,7 +131,7 @@ const SellerInventory = () => {
     setSearchQuery(query); // Update the search query
   };
 
-  const handleUpdateProduct = async (productId: number, newPrice: number) => {
+  const handleUpdateProduct = async (productId: string, newPrice: number) => {
     setInventoryData(
       inventoryData.map((product) =>
         product._id === productId ? { ...product, price: newPrice } : product
@@ -225,36 +205,13 @@ const SellerInventory = () => {
   };
 
   //for defining what table headers needed
-  const handleUpdate = (rowData: InventoryProps) => {
+  const handleUpdate = (rowData: ProductProps) => {
     setCurrentRowData(rowData);
     // console.log(rowData);
     setIsUpdateModalOpen(true);
+    // window.location.href = `../inventory/update-product?_id=${rowData._id}`;
   };
-  const handleSaveUpdatedRow = async (updatedRow: InventoryProps) => {
-    try {
-      const response = await updateProduct(userInfo, updatedRow._id); //TODO: this should be updateInventoryProduct
-      setSuccessMessage(
-        `Inventory item # ${updatedRow._id} updated successfully.`
-      );
-      //update from table row
-      setFilteredInventory((prevProduct) =>
-        prevProduct.map((product) =>
-          product._id === updatedRow._id
-            ? { ...product, ...updatedRow }
-            : product
-        )
-      );
-    } catch (error) {
-      //TODO: setErrorMessage?
-      console.error(
-        `Error updating product with id ${updatedRow._id} from the database:`,
-        error
-      ); // Log the full error for debugging
-      alert(
-        `Error updating product with id ${updatedRow._id} from the database.`
-      );
-    }
-
+  const handleSaveUpdatedRow = async (updatedRow: ProductProps) => {
     setIsUpdateModalOpen(false);
     setTimeout(() => setSuccessMessage(''), 4000);
   };
@@ -263,24 +220,24 @@ const SellerInventory = () => {
     setIsUpdateModalOpen(false);
   };
 
-  const handleRemove = (id: number) => {
+  const handleDelete = (id: string) => {
     setFilteredInventory((prevInventory) =>
       prevInventory.filter((inventory) => inventory._id !== id)
     );
   };
 
-  const handleRemoveClick = (rowData: InventoryProps) => {
+  const handleDeleteClick = (rowData: ProductProps) => {
     setCurrentRowData(rowData); // Set the selected row data
-    setIsRemoveModalOpen(true); // Open the modal
+    setIsDeleteModalOpen(true); // Open the modal
   };
 
-  const handleConfirmRemove = async (id: number) => {
+  const handleConfirmDelete = async (id: string) => {
     //delete it from database -- though i dont't think we should delete products at all for future references
     try {
-      const response = await deleteProduct(userInfo, id); //TODO: this should be deleteInventoryProduct
+      await deleteProduct(id);
       setSuccessMessage(`Inventory item # ${id} deleted successfully.`);
 
-      //remove from table row
+      //Delete from table row
       setFilteredInventory((prevInventory) =>
         prevInventory.filter((inventory) => inventory._id !== id)
       );
@@ -293,12 +250,12 @@ const SellerInventory = () => {
 
       alert(`Error deleting product with id ${id} from the database.`);
     }
-    setIsRemoveModalOpen(false);
+    setIsDeleteModalOpen(false);
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
   //for bulk deleting
-  const handleSelectRow = (id: number) => {
+  const handleSelectRow = (id: string) => {
     setSelectedRows((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((rowId) => rowId !== id)
@@ -315,7 +272,7 @@ const SellerInventory = () => {
 
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(selectedRows.map((id) => deleteProduct(userInfo, id)));
+      await Promise.all(selectedRows.map((id) => deleteProduct(id)));
 
       setFilteredInventory((prevInventory) =>
         prevInventory.filter((item) => !selectedRows.includes(item._id))
@@ -335,10 +292,21 @@ const SellerInventory = () => {
     <div>
       <PageHeader
         heading='Inventory'
+        actions={
+          <Button
+            isLoading={isLoading}
+            buttonTitle='Refresh'
+            loadingButtonTitle='Refreshing...'
+            className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
+            onClick={async () => {
+              await fetchData();
+            }}
+          />
+        }
         extraComponent={
           <PageHeaderLink
-            linkTitle={'Add New Product to Inventory'}
-            href={'./inventory/new-inventory'}
+            linkTitle='Create New Product'
+            href='./inventory/new-product'
           />
         }
       />
@@ -354,15 +322,24 @@ const SellerInventory = () => {
           searchFieldPlaceholder='inventory products'
           onSearchChange={handleSearchChange}
         />
-        {/* TODO: Add filter by stock status */}
+        {/* TODO: Add filter by quantity status */}
+       
         {/* Filter by dates */}
-        <DateFilters
-          label='Filter by Date Range'
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={handleStartDateChange}
-          onEndDateChange={handleEndDateChange}
-        />
+        {showMoreFilters && (
+          <DateFilters
+            label='Filter by Date Range'
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={handleStartDateChange}
+            onEndDateChange={handleEndDateChange}
+          />
+        )}
+        <button
+          onClick={toggleMoreFilters}
+          className='text-sm text-nezeza_dark_blue underline'
+        >
+          {showMoreFilters ? 'Less Filters' : 'More Filters'}
+        </button>
         {/* Clear Filters Button */}
         <ClearFilters clearFiltersFunction={clearFilters} />
       </TableFilters>
@@ -377,63 +354,70 @@ const SellerInventory = () => {
             columns={tableColumns}
             handleSort={handleSort}
           />
-          <tbody>
-            {filteredInventory
-              .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-              .map((product) => (
-                <TableRow
-                  key={product._id}
-                  rowData={product}
-                  rowValues={[
-                    {
-                      content: (
-                        <input
-                          type='checkbox'
-                          checked={selectedRows.includes(product._id)}
-                          onChange={() => handleSelectRow(product._id)}
-                        />
-                      ),
-                    },
-                    { content: formatIdByShortening(product._id) },
+          {isLoading ? ( // Show loading indicator
+            <Loading message='inventory products' />
+          ) : filteredInventory.length === 0 ? (
+            <p className='text-center'>No inventory products found</p>
+          ) : (
+            <tbody>
+              {filteredInventory
+                .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+                .map((product) => (
+                  <TableRow
+                    key={product._id}
+                    rowData={product}
+                    rowValues={[
+                      {
+                        content: (
+                          <input
+                            type='checkbox'
+                            checked={selectedRows.includes(product._id)}
+                            onChange={() => handleSelectRow(product._id)}
+                          />
+                        ),
+                      },
+                      { content: product._id },
 
-                    {
-                      content: (
-                        <Image
-                          src={product.image}
-                          alt={product.title}
-                          width={50} // Adjust the width as needed
-                          height={50} // Adjust the height as needed
-                          priority
-                        />
-                      ),
-                    },
-                    { content: product.title },
-                    { content: product.stock, isStock: true },
-                    { content: `$${formatPrice(product.price)}` },
-                    { content: formatDate(product.createdAt) },
-                    { content: formatDate(product.updatedAt) },
-                    {
-                      content: (
-                        <RowActionDropdown
-                          actions={[
-                            {
-                              label: 'Update',
-                              onClick: () => handleUpdate(product),
-                            },
-                            {
-                              label: 'Remove',
-                              onClick: () => handleRemoveClick(product),
-                            },
-                          ]}
-                        />
-                      ),
-                    },
-                  ]}
-                  onUpdate={handleSaveUpdatedRow}
-                  onRemove={handleRemove}
-                />
-              ))}
-          </tbody>
+                      {
+                        content: (
+                          <Image
+                            src={product.image}
+                            alt={product.title}
+                            width={50} // Adjust the width as needed
+                            height={50} // Adjust the height as needed
+                            priority
+                          />
+                        ),
+                      },
+                      { content: product.title },
+                      { content: product.quantity, isStock: true },
+                      { content: `$${formatPrice(product.price)}` },
+                      { content: formatDate(product.createdAt) },
+                      { content: formatDate(product.updatedAt) },
+                      {
+                        content: (
+                          <RowActionDropdown
+                            actions={[
+                              {
+                                label: 'Update',
+                                onClick: () => handleUpdate(product),
+                                // href: `./inventory/update-product?_id=${product._id}`,
+                              },
+                              {
+                                label: 'Delete',
+                                onClick: () => handleDeleteClick(product),
+                              },
+                            ]}
+                          />
+                        ),
+                      },
+                    ]}
+                    onUpdate={handleSaveUpdatedRow}
+                    onDelete={handleDelete}
+                  />
+                ))}
+            </tbody>
+          )}
         </table>
         <Pagination
           data={filteredInventory}
@@ -441,19 +425,23 @@ const SellerInventory = () => {
           onPageChange={handlePageChange}
         />
         {/* Update Row Modal */}
-        <UpdateRowModal
-          isOpen={isUpdateModalOpen}
-          rowData={currentRowData}
-          onClose={handleCloseUpdateModal}
-          onSave={handleSaveUpdatedRow}
-        />
-        {/* Remove Row Modal */}
-        <RemoveRowModal
-          isOpen={isRemoveModalOpen}
-          rowData={currentRowData}
-          onClose={() => setIsRemoveModalOpen(false)}
-          onDelete={() => handleConfirmRemove(currentRowData._id)}
-        />
+        {isUpdateModalOpen && currentRowData && (
+          <UpdateRowModal
+            isOpen={isUpdateModalOpen}
+            rowData={currentRowData}
+            onClose={handleCloseUpdateModal}
+            onSave={handleSaveUpdatedRow}
+          />
+        )}
+        {/* Delete Row Modal */}
+        {isDeleteModalOpen && currentRowData && (
+          <DeleteRowModal
+            isOpen={isDeleteModalOpen}
+            rowData={currentRowData}
+            onClose={() => setIsDeleteModalOpen(false)}
+            onDelete={() => handleConfirmDelete(currentRowData._id)}
+          />
+        )}
         {/* Bulk Delete Confirmation Modal */}
         <BulkDeleteModal
           isOpen={isBulkDeleteModalOpen}

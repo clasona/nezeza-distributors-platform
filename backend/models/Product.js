@@ -13,6 +13,11 @@ const ProductSchema = new mongoose.Schema(
       required: [true, 'Please provide product price'],
       default: 0,
     },
+    quantity: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     description: {
       type: String,
       required: [true, 'Please provide product description'],
@@ -25,9 +30,9 @@ const ProductSchema = new mongoose.Schema(
     category: {
       type: String,
       required: [true, 'Please provide product category'],
-      enum: ['food', 'electronics', 'furniture', 'clothing', 'others'], 
+      enum: ['food', 'electronics', 'furniture', 'clothing', 'others'],
     },
-    
+
     colors: {
       type: [String],
       default: ['#222'],
@@ -53,11 +58,6 @@ const ProductSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    stock: {
-      type: Number,
-      required: true,
-      default: 15,
-    },
     averageRating: {
       type: Number,
       default: 0,
@@ -66,11 +66,10 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    storeId: { 
-      type: mongoose.Schema.ObjectId, 
+    storeId: {
+      type: mongoose.Schema.ObjectId,
       ref: 'Store',
     },
-    
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

@@ -16,13 +16,13 @@ const VerificationDocsInput = ({
   return (
     <>
       {/* TODO: Replace with upload docs */}
-      <CloudinaryFileUpload
-        label='Business Registration Docs'
+      {/* <CloudinaryFileUpload
+        label='Store Registration Docs'
         className='sm:col-span-2' //span full row
         onResourceChange={setMainImageResource}
-      />
+      /> */}
     </>
   );
 };
 
-export default VerificationDocsInput
+export default VerificationDocsInput;

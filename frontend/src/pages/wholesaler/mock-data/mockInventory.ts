@@ -5,13 +5,10 @@ const numInventoryItems = 21; // Adjust this value to control the number of item
 const mockInventory: InventoryProps[] = [];
 
 for (let i = 0; i < numInventoryItems; i++) {
-  const randomTitle = [
-    'Akanozo',
-    'Kinazi',
-    'Akarabo',
-    'Akabanga',
-  ][Math.floor(Math.random() * 3)];
-    const randomDescription = generateRandomDescription(); // Function to generate random descriptions
+  const randomTitle = ['Akanozo', 'Kinazi', 'Akarabo', 'Akabanga'][
+    Math.floor(Math.random() * 3)
+  ];
+  const randomDescription = generateRandomDescription(); // Function to generate random descriptions
   const randomImage = [
     'akanozo.png',
     'kinazi.jpg',
@@ -22,7 +19,7 @@ for (let i = 0; i < numInventoryItems; i++) {
   const randomOwner = Math.floor(Math.random() * 100) + 1; // Random owner ID
   const randomBuyerStoreId = Math.floor(Math.random() * 50) + 1; // Random buyer store ID
   const randomProductId = Math.floor(Math.random() * 1000) + 1; // Random product ID
-  const randomStock = Math.floor(Math.random() * 50) + 1; // Random stock quantity
+  const randomStock = Math.floor(Math.random() * 50) + 1; // Random quantity quantity
   const randomPrice = Math.floor(Math.random() * 10000) + 100; // Random price (cents)
   const randomFreeShipping = Math.random() < 0.5; // Random boolean for free shipping
   const randomAvailability = Math.random() < 0.8; // Random boolean for availability
@@ -38,7 +35,7 @@ for (let i = 0; i < numInventoryItems; i++) {
     owner: randomOwner,
     buyerStoreId: randomBuyerStoreId,
     productId: randomProductId,
-    stock: randomStock,
+    quantity: randomStock,
     price: randomPrice / 100, // Convert price to dollars
     freeShipping: randomFreeShipping,
     availability: randomAvailability,

@@ -7,7 +7,7 @@ import EditModal from './EditModal';
 interface OrderProps {
   _id: string;
   status: string;
-  stock: number;
+  quantity: number;
   name: string;
 }
 
@@ -74,7 +74,7 @@ const Inventory = () => {
               rowData={order}
               rowValues={[
                 { content: order.status, isStatus: true },
-                { content: order.stock, isStock: true },
+                { content: order.quantity, isStock: true },
                 { content: order.name },
                 {
                   content: (

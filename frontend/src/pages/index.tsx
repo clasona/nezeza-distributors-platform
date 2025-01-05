@@ -18,7 +18,7 @@ export default function Home({ productData }: Props) {
   // console.log(productData)
   return (
     <main> 
-      <div>
+      <div className='bg-nezeza_powder_blue'>
         <Banner />
         <Products productData={productData}/>
       </div>

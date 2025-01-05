@@ -12,8 +12,8 @@ import { generateSlug } from '@/lib/generateSlug';
 import FileInput from '@/components/FormInputs/ImageInput';
 import MultiImageInput from '@/components/FormInputs/MultipleImageInput';
 import ImageInput from '@/components/FormInputs/ImageInput-Old';
-import NewProductForm from '@/components/NewProductForm';
-import ManufacturerLayout from '..';
+import NewProductForm from '@/components/Product/NewProductForm';
+import ManufacturerLayout from '../layout';
 
 const NewInventory = () => {
   const handleFormSubmit = (data: any) => {

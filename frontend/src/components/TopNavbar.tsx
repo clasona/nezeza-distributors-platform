@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { GiHamburgerMenu } from 'react-icons/gi';
-import { Disclosure } from '@headlessui/react';
 import Image from 'next/image';
 import {
   DropdownMenu,
@@ -11,41 +10,60 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
-  MdOutlineSpaceDashboard,
-  MdOutlineAnalytics,
-  MdInventory,
-  MdShoppingCart,
-  MdOutlineIntegrationInstructions,
-  MdOutlineMoreHoriz,
-  MdOutlineSettings,
-  MdOutlineDashboard,
-  MdOutlineLogout,
   MdAccountCircle,
   MdOutlineNotifications,
-  MdOutlineLightMode,
   MdOutlineClose,
-  MdMenu,
 } from 'react-icons/md';
-import { CgProfile } from 'react-icons/cg';
 import { GoSidebarCollapse } from 'react-icons/go';
 
-import { FaRegComments } from 'react-icons/fa';
-import { BiMessageSquareDots } from 'react-icons/bi';
 import Link from 'next/link';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
-import { CircleUserRound, LayoutDashboard, LogOut } from 'lucide-react';
+import {
+  Bell,
+  CircleUserRound,
+  LayoutDashboard,
+  LogOut,
+  UserRound,
+} from 'lucide-react';
+import { getAllNotifications } from '@/utils/notificationUtils';
+import { NotificationProps } from '../../type';
+import { LogoutButton } from './LogoutButton';
 // import { SidebarTrigger } from '@/components/ui/sidebar';
 
 interface TopNavbarProps {
   storeName: string;
   showSidebar: boolean;
   setShowSidebar: (showSidebar: boolean) => void;
+  basePath: string;
 }
- 
+
 const TopNavbar = ({
   storeName,
-  showSidebar, setShowSidebar
+  showSidebar,
+  setShowSidebar,
+  basePath,
 }: TopNavbarProps) => {
+  const [notifications, setNotifications] = useState<NotificationProps[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0); // State for unread count
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getAllNotifications();
+        setNotifications(data);
+        if (data) {
+          setUnreadCount(data.filter((n: any) => !n.read).length); // Update unread count directly
+        } else {
+          setUnreadCount(0);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   // add fixed to fix top nav bar
   return (
     <div
@@ -74,10 +92,11 @@ const TopNavbar = ({
               type='button'
               className='relative inline-flex items-center p-3 text-sm font-medium text-center text-nezeza_dark_slate bg-transparent rounded-lg'
             >
-              <MdOutlineNotifications className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate '></MdOutlineNotifications>
+              {/* <MdOutlineNotifications className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate '></MdOutlineNotifications> */}
+              <Bell />
               <span className='sr-only'>Notifications</span>
               <div className='absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-nezeza_red_600 border-2  rounded-full -top-0 end-6 dark:border-gray-900'>
-                20
+                {unreadCount}
               </div>
             </button>
           </DropdownMenuTrigger>
@@ -85,54 +104,44 @@ const TopNavbar = ({
             <DropdownMenuLabel>Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem>
-              <div className='flex items-center space-x-2'>
-                <Image
-                  src=''
-                  alt='User profile'
-                  width={200}
-                  height={200}
-                  className='w-8 h-8 rounded-full'
-                />
-                <div className='flex flex-col space-y-1'>
-                  <p> Banana Stock out</p>
-                  <div className='flex items-center space-x-2'>
-                    <p className='px-3 py-0.5 bg-red-700 text-nezeza_dark_slate rounded-full text-sm text-white'>
-                      {' '}
-                      Stock out
-                    </p>
-                    <p> Dec 12 2024 - 12:50PM</p>
-                  </div>
-                </div>
-                <button>
-                  <MdOutlineClose />
-                </button>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <div className='flex items-center space-x-2'>
-                <Image
-                  src=''
-                  alt='User profile'
-                  width={200}
-                  height={200}
-                  className='w-8 h-8 rounded-full'
-                />
-                <div className='flex flex-col space-y-1'>
-                  <p> Banana Stock out</p>
-                  <div className='flex items-center space-x-2'>
-                    <p className='px-3 py-0.5 bg-red-700 text-nezeza_dark_slate rounded-full text-sm text-white'>
-                      {' '}
-                      Stock out
-                    </p>
-                    <p> Dec 12 2024 - 12:50PM</p>
-                  </div>
-                </div>
-                <button>
-                  <MdOutlineClose />
-                </button>
-              </div>
-            </DropdownMenuItem>
+            {notifications.filter((n) => !n.read).length > 0 ? (
+              notifications
+                .filter((n) => !n.read)
+                .map((notification) => (
+                  <DropdownMenuItem key={notification._id}>
+                    {' '}
+                    {/* Add key prop */}
+                    <div className='flex items-center space-x-2'>
+                      <div className='flex flex-col space-y-1'>
+                        <p>{notification.title}</p>
+                        <div className='flex items-center space-x-2'>
+                          <p
+                            className={`px-3 py-0.5  rounded-full text-sm text-white ${
+                              notification.priority === 'high'
+                                ? 'bg-red-700'
+                                : notification.priority === 'medium'
+                                ? 'bg-yellow-700'
+                                : 'bg-green-700'
+                            }`}
+                          >
+                            {notification.priority}
+                          </p>
+                          <p> {notification.createdAt}</p>
+                        </div>
+                      </div>
+                      <button>
+                        <MdOutlineClose />
+                      </button>
+                    </div>
+                  </DropdownMenuItem>
+                ))
+            ) : (
+              <DropdownMenuItem>
+                <p className='text-center text-gray-500'>
+                  No unread high priority notifications.
+                </p>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
           </DropdownMenuContent>
         </DropdownMenu>
@@ -140,8 +149,7 @@ const TopNavbar = ({
         <DropdownMenu>
           <DropdownMenuTrigger>
             <button>
-              {/* <Image src='' alt='User profile' width={200}  height={200} className='w-8 h-8 rounded-full'/> */}
-              <MdAccountCircle className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate ' />
+              <CircleUserRound />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className='px-2 py-4 pr-8'>
@@ -149,7 +157,7 @@ const TopNavbar = ({
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link
-                href='/wholesaler/dashboard'
+                href={`/${basePath}`}
                 className='flex items-center space-x-2'
               >
                 <LayoutDashboard />
@@ -158,19 +166,28 @@ const TopNavbar = ({
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Link
-                href='/wholesaler/account'
+                href={`/${basePath}/my-account`}
                 className='flex items-center space-x-2'
               >
                 {/* <CgProfile /> */}
                 <CircleUserRound />
-                <span>Edit Profile</span>
+                <span>My Account</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <button className='flex items-center space-x-2'>
-                <LogOut />
-                <span>Logout</span>
-              </button>
+              <Link
+                href={`/${basePath}/store-account`}
+                className='flex items-center space-x-2'
+              >
+                {/* <CgProfile /> */}
+                <CircleUserRound />
+                <span>Store Account</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <div>
+                <LogoutButton />
+              </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

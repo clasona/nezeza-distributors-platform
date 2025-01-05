@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Products from '@/components/Products';
-import { fetchInventory } from '../../utils/inventory/fetchInventory';
+import { fetchInventory } from '../../../utils/inventory/fetchInventory';
 import { ProductProps } from '../../../../type';
 import axios from 'axios';
 import { MdClose } from 'react-icons/md';
-import WholesalerLayout from '..';
+import WholesalerLayout from '../layout';
 import Heading from '@/components/Heading';
 
 const WholesalerInventory = () => {

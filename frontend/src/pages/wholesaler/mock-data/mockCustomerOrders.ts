@@ -29,7 +29,7 @@ const mockOrders: OrderProps[] = [
     fulfillmentStatus: 'Pending',
     orderItems: mockProducts,
     quantity: 100,
-    totalPrice: mockProducts.reduce((total, item) => total + item.price, 0),
+    totalAmount: mockProducts.reduce((total, item) => total + item.price, 0),
 
     totalTax: 750,
     totalShipping: 200,
@@ -63,7 +63,7 @@ for (let i = 2; i <= 25; i++) {
     fulfillmentStatus: randomStatus,
     orderItems: randomProducts,
     quantity: randomQuantity,
-    totalPrice: randomProducts.reduce((total, item) => total + item.price, 0),
+    totalAmount: randomProducts.reduce((total, item) => total + item.price, 0),
     totalTax: randomTax,
     totalShipping: randomShipping,
     orderDate: formattedDate,
