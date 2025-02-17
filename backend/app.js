@@ -28,6 +28,7 @@ const productRouter = require('./routes/productRoutes');
 const wholesalerRouter = require('./routes/wholesalerRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const orderRouter = require('./routes/orderRoutes');
+const paymentRouter = require('./routes/paymentRoutes');
 const inventoryRouter = require('./routes/inventoryRoutes');
 
 // middleware
@@ -42,15 +43,19 @@ app.use(
   })
 );
 app.use(helmet());
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-  // allowedHeaders: [
-  //   'Content-Type',
-  //   'Authorization',
-  //   'Origin',
-  // ]
-}));
+app.use(cors());
+
+// app.use(
+//   cors({
+//     origin: 'http://localhost:5173/',
+//     credentials: true,
+//     //     // allowedHeaders: [
+//     //     //   'Content-Type',
+//     //     //   'Authorization',
+//     //     //   'Origin',
+//     //     // ]
+//   })
+// );
 app.use(xss());
 app.use(mongoSanitize());
 
@@ -75,6 +80,7 @@ app.use('/api/v1/marketplace/products', wholesalerRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/orders', orderRouter);
 app.use('/api/v1/suborders', orderRouter);
+app.use('/api/v1/payment', paymentRouter);
 app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 
 app.use(notFoundMiddleware);

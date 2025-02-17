@@ -5,6 +5,7 @@ const Order = require('../models/Order');
 const Notification = require('../models/Notification');
 const SubOrder = require('../models/SubOrder');
 const Product = require('../models/Product');
+const { createPaymentIntent } = require('./paymentController');
 
 // utils imports
 const { StatusCodes } = require('http-status-codes');
@@ -71,12 +72,15 @@ const createSubOrders = async (fullOrder) => {
    TODOs: integrate with actual payment processing (like Stripe)
  */
 const createOrder = async (req, res) => {
+  //console.log(req.body);
   const { items: cartItems, tax, shippingFee, paymentMethod } = req.body;
 
-  const buyerId = req.user.userId; // authenticated buyer's id
+  const buyerId = '674a2964f51a81ec936d060d';
+  //req.user.userId; // authenticated buyer's id
 
   // Fetch buyer details including their store
   const buyer = await User.findById(buyerId).populate('storeId');
+  //console.log(buyer);
   if (!buyer || !buyer.storeId) {
     throw new CustomError.NotFoundError('The buyer store does not exist.');
   }
@@ -137,7 +141,8 @@ const createOrder = async (req, res) => {
 
     // Fetch seller's store
     const sellerStore = await Store.findById(sellerStoreId);
-
+    // console.log(sellerStore);
+    // console.log(buyerStore);
     // Validate buyer's store type can buy from this seller
     checkWhoIsTheBuyer(buyerStore, sellerStore);
 
@@ -162,25 +167,18 @@ const createOrder = async (req, res) => {
   }
 
   // Calculate total
-  const totalPrice = totalTax + totalShipping + subtotal;
-
-  // getting client secret from payment API
-  const paymentIntent = await fakeStripeAPI({
-    amount: totalPrice,
-    currency: 'usd',
-  });
+  const total = totalTax + totalShipping + subtotal;
 
   // Create full order
   const order = await Order.create({
     orderItems,
-    totalPrice,
+    total,
     totalTax,
     totalShipping,
     paymentMethod,
-    transactionFee: totalPrice * 0.1, // Example platform fee
+    transactionFee: total * 0.1, // Example platform fee
     shippingAddress: '12345 Airport Blvd Blvd', // Mock data
     billingAddress: '12345 Airport Blvd', // Mock data
-    clientSecret: paymentIntent.client_secret,
     buyerId,
     buyerStoreId: buyerStore._id,
     subOrders: [], // SubOrders will be created in the next step
@@ -199,10 +197,13 @@ const createOrder = async (req, res) => {
   const fullOrder = await createSubOrders(order);
   order.subOrders = fullOrder;
   await order.save();
-  console.log('Suborders created:', fullOrder);
+  // getting client secret from payment API
+  const paymentIntent = await createPaymentIntent(order);
+  order.paymentIntentId = paymentIntent.id;
+  await order.save();
   res
     .status(StatusCodes.CREATED)
-    .json({ order, clientSecret: fullOrder.clientSecret });
+    .json({ clientSecret: paymentIntent.client_secret });
 };
 
 /* 
@@ -261,18 +262,17 @@ const getAllOrders = async (req, res) => {
 
   console.log(queryObject);
   // Execute the query with pagination
-  const filteredOrders = await SubOrder.find(queryObject)
+  const orders = await SubOrder.find(queryObject)
+    .populate('sellerStoreId')
     .skip(parseInt(offset))
     .limit(parseInt(limit));
-  console.log(filteredOrders);
-  if (filteredOrders.length < 1) {
+  console.log(orders);
+  if (orders.length < 1) {
     return res
       .status(StatusCodes.OK)
       .json({ orders: subOrders, count: subOrders.length });
   }
-  res
-    .status(StatusCodes.OK)
-    .json({ filteredOrders, count: filteredOrders.length });
+  res.status(StatusCodes.OK).json({ orders, count: orders.length });
 };
 
 /* 
@@ -354,7 +354,17 @@ const getCurrentUserOrders = async (req, res) => {
     throw new CustomError.UnauthorizedError('Not authorized to view orders');
   }
 
-  const orders = await Order.find({ buyerStoreId: user.storeId });
+  const orders = await Order.find({ buyerStoreId: user.storeId }).populate({
+    path: 'orderItems',
+    populate: [
+      {
+        path: 'product',
+      },
+      {
+        path: 'sellerStoreId',
+      },
+    ],
+  });
   if (!orders || orders.length < 1) {
     throw new CustomError.NotFoundError(`No Orders at the moment`);
   }
