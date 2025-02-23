@@ -846,7 +846,34 @@ const updateShippingInfo = async (req, res) => {
     shippingDetails: subOrder.shippingDetails,
   });
 };
+const updateRevenueOnOrderPlaced = async (order) => {
+  for (const subOrder of order.subOrders) {
+    const { sellerId, totalAmount } = subOrder;
+    const commissionRate = 0.1; // 10% platform commission
+    const commission = totalAmount * commissionRate;
+    const netEarnings = totalAmount - commission;
 
+    let sellerRevenue = await SellerRevenue.findOne({ sellerId });
+
+    if (!sellerRevenue) {
+      sellerRevenue = new SellerRevenue({ sellerId });
+    }
+
+    sellerRevenue.totalSales += totalAmount;
+    sellerRevenue.commissionDeducted += commission;
+    sellerRevenue.netRevenue += netEarnings;
+    sellerRevenue.pendingBalance += netEarnings;
+
+    sellerRevenue.transactions.push({
+      orderId: order._id,
+      amount: netEarnings,
+      type: 'sale',
+      date: new Date(),
+    });
+
+    await sellerRevenue.save();
+  }
+};
 module.exports = {
   getAllOrders,
   getSingleOrder,

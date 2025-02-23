@@ -20,7 +20,7 @@ const SingleOrderItemSchema = mongoose.Schema({
 const OrderSchema = mongoose.Schema(
   {
     // TODO: add transaction fee field // converse with nezeza
-    totalPrice: {
+    total: {
       type: Number,
       required: true,
     },
@@ -88,7 +88,7 @@ const OrderSchema = mongoose.Schema(
     },
     clientSecret: {
       type: String,
-      required: true,
+      //required: true,
     },
     paymentIntentId: {
       type: String,
