@@ -20,9 +20,8 @@ const {
   updateShippingInfo,
 } = require('../controllers/orderController');
 
-router
-  .route('/')
-  .post(authenticateUser, authorizePermissions('create_order'), createOrder);
+router.route('/').post(createOrder);
+//authenticateUser, authorizePermissions('create_order')
 
 router
   .route('/selling')
