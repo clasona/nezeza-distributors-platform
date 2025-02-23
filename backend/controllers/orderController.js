@@ -75,18 +75,21 @@ const createOrder = async (req, res) => {
   //console.log(req.body);
   const { items: cartItems, tax, shippingFee, paymentMethod } = req.body;
 
-  const buyerId = '674a2964f51a81ec936d060d';
-  //req.user.userId; // authenticated buyer's id
+  // const buyerId = '674a2964f51a81ec936d060d';
+  const buyerId = req.user.userId; // authenticated buyer's id
 
   // Fetch buyer details including their store
   const buyer = await User.findById(buyerId).populate('storeId');
-  //console.log(buyer);
-  if (!buyer || !buyer.storeId) {
-    throw new CustomError.NotFoundError('The buyer store does not exist.');
+
+  if (!buyer) {
+    throw new CustomError.NotFoundError('The buyer does not exist.');
   }
+  // if (!buyer || !buyer.storeId) {
+  //   throw new CustomError.NotFoundError('The buyer store does not exist.');
+  // }
+  const isIndividualCustomer = !buyer.storeId; // True if buyer has no storeId (i.e., is a customer)
 
-  const buyerStore = buyer.storeId; // Store associated with the buyer
-
+  let buyerStore = isIndividualCustomer ? buyer : buyer.storeId; // If a customer, use user object; otherwise, use storeId
   // Check if cart items exist
   if (!cartItems || cartItems.length < 1) {
     throw new CustomError.BadRequestError('No cart items provided');
@@ -111,12 +114,12 @@ const createOrder = async (req, res) => {
 
   // Prepare stock updates to be applied later
   const stockUpdates = [];
-
   // Loop over cart items and prepare order
   for (const item of cartItems) {
     const dbProduct = dbProducts.find(
-      (product) => product._id.toString() === item.product
+      (product) => product._id.toString() === item.product._id
     );
+
     if (!dbProduct) {
       throw new CustomError.NotFoundError(
         `No product with id : ${item.product}`
@@ -141,14 +144,12 @@ const createOrder = async (req, res) => {
 
     // Fetch seller's store
     const sellerStore = await Store.findById(sellerStoreId);
-    // console.log(sellerStore);
-    // console.log(buyerStore);
     // Validate buyer's store type can buy from this seller
     checkWhoIsTheBuyer(buyerStore, sellerStore);
 
     // Add the product as an order item
     const singleOrderItem = {
-      quantity: item.amount,
+      quantity: item.quantity,
       title,
       price,
       image,
@@ -158,7 +159,7 @@ const createOrder = async (req, res) => {
     orderItems.push(singleOrderItem);
 
     // Calculate subtotal, tax, and shipping
-    subtotal += item.amount * price;
+    subtotal += item.quantity * price;
     totalTax += price * 0.1; // Example 10% tax
     totalShipping += 10; // flat shipping
 
@@ -167,21 +168,34 @@ const createOrder = async (req, res) => {
   }
 
   // Calculate total
-  const total = totalTax + totalShipping + subtotal;
+  const totalAmount = totalTax + totalShipping + subtotal;
+
+  // getting client secret from payment API
+  // const paymentIntent = await fakeStripeAPI({
+  //   amount: totalAmount,
+  //   currency: 'usd',
+  // });
 
   // Create full order
   const order = await Order.create({
     orderItems,
-    total,
+    totalAmount,
     totalTax,
     totalShipping,
     paymentMethod,
-    transactionFee: total * 0.1, // Example platform fee
-    shippingAddress: '12345 Airport Blvd Blvd', // Mock data
+    transactionFee: totalAmount * 0.1, // Example platform fee
+    shippingAddress: {
+      street: '12345 Market St',
+      city: 'San Francisco',
+      state: 'CA',
+      zipCode: '94103',
+      country: 'USA',
+    }, // Mock data
     billingAddress: '12345 Airport Blvd', // Mock data
     buyerId,
     buyerStoreId: buyerStore._id,
     subOrders: [], // SubOrders will be created in the next step
+    // paymentStatus
   });
 
   // Bulk update stock levels for products
@@ -196,15 +210,17 @@ const createOrder = async (req, res) => {
   // Create suborders
   const fullOrder = await createSubOrders(order);
   order.subOrders = fullOrder;
-  await order.save();
+  // await order.save();
+
   // getting client secret from payment API
   const paymentIntent = await createPaymentIntent(order);
   order.paymentIntentId = paymentIntent.id;
-  await order.save();
+
+  // await order.save();
   res
     .status(StatusCodes.CREATED)
-    .json({ clientSecret: paymentIntent.client_secret });
-};
+    .json({ paymentIntentId: paymentIntent.id, clientSecret: paymentIntent.client_secret });
+}; 
 
 /* 
   Get all orders for the authenticated user
@@ -214,7 +230,6 @@ const createOrder = async (req, res) => {
 const getAllOrders = async (req, res) => {
   const userId = req.user.userId; // Retrieve authenticated user
   const user = await User.findById(userId);
-  console.log(user);
   if (!user) {
     throw new CustomError.UnauthorizedError('Not authorized to view orders');
   }
@@ -231,10 +246,15 @@ const getAllOrders = async (req, res) => {
     offset = 0, // Default offset
   } = req.query;
 
-  const storeId = user.storeId;
+  const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
+
+  const storeId = isIndividualCustomer ? userId : user.storeId;
 
   // Retrieve suborders for the seller’s store
-  const subOrders = await SubOrder.find({ sellerStoreId: storeId })
+  const subOrders = await SubOrder.find({
+    sellerStoreId: storeId,
+    archived: false,
+  })
     .populate('buyerStoreId')
     .populate('products.productId');
 
@@ -285,7 +305,11 @@ const getSingleOrder = async (req, res) => {
   const { id: orderId } = req.params; // The order ID from the URL params
   const userId = req.user.userId; // get the user ID attached to the request after authentication
 
-  const { storeId } = await User.findById(userId);
+  const user = await User.findById(userId);
+
+  const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
+
+  const storeId = isIndividualCustomer ? userId : user.storeId;
 
   if (!storeId) {
     throw new CustomError.UnauthorizedError('Not authorized to view order');
@@ -294,14 +318,72 @@ const getSingleOrder = async (req, res) => {
     .select('-subOrders')
     .populate('buyerId', '-password')
     .populate('buyerStoreId')
+    .populate({
+      path: 'orderItems',
+      populate: [
+        {
+          path: 'product',
+        },
+      ],
+    })
     .exec(); //Find the full order by ID
+
   ///console.log(order);
   if (!order) {
     throw new CustomError.NotFoundError(`No order with id : ${orderId}`);
   }
-  const buyerStoreId = order.buyerStoreId._id.toString(); // if buyer is requesting, get buyer ID from the order
-  console.log(buyerStoreId);
-  console.log(storeId.toString());
+  const buyerStoreId = isIndividualCustomer
+    ? userId.toString()
+    : order.buyerStoreId._id.toString(); // if buyer is requesting, get buyer ID from the order
+  if (buyerStoreId !== storeId.toString()) {
+    throw new CustomError.UnauthorizedError('Not authorized to view order');
+    // return full order to the customer sub-orders from different sellers
+  }
+
+  if (buyerStoreId === storeId.toString()) {
+    return res.status(StatusCodes.OK).json({ order }); // return full order to the customer
+  }
+};
+
+/* 
+  Get a single order for the authenticated buyer using payment intent id
+ */
+const getOrderByPaymentIntentId = async (req, res) => {
+  const { paymentIntentId } = req.params; // The order ID from the URL params
+  const userId = req.user.userId; // get the user ID attached to the request after authentication
+
+  const user = await User.findById(userId);
+
+  const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
+
+  const storeId = isIndividualCustomer ? userId : user.storeId;
+
+  if (!storeId) {
+    throw new CustomError.UnauthorizedError('Not authorized to view order');
+  }
+  const order = await Order.findOne({ paymentIntentId: paymentIntentId })
+    .select('-subOrders')
+    .populate('buyerId', '-password')
+    .populate('buyerStoreId')
+    .populate({
+      path: 'orderItems',
+      populate: [
+        {
+          path: 'product',
+        },
+      ],
+    })
+    .exec(); //Find the full order by ID
+
+  ///console.log(order);
+  if (!order) {
+    throw new CustomError.NotFoundError(
+      `No order with payment intent id : ${paymentIntentId}`
+    );
+  }
+  const buyerStoreId = isIndividualCustomer
+    ? userId.toString()
+    : order.buyerStoreId._id.toString(); // if buyer is requesting, get buyer ID from the order
   if (buyerStoreId !== storeId.toString()) {
     throw new CustomError.UnauthorizedError('Not authorized to view order');
     // return full order to the customer sub-orders from different sellers
@@ -354,21 +436,52 @@ const getCurrentUserOrders = async (req, res) => {
     throw new CustomError.UnauthorizedError('Not authorized to view orders');
   }
 
-  const orders = await Order.find({ buyerStoreId: user.storeId }).populate({
+  const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
+
+  const storeId = isIndividualCustomer ? userId : user.storeId;
+
+  const orders = await Order.find({
+    buyerStoreId: storeId,
+  }).populate({
     path: 'orderItems',
     populate: [
       {
-        path: 'product',
+        path: 'sellerStoreId',
       },
       {
-        path: 'sellerStoreId',
+        path: 'product',
       },
     ],
   });
-  if (!orders || orders.length < 1) {
+  // if (!orders || orders.length < 1) {
+  if (!orders) {
     throw new CustomError.NotFoundError(`No Orders at the moment`);
   }
   res.status(StatusCodes.OK).json({ orders, count: orders.length });
+};
+
+const archiveOrder = async (req, res) => {
+  const { id } = req.params; // Get the order ID from the URL parameters
+  const userId = req.user.userId; // Retrieve authenticated user
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new CustomError.UnauthorizedError(
+      'Not authorized to archive this order'
+    );
+  }
+
+  const order = await Order.findById(id);
+  if (!order) {
+    throw new CustomError.NotFoundError(`Order with id ${id} not found`);
+  }
+  const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
+
+  const storeId = isIndividualCustomer ? userId : user.storeId;
+
+  order.fulfillmentStatus = 'Archived';
+  await order.save(); // Save the updated order
+
+  res.status(StatusCodes.OK).json({ order });
 };
 
 /*
@@ -438,6 +551,50 @@ const updateOrder = async (req, res) => {
       fulfillmentStatus
     );
   }
+};
+
+const updateOrderItem = async (req, res) => {
+  const { id: orderId, itemId: orderItemId } = req.params;
+  const userId = req.user.userId;
+  const { addedToInventory } = req.body; // Only updating this field
+
+  // Find the order
+  const order = await Order.findOne({ _id: orderId });
+  if (!order) {
+    throw new CustomError.NotFoundError(`No order with id: ${orderId}`);
+  }
+
+  // Check if the user exists
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new CustomError.UnauthorizedError(`No user with id: ${userId}`);
+  }
+
+  // Check authorization based on storeId
+  if (!user.storeId) {
+    throw new CustomError.UnauthorizedError(
+      'Not authorized to update this order'
+    );
+  }
+
+  // Find the specific orderItem inside orderItems[]
+  const orderItemIndex = order.orderItems.findIndex(
+    (item) => item._id.toString() === orderItemId
+  );
+  if (orderItemIndex === -1) {
+    throw new CustomError.NotFoundError(
+      `No order item with id: ${orderItemId}`
+    );
+  }
+
+  // Update only the addedToInventory field
+  order.orderItems[orderItemIndex].addedToInventory = addedToInventory;
+
+  await order.save(); // Save the updated order
+
+  res
+    .status(StatusCodes.OK)
+    .json({ orderItem: order.orderItems[orderItemIndex] });
 };
 
 const updateSubOrder = async (req, res) => {
@@ -850,10 +1007,13 @@ const updateShippingInfo = async (req, res) => {
 module.exports = {
   getAllOrders,
   getSingleOrder,
+  getOrderByPaymentIntentId,
   getSellerSingleOrder,
   getCurrentUserOrders,
   createOrder,
   updateOrder,
+  updateOrderItem,
+  archiveOrder,
   updateSubOrder,
   updateToFulfilled,
   updateToShipped,

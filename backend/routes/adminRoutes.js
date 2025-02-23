@@ -10,24 +10,43 @@ const {
   getSingleUser,
   updateUser,
   deleteUser,
-} = require('../controllers/adminController');
+} = require('../controllers/adminController'); //TODO: change this to the admin/ folder structure
+
+const {
+  getAllStoreApplications,
+} = require('../controllers/admin/adminStoreApplicationController');
 
 // user management routes
 router
-  .route('/')
+  .route('/users')
   .get(authenticateUser, authorizePermissions('view_all_users'), getAllUsers);
 
 router
-  .route('/:userId')
+  .route('/users/:userId')
   .get(authenticateUser, authorizePermissions('view_user'), getSingleUser);
 router
-  .route('/:userId')
+  .route('/users/:userId')
   .delete(authenticateUser, authorizePermissions('delete_user'), deleteUser);
 router
-  .route('/:userId')
+  .route('/users/:userId')
   .patch(authenticateUser, authorizePermissions('edit_user'), updateUser);
 
 // store management routes
+router
+  .route('/store-applications')
+  .get(
+    authenticateUser,
+    authorizePermissions('view_all_store_applications'),
+    getAllStoreApplications
+  );
+
+// router
+//   .route('/store-applications/:applicationId')
+//   .get(
+//     authenticateUser,
+//     authorizePermissions('view_store_application'),
+//     getStoreApplicationDetails
+//   );
 
 // inventory management routes
 

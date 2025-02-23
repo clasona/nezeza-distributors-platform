@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Products from '@/components/Products';
-import { fetchInventory } from '../../utils/inventory/fetchInventory';
+import { fetchInventory } from '../../../utils/inventory/fetchInventory';
 import { InventoryProps, ProductProps, stateProps } from '../../../../type';
 import axios from 'axios';
 import { MdClose } from 'react-icons/md';
-import WholesalerLayout from '../index';
+import WholesalerLayout from '../layout';
 import Heading from '@/components/Heading';
 import PageHeader from '@/components/PageHeader';
 import TableActions from '@/components/Table/TableActions';
@@ -18,20 +18,17 @@ import mockInventory from '../mock-data/mockInventory';
 import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import SearchField from '@/components/Table/SearchField';
-import { sortItems } from '@/pages/utils/sortItems';
+import { sortItems } from '@/utils/sortItems';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
-import RemoveRowModal from '@/components/Table/RemoveRowModal';
+import RemoveRowModal from '@/components/Table/DeleteRowModal';
 import { FaProductHunt } from 'react-icons/fa';
-import formatPrice from '@/pages/utils/formatPrice';
-import formatDate from '@/pages/utils/formatDate';
+import formatPrice from '@/utils/formatPrice';
+import formatDate from '@/utils/formatDate';
 import PageHeaderLink from '@/components/PageHeaderLink';
 import DateFilters from '@/components/Table/Filters/DateFilters';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
 import { useSelector } from 'react-redux';
-import {
-  formatIdByShortening,
-  formatIdByTimestamp,
-} from '@/pages/utils/formatId';
+import { formatIdByShortening, formatIdByTimestamp } from '@/utils/formatId';
 
 const WholesalerInventory = () => {
   const [inventoryData, setInventoryData] = useState<InventoryProps[]>([]);
@@ -66,7 +63,7 @@ const WholesalerInventory = () => {
     { title: 'ID', id: '_id', sortable: true },
     { title: 'Image', id: 'image' },
     { title: 'Title', id: 'title', sortable: true },
-    { title: 'Qty', id: 'stock', sortable: true },
+    { title: 'Qty', id: 'quantity', sortable: true },
     { title: 'Price', id: 'price', sortable: true },
     { title: 'Created', id: 'createdAt', sortable: true },
     { title: 'Updated', id: 'updatedAt', sortable: true },
@@ -87,7 +84,7 @@ const WholesalerInventory = () => {
     owner: 0,
     buyerStoreId: 0,
     productId: 0,
-    stock: 0,
+    quantity: 0,
     price: 0,
     freeShipping: false,
     availability: false,
@@ -269,7 +266,7 @@ const WholesalerInventory = () => {
           extraComponent={
             <PageHeaderLink
               linkTitle={'Add New Product to Inventory'}
-              href={'./inventory/new-inventory'}
+              href={'./inventory/new-product'}
             />
           }
         />
@@ -281,7 +278,7 @@ const WholesalerInventory = () => {
             searchFieldPlaceholder='inventory products'
             onSearchChange={handleSearchChange}
           />
-          {/* TODO: Add filter by stock status */}
+          {/* TODO: Add filter by quantity status */}
           {/* Filter by dates */}
           <DateFilters
             label='Filter by Date Range'
@@ -322,7 +319,7 @@ const WholesalerInventory = () => {
                         ),
                       },
                       { content: product.title },
-                      { content: product.stock, isStock: true },
+                      { content: product.quantity, isStock: true },
                       { content: `$${formatPrice(product.price)}` },
                       { content: formatDate(product.createdAt) },
                       { content: formatDate(product.updatedAt) },

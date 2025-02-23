@@ -1,179 +1,175 @@
-import React, { useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import PrimaryContactInput from './PrimaryContactInput';
-import BusinessInfoInput from './BusinessInfoInput';
-import BillingInfoInput from './BillingInfoInput';
-import VerificationDocsInput from './VerificationDocsInput';
-import SuccessMessageModal from './SuccessMessageModal';
-import ErrorMessageModal from './ErrorMessageModal';
+import ErrorMessageModal from '@/components/ErrorMessageModal';
+import SubmitButton from '@/components/FormInputs/SubmitButton';
+import TextInput from '@/components/FormInputs/TextInput';
+import SuccessMessageModal from '@/components/SuccessMessageModal';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { registerUser } from '@/utils/user/registerUser';
 
-const StoreSetupForm = () => {
-  const [currentSection, setCurrentSection] = useState(0);
-  const [successMessage, setSuccessMessage] = useState('');
+const RegisterSellerPage = () => {
+  // TODO: put all these together as in this link: https://github.com/pawelborkar/react-login-form/blob/master/src/App.js
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
+  // TODO: add repeat password
+  // const [storeType, setStoreType] = useState(''); //TODO: make this choice
   const [errorMessage, setErrorMessage] = useState('');
-
+  const [successMessage, setSuccessMessage] = useState('');
+  const [verificationPrompt, setVerificationPrompt] = useState(false);
+  //initialize registerData as an object
+  const [registerData, setRegisterData] = useState<any | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
-    getValues, // Use this to get form values
-    control,
   } = useForm();
 
-  const sections = [
-    'Primary Contact',
-    'Business Info',
-    'Billing Info',
-    'Verification Docs',
-    'Review & Submit',
-  ];
-
-  const handleNext = () => {
-    if (currentSection < sections.length - 1) {
-      setCurrentSection((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentSection > 0) {
-      setCurrentSection((prev) => prev - 1);
-    }
-  };
-
-  const onSubmit: SubmitHandler<any> = (data) => {
-    // Placeholder logic for form submission
+  const onSubmit = async (data: any) => {
+    const userData = { ...data };
     try {
-      // Simulate successful submission
-      setSuccessMessage('Store setup completed successfully.');
+      if (password !== repeatPassword) {
+        setErrorMessage("Passwords don't match");
+        return;
+      }
+
+      const response = await registerUser(userData);
       setErrorMessage('');
+      setSuccessMessage('User registered successfully.');
+      setTimeout(() => setSuccessMessage(''), 4000);
+      setVerificationPrompt(true); // **Trigger verification prompt**
+
+      //initialize store attached to current user with default values
+      //       const initStoreData = {
+      //         storeName: '',
+      //         email:'',
+      //         address: '',
+      //         description: '',
+      //         isActive: false,
+      //         storeType: '',
+      //       }
     } catch (error) {
-      setErrorMessage('Error submitting store setup.');
+      setErrorMessage('Error registering user.');
     }
   };
 
   return (
-    <div className='w-full max-w-4xl mx-auto relative'>
-      <form
-        className='w-full max-w-4xl mx-auto bg-nezeza_light_blue border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 my-4'
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <h2 className='text-3xl text-nezeza_dark_blue font-bold text-center mb-4'>
-          Nezeza Store Setup
-        </h2>
-        <p className='text-center mb-6 text-nezeza_gray_600'>
-          Please fill in information as it appears on your official ID and
-          registered business documents.
-        </p>
-
-        {/* Progress Bar */}
-        <div className='flex justify-between items-center mb-6'>
-          {sections.map((section, index) => (
-            <div
-              key={index}
-              className={`flex-1 text-center cursor-pointer ${
-                index <= currentSection
-                  ? 'text-nezeza_green_800'
-                  : 'text-gray-400'
-              }`}
-              onClick={() => setCurrentSection(index)}
-            >
-              <span className='font-semibold'>{section}</span>
-              {index < sections.length - 1 && <span className='mx-2'>→</span>}
-            </div>
-          ))}
-        </div>
-
-        {/* Section Forms */}
-        <div>
-          {currentSection === 0 && <PrimaryContactInput register={register} />}
-          {currentSection === 1 && <BusinessInfoInput register={register} />}
-          {currentSection === 2 && <BillingInfoInput register={register} />}
-          {currentSection === 3 && (
-            <VerificationDocsInput register={register} />
-          )}
-
-          {/* Review & Submit Section */}
-          {currentSection === 4 && (
-            <div className='space-y-4'>
-              <h3 className='text-xl font-semibold'>Review Your Information</h3>
-
-              {/* Display the collected data */}
-              <div className='bg-gray-100 p-4 rounded-md'>
-                <h4 className='font-semibold'>Primary Contact</h4>
-                <p>
-                  Name: {getValues('firstName')} {getValues('lastName')}
-                </p>
-                <p>Email: {getValues('email')}</p>
-                <p>Phone: {getValues('phone')}</p>
+    <div className='w-full bg-gray-100 min-h-screen flex items-center justify-center'>
+      <div className='bg-nezeza_light_blue p-4'>
+        {/* <div className='bg-white shadow-lg rounded-lg p-6'> */}
+        {/* TODO: add shadow such as: shadow-lg shadow-nezeza_light_blue-200 */}
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className='w-full max-w-md bg-white p-6 rounded-lg shadow-lg'
+        >
+          <h2 className='text-2xl font-bold text-center text-nezeza_dark_blue mb-4'>
+            Create a Nezeza account
+          </h2>
+          {/* Form Fields */}
+          {!verificationPrompt ? (
+            <>
+              <div className='mb-2'>
+                <TextInput
+                  label='First Name'
+                  id='firstName'
+                  name='firstName'
+                  register={register}
+                  errors={errors}
+                  type='text'
+                />
+              </div>
+              <div className='mb-2'>
+                <TextInput
+                  label='Last Name'
+                  id='lastName'
+                  name='lastName'
+                  register={register}
+                  errors={errors}
+                  type='text'
+                />
+              </div>
+              <div className='mb-2'>
+                <TextInput
+                  label='Email'
+                  id='email'
+                  name='email'
+                  register={register}
+                  errors={errors}
+                  type='email'
+                />
+              </div>
+              <div className='mb-2'>
+                <TextInput
+                  label='Password'
+                  id='password'
+                  name='password'
+                  register={register}
+                  errors={errors}
+                  type='password'
+                />
+              </div>
+              <div className='mb-4'>
+                <TextInput
+                  label='Repeat Password'
+                  id='repeatPassword'
+                  name='repeatPassword'
+                  register={register}
+                  errors={errors}
+                  type='password'
+                />
+              </div>
+              <div className='flex items-center justify-center'>
+                {successMessage && (
+                  <SuccessMessageModal successMessage={successMessage} />
+                )}
+                {errorMessage && (
+                  <ErrorMessageModal errorMessage={errorMessage} />
+                )}
+                {/* {errorMessage && <p className='text-red-600'>{errorMessage}</p>} */}
+                <SubmitButton
+                  isLoading={false}
+                  buttonTitle='Signup'
+                  loadingButtonTitle='Registering user...'
+                />
               </div>
 
-              <div className='bg-gray-100 p-4 rounded-md'>
-                <h4 className='font-semibold'>Business Info</h4>
-                <p>Business Name: {getValues('businessName')}</p>
-                <p>Business Type: {getValues('businessType')}</p>
-                <p>Tax ID: {getValues('taxId')}</p>
-              </div>
-
-              <div className='bg-gray-100 p-4 rounded-md'>
-                <h4 className='font-semibold'>Billing Info</h4>
-                <p>Street: {getValues('street')}</p>
-                <p>City: {getValues('city')}</p>
-                <p>State: {getValues('state')}</p>
-                <p>Zip Code: {getValues('zipCode')}</p>
-              </div>
-
-              <div className='bg-gray-100 p-4 rounded-md'>
-                <h4 className='font-semibold'>Verification Docs</h4>
-                <p>
-                  Upload: {getValues('verificationDocs')?.length} files uploaded
-                </p>
-              </div>
-
-              <div className='text-center'>
-                <button
-                  type='submit'
-                  className='bg-nezeza_green_600 text-white px-6 py-2 rounded-md hover:bg-nezeza_green_800'
+              <p className='text-center mt-6 text-gray-600'>
+                Already have an account?{' '}
+                <a
+                  className='text-nezeza_yellow hover:text-nezeza_dark_blue hoverunderline transition-colors
+            cursor-pointer duration-250'
+                  href='http://localhost:3000/login'
                 >
-                  Submit
-                </button>
-              </div>
+                  Signin
+                </a>
+              </p>
+            </>
+          ) : (
+            //TODO: Add a resend email button
+            // **Email verification prompt**
+            <div className='text-center mt-6'>
+              <h3 className='text-xl font-semibold text-nezeza_green_600'>
+                Verify Your Email
+              </h3>
+              <p className='mt-4 text-gray-600'>
+                We've sent a verification link to <strong>{email}</strong>.
+                Please check your inbox and follow the instructions to verify
+                your email.
+              </p>
+              <button
+                className='mt-6 px-4 py-2 rounded-md bg-nezeza_dark_blue text-white hover:bg-nezeza_yellow hover:text-black transition-colors duration-300'
+                onClick={() => (window.location.href = '/login')} // Redirect to store setup page
+              >
+                Continue to Login
+              </button>
             </div>
           )}
-        </div>
-
-        {/* Absolute Positioned Navigation Arrows */}
-        <button
-          className={`absolute left-0 top-1/2 transform -translate-y-1/2 ${
-            currentSection > 0 ? 'text-nezeza_dark_blue' : 'text-gray-400'
-          }`}
-          onClick={handlePrevious}
-          disabled={currentSection === 0}
-          style={{ fontSize: '1.5rem' }}
-        >
-          <CircleArrowLeft />
-        </button>
-
-        <button
-          className={`absolute right-0 top-1/2 transform -translate-y-1/2 ${
-            currentSection < sections.length - 1
-              ? 'text-nezeza_dark_blue'
-              : 'text-gray-400'
-          }`}
-          onClick={handleNext}
-          disabled={currentSection === sections.length - 1}
-          style={{ fontSize: '1.5rem' }}
-        >
-          <CircleArrowRight />
-        </button>
-      </form>
-
-      {/* Success and Error Modals */}
-      {successMessage && (
-        <SuccessMessageModal successMessage={successMessage} />
-      )}
-      {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
+        </form>
+      </div>
     </div>
   );
 };
 
-export default StoreSetupForm;
+RegisterSellerPage.noLayout = true; // remove root layout from this page
+export default RegisterSellerPage;

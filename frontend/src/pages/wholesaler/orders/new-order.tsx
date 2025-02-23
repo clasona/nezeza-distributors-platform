@@ -1,5 +1,5 @@
 import React from 'react';
-import WholesalerLayout from '../index';
+import WholesalerLayout from '../layout';
 
 export default function NewOrder() {
   return (

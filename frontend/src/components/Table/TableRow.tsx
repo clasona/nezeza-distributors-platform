@@ -3,7 +3,7 @@ import FormattedStatus from './FormattedStatus';
 import FormattedStock from './FormattedStock';
 import { InventoryProps, OrderProps } from '../../../type';
 // import UpdateRow from './UpdateRow';
-// import RemoveRow from './RemoveRow';
+// import DeleteRow from './DeleteRow';
 
 interface TableRowProps<T> {
   hasCollapsibleContent?: boolean;
@@ -14,8 +14,8 @@ interface TableRowProps<T> {
     isStock?: boolean;
   }[];
   rowData: T; // Represents the full row data for editing
-  onUpdate: (updatedRow: T) => void; // TODO: make this generic T type
-  onRemove: (id: number) => void; // Callback when a row is removed
+  onUpdate?: (updatedRow: T) => void; // TODO: make this generic T type
+  onDelete: (id: string) => void; // Callback when a row is Deleted
   //   actions?: React.ReactNode; // Optional actions to display
   renderCollapsibleContent?: (rowData: T) => React.ReactNode; // Function to render collapsible content
 }
@@ -25,7 +25,7 @@ const TableRow = <T,>({
   rowValues,
   rowData,
   onUpdate,
-  onRemove,
+  onDelete,
   renderCollapsibleContent,
 }: TableRowProps<T>) => {
   const [isChecked, setIsChecked] = useState(false);

@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface DateFiltersProps {
-  label: string;
+  label?: string;
   startDate: string; // Start date value in ISO format (or any date string format you're using)
   endDate: string; // End date value in ISO format
   onStartDateChange: (value: string) => void; // Callback for start date changes

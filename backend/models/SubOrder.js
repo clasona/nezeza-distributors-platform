@@ -97,10 +97,10 @@ const SubOrderSchema = new mongoose.Schema(
         },
       },
     ],
-    clientSecret: {
-      type: String,
-      required: true,
-    },
+    // clientSecret: {
+    //   type: String,
+    //   required: true,
+    // },
     paymentIntentId: {
       type: String,
     },

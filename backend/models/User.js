@@ -25,26 +25,32 @@ const UserSchema = new mongoose.Schema({
       message: 'Please provide valid email',
     },
   },
+
   password: {
     type: String,
     required: [true, 'Please provide password'],
     minlength: 6,
   },
-  previousPasswords: { 
-    type: [String], 
-    default: [] 
-  },  // Array to store old password hashes
- 
-  roles: [{
-    type: mongoose.Schema.ObjectId,
-    ref: 'Role',  // Link to the Role schema
-    required: true,
-  }],
+  previousPasswords: {
+    type: [String],
+    default: [],
+  }, // Array to store old password hashes
 
-  storeId: { 
-    type: mongoose.Schema.ObjectId, 
-    ref: 'Store', 
-    },  // Link user to store
+  roles: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Role', // Link to the Role schema
+      required: true,
+    },
+  ],
+  image: {
+    type: String,
+    // default: '/uploads/defaultUserImage.png',
+  },
+  storeId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Store',
+  }, // Link user to store
   // NEW FIELDS
   verificationToken: String,
   isVerified: {
@@ -61,8 +67,36 @@ const UserSchema = new mongoose.Schema({
   passwordTokenExpirationDate: {
     type: Date,
   },
-  
+  stripeAccountId: {
+    type: String,
+    // required: true,
+  },
 
+  // Optional: required for store register primary contact
+  phone: {
+    type: String,
+    // required: [true, 'Please provide email'],
+    // validate: {
+    //   validator: validator.isEmail,
+    //   message: 'Please provide valid email',
+    // },
+  },
+  countryOfCitizenship: {
+    type: String,
+    // required: [true, 'Please provide email'],
+  },
+  countryOfBirth: {
+    type: String,
+    // required: [true, 'Please provide email'],
+  },
+  dateOfBirth: {
+    type: String,
+    // required: [true, 'Please provide email'],
+  },
+  residenceAddress: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Address',
+  },
 });
 
 

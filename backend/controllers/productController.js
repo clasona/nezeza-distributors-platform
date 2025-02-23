@@ -17,13 +17,16 @@ const {
  */
 const createProduct = async (req, res) => {
   // assign the authenticated user's ID to the product's manufacturer and storeId fields
-  const {manufacturerId} = req.params;
-  console.log(req.user.userId);
-  if (manufacturerId !== req.user.userId.toString()) {
-    throw new CustomError.UnauthorizedError('You are not authorize to create products.');
-  };
+  // const { manufacturerId } = req.params;
+  const userId = req.user.userId;
   
-  const {storeId} = await User.findById(req.user.userId);
+  // if (userId !== req.user.userId.toString()) {
+  //   throw new CustomError.UnauthorizedError(
+  //     'You are not authorize to create products.'
+  //   );
+  // };
+  
+  const {storeId} = await User.findById(userId);
   if (!storeId) {
     throw new CustomError.UnauthorizedError('The buyer store does not exist.');
   };
@@ -44,19 +47,20 @@ const createProduct = async (req, res) => {
  * @param res - Express response object  - array of products objects
  */
 const getAllProducts = async (req, res) => {
-  const {manufacturerId } = req.params;
-  const user = await User.findById(manufacturerId);
+  // const { manufacturerId } = req.params;
+   const userId = req.user.userId;
+  const user = await User.findById(userId);
   if (!user) {
     throw new CustomError.UnauthorizedError(`No user with id : ${manufacturerId}`);
   }
 
-  if(req.user.userId.toString()!== manufacturerId) {
-    throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
-  }
+  // if(req.user.userId.toString()!== manufacturerId) {
+  //   throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
+  // }
 
   const { storeId } = user;
   if (!storeId) {
-    throw new CustomError.UnauthorizedError('The manufacturer store does not exist.');
+    throw new CustomError.UnauthorizedError('The user store does not exist.');
   }
   //TODO: Implement filtering and pagination
   // Extract query parameters for filtering
@@ -120,28 +124,36 @@ const getAllProducts = async (req, res) => {
 */
 
 const getSingleProduct = async (req, res) => {
-  const {manufacturerId, id: productId } = req.params;
+  // const userId = req.user.userId;
+  const { id: productId } = req.params;
+
   const product = await Product.findOne({ _id: productId }).populate('reviews');
 
-  const user = await User.findById(manufacturerId);
-  
-  if (!user) {
-    throw new CustomError.UnauthorizedError(`No user with id : ${manufacturerId}`);
-  }
+  // const user = await User.findById(userId);
 
-  if(req.user.userId.toString()!== manufacturerId) {
-    throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
-  }
+  // if (!user) {
+  //   throw new CustomError.UnauthorizedError(
+  //     `No user with id : ${userId}`
+  //   );
+  // }
+
+  // const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
+
+  // const storeId = isIndividualCustomer ? userId : user.storeId;
+  // if(req.user.userId.toString()!== manufacturerId) {
+  //   throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
+  // }
 
   if (!product) {
     throw new CustomError.NotFoundError(`No product with id : ${productId}`);
   }
-if(product.storeId.toString()!== user.storeId.toString()) {
-  throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
-  }
+  // if(product.storeId.toString()!== user.storeId.toString()) {
+  //   throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
+  //   }
 
   res.status(StatusCodes.OK).json({ product });
 };
+
 
 /*
  * Update a product.
@@ -152,18 +164,19 @@ if(product.storeId.toString()!== user.storeId.toString()) {
  */
 const updateProduct = async (req, res) => {
 
-  const {manufacturerId, id: productId } = req.params;
+  const { id: productId } = req.params;
+    const userId = req.user.userId;
 
   const productToUpdate = await Product.findOne({ _id: productId }).populate('reviews');
-  const user = await User.findById(manufacturerId);
+  const user = await User.findById(userId);
 
   if (!user) {
-    throw new CustomError.UnauthorizedError(`No user with id : ${manufacturerId}`);
+    throw new CustomError.UnauthorizedError(`No user with id : ${userId}`);
   }
 
-  if(req.user.userId.toString()!== manufacturerId) {
-    throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
-  }
+  // if(req.user.userId.toString()!== manufacturerId) {
+  //   throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
+  // }
   console.log(productToUpdate)
   if (!productToUpdate) {
     throw new CustomError.NotFoundError(`No product with id : ${productId}`);
@@ -194,21 +207,22 @@ const updateProduct = async (req, res) => {
  * @param res - Express response object  - message
  */
 const deleteProduct = async (req, res) => {
-  const {manufacturerId, id: productId } = req.params;
+  const { id: productId } = req.params;
+      const userId = req.user.userId;
   
   const productToDelete = await Product.findOne({ _id: productId }).populate('reviews');
   if (!productToDelete) {
     throw new CustomError.NotFoundError(`No product with id : ${productId}`);
   }
 
-  const user = await User.findById(manufacturerId);
+  const user = await User.findById(userId);
   if (!user) {
-    throw new CustomError.UnauthorizedError(`No user with id : ${manufacturerId}`);
+    throw new CustomError.UnauthorizedError(`No user with id : ${userId}`);
   }
 
-  if(req.user.userId.toString()!== manufacturerId) {
-    throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
-  }
+  // if(req.user.userId.toString()!== manufacturerId) {
+  //   throw new CustomError.UnauthorizedError('You are not authorize to view this product.');
+  // }
 
   if(productToDelete.storeId.toString()!== user.storeId.toString()) {
     throw new CustomError.UnauthorizedError('You are not authorize to delete this product.');
@@ -260,6 +274,7 @@ module.exports = {
   createProduct,
   getAllProducts,
   getSingleProduct,
+  // getProduct,
   updateProduct,
   deleteProduct,
   uploadImage,

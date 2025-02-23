@@ -11,7 +11,10 @@ const FormattedStatus = ({ status }: StatusProps) => {
     Shipped: 'bg-blue-100 text-blue-800',
     Delivered: 'bg-teal-100 text-teal-800',
     Completed: 'bg-green-100 text-nezeza_green_800',
+    Approved: 'bg-green-100 text-nezeza_green_800',
     Canceled: 'bg-red-100 text-red-800',
+    Declined: 'bg-red-100 text-red-800',
+    Archived: 'bg-gray-100 text-gray-800',
   };
 
   const statusClass = statusColors[status] || 'bg-gray-100 text-gray-800';

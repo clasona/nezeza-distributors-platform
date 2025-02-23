@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchOrders } from '../utils/order/fetchMyOrders';
+import { fetchOrders } from '../../utils/order/getMyUnarchivedOrders';
 import { OrderProps } from '../../../type';
 import axios from 'axios';
 
@@ -35,14 +35,14 @@ const ManufacturerCustomerOrders = () => {
           price: order.items[0].price,
           image: order.items[0].image,
           productId: order.items[0]._id,
-          stock: order.quantity,
+          quantity: order.quantity,
           averageRating: 0,
           numOfReviews: 0,
         }
       );
 
       if (response.status === 201) {
-        setSuccessMessage('Product added to stock successfully');
+        setSuccessMessage('Product added to quantity successfully');
       } else {
         console.error('Error adding product to inventory:', response.data);
       }

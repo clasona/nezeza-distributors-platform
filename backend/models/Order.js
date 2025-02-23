@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const AddressSchema = require('./AddressSchema'); // Adjust the path as needed
 
 const SingleOrderItemSchema = mongoose.Schema({
   title: { type: String, required: true },
@@ -15,12 +16,16 @@ const SingleOrderItemSchema = mongoose.Schema({
     ref: 'Store',
     required: true,
   }, // Can be wholesaler or retailer or manufacturer
+  addedToInventory: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const OrderSchema = mongoose.Schema(
   {
     // TODO: add transaction fee field // converse with nezeza
-    totalPrice: {
+    totalAmount: {
       type: Number,
       required: true,
     },
@@ -39,7 +44,7 @@ const OrderSchema = mongoose.Schema(
     orderItems: [SingleOrderItemSchema],
     paymentStatus: {
       type: String,
-      enum: ['Pending', 'Paid', 'Failed', 'Refunded'],
+      enum: ['Pending', 'Paid', 'Completed', 'Failed', 'Refunded'],
       default: 'Pending',
     },
     fulfillmentStatus: {
@@ -52,8 +57,12 @@ const OrderSchema = mongoose.Schema(
         'Shipped',
         'Partially Delivered',
         'Delivered',
+        'Completed',
         'Partially Cancelled',
         'Cancelled',
+        'Partially Returned',
+        'Returned',
+        'Archived',
       ],
       default: 'Pending',
     },
@@ -62,13 +71,23 @@ const OrderSchema = mongoose.Schema(
       ref: 'Store',
       required: true,
     },
+    // buyerStoreId: {
+    //   type: mongoose.Schema.ObjectId,
+    //   required: true,
+    //   refPath: 'buyerStoreType', // Determines which model to reference
+    // },
+    // buyerStoreType: {
+    //   type: String,
+    //   required: true,
+    //   enum: ['Store', 'User'], // Must be either 'Store' or 'User'
+    // },
     buyerId: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
       required: true,
     }, // Can be wholesaler or retailer or customer
     shippingAddress: {
-      type: String,
+      type: AddressSchema,
       required: true,
     },
     billingAddress: {
@@ -86,10 +105,10 @@ const OrderSchema = mongoose.Schema(
       enum: ['credit_card', 'bank_transfer', 'paypal'],
       required: true,
     },
-    clientSecret: {
-      type: String,
-      required: true,
-    },
+    // clientSecret: {
+    //   type: String,
+    //   required: true,
+    // },
     paymentIntentId: {
       type: String,
     },

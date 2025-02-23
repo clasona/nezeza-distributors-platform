@@ -30,12 +30,12 @@ const initRoles = async () => {
     {
       name: 'manufacturer',
       permissions: [
-        'create_product',
-        'upload_product_image',
-        'view_my_products',
-        'view_my_product',
-        'update_product',
-        'delete_product',
+        // 'create_product',
+        // 'upload_product_image',
+        // 'view_products',
+        // 'view_product',
+        // 'update_product',
+        // 'delete_product',
         'view_current_orders',
         'view_current_order',
         'delete_order',
@@ -88,8 +88,11 @@ const initRoles = async () => {
         'update_user',
         'update_user_password',
         'upload_image',
-        'view_orders',
-        'view_order',
+
+        'view_current_orders',
+        'view_current_order',
+        'delete_order',
+
         'cancel_order',
         'create_order',
         'update_order', // Add any additional permissions required for customers.  E.g., 'view_customer_orders', 'place_order'
@@ -125,6 +128,9 @@ const initRoles = async () => {
         //Platform Settings and Store Management
         'deactivate_stores',
         'activate_stores',
+        'create_store_application',
+        'view_store_application_details',
+        'view_all_store_applications',
         // Support and Communication
         'access_support_tickets',
         'view_ticket_details',
@@ -186,6 +192,14 @@ const initRoles = async () => {
         'upload_image',
         'view_store_details',
         'update_store_details',
+        'create_store_application',
+        `view_store_application_details`,
+        'create_product',
+        'upload_product_image',
+        'view_my_products',
+        'view_my_product',
+        'update_product',
+        'delete_product',
       ],
     },
 

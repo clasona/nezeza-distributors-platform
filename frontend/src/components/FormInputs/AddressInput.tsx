@@ -23,23 +23,22 @@ interface AddressInputProps {
   cityFieldName?: string;
   stateFieldName?: string;
   countryFieldName?: string;
-  zipcodeFieldName?: string;
+  zipCodeFieldName?: string;
   errors: FieldErrors;
   defaultValue?: string;
   register: UseFormRegister<FieldValues>;
   control: Control<FieldValues>;
 }
 const AddressInput = ({
-  streetFieldName='street',
-  cityFieldName='city',
-  stateFieldName='state',
+  streetFieldName = 'street',
+  cityFieldName = 'city',
+  stateFieldName = 'state',
   countryFieldName = 'country',
-  zipcodeFieldName = 'zipcode',
+  zipCodeFieldName = 'zipCode',
   register,
   errors,
   control,
 }: AddressInputProps) => {
-
   const selectedCountry = useWatch({
     control,
     name: `${countryFieldName}`, // Watch the country field
@@ -136,8 +135,8 @@ const AddressInput = ({
       />
       <TextInput
         label='Zip Code'
-        id={zipcodeFieldName}
-        name={zipcodeFieldName}
+        id={zipCodeFieldName}
+        name={zipCodeFieldName}
         register={register}
         errors={errors}
         type='text'
