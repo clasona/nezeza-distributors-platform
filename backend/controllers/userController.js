@@ -17,26 +17,33 @@ const {
 
 const getSingleUser = async (req, res) => {
   // The authenticated user making the request
-  const user = await User.findById(req.params.userId).select('-password').populate('roles').populate('storeId');
+  const user = await User.findById(req.params.userId)
+    .select('-password')
+    .populate('roles')
+    .populate('storeId');
 
   if (!user) {
     throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`);
   }
 
-  if(req.user.userId.toString()!== req.params.userId.toString()) {
-    throw new CustomError.UnauthorizedError('Sorry, not allow to view this user details.');
+  if (req.user.userId.toString() !== req.params.userId.toString()) {
+    throw new CustomError.UnauthorizedError(
+      'Sorry, not allow to view this user details.'
+    );
   }
- return res.status(StatusCodes.OK).json({ user });
-
+  return res.status(StatusCodes.OK).json({ user });
 };
 
-// Show current authenticated user details. 
+// Show current authenticated user details.
 const showCurrentUser = async (req, res) => {
-  const user = await User.findById(req.user.userId).select('-password').populate('roles').populate('storeId');
-  if(!user) {
+  const user = await User.findById(req.user.userId)
+    .select('-password')
+    .populate('roles')
+    .populate('storeId');
+  if (!user) {
     throw new CustomError.NotFoundError('No current user found');
   }
-  res.status(StatusCodes.OK).json({user});
+  res.status(StatusCodes.OK).json({ user });
 };
 
 /*
@@ -47,24 +54,29 @@ const showCurrentUser = async (req, res) => {
  *  @param res - Express response object  - updated user object with updated details 
  */
 const updateUser = async (req, res) => {
-  const { email, firstName, lastName, } = req.body;
+  const { email, firstName, lastName, roles, image } = req.body;
 
   const user = await User.findOne({ _id: req.user.userId });
   if (!user) {
     throw new CustomError.NotFoundError('No current user found');
   }
-  
-  if(req.user.userId.toString()!== req.params.userId.toString()) {
+
+  if (req.user.userId.toString() !== req.params.userId.toString()) {
     throw new CustomError.UnauthorizedError('Sorry, update not allowed.');
   }
-  if(email) user.email = email;
-  if(firstName) user.firstName = firstName;
-  if(lastName) user.lastName = lastName;
- 
+  if (email) user.email = email;
+  if (firstName) user.firstName = firstName;
+  if (lastName) user.lastName = lastName;
+  if (roles) user.roles = roles;
+  if (image) user.image = image;
+
   await user.save();
 
-  const tokenUser = createTokenUser(user);
-  attachCookiesToResponse({ res, user: tokenUser });
+  if (email) {
+    const tokenUser = createTokenUser(user);
+    attachCookiesToResponse({ res, user: tokenUser });
+  }
+
   res.status(StatusCodes.OK).json({ user });
 };
 
@@ -77,10 +89,12 @@ const updateUser = async (req, res) => {
    - oldPassword, newPassword
  */
 const updateUserPassword = async (req, res) => {
-  if(req.user.userId.toString()!== req.params.userId.toString()) {
-    throw new CustomError.UnauthorizedError('Sorry, password update not allowed.');
+  if (req.user.userId.toString() !== req.params.userId.toString()) {
+    throw new CustomError.UnauthorizedError(
+      'Sorry, password update not allowed.'
+    );
   }
- 
+
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
@@ -95,7 +109,7 @@ const updateUserPassword = async (req, res) => {
   user.password = newPassword;
 
   await user.save();
-  
+
   res.status(StatusCodes.OK).json({ msg: 'Success! Password Updated.' });
 };
 

@@ -3,14 +3,14 @@ import { Pencil } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
-interface ImageInputProps{
-    label: string;
-    imageUrl?: string;
-    setImageUrl: (url: string) => void;
-    className?: string;
-    endpoint?: string;
-    // onUpload: (file: File) => void;
-    // accept?: string;
+interface ImageInputProps {
+  label: string;
+  imageUrl?: string;
+  setImageUrl: (url: string) => void;
+  className?: string;
+  endpoint?: string;
+  // onUpload: (file: File) => void;
+  // accept?: string;
 }
 const ImageInput = ({
   label,
@@ -50,7 +50,7 @@ const ImageInput = ({
       ) : (
         <UploadDropzone
           endpoint={endpoint}
-          onClientUploadComplete={(res: any ) => {
+          onClientUploadComplete={(res: any) => {
             setImageUrl(res[0].url);
             // Do something with the response
             // toast.success('Image uploaded successfully.');

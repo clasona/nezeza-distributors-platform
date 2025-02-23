@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { fetchCustomerOrders } from '@/pages/utils/order/fetchCustomerOrders';
-import { OrderProps, ProductProps } from '../../type';
+import { fetchCustomerOrders } from '@/utils/order/fetchCustomerOrders';
+import { SubOrderProps, ProductProps } from '../../type';
 import axios from 'axios';
 import SmallCards from '@/components/SmallCards';
-import { calculateOrderStats } from '@/pages/utils/orderUtils';
+import { calculateOrderStats } from '@/utils/orderUtils';
 import Heading from '@/components/Heading';
 import Pagination from '@/components/Table/Pagination';
 import PageHeader from '@/components/PageHeader';
@@ -16,22 +16,27 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import TableFilters from '@/components/Table/TableFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import SearchField from '@/components/Table/SearchField';
-import { sortItems } from '@/pages/utils/sortItems';
+import { sortItems } from '@/utils/sortItems';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
-import RemoveRowModal from '@/components/Table/RemoveRowModal';
-import formatPrice from '@/pages/utils/formatPrice';
+import DeleteRowModal from '@/components/Table/DeleteRowModal';
+import formatPrice from '@/utils/formatPrice';
 import PageHeaderLink from '@/components/PageHeaderLink';
 import DateFilters from '@/components/Table/Filters/DateFilters';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
 import SuccessMessageModal from './SuccessMessageModal';
+import formatDate from '@/utils/formatDate';
+import { formatIdByShortening } from '@/utils/formatId';
+import Button from './FormInputs/Button';
+import Loading from './Loaders/Loading';
+import CustomerMoreOrderDetailsModal from './Order/CustomerMoreOrderDetailsModal';
 
 const SellerCustomerOrders = () => {
-  const [customerOrders, setCustomerOrders] = useState<OrderProps[]>([]);
-  const [sampleOrders, setSampleOrders] = useState<OrderProps[]>([]);
+  const [customerOrders, setCustomerOrders] = useState<SubOrderProps[]>([]);
+  const [sampleOrders, setSampleOrders] = useState<SubOrderProps[]>([]);
 
-  const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<SubOrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState<string>('');
 
   // For sorting and filtering
@@ -41,6 +46,8 @@ const SellerCustomerOrders = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+    const [showMoreFilters, setshowMoreFilters] = useState(false);
+  const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
 
   // for the small cards
   const orderStats = calculateOrderStats(filteredOrders);
@@ -50,9 +57,10 @@ const SellerCustomerOrders = () => {
     { title: 'Status', id: 'fulfillmentStatus', sortable: true },
     { title: 'Order ID', id: '_id', sortable: true },
     { title: 'Customer', id: 'customer', sortable: true },
-    { title: 'Items', id: 'orderItems', sortable: true },
-    { title: 'Total Price', id: 'totalPrice', sortable: true },
-    { title: 'Order Date', id: 'orderDate', sortable: true },
+    { title: 'Items', id: 'products', sortable: true },
+    { title: 'Total Amount', id: 'totalAmount', sortable: true },
+    { title: 'Created', id: 'createdAt', sortable: true },
+    { title: 'Updated', id: 'updatedAt', sortable: true },
     { title: 'Action', id: 'action' },
   ];
 
@@ -61,39 +69,37 @@ const SellerCustomerOrders = () => {
   const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
 
   //for bulk deleting
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
   //for table row dropdown actions i.e: update, remove
+    const [isCustomerMoreOrderDetailsModalOpen, setIsCustomerMoreOrderDetailsModalOpen] =
+      useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-  const [currentRowData, setCurrentRowData] = useState<OrderProps>({
-    _id: 0,
-    fulfillmentStatus: '',
-    orderItems: [],
-    quantity: 0,
-    totalPrice: 0,
-    totalTax: 0,
-    totalShipping: 0,
-    orderDate: '',
-    paymentMethod: '',
-  });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState<SubOrderProps | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState(false); // State for loading
 
   //setting customer orders data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        //sample orders
-        // const sampleOrdersData = mockCustomerOrders;
-        const customerOrdersData = await fetchCustomerOrders();
-        setCustomerOrders(customerOrdersData);
-        // setSampleOrders(sampleOrdersData);
-        setFilteredOrders(customerOrdersData); // Initially show all orders
-      } catch (error) {
-        console.error('Error fetching customer orders data:', error);
-      }
-    };
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      //sample orders
+      // const sampleOrdersData = mockCustomerOrders;
+      const customerOrdersData = await fetchCustomerOrders();
+      setCustomerOrders(customerOrdersData);
+      // setSampleOrders(sampleOrdersData);
+      setFilteredOrders(customerOrdersData); // Initially show all orders
+    } catch (error) {
+      console.error('Error fetching customer orders data:', error);
+    } finally {
+      setIsLoading(false); // Set loading to false *after* fetch completes (success or error)
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -138,9 +144,9 @@ const SellerCustomerOrders = () => {
 
   const applyDateFilter = (start: string, end: string) => {
     const filtered = customerOrders.filter((order) => {
-      const orderDate = order.orderDate; // YYYY-MM-DD format
-      const isAfterStart = start ? orderDate >= start : true;
-      const isBeforeEnd = end ? orderDate <= end : true;
+      const createdDate = order.createdAt; // YYYY-MM-DD format
+      const isAfterStart = start ? createdDate >= start : true;
+      const isBeforeEnd = end ? createdDate <= end : true;
       return isAfterStart && isBeforeEnd;
     });
     setFilteredOrders(filtered);
@@ -174,52 +180,60 @@ const SellerCustomerOrders = () => {
     setFilteredOrders(sortedOrders);
   };
 
-  const handleUpdate = (rowData: OrderProps) => {
+   const handleCustomerMoreOrderDetails = (rowData: SubOrderProps) => {
+     setCurrentRowData(rowData);
+     setIsCustomerMoreOrderDetailsModalOpen(true);
+   };
+   const handleCloseCustomerMoreOrderDetailsModal = () => {
+     setIsCustomerMoreOrderDetailsModalOpen(false);
+   };
+
+  const handleUpdate = (rowData: SubOrderProps) => {
     setCurrentRowData(rowData);
     // console.log(rowData);
     setIsUpdateModalOpen(true);
   };
-  const handleSaveUpdatedRow = (updatedRow: OrderProps) => {
-    // Update filteredOrders to reflect the updated row
-    setFilteredOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order._id === updatedRow._id ? { ...order, ...updatedRow } : order
-      )
-    );
-    setSuccessMessage(`Order # ${updatedRow._id} updated successfully.`);
-    setIsUpdateModalOpen(false); // Close the modal after saving
-    setTimeout(() => setSuccessMessage(''), 4000);
-  };
+  // const handleSaveUpdatedRow = (updatedRow: SubOrderProps) => {
+  //   // Update filteredOrders to reflect the updated row
+  //   setFilteredOrders((prevOrders) =>
+  //     prevOrders.map((order) =>
+  //       order._id === updatedRow._id ? { ...order, ...updatedRow } : order
+  //     )
+  //   );
+  //   setSuccessMessage(`Order # ${updatedRow._id} updated successfully.`);
+  //   setIsUpdateModalOpen(false); // Close the modal after saving
+  //   setTimeout(() => setSuccessMessage(''), 4000);
+  // };
 
   const handleCloseUpdateModal = () => {
     setIsUpdateModalOpen(false);
   };
 
-  const handleRemove = (id: number) => {
+  const handleDelete = (id: string) => {
     setFilteredOrders((prevOrders) =>
       prevOrders.filter((order) => order._id !== id)
     );
   };
 
-  const handleRemoveClick = (rowData: OrderProps) => {
+  const handleDeleteClick = (rowData: SubOrderProps) => {
     setCurrentRowData(rowData); // Set the selected row data
-    setIsRemoveModalOpen(true); // Open the modal
+    setIsDeleteModalOpen(true); // Open the modal
   };
 
-  const handleConfirmRemove = (id: number) => {
+  const handleConfirmDelete = (id: string) => {
     setFilteredOrders((prevOrders) =>
       prevOrders.filter((order) => order._id !== id)
     );
 
     setSuccessMessage(`Order # ${id} deleted successfully.`);
 
-    //TODO: Remove from database
-    setIsRemoveModalOpen(false); // Close the modal after deletion
+    //TODO: Delete from database
+    setIsDeleteModalOpen(false);
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
   //for bulk deleting
-  const handleSelectRow = (id: number) => {
+  const handleSelectRow = (id: string) => {
     setSelectedRows((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((rowId) => rowId !== id)
@@ -236,7 +250,9 @@ const SellerCustomerOrders = () => {
 
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(selectedRows.map((id) => deleteCustomerOrder(userInfo, id)));
+      await Promise.all(
+        selectedRows.map((id) => deleteCustomerOrder(userInfo, id))
+      );
 
       setFilteredOrders((prevInventory) =>
         prevInventory.filter((item) => !selectedRows.includes(item._id))
@@ -256,6 +272,17 @@ const SellerCustomerOrders = () => {
     <div>
       <PageHeader
         heading='Customer Orders'
+        actions={
+          <Button
+            isLoading={isLoading}
+            buttonTitle='Refresh'
+            loadingButtonTitle='Refreshing...'
+            className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
+            onClick={async () => {
+              await fetchData();
+            }}
+          />
+        }
         extraComponent={
           <PageHeaderLink
             linkTitle={'Create New Order'}
@@ -294,14 +321,21 @@ const SellerCustomerOrders = () => {
           onChange={handleStatusFilterChange}
         />
         {/* Filter by dates */}
-        <DateFilters
-          label='Filter by Date Range'
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={handleStartDateChange}
-          onEndDateChange={handleEndDateChange}
-        />
-
+        {showMoreFilters && (
+          <DateFilters
+            label='Filter by Date Range'
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={handleStartDateChange}
+            onEndDateChange={handleEndDateChange}
+          />
+        )}
+        <button
+          onClick={toggleMoreFilters}
+          className='text-sm text-nezeza_dark_blue underline'
+        >
+          {showMoreFilters ? 'Less Filters' : 'More Filters'}
+        </button>
         {/* Clear Filters Button */}
         <ClearFilters clearFiltersFunction={clearFilters} />
       </TableFilters>
@@ -315,74 +349,141 @@ const SellerCustomerOrders = () => {
           <TableHead
             checked={selectedRows.length === filteredOrders.length}
             onChange={handleSelectAllRows}
+            hasCollapsibleContent={true}
             columns={tableColumns}
             handleSort={handleSort}
           />
-          <tbody>
-            {filteredOrders
-              .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-              .map((order) => (
-                <TableRow
-                  key={order._id}
-                  rowData={order}
-                  rowValues={[
-                    { content: <input type='checkbox' /> },
-                    { content: order.fulfillmentStatus, isStatus: true },
-                    { content: order._id },
-                    { content: '' },
-                    {
-                      content: (
-                        <Link href='#' className='text-nezeza_dark_blue'>
-                          {order.orderItems.length}{' '}
-                        </Link>
-                      ),
-                    }, //TODO: make it show order products details when clicked
-                    { content: `$${formatPrice(order.totalPrice)}` },
-                    { content: order.orderDate },
+          {isLoading ? ( // Show loading indicator
+            <Loading message='customer orders' />
+          ) : filteredOrders.length === 0 ? (
+            <p className='text-center'>No customer orders found</p>
+          ) : (
+            <tbody>
+              {filteredOrders
+                .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+                .map((order) => (
+                  <TableRow
+                    key={order._id}
+                    hasCollapsibleContent={true}
+                    rowData={order}
+                    rowValues={[
+                      {
+                        content: (
+                          <input
+                            type='checkbox'
+                            checked={selectedRows.includes(order._id)}
+                            onChange={() => handleSelectRow(order._id)}
+                          />
+                        ),
+                      },
+                      { content: order.fulfillmentStatus, isStatus: true },
+                      { content: formatIdByShortening(order._id) },
+                      { content: order.buyerId },
+                      // {
+                      //   content: `${order.buyerId.firstName} ${order.buyerId.lastName}`, TODO: user user names
+                      // },
+                      {
+                        content: (
+                          <Link href='#' className='text-nezeza_dark_blue'>
+                            {order.products.length}
+                          </Link>
+                        ),
+                      }, //TODO: make it show order products details when clicked
+                      { content: `$${formatPrice(order.totalAmount)}` },
+                      { content: formatDate(order.createdAt) },
+                      { content: formatDate(order.updatedAt) },
 
-                    {
-                      content: (
-                        <RowActionDropdown
-                          actions={[
-                            {
-                              label: 'Update',
-                              onClick: () => handleUpdate(order),
-                            },
-                            {
-                              label: 'Remove',
-                              onClick: () => handleRemoveClick(order),
-                            },
-                          ]}
-                        />
-                      ),
-                    },
-                  ]}
-                  onUpdate={handleSaveUpdatedRow}
-                  onRemove={handleRemove}
-                />
-              ))}
-            ;
-          </tbody>
+                      {
+                        content: (
+                          <RowActionDropdown
+                            actions={[
+                              {
+                                label: 'Update Order',
+                                onClick: () =>
+                                  handleCustomerMoreOrderDetails(order),
+                              },
+                              {
+                                label: 'Delete',
+                                onClick: () => handleDeleteClick(order),
+                              },
+                            ]}
+                          />
+                        ),
+                      },
+                    ]}
+                    // onUpdate={handleSaveUpdatedRow}
+                    onDelete={handleDelete}
+                    renderCollapsibleContent={(order) => (
+                      <div className='flex flex-col gap-4'>
+                        {order.products.map((item) => (
+                          <div
+                            key={item._id}
+                            className='flex items-center px-20 gap-4 border-b border-nezeza_light_blue pb-2'
+                          >
+                            <img
+                              src={item.image}
+                              alt={item.description}
+                              className='w-12 h-12 object-cover'
+                            />
+                            <div className=''>
+                              <p className='font-semibold'>
+                                {item.title || 'Title Missing'}
+                              </p>
+                              <p className='text-nezeza_gray_600'>
+                                {item.quantity} x ${item.price}
+                              </p>
+                              {/* <p>
+                              Seller:{' '}
+                              <Link
+                                href='#'
+                                target='_blank'
+                                className='text-nezeza_dark_blue'
+                              >
+                                {item.sellerStoreId.name ||
+                                  'Store Name Missing'}
+                              </Link>
+                            </p> */}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  />
+                ))}
+              ;
+            </tbody>
+          )}
         </table>
         <Pagination
           data={filteredOrders}
           pageSize={PAGE_SIZE}
           onPageChange={handlePageChange}
         />
+        {/* More Details Modal */}
+        {isCustomerMoreOrderDetailsModalOpen && currentRowData && (
+          <CustomerMoreOrderDetailsModal
+            isOpen={isCustomerMoreOrderDetailsModalOpen}
+            rowData={currentRowData}
+            onClose={handleCloseCustomerMoreOrderDetailsModal}
+            // onSave={handleSaveUpdatedRow}
+          />
+        )}
         {/* Update Row Modal */}
-        <UpdateRowModal
+        {/* <UpdateRowModal
           isOpen={isUpdateModalOpen}
           rowData={currentRowData}
           onClose={handleCloseUpdateModal}
           onSave={handleSaveUpdatedRow}
-        />
-        {/* Remove Row Modal */}
-        <RemoveRowModal
-          isOpen={isRemoveModalOpen}
-          rowData={currentRowData}
-          onClose={() => setIsRemoveModalOpen(false)}
-          onDelete={() => handleConfirmRemove(currentRowData._id)}
-        />
+        /> */}
+        {/* Delete Row Modal */}
+        {isDeleteModalOpen && currentRowData && (
+          <DeleteRowModal
+            isOpen={isDeleteModalOpen}
+            rowData={currentRowData}
+            onClose={() => setIsDeleteModalOpen(false)}
+            onDelete={() => handleConfirmDelete(currentRowData._id)}
+          />
+        )}
         {/* Bulk Delete Confirmation Modal */}
         <BulkDeleteModal
           isOpen={isBulkDeleteModalOpen}

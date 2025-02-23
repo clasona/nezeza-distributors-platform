@@ -24,12 +24,15 @@ const adminNotificationRouter = require('./routes/adminNotificationRoutes');
 const authRouter = require('./routes/authRoutes');
 const userRouter = require('./routes/userRoutes');
 const storeRouter = require('./routes/storeRoutes');
+const storeApplicationRouter = require('./routes/storeApplicationRoutes');
 const productRouter = require('./routes/productRoutes');
 const wholesalerRouter = require('./routes/wholesalerRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const orderRouter = require('./routes/orderRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
 const inventoryRouter = require('./routes/inventoryRoutes');
+const notificationRouter = require('./routes/notificationRoutes');
+const cartRouter = require('./routes/cartRoutes');
 
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
@@ -43,24 +46,34 @@ app.use(
   })
 );
 app.use(helmet());
-app.use(cors());
+// app.use(cors());
 
-// app.use(
-//   cors({
-//     origin: 'http://localhost:5173/',
-//     credentials: true,
-//     //     // allowedHeaders: [
-//     //     //   'Content-Type',
-//     //     //   'Authorization',
-//     //     //   'Origin',
-//     //     // ]
-//   })
-// );
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+    // allowedHeaders: [
+    //   'Content-Type',
+    //   'Authorization',
+    //   'Origin',
+    // ]
+  })
+);
 app.use(xss());
 app.use(mongoSanitize());
 
 app.use(morgan('dev'));
-app.use(express.json());
+// app.use(express.json());
+// Must exclude converting object to json for the payment webhook since it requires raw
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      if (req.originalUrl === '/api/v1/payment/webhook') {
+        req.rawBody = buf; // Store raw body in req.rawBody
+      }
+    },
+  })
+);
 app.use(cookieParser(process.env.JWT_SECRET));
 
 app.use(express.static('./public'));
@@ -75,12 +88,17 @@ app.use('/api/v1/admin/notifications', adminNotificationRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/store', storeRouter);
+app.use('/api/v1/store-application', storeApplicationRouter);
 app.use('/api/v1/manufacturers', productRouter);
+app.use('/api/v1/products', productRouter);
 app.use('/api/v1/marketplace/products', wholesalerRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/orders', orderRouter);
 app.use('/api/v1/suborders', orderRouter);
 app.use('/api/v1/payment', paymentRouter);
+app.use('/api/v1/notifications', notificationRouter);
+app.use('/api/v1/cart', cartRouter);
+
 app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 
 app.use(notFoundMiddleware);

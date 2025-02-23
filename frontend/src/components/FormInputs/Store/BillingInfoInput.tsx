@@ -3,7 +3,12 @@ import AddressInput from '../AddressInput';
 import DropdownInput from '../DropdownInput';
 import TextInput from '../TextInput';
 import countries from '@/pages/data/countries.json';
-import { FieldErrors, FieldValues, UseFormRegister, Control } from 'react-hook-form';
+import {
+  FieldErrors,
+  FieldValues,
+  UseFormRegister,
+  Control,
+} from 'react-hook-form';
 import StoreFormHeading from './StoreFormHeading';
 
 interface BillingInfoInputProps {
@@ -13,7 +18,11 @@ interface BillingInfoInputProps {
   control: Control<FieldValues>;
 }
 
-const BillingInfoInput = ({ register, errors, control }: BillingInfoInputProps) => {
+const BillingInfoInput = ({
+  register,
+  errors,
+  control,
+}: BillingInfoInputProps) => {
   return (
     <>
       <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6'>
@@ -81,7 +90,7 @@ const BillingInfoInput = ({ register, errors, control }: BillingInfoInputProps) 
           cityFieldName='billingCity'
           stateFieldName='billingState'
           countryFieldName='billingCountry'
-          zipcodeFieldName='billingZipcode'
+          zipCodeFieldName='billingZipCode'
           register={register}
           errors={errors}
           control={control}

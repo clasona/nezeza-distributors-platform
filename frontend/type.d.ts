@@ -1,17 +1,39 @@
 // defining different custom data types
 
-// export interface ProductProps {
-//   id: number;
-//   title: string;
-//   price: number;
-//   description: string;
-//   category: string;
-//   image: string;
-// }
-
 export interface ProductProps {
+  _id: string;
+  title: string;
+  price: number;
+  quantity: number;
+  description: string;
+  category: string;
+  image: string;
+  images?: string[]; // Optional if the product has multiple images
+  colors: string[]; // Array of color hex codes
+  featured: boolean;
+  weight: number;
+  height: number;
+  freeShipping: boolean;
+  availability: boolean;
+  averageRating: number;
+  numOfReviews: number;
+  storeId: StoreProps;
+  createdAt: string;
+  updatedAt: string;
+  reviews: ReviewProps[]; // Define a ReviewProps interface for better structure
+}
+
+export interface ReviewProps {
+  userId: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+// for the buyer
+export interface OrderItemsProps {
   // we can add as many keys as we want from the product
-  _id: number;
+  _id?: string;
   title: string;
   price: number;
   quantity: number;
@@ -19,30 +41,59 @@ export interface ProductProps {
   category: string;
   // storeId: number;
   image: string;
+  product: ProductProps;
+  sellerStoreId: StoreProps;
+  addedToInventory: boolean;
 }
 
+// for buyers
 export interface OrderProps {
-  // we can add as many keys as we want from the orders
-  _id: number;
+  _id: string;
   fulfillmentStatus: string;
-  orderItems: ProductProps[];
+  orderItems: OrderItemsProps[];
   quantity: number;
-  totalPrice: number;
+  totalAmount: number;
   totalTax: number;
   totalShipping: number;
-  orderDate: string;
+  createdAt: string;
+  updatedAt: string;
   paymentMethod: string;
+  shippingAddress: AddressProps; //TODO: change to AddressProps;
+  archived: boolean;
+}
+
+/// for sellers
+export interface SubOrderProps {
+  _id: string;
+  fulfillmentStatus: string;
+  products: ProductProps[];
+  quantity: number;
+  totalAmount: number;
+  totalTax: number;
+  totalShipping: number;
+  createdAt: string;
+  updatedAt: string;
+  paymentMethod: string;
+  buyerId: string;
+  // buyerId: UserProps;
+  // buyerStoreId: StoreProps;
+  // sellerStoreId: string;
+}
+
+export interface PaymentProps {
+  paymentIntentId: string;
+  // customerSessionClientId:string
 }
 
 export interface InventoryProps {
   _id: number;
-  title: string;
-  description: string;
-  image: string;
+  // title: string;
+  // description: string;
+  // image: string;
   owner: number;
   buyerStoreId: number;
   productId: number;
-  stock: number;
+  quantity: number;
   price: number;
   freeShipping: boolean;
   availability: boolean;
@@ -55,7 +106,7 @@ export interface InventoryProps {
 
 //passed into redux stat for add to cart
 export interface StoreProduct {
-  id: number;
+  _id: number;
   title: string;
   price: number;
   description: string;
@@ -65,40 +116,72 @@ export interface StoreProduct {
 }
 
 export interface StoreProps {
-  _id: string; 
-  storeName: string; 
+  _id: number;
+  storeType: string;
+  registrationNumber: number;
+  name: string;
+  category: string;
   description: string;
   email: string;
-  // website: string;
+  phone: string;
+  ownerId: number;
   // logo: string;
   // products: StoreProduct[];
   // orders: OrderProps[];
   // inventory: InventoryProps[];
-  businessType: string;
-  address: string;
+  address?: AddressProps;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+// When creating a new store, omit these since MongoDB will generate them
+export type NewStoreProps = Omit<StoreProps, '_id' | 'createdAt' | 'updatedAt'>;
+
+export interface StoreApplicationProps {
+  _id: number;
+  status: string;
+  // storeName: string;
+  primaryContactId: UserProps;
+  storeId: StoreProps;
+  billingInfo: BillingInfoProps;
+  // VerificationDocs: VerificationDocsProps;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserProps {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  roles: string[];
+  image: string;
+  password: string;
+  isVerified: boolean;
+  verifiedAt: string;
+  storeId: string;
 }
 
 export interface stateProps {
   productData: [];
   favoriteData: [];
   userInfo: [];
-  userInfo: null | string;
+  // userInfo: null | string;
   storeInfo: StoreProps; //TODO: change this type to StoreProps
   next: any;
   //add orderData
 }
 
-export interface Address{
+export interface AddressProps {
+  _id: number;
   street: string;
   city: string;
   state: string;
   zipCode: string;
   country: string;
 }
-export interface PrimaryContactInfo {
+export interface PrimaryContactProps {
   firstName: string;
   lastName: string;
   email: string;
@@ -106,37 +189,37 @@ export interface PrimaryContactInfo {
   countryOfCitizenship: string;
   countryOfBirth: string;
   dateOfBirth: string;
-  residenceAddress: Address;
-  isBeneficialOwner: boolean;
-  isLegalRepresentative: boolean;
-}
-
-// Define the business information structure
-export interface BusinessInfo {
-  registrationNumber: string;
-  sellerType: string;
-  businessName: string;
-  businessType: string;
-  businessPhone: string;
-  businessAddress: Address;
+  residenceAddress: AddressProps;
+  // isBeneficialOwner: boolean;
+  // isLegalRepresentative: boolean;
 }
 
 // Define the billing information structure
-export interface BillingInfo {
+export interface BillingInfoProps {
   routingNumber: string;
   accountNumber: string;
   cardholderName: string;
   cardNumber: string;
   expirationDate: string;
-  cvv: string;
+  cvv: number;
+  billingAddress: string;
 }
 
 // Define the overall form data structure
 export interface StoreSetupFormData {
   primaryContact: PrimaryContactInfo;
-  businessInfo: BusinessInfo;
+  storeInfo: StoreInfo;
   billingInfo: BillingInfo;
 }
 
-// Type for sections in the form
-export type StoreSetupFormDataSection = 'primaryContact' | 'businessInfo' | 'billingInfo';
+export interface NotificationProps {
+  _id: string;
+  read: bookean;
+  priority: string;
+  title: string;
+  body: string;
+  senderId: Userprops;
+  receipientId: Userprops;
+  // type: string;
+  createdAt: string;
+}

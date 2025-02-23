@@ -4,7 +4,10 @@ import React, { useState } from 'react';
 
 interface RowActionDropdownProps {
   // actions: (string | { href: string; label: string })[];
-  actions: { label: string; onClick: () => void }[];
+  actions: (
+    | { label: string; onClick: () => void }
+    | { label: string; href: string }
+  )[];
 }
 const RowActionDropdown = ({ actions }: RowActionDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,7 +37,29 @@ const RowActionDropdown = ({ actions }: RowActionDropdownProps) => {
       >
         <div className='py-1'>
           {actions.map((action, index) => (
-            <button
+            <React.Fragment key={index}>
+              {'href' in action ? (
+                <Link
+                  href={action.href}
+                  className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 hover:text-gray-900'
+                >
+                  {action.label}
+                </Link>
+              ) : (
+                <button
+                  key={index}
+                  onClick={() => {
+                    action.onClick();
+                    setIsOpen(false); // Close dropdown after action
+                  }}
+                  className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 hover:text-gray-900'
+                >
+                  {action.label}
+                </button>
+              )}
+            </React.Fragment>
+          ))}
+          {/* <button
               key={index}
               onClick={() => {
                 action.onClick();
@@ -43,8 +68,8 @@ const RowActionDropdown = ({ actions }: RowActionDropdownProps) => {
               className='block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 hover:text-gray-900'
             >
               {action.label}
-            </button>
-          ))}
+            </button> */}
+          {/* ))} */}
         </div>
       </div>
     </div>

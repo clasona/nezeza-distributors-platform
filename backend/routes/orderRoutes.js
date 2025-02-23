@@ -8,10 +8,13 @@ const {
 const {
   getAllOrders,
   getSingleOrder,
+  getOrderByPaymentIntentId,
   getSellerSingleOrder,
   getCurrentUserOrders,
   createOrder,
   updateOrder,
+  updateOrderItem,
+  archiveOrder,
   updateSubOrder,
   updateToFulfilled,
   updateToShipped,
@@ -38,21 +41,42 @@ router
     authorizePermissions('view_current_orders'),
     getCurrentUserOrders
   );
+
+// router
+//   .route('/buying/archived')
+//   .get(
+//     authenticateUser,
+//     authorizePermissions('view_current_orders'),
+//     getArchivedOrders
+//   );
+
 router
   .route('/buying/:id')
   .get(
     authenticateUser,
     authorizePermissions('view_current_order'),
     getSingleOrder
+);
+  
+router
+  .route('/buying/payment/:paymentIntentId')
+  .get(
+    authenticateUser,
+    authorizePermissions('view_current_order'),
+    getOrderByPaymentIntentId
   );
+
+
+router.route('/buying/archive/:id').patch(authenticateUser, archiveOrder);
+
 router
   .route('/selling/:id')
   .get(
     authenticateUser,
     authorizePermissions('view_current_order'),
     getSellerSingleOrder
-  );
-
+);
+  
 // order updates routes
 router
   .route('/:id/update/fulfillment/fulfilled')
@@ -99,4 +123,11 @@ router
   )
   .patch(authenticateUser, authorizePermissions('update_order'), updateOrder);
 
+router
+  .route('/:id/:itemId')
+  .patch(
+    authenticateUser,
+    authorizePermissions('update_order'),
+    updateOrderItem
+  );
 module.exports = router;

@@ -1,5 +1,5 @@
 import React from 'react';
-import WholesalerLayout from '..';
+import WholesalerLayout from '../layout';
 import SellerCustomerOrders from '@/components/SellerCustomerOrders';
 import SellerProducts from '@/components/SellerProducts';
 

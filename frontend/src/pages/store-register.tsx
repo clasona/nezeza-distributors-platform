@@ -12,37 +12,45 @@ import countries from './data/countries.json';
 import { CircleArrowLeft, CircleArrowRight } from 'lucide-react';
 import AddressInput from '@/components/FormInputs/AddressInput';
 import PrimaryContactInput from '@/components/FormInputs/Store/PrimaryContactInput';
-import BusinessInfoInput from '@/components/FormInputs/Store/BusinessInfoInput';
+import StoreInfoInput from '@/components/FormInputs/Store/StoreInfoInput';
 import BillingInfoInput from '@/components/FormInputs/Store/BillingInfoInput';
 import VerificationDocsInput from '@/components/FormInputs/Store/VerificationDocsInput';
 import StoreFormHeading from '@/components/FormInputs/Store/StoreFormHeading';
 import ReviewInfoInput from '@/components/FormInputs/Store/ReviewInfoInput';
-import { submitStoreData } from './utils/store/submitStoreData';
+import { createStoreApplication } from '../utils/store/createStoreApplication';
 import { useSelector } from 'react-redux';
-import { stateProps } from '../../type';
+import {
+  AddressProps,
+  NewStoreProps,
+  stateProps,
+  StoreProps,
+} from '../../type';
+import { createStore } from '../utils/store/createStore';
 
 interface StoreRegistrationFormProps {
   onSubmitSuccess?: (data: any) => void; // Callback after successful submission
 }
 
-const StoreRegistrationForm = ({onSubmitSuccess}: StoreRegistrationFormProps) => {
- const {
-   register,
-   handleSubmit,
-   formState: { errors },
-   getValues,
-   control,
-   setValue,
-   reset,
- } = useForm();
-  
+const StoreRegistrationForm = ({
+  onSubmitSuccess,
+}: StoreRegistrationFormProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+    control,
+    setValue,
+    reset,
+  } = useForm();
+
   const [currentSection, setCurrentSection] = useState(0);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const sections = [
     'Primary Contact',
-    'Business Info',
+    'Store Info',
     'Billing Info',
     'Verification Docs',
     'Review & Submit',
@@ -65,18 +73,53 @@ const StoreRegistrationForm = ({onSubmitSuccess}: StoreRegistrationFormProps) =>
   );
 
   const onSubmit = async (data: any) => {
-    const storeData = {
+    //change default customer role to role of current user?
+
+    // Create the store first
+    const storeAddress: AddressProps = {
+      street: data.storeStreet,
+      city: data.storeCity,
+      state: data.storeState,
+      country: data.storeCountry,
+      zipCode: data.storeZipCode,
+    };
+
+    const storePayload: NewStoreProps = {
+      name: data.storeName,
+      email: data.storeEmail,
+      description: data.storeDescription,
+      ownerId: userInfo.userId,
+      storeType: data.storeType,
+      registrationNumber: data.storeRegistrationNumber,
+      category: data.storeCategory,
+      phone: data.storePhone,
+      // logo
+      address: storeAddress,
+      isActive: false,
+    };
+
+    const storeResponse = await createStore(storePayload);
+
+    const { storeId } = storeResponse; // Extract the created store's ID
+
+    console.log(storeId);
+
+    // Use the storeId to create the store application
+    const storeApplicationData = {
       ...data,
-      // image: mainImageResource?.secure_url, // Main product image URL
+      primaryContactId: userInfo.userId,
+      storeId: storeId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      // owner: storeInfo._id,
     };
 
     try {
-      const response = await submitStoreData(userInfo, storeData);
+      const response = await createStoreApplication(
+        userInfo,
+        storeApplicationData
+      );
       setErrorMessage('');
-      setSuccessMessage('Store data submitted for review successfully.');
+      setSuccessMessage('Store application submitted successfully.');
       setTimeout(() => setSuccessMessage(''), 4000);
 
       // TODO: Reset form inputs
@@ -133,9 +176,9 @@ const StoreRegistrationForm = ({onSubmitSuccess}: StoreRegistrationFormProps) =>
               control={control}
             />
           )}
-          {/* Business Info Section */}
+          {/* Store Info Section */}
           {currentSection === 1 && (
-            <BusinessInfoInput
+            <StoreInfoInput
               register={register}
               errors={errors}
               control={control}

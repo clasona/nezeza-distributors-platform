@@ -1,22 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { FaGoogle } from 'react-icons/fa';
-import { stateProps } from '../../type';
+import { AddressProps, OrderItemsProps, stateProps, StoreProps } from '../../type';
 import { useSelector, useDispatch } from 'react-redux';
-import { addUser, addStore } from '@/store/nextSlice';
+import { addUser, addStore, setCartItems } from '@/store/nextSlice';
 import axios from 'axios';
+import { useRouter } from 'next/router';
+import { createStore } from '../utils/store/createStore';
+import SubmitButton from '@/components/FormInputs/SubmitButton';
+import { getCart } from '@/utils/cart/getCart';
+import { mergeCartItems } from '@/utils/cart/mergeCartItems';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const { userInfo } = useSelector((state: stateProps) => state.next);
-
+  const { cartItemsData, userInfo } = useSelector((state: stateProps) => state.next);
+  const router = useRouter();
   const dispatch = useDispatch();
 
   //initialize loginData as an object
   const [loginData, setLoginData] = useState<any | null>(null);
+
+  // Redirect authenticated users away from login
+  useEffect(() => {
+    if (userInfo) {
+      router.replace('/'); // Redirect to the homepage or dashboard
+    }
+  }, [userInfo, router]);
+
   const handleGoogleLogin = async () => {
     try {
       // signin with google and redirect to homepage
@@ -45,16 +58,18 @@ const LoginPage = () => {
 
       if (response.status !== 200) {
         setSuccessMessage(''); // Clear any previous error message
-        setErrorMessage(response.data.msg);
+        setErrorMessage(response.data.msg || 'Login failed.');
         //TODO: Do not redirect
       } else {
         setLoginData(response.data);
 
         const userData = response.data.user;
         const storeData = response.data.user.storeId;
+        let storeId = 0;
 
-        console.log('yvess');
-        console.log(storeData);
+        if (storeData) {
+          storeId = storeData;
+        }
 
         // set logged in userInfo to redux for further retrieval
         dispatch(
@@ -63,7 +78,7 @@ const LoginPage = () => {
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
-            storeId: userData.storeId
+            storeId: storeId,
             // image: loginData.user.image,
             //ADD MORE AS NEEDED
           })
@@ -71,22 +86,42 @@ const LoginPage = () => {
 
         // for sellers. set logged in storeInfo to redux for further retrieval
         //TODO: can be null for customers for now
-        dispatch(
-          addStore({
-            _id: storeData._id,
-            name: storeData.name,
-            email: storeData.email,
-            businessType: storeData.businessType,
-            // ADD MORE AS NEEDED
-          })
-        );
+        if (storeData) {
+          dispatch(
+            addStore({
+              _id: storeData._id,
+              name: storeData.name,
+              email: storeData.email,
+              storeType: storeData.storeType,
+              // ADD MORE AS NEEDED
+            })
+          );
+        }
 
         setErrorMessage(''); // Clear any previous error message
         setSuccessMessage('Login successful. Redirecting to home page...'); //for testing
+
+        // Fetch and update cart after successful login
+        try {
+          // const cartItems = await getCart(); // Call your getCart function
+          const serverCartItems = await getCart(); // Get cart from server
+
+          const mergedCartItems = mergeCartItems(
+            cartItemsData,
+            serverCartItems
+          ); // Merge the carts
+
+          dispatch(setCartItems(mergedCartItems)); // Dispatch the setCartItems action
+        } catch (cartError) {
+          console.error('Error fetching cart after login:', cartError);
+          // Handle the error (e.g., display a message to the user)
+          // Perhaps dispatch an action to set an error state in Redux
+        }
+
         setTimeout(() => {
           // Redirect to home page
-          // window.location.href = '/browse-or-setup-store';
-          window.location.href = '/';
+          // window.location.href = '/';
+          router.replace('/');
         }, 2000); // Simulate delay for testing purposes
       }
     } catch (error) {
@@ -95,8 +130,9 @@ const LoginPage = () => {
     }
   };
 
+  
   return (
-    <div className='w-full bg-gray-100 min-h-screen flex items-center justify-center'>
+    <div className='w-full bg-nezeza_light_blue min-h-screen flex items-center justify-center'>
       <div className='bg-nezeza_light_blue p-4'>
         {/* <div className='bg-white shadow-lg rounded-lg p-6'> */}
         {/* TODO: add shadow such as: shadow-lg shadow-nezeza_light_blue-200 */}
@@ -129,13 +165,19 @@ const LoginPage = () => {
               required
             />
           </div>
-          <button
+          <SubmitButton
+            isLoading={false}
+            buttonTitle='Login'
+            loadingButtonTitle='Logging in ...'
+            className='w-full h-10'
+          />
+          {/* <button
             type='submit'
             className='w-full h-10 rounded-md font-medium bg-nezeza_dark_blue text-white hover:bg-nezeza_yellow 
             hover:text-black transition-colors duration-300 mt-2'
           >
             Login
-          </button>
+          </button> */}
           <button
             type='button'
             onClick={handleGoogleLogin}
@@ -153,7 +195,7 @@ const LoginPage = () => {
           <p className='text-center mt-6 text-gray-600'>
             New to Nezeza?{' '}
             <a
-              className='text-nezeza_yellow hover:text-nezeza_dark_blue hoverunderline transition-colors
+              className='text-nezeza_dark_blue hover:text-nezeza_dark_blue hoverunderline transition-colors
             cursor-pointer duration-250'
               href='http://localhost:3000/register' //TODO: put real address
             >

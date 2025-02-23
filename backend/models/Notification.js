@@ -1,47 +1,41 @@
 const mongoose = require('mongoose');
 
-const notificationSchema = new mongoose.Schema(
+const NotificationSchema = new mongoose.Schema(
   {
-    to: {
+    read: {
+      type: Boolean,
+      default: false,
+    },
+    priority: {
+      type: String,
+      enum: ['high', 'medium', 'low'],
+      default: 'low',
+    },
+    title: {
       type: String,
       required: true,
     },
-    channel: {
-      type: String,
-      required: true,
-      enum: ['email', 'sms', 'push'], // Add other channels if needed
-    },
-    template: {
+    body: {
       type: String,
       required: true,
     },
-    provider_id: {
-      type: String,
-      required: true,
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User', //coudl also be User for customers.
+      // required: true,
     },
-    data: {
-      type: Object,
+    recipientId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User', //coudl also be User for customers.
+      // required: true,
     },
-    trigger_type: {
-      type: String,
-    },
-    resource_id: {
-      type: String,
-    },
-    resource_type: {
-      type: String,
-    },
-    receiver_id: {
-      type: String,
-    },
-    original_notification_id: {
-      type: String,
-    },
-    external_id: {
-      type: String,
-    },
+    // type: {
+    //   type: String,
+    //   enum: ['order', 'product', 'user', 'inventory', 'payment', 'account'],
+    //   required: true,
+    // },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Notification', notificationSchema);
+module.exports = mongoose.model('Notification', NotificationSchema);

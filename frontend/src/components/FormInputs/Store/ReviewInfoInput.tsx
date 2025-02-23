@@ -75,80 +75,80 @@ const ReviewInfoInput = ({ getValues }: ReviewInfoInputProps) => {
             />
             <ReviewInputItem
               label='Zip Code'
-              fieldName='residenceZipcode'
+              fieldName='residenceZipCode'
               getValues={getValues}
             />
           </div>
         </div>
 
         <div className='bg-gray-100 p-4 rounded-md'>
-          <StoreFormHeading heading='Business Info' />
+          <StoreFormHeading heading='Store Info' />
           <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6'>
             <ReviewInputItem
-              label='Business Type'
-              fieldName='businessType'
+              label='Store Type'
+              fieldName='storeType'
               getValues={getValues}
             />
             <ReviewInputItem
-              label='Business Registration Number'
-              fieldName='businessRegistrationNumber'
+              label='Store Registration Number'
+              fieldName='storeRegistrationNumber'
               getValues={getValues}
             />
             <ReviewInputItem
-              label='Business Name'
+              label='Store Name'
               fieldName='storeName'
               getValues={getValues}
             />
             <ReviewInputItem
-              label='Business Category'
-              fieldName='businessCategory'
+              label='Store Category'
+              fieldName='storeCategory'
               getValues={getValues}
             />
             <ReviewInputItem
-              label='Business Description'
-              fieldName='businessDescription'
+              label='Store Description'
+              fieldName='storeDescription'
               getValues={getValues}
             />
             <ReviewInputItem
-              label='Business Email'
-              fieldName='businessEmail'
+              label='Store Email'
+              fieldName='storeEmail'
               getValues={getValues}
             />
             <ReviewInputItem
-              label='Business Phone'
-              fieldName='businessPhone'
+              label='Store Phone'
+              fieldName='storePhone'
               getValues={getValues}
             />
             <ReviewInputItem
-              label='Business Logo'
-              fieldName='businessLogo'
+              label='Store Logo'
+              fieldName='storeLogo'
               getValues={getValues}
             />
-            <StoreFormHeading heading='Business Address' />
+            <StoreFormHeading heading='Store Address' />
             <ReviewInputItem
               label='Street Address'
-              fieldName='businessStreet'
+              fieldName='storeStreet'
               getValues={getValues}
             />
             <ReviewInputItem
               label='City'
-              fieldName='businessCity'
+              fieldName='storeCity'
               getValues={getValues}
             />
             <ReviewInputItem
               label='State'
-              fieldName='businessState'
+              fieldName='storeState'
               getValues={getValues}
             />
 
             <ReviewInputItem
               label='Country'
-              fieldName='businessCountry'
+              fieldName='storeCountry'
               getValues={getValues}
             />
             <ReviewInputItem
               label='Zip Code'
-              fieldName='businessZipcode'
+              fieldName='storeZipCode'
               getValues={getValues}
             />
           </div>
@@ -212,7 +212,7 @@ const ReviewInfoInput = ({ getValues }: ReviewInfoInputProps) => {
             />
             <ReviewInputItem
               label='Zip Code'
-              fieldName='billingZipcode'
+              fieldName='billingZipCode'
               getValues={getValues}
             />
           </div>

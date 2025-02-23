@@ -5,21 +5,25 @@ interface SubmitButtonProps {
   isLoading: boolean;
   buttonTitle: string;
   loadingButtonTitle?: string;
+  className?: string;
+  disabled?: boolean;
 }
 const SubmitButton = ({
   isLoading = false,
   buttonTitle,
   loadingButtonTitle,
+  className = '',
+  disabled = false,
 }: SubmitButtonProps) => {
   return (
     <div className='sm:col-span-1'>
       {isLoading ? (
         <button
           type='submit'
-          disabled
-          className='items-center px-5 py-2.5 mt-4 sm:mt-6 test-sm font-medium text-center 
-                  text-white bg-nezeza_green_600 hover:bg-green-700 rounded-lg fpcus:ring-4 focus:ring-green-200 focus:outline-none
-                  mr-2 inline-flex'
+          disabled={disabled}
+          className={`${className} items-center px-5 py-2.5 mt-4 sm:mt-6 test-sm font-medium text-center 
+                  text-white bg-nezeza_green_600 hover:bg-green-800 rounded-lg fpcus:ring-4 focus:ring-green-200 focus:outline-none
+                  mr-2`}
         >
           <svg
             aria-hidden='true'
@@ -44,8 +48,9 @@ const SubmitButton = ({
       ) : (
         <button
           type='submit'
-          className='inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 test-sm font-medium text-center 
-                  text-white bg-nezeza_green_600 rounded-lg fpcus:ring-4 focus:ring-green-200'
+          disabled={disabled}
+          className={`${className} items-center px-5 py-2.5 mt-4 sm:mt-6 test-sm font-medium text-center 
+                  text-white bg-nezeza_green_600 rounded-lg fpcus:ring-4 focus:ring-green-200`}
         >
           {/* <Plus className='w-5 h-5 mr-2' /> */}
           {buttonTitle}

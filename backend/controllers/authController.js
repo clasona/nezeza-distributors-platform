@@ -1,99 +1,108 @@
-// model imports 
+// model imports
 const User = require('../models/User');
 const Token = require('../models/Token');
 const Role = require('../models/Role');
 
-// utils imports 
+// utils imports
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const crypto = require('crypto');
 const {
-   attachCookiesToResponse, 
-   createTokenUser, 
-   sendVerificationEmail,
-   sendResetPasswordEmail, 
-   createHash
-  } = require('../utils');
+  attachCookiesToResponse,
+  createTokenUser,
+  sendVerificationEmail,
+  sendResetPasswordEmail,
+  createHash,
+} = require('../utils');
 
 const register = async (req, res) => {
- 
-  const { email, firstName,lastName, password, businessType} = req.body;
+  const { email, firstName, lastName, password, storeType } = req.body;
   console.log(req.body);
   const emailAlreadyExists = await User.findOne({ email });
   if (emailAlreadyExists) {
     throw new CustomError.BadRequestError('Email already exists');
   }
-  
-  
+
   // first registered user is an admin
   ///const isFirstAccount = (await Store.countDocuments({})) === 0;
-  //const {businessType } = await Store.findById(storeId);
-  
+  //const {storeType } = await Store.findById(storeId);
+
   //   const role = isFirstAccount ? 'admin' : 'user';
   let roleNames = [];
- 
-  switch (businessType) {
-      case 'E-commerce Marketplace':
+
+  switch (storeType) {
+    case 'admin':
       roleNames[0] = 'admin';
-      roleNames[1] = 'wholesaler'; //yves for testing, might remove it
-        break;
-      case 'manufacturing':
-        roleNames[0] = 'owner';
-        roleNames[1] = 'manufacturer';
-        break;
-      case 'wholesale':
-        roleNames[0] = 'owner';
-        roleNames[1] = 'wholesaler';
-        break;
-      case 'retail':
-        roleNames[0] = 'owner';
-        roleNames[1] = 'retailer';
-        break;
-      case 'retailer':
-        roleNames[0] = 'owner';
-        roleNames[1] = 'retailer';
-        break;
-      default:
-        case 'user':
-        roleNames[0] = 'customer';
+      break;
+    case 'manufacturing':
+      roleNames[0] = 'owner';
+      roleNames[1] = 'manufacturer';
+      break;
+    case 'wholesale':
+      roleNames[0] = 'owner';
+      roleNames[1] = 'wholesaler';
+      break;
+    case 'retail':
+      roleNames[0] = 'owner';
+      roleNames[1] = 'retailer';
+      break;
+    case 'retailer':
+      roleNames[0] = 'owner';
+      roleNames[1] = 'retailer';
+      break;
+    default:
+    case 'user':
+      // roleNames[0] = 'owner';
+      roleNames[0] = 'customer';
   }
 
   //console.log(roleNames);
-  // fine user roleNames from Role js 
+  // fine user roleNames from Role js
   let roles = await Role.find({ name: { $in: roleNames } });
-  
+
   console.log(roles);
 
   if (!roles || roles.length === 0) {
-    return res.status(StatusCodes.OK).json({ message: 'Please provide valid role(s)' });
+    return res
+      .status(StatusCodes.OK)
+      .json({ message: 'Please provide valid role(s)' });
   }
   const verificationToken = crypto.randomBytes(40).toString('hex');
-  const user = await User.create({ 
+  const user = await User.create({
     firstName,
-    lastName, 
-    email, 
-    password, 
-    roles: roles.map(role => role._id),  // Assign multiple role IDs
-    verificationToken, 
-    previousPasswords: []  // Initialize previousPasswords array
+    lastName,
+    email,
+    password,
+    roles: roles.map((role) => role._id), // Assign multiple role IDs
+    verificationToken,
+    previousPasswords: [], // Initialize previousPasswords array
   });
 
   // Add the current password to the previousPasswords array
-  user.previousPasswords.push(user.password); 
+  user.previousPasswords.push(user.password);
   await user.save();
   const origin = process.env.SERVER_URL; // server where the frontend is running
   // send verification email
-  await sendVerificationEmail({ name: user.name, email: user.email, verificationToken, origin });
+  await sendVerificationEmail({
+    name: user.name,
+    email: user.email,
+    verificationToken,
+    origin,
+  });
 
   //  Create a token for the user and attach it to the response as a cookie
   // we are no longer attaching the token to the response during registration
-/*    const tokenUser = createTokenUser(user);
+  /*    const tokenUser = createTokenUser(user);
    console.log(tokenUser);
    attachCookiesToResponse({ res, user: tokenUser }); */
 
-
   //  Send a verification token to the user while testng in the Postman
-  res.status(StatusCodes.CREATED).json({ msg:'Success! Please check your email to verify the account', verificationToken: user.verificationToken });
+  res
+    .status(StatusCodes.CREATED)
+    .json({
+      msg: 'Success! Please check your email to verify the account',
+      verificationToken: user.verificationToken,
+    });
 };
 
 /* 
@@ -110,7 +119,9 @@ const login = async (req, res) => {
   if (!email || !password) {
     throw new CustomError.BadRequestError('Please provide email and password');
   }
-  const user = await User.findOne({ email }).populate('roles').populate('storeId');
+  const user = await User.findOne({ email })
+    .populate('roles')
+    .populate('storeId');
   //console.log(user);
   if (!user) {
     throw new CustomError.UnauthenticatedError('Invalid Credentials');
@@ -120,10 +131,12 @@ const login = async (req, res) => {
     throw new CustomError.UnauthenticatedError('Invalid Credentials');
   }
   if (!user.isVerified) {
-    throw new CustomError.UnauthenticatedError('Account not verified. Please verify your email!');
+    throw new CustomError.UnauthenticatedError(
+      'Account not verified. Please verify your email!'
+    );
   }
   const tokenUser = createTokenUser(user);
-  // now attach 2 tokens(access token and refresh token) to cookies 
+  // now attach 2 tokens(access token and refresh token) to cookies
   // create refresh token
   let refreshToken = '';
   // check for existing token
@@ -139,19 +152,18 @@ const login = async (req, res) => {
     res.status(StatusCodes.OK).json({ user });
     return;
   }
-// create new token
+  // create new token
   refreshToken = crypto.randomBytes(40).toString('hex');
   const userAgent = req.headers['user-agent'];
   const ip = req.ip;
   const userToken = { refreshToken, ip, userAgent, user: user._id };
 
- const token = await Token.create(userToken);
- // attach tokens to response
- attachCookiesToResponse({ res, user: tokenUser, refreshToken });
+  const token = await Token.create(userToken);
+  // attach tokens to response
+  attachCookiesToResponse({ res, user: tokenUser, refreshToken });
 
-  res.status(StatusCodes.OK).json({ user});
+  res.status(StatusCodes.OK).json({ user });
 };
-
 
 /*
  Verify user email.
@@ -274,8 +286,6 @@ const resetPassword = async (req, res) => {
 
   res.send('reset password');
 };
-
-
 
 module.exports = {
   register,
