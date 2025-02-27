@@ -5,7 +5,7 @@ import CartProduct from '@/components/Cart/CartProduct';
 import ResetCart from '@/components/ResetCart';
 import Link from 'next/link';
 import CartPayment from '@/components/Cart/CartPayment';
-import { setCartItems } from '@/store/nextSlice';
+import { setCartItems } from '@/redux/nextSlice';
 import { getCart } from '@/utils/cart/getCart';
 
 const cartPage = () => {
@@ -16,7 +16,7 @@ const cartPage = () => {
   //  useEffect(() => {
   //    const fetchUpdatedCart = async () => {
   //      try {
-  //        const res = await getCart(); 
+  //        const res = await getCart();
 
   //        dispatch(setCartItems(res)); // Update Redux state with latest cart
   //      } catch (error) {
@@ -71,9 +71,7 @@ const cartPage = () => {
           </div>
         </>
       ) : (
-        <div
-          className='w-full col-span-5 flex flex-col items-center justify -center py-5 rounded-lg shadow-lg'
-        >
+        <div className='w-full col-span-5 flex flex-col items-center justify -center py-5 rounded-lg shadow-lg'>
           <h1 className='text-lg font-medium'>Your Cart is Empty</h1>
           {/* Redirect to this user's home page */}
           <Link href='/'>

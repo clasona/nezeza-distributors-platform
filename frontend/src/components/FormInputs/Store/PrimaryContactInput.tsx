@@ -57,7 +57,7 @@ const PrimaryContactInput = ({
           register={register}
           errors={errors}
           type='text'
-          disabled
+          // disabled
         />
         <TextInput
           label='Last Name'
@@ -66,7 +66,7 @@ const PrimaryContactInput = ({
           register={register}
           errors={errors}
           type='text'
-          disabled
+          // disabled
         />
         <TextInput
           label='Email'
@@ -75,7 +75,7 @@ const PrimaryContactInput = ({
           register={register}
           errors={errors}
           type='email'
-          disabled
+          // disabled
         />
         <TextInput
           label='Phone'

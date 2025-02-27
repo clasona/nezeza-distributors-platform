@@ -49,10 +49,9 @@ const SubmitButton = ({
         <button
           type='submit'
           disabled={disabled}
-          className={`${className} items-center px-5 py-2.5 mt-4 sm:mt-6 test-sm font-medium text-center 
+          className={`${className} flex items-center justify-center px-5 py-2.5 sm:mt-6 test-sm font-medium text-center 
                   text-white bg-nezeza_green_600 rounded-lg fpcus:ring-4 focus:ring-green-200`}
         >
-          {/* <Plus className='w-5 h-5 mr-2' /> */}
           {buttonTitle}
         </button>
       )}

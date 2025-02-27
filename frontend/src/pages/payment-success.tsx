@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { resetCart } from '@/store/nextSlice';
+import { resetCart } from '@/redux/nextSlice';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';

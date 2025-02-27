@@ -16,7 +16,7 @@ const {
 } = require('../utils');
 
 const register = async (req, res) => {
-  const { email, firstName, lastName, password, storeType } = req.body;
+  const { firstName, lastName, email, password, storeType } = req.body;
   console.log(req.body);
   const emailAlreadyExists = await User.findOne({ email });
   if (emailAlreadyExists) {
@@ -191,6 +191,35 @@ const verifyEmail = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: 'Email Verified' });
 };
 
+/*
+ Check user email is verified
+  User must provide the correct verification token to be able to verify their email.   
+ *  @param req - Express request object  
+   - verificationToken 
+ */
+const checkUserVerified = async (req, res) => {
+   const { email } = req.query; // Assuming email is sent as a query parameter
+
+   try {
+     const user = await User.findOne({ email });
+
+     if (!user) {
+       return res
+         .status(StatusCodes.NOT_FOUND)
+         .json({ verified: false, msg: 'User not found' });
+     }
+
+     return res
+       .status(StatusCodes.OK)
+       .json({ verified: user.isVerified, msg: 'Verification status checked' });
+   } catch (error) {
+     console.error('Error checking verification status:', error);
+     return res
+       .status(StatusCodes.INTERNAL_SERVER_ERROR)
+       .json({ verified: false, msg: 'Internal server error' });
+   }
+};
+
 /* 
  Logout user.
   User must be authenticated to be able to logout.   
@@ -292,6 +321,7 @@ module.exports = {
   login,
   logout,
   verifyEmail,
+  checkUserVerified,
   forgotPassword,
   resetPassword,
 };

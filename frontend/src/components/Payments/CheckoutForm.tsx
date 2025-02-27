@@ -14,7 +14,7 @@ import { confirmOrderPayment } from '@/utils/payment/confirmOrderPayment';
 import SuccessMessageModal from '../SuccessMessageModal';
 import ErrorMessageModal from '../ErrorMessageModal';
 import { useRouter } from 'next/router';
-import { resetCart } from '@/store/nextSlice';
+import { resetCart } from '@/redux/nextSlice';
 
 interface CheckoutFormProps {
   clientSecret: string;
