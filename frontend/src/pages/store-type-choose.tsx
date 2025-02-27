@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { resetCart } from '@/store/nextSlice';
+import { resetCart } from '@/redux/nextSlice';
 import Link from 'next/link';
 import DropdownInput from '@/components/FormInputs/DropdownInput';
 import { useForm } from 'react-hook-form';

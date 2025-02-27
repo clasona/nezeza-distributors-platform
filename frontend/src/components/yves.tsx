@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { HiShoppingCart } from 'react-icons/hi';
 import FormattedPrice from './FormattedPrice';
 import { useDispatch } from 'react-redux';
-import { addToCart, addToFavorite } from '@/store/nextSlice';
+import { addToCart, addToFavorite } from '@/redux/nextSlice';
 import { Heart } from 'lucide-react';
 import { useRouter } from 'next/router';
 

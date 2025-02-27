@@ -6,17 +6,20 @@ import Image from 'next/image';
 import { HiShoppingCart } from 'react-icons/hi';
 import FormattedPrice from './FormattedPrice';
 import { useDispatch } from 'react-redux';
-import { addToCart, addToFavorite } from '@/store/nextSlice';
+import { addToCart, addToFavorite } from '@/redux/nextSlice';
 import { Heart } from 'lucide-react';
 import { useRouter } from 'next/router';
+import SuccessMessageModal from './SuccessMessageModal';
+import ErrorMessageModal from './ErrorMessageModal';
 
 const Products = ({ productData }: any) => {
-   console.log('productData received:', productData); // Log RIGHT HERE
-   if (!productData || !Array.isArray(productData)) {
-     console.error('productData is missing or not an array!');
-     return <div>No products available.</div>; // Or a loading indicator
-   }
-  
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  if (!productData || !Array.isArray(productData)) {
+    console.error('productData is missing or not an array!');
+    return <div>No products available.</div>; // Or a loading indicator
+  }
+
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -62,44 +65,41 @@ const Products = ({ productData }: any) => {
                         border-gray-400 bg-white rounded-md flex flex-col translate-x-20 group-hover:translate-x-0
                         transition-transform duration-300'
             >
-              {
-                
-                  !(product.quantity < 1) && (
-                    <span
-                      onClick={() =>
-                        dispatch(
-                          addToCart({
-                            product,
-                            quantity: 1,
-                          })
-                        )
-                      }
-                      className={`w-full h-full border-b-[1px] border-b-gray-400 flex items-center justify-center 
-                            text-xl bg-transparent hover:bg-nezeza_yellow cursor-pointer duration-300
+              {!(product.quantity < 1) && (
+                <span
+                  onClick={() => {
+                    dispatch(
+                      addToCart({
+                        product,
+                        quantity: 1,
+                      })
+                    );
+                    setSuccessMessage('Added successfully!');
+                  }}
+                  className={`w-full h-full border-b-[1px] border-b-gray-400 flex items-center justify-center 
+                            text-xl bg-transparent hover:bg-nezeza_green_600 cursor-pointer duration-300
                             ${
                               product.quantity < 1
                                 ? 'cursor-not-allowed opacity-50'
                                 : ''
                             }`}
-                    >
-                      <HiShoppingCart />
-                    </span>
-                  )
-                
-              }
+                >
+                  <HiShoppingCart />
+                </span>
+              )}
 
-              {/* TODO: Not sure if we need this favoritefunctionality tho  */}
               <span
-                onClick={() =>
+                onClick={() => {
                   dispatch(
                     addToFavorite({
                       product,
                       quantity: 1,
                     })
-                  )
-                }
+                  );
+                  setSuccessMessage('Added successfully!');
+                }}
                 className='w-full h-full border-b-[1px] border-b-gray-400 flex items-center justify-center 
-                            text-xl bg-transparent hover:bg-nezeza_yellow cursor-pointer duration-300
+                            text-xl bg-transparent hover:bg-nezeza_green_600 cursor-pointer duration-300
                             '
               >
                 <Heart />
@@ -117,9 +117,6 @@ const Products = ({ productData }: any) => {
                 <FormattedPrice amount={product.price} />
               </span>
             </p>
-            {/* <p className='text-xs text-gray-600 text-justify'>
-                {description.substring(0, 50)}
-              </p> */}
             <p
               className='text-xs text-gray-600 text-justify'
               onClick={() => {
@@ -155,9 +152,10 @@ const Products = ({ productData }: any) => {
                         quantity: 1,
                       })
                     );
+                setSuccessMessage('Added successfully!');
               }}
-              className='h-10 font-medium bg-nezeza_dark_blue text-white round-md hover:bg-nezeza_yellow 
-                            hover:text-black duration-300 mt-2'
+              className='h-10 font-medium bg-nezeza_dark_blue text-white round-md hover:bg-nezeza_green_600 
+                             duration-300 mt-2'
             >
               {product.quantity < 1 ? 'Add to Favorites' : 'Add to Cart'}
             </button>
@@ -171,6 +169,10 @@ const Products = ({ productData }: any) => {
           </div>
         </div>
       ))}
+      {successMessage && (
+        <SuccessMessageModal successMessage={successMessage} />
+      )}
+      {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
     </div>
   );
 };

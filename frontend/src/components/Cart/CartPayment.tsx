@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { setCartItems } from '@/store/nextSlice';
+import { setCartItems } from '@/redux/nextSlice';
 import { useRouter } from 'next/router';
 import ErrorMessageModal from '../ErrorMessageModal';
 import { getCart } from '@/utils/cart/getCart';
@@ -40,7 +40,7 @@ const CartPayment = () => {
     try {
       //  const serverCartItems = await getCart(); // Get cart from server
       // const mergedCartItems = mergeCartItems(cartItemsData, serverCartItems);
-      
+
       const filteredCartItems = cartItemsData.filter(
         (item: OrderItemsProps) => item.product.quantity > 0
       );
@@ -74,16 +74,15 @@ const CartPayment = () => {
       </p>
 
       <div className='flex flex-col items-center text-center justify-center'>
-        
-          <button
-            onClick={handleCheckout}
-            className={`w-full p-2 text-sm font-semibold bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 ${
-              !userInfo ? 'pointer-events-none bg-nezeza_gray_600' : ''
-            }`}
-          >
-            Proceed to Checkout
-          </button>
-        
+        <button
+          onClick={handleCheckout}
+          className={`w-full p-2 text-sm font-semibold bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 ${
+            !userInfo ? 'pointer-events-none bg-nezeza_gray_600' : ''
+          }`}
+        >
+          Proceed to Checkout
+        </button>
+
         {!userInfo && (
           <p className='text-xs mt-1 text-nezeza_red_600 font-semibold animate-bounce'>
             Please Login to Continue

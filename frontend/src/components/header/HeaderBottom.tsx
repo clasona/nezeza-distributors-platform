@@ -3,7 +3,7 @@ import { LuMenu } from 'react-icons/lu';
 import { useSelector, useDispatch } from 'react-redux';
 import { stateProps } from '../../../type';
 import { signOut } from 'next-auth/react';
-import { removeUser, removeStore } from '@/store/nextSlice';
+import { removeUser, removeStore } from '@/redux/nextSlice';
 import { useRouter } from 'next/router';
 import { LogoutButton } from '../LogoutButton';
 import Link from 'next/link';

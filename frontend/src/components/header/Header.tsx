@@ -17,7 +17,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { stateProps } from '../../../type';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
-import { addUser } from '@/store/nextSlice';
+import { addUser } from '@/redux/nextSlice';
 import { getUser } from '@/utils/user/getUser';
 import defaultUserImage from '@/images/defaultUserImage.png';
 import {
@@ -32,16 +32,17 @@ import {
 } from 'lucide-react';
 import { LogoutButton } from '../LogoutButton';
 import { getSellerTypeBaseurl } from '@/lib/utils';
+import SearchField from '../Table/SearchField';
 
 // import { SessionProvider } from "next-auth/react";
 
 const Header = () => {
   const { data: session } = useSession();
-  const { cartItemsData, productData, favoriteData, userInfo, storeInfo } = useSelector(
+  const { cartItemsData, favoriteData, userInfo, storeInfo } = useSelector(
     (state: stateProps) => state.next
   );
-
   const [currentUserData, setCurrentUserData] = useState<any | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const dispatch = useDispatch();
 
@@ -71,6 +72,24 @@ const Header = () => {
     }
   }, [session]);
 
+  // useEffect(() => {
+  //   const flteredBySearching = myOrders.filter((order) => {
+  //     const searchMatch = Object.values(order)
+  //       .join(' ')
+  //       .toLowerCase()
+  //       .includes(searchQuery.toLowerCase());
+  //     const statusMatch =
+  //       statusFilter === 'Status' || order.fulfillmentStatus === statusFilter;
+  //     return searchMatch && statusMatch;
+  //   });
+
+  //   setFilteredOrders(flteredBySearching);
+  // }, [searchQuery, statusFilter, myOrders]);
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query); // Update the search query
+  };
+
   return (
     <div className='w-full h-20 bg-nezeza_dark_blue text-lightText sticky top-0 z-50'>
       <div className='h-full w-full mx-auto inline-flex items-center justify-between gap-1 mdl:gap-3 px-4 '>
@@ -90,7 +109,11 @@ const Header = () => {
           </div>
         </div>
         {/* searchbar */}
-        <div className='flex-1 h-10 hidden md:inline-flex items-center justify-between relative '>
+        <SearchField
+          searchFieldPlaceholder='nezeza products'
+          onSearchChange={handleSearchChange}
+        />
+        {/* <div className='flex-1 h-10 hidden md:inline-flex items-center justify-between relative '>
           <input
             className='w-full h-full rounded-3xl px-2 placeholder:text-sm text-base text-black border-[3px] border-transparent outline-none
                 focus-visible:border-nezeza_yellow'
@@ -103,7 +126,7 @@ const Header = () => {
           >
             <HiOutlineSearch />
           </span>
-        </div>
+        </div> */}
         <div className='text-xs text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'>
           <Heart size={22} />
           <p className='text-white font-bold text-center'>Favorites</p>{' '}

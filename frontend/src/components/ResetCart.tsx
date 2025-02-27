@@ -1,4 +1,4 @@
-import { clearCartOnServer, resetCart } from '@/store/nextSlice';
+import { clearCartOnServer, resetCart } from '@/redux/nextSlice';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ConfirmResetCartModal from './Cart/ConfirmResetCartModal';
@@ -8,10 +8,10 @@ const ResetCart = () => {
   const [isConfirmCartResetModalOpen, setIsConfirmCartResetModalOpen] =
     useState(false);
 
-    const handleResetCartClick = () => {
-      setIsConfirmCartResetModalOpen(true); // Only open the modal
-    };
-  
+  const handleResetCartClick = () => {
+    setIsConfirmCartResetModalOpen(true); // Only open the modal
+  };
+
   const handleResetCart = () => {
     dispatch(resetCart()); // Clear cart in Redux
     dispatch(clearCartOnServer()); // Clear cart on the server (async)

@@ -151,7 +151,6 @@ const ConfirmUpdateProductModal = ({
         {/* <DropdownInputSearchable options={productOptions} /> */}
         <DropdownInputSearchableAsync
           label='Select Item'
-          className=''
           onChange={handleProductSelectChange}
         />
         <div className='flex justify-end space-x-4 mt-4'>
