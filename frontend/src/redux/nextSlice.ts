@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { OrderItemsProps, PaymentProps, StoreProduct, StoreProps } from '../../type';
 import { clearCart } from '@/utils/cart/clearCart';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { OrderItemsProps, PaymentProps, StoreProps } from '../../type';
 
 interface NextState {
   productData: OrderItemsProps[];

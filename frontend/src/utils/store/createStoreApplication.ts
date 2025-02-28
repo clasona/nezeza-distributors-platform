@@ -1,13 +1,13 @@
 import React from 'react';
 import axios from 'axios';
 
-import { StoreProps } from '../../../type';
+import { StoreProps, UserProps } from '../../../type';
 
 export const createStoreApplication = async (
-  userInfo: any,
+  userInfo: UserProps,
   storeApplicationData: StoreProps
 ) => {
-  const ownerId = userInfo.userId;
+  const ownerId = userInfo._id;
 
   try {
     const response = await axios.post(

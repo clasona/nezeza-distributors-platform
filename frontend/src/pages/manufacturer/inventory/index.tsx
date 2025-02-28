@@ -1,7 +1,5 @@
-import React from 'react';
-import ManufacturerLayout from '../layout';
 import SellerInventory from '@/components/SellerInventory';
-import SellerProducts from '@/components/SellerProducts';
+import ManufacturerLayout from '../layout';
 
 const ManufacturerInventory = () => {
   return (

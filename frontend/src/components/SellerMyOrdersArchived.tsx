@@ -213,7 +213,7 @@ const SellerMyOrders = () => {
 
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(selectedRows.map((id) => deleteMyOrder(id)));
+      // await Promise.all(selectedRows.map((id) => deleteMyOrder(id)));
 
       setFilteredOrders((prevInventory) =>
         prevInventory.filter((item) => !selectedRows.includes(item._id))

@@ -7,17 +7,10 @@ Admin can:
 
 'use client';
 
-import React, { PropsWithChildren, useEffect } from 'react';
-import Link from 'next/link';
-import { useState } from 'react';
-import Sidebar from '../../components/Sidebar';
 import SideNavbar from '@/components/Admin/SideNavbar';
-import TopNavbar from '@/components/TopNavbar';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import Providers from '@/context/Providers';
+import { PropsWithChildren, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../../type';
-// import { AppSidebar } from '@/components/app-sidebar';
 
 const AdminLayout = ({ children }: PropsWithChildren<{}>) => {
   const [showSidebar, setShowSidebar] = useState(true); //TODO: make false

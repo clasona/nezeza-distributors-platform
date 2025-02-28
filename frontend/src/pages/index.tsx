@@ -1,13 +1,6 @@
-import Image from "next/image";
-import localFont from "next/font/local";
-import { Inter } from "next/font/google";
-import Header from "@/components/header/Header";
-import HeaderBottom from "@/components/header/HeaderBottom";
-import Footer from "@/components/Footer";
 import Banner from "@/components/Banner";
 import Products from "@/components/Products";
-import { ProductProps } from "../../type"
-// import { getServerSideProps } from './utils/fetchProducts';
+import { ProductProps } from "../../type";
 
 interface Props{
   productData: ProductProps;

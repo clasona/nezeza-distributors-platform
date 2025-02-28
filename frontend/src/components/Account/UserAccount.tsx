@@ -1,25 +1,19 @@
-import Heading from '@/components/Heading';
 import React, { useEffect, useState } from 'react';
-import FormHeader from '@/components/FormHeader';
 import TextInput from '@/components/FormInputs/TextInput';
-import Button from '@/components/FormInputs/Button';
 import { useForm } from 'react-hook-form';
-import { Edit3, Plus } from 'lucide-react';
 import defaultUserImage from '@/images/defaultUserImage.png';
 import Image from 'next/image';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
 import { updateUser } from '@/utils/user/updateUser';
-import { useSelector } from 'react-redux';
 import SuccessMessageModal from '@/components/SuccessMessageModal';
 import ErrorMessageModal from '@/components/ErrorMessageModal';
 import { getUser } from '@/utils/user/getUser';
 import CloudinaryImageUpload from '../FormInputs/CloudinaryImageUpload';
-import { stateProps } from '../../../type';
 import PageHeader from '../PageHeader';
+import { UserProps } from '../../../type';
 
 interface UserAccountProps {
-  // onSubmitSuccess?: (data: any) => void;
-  userInfo:any;
+  userInfo:UserProps;
 }
 const UserAccount = ({ userInfo }: UserAccountProps) => {
   const {
@@ -27,20 +21,18 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
     handleSubmit,
     formState: { errors },
     setValue,
-    getValues,
   } = useForm();
 
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-
   const [currentUserData, setCurrentUserData] = useState<any | null>(null);
   const [userProfilePicture, setUserProfilePicture] = useState<any>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userInfo?.userId) return; // Ensure userId exists before fetching
+      if (!userInfo?._id) return; // Ensure userId exists before fetching
       try {
-        const userData = await getUser(userInfo.userId);
+        const userData = await getUser(userInfo._id);
         setCurrentUserData(userData);
         // Set form values
         setValue('firstName', userData.firstName || '');
@@ -78,15 +70,11 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
 
     console.log('changes', updatedFields);
     try {
-      await updateUser(userInfo.userId, updatedFields);
+      await updateUser(userInfo._id, updatedFields);
 
       setErrorMessage('');
       setSuccessMessage(`Account data updated successfully!`);
       setTimeout(() => setSuccessMessage(''), 4000);
-
-      //   if (onSubmitSuccess) {
-      //   onSubmitSuccess(response.data);
-      //   }
     } catch (error) {
       setErrorMessage('Error updating account data.');
     }

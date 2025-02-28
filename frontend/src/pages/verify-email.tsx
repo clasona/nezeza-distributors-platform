@@ -1,8 +1,8 @@
 // pages/register-verify.tsx
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { checkUserVerified } from '@/utils/auth/checkUserVerified';
 import { resendVerificationEmail } from '@/utils/auth/resendVerification';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 const RegisterVerifyPage = () => {
   const router = useRouter();

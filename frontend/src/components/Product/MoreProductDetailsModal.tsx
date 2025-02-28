@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import { addToCart, addToFavorite } from '@/redux/nextSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { ProductProps } from '../../../type';
 
 interface ProductMoreInfoModalProps {
@@ -21,6 +23,9 @@ const MoreProductDetailsModal = ({
 }: ProductMoreInfoModalProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1); // Quantity state
+  const images = product.images ?? []; 
+    const dispatch = useDispatch();
+
 
   if (!isOpen) return null;
 
@@ -30,7 +35,7 @@ const MoreProductDetailsModal = ({
 
   const handleNextImage = () => {
     setCurrentImageIndex((prev) =>
-      prev < product.images.length - 1 ? prev + 1 : prev
+      prev < images.length - 1 ? prev + 1 : prev
     );
   };
 
@@ -57,14 +62,14 @@ const MoreProductDetailsModal = ({
               <ChevronLeft size={24} />
             </button>
             <img
-              src={product.images[currentImageIndex]}
+              src={images[currentImageIndex]}
               alt={product.title}
               className='w-full h-64 object-cover rounded-md'
             />
             <button
               onClick={handleNextImage}
               className='absolute top-1/2 right-0 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md'
-              disabled={currentImageIndex === product.images.length - 1}
+              disabled={currentImageIndex === images.length - 1}
             >
               <ChevronRight size={24} />
             </button>
@@ -80,7 +85,8 @@ const MoreProductDetailsModal = ({
             <div className='flex items-center mt-2'>
               <span className='text-yellow-500'>⭐⭐⭐⭐⭐</span>
               <span className='ml-2 text-sm text-gray-600'>
-                ({product.reviewsCount} Reviews)
+                {/* ({product.reviewsCount} Reviews) */} {'nbr of'}
+                Reviews
               </span>
             </div>
 
@@ -111,19 +117,35 @@ const MoreProductDetailsModal = ({
             {/* Action Buttons */}
             <div className='mt-4'>
               <button
-                onClick={() => onAddToCart(product._id, quantity)}
+                onClick={() => {
+                  dispatch(
+                    addToCart({
+                      product,
+                      quantity: 1,
+                    })
+                  );
+                  // setSuccessMessage('Added successfully!');
+                }}
                 className='w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300'
               >
                 Add to Cart
               </button>
               <button
-                onClick={() => onBuyAgain(product._id)}
+                // onClick={() => onBuyAgain(product._id)}
                 className='w-full mt-2 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300'
               >
                 Buy Again
               </button>
               <button
-                onClick={() => onAddToFavorites(product._id)}
+                onClick={() => {
+                  dispatch(
+                    addToFavorite({
+                      product,
+                      quantity: 1,
+                    })
+                  );
+                  // setSuccessMessage('Added successfully!');
+                }}
                 className='w-full mt-2 bg-yellow-600 text-white py-2 rounded-lg hover:bg-yellow-700 transition duration-300'
               >
                 Add to Favorites
@@ -136,18 +158,22 @@ const MoreProductDetailsModal = ({
         <div className='mt-4'>
           <h5 className='font-semibold'>Product Details</h5>
           <p className='text-sm mt-2'>
-            <strong>Material:</strong> {product.material}
+            <strong>Material:</strong>
+            {/* {product.material} */} {'enter'}
           </p>
           <p className='text-sm'>
-            <strong>Dimensions:</strong> {product.dimensions}
+            <strong>Dimensions:</strong>
+            {/* {product.dimensions} */}
+            {'enter'}
           </p>
           <h5 className='font-semibold mt-4'>Features:</h5>
           <ul className='list-disc pl-5'>
-            {product.features.map((feature, index) => (
+            {/* {product.features.map((feature, index) => (
               <li key={index} className='text-sm'>
                 {feature}
               </li>
-            ))}
+            ))} */}{' '}
+            {'enter'}
           </ul>
         </div>
       </div>

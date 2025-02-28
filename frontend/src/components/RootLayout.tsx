@@ -1,12 +1,11 @@
 // For the page apsects that remain static when you scroll like the header etc
 
-import React, { ReactElement, useEffect, useState } from 'react';
+import Footer from '@/components/Footer';
 import Header from '@/components/header/Header';
 import HeaderBottom from '@/components/header/HeaderBottom';
-import Footer from '@/components/Footer';
+import { ReactElement, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../type';
-import CustomerSideNavbar from './CustomerSideNavbar';
 import FullScreenLoader from './Loaders/FullScreenLoader';
 
 interface Props {
@@ -55,7 +54,7 @@ const RootLayout = ({ children }: Props) => {
         {/* <CustomerSideNavbar
               showSidebar={showSidebar}
               setShowSidebar={setShowSidebar}
-              basePath='/user'
+              basePath='/customer'
             /> 
           </>
         )}

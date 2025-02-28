@@ -16,7 +16,7 @@ import PageHeader from '@/components/PageHeader';
 import { stateProps, UserProps } from '../../../type';
 import Loading from '../Loaders/Loading';
 
-const UserNotifications = (userInfo: any) => {
+const UserNotifications = () => {
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');

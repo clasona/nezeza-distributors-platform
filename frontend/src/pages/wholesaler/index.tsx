@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import WholesalerLayout from './layout';
 import Heading from '@/components/Heading';
-import { OrderProps, stateProps } from '../../../type';
-
-import { useSelector } from 'react-redux';
 import SmallCards from '@/components/SmallCards';
+import { createStripeAccount } from '@/utils/stripe/createStripeAccount';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { OrderProps, stateProps } from '../../../type';
+import { fetchCustomerOrders } from '../../utils/order/fetchCustomerOrders';
 import { getMyUnarchivedOrders } from '../../utils/order/getMyUnarchivedOrders';
 import { calculateOrderStats } from '../../utils/orderUtils';
-import { fetchCustomerOrders } from '../../utils/order/fetchCustomerOrders';
-import Link from 'next/link';
-import { createStripeAccount } from '@/utils/stripe/createStripeAccount';
+import WholesalerLayout from './layout';
 
 const Dashboard = () => {
   const { userInfo, storeInfo } = useSelector(

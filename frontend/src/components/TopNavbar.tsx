@@ -1,6 +1,3 @@
-import React, { useEffect, useState } from 'react';
-import { GiHamburgerMenu } from 'react-icons/gi';
-import Image from 'next/image';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,26 +6,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  MdAccountCircle,
-  MdOutlineNotifications,
-  MdOutlineClose,
-} from 'react-icons/md';
+import { useEffect, useState } from 'react';
 import { GoSidebarCollapse } from 'react-icons/go';
-
-import Link from 'next/link';
-import ThemeSwitcher from '@/components/ThemeSwitcher';
-import {
-  Bell,
-  CircleUserRound,
-  LayoutDashboard,
-  LogOut,
-  UserRound,
-} from 'lucide-react';
+import { MdOutlineClose } from 'react-icons/md';
 import { getAllNotifications } from '@/utils/notificationUtils';
+import { Bell, CircleHelp, CircleUserRound, LayoutDashboard } from 'lucide-react';
+import Link from 'next/link';
 import { NotificationProps } from '../../type';
 import { LogoutButton } from './LogoutButton';
-// import { SidebarTrigger } from '@/components/ui/sidebar';
 
 interface TopNavbarProps {
   storeName: string;
@@ -182,6 +167,15 @@ const TopNavbar = ({
                 {/* <CgProfile /> */}
                 <CircleUserRound />
                 <span>Store Account</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link
+                href={`/${basePath}/support`}
+                className='flex items-center space-x-2'
+              >
+                <CircleHelp />
+                <span>Support</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>
