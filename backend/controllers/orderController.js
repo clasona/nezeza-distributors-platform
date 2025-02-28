@@ -286,7 +286,6 @@ const getAllOrders = async (req, res) => {
     .populate('sellerStoreId')
     .skip(parseInt(offset))
     .limit(parseInt(limit));
-  console.log(orders);
   if (orders.length < 1) {
     return res
       .status(StatusCodes.OK)

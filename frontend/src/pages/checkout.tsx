@@ -1,15 +1,14 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import FormattedPrice from '@/components/FormattedPrice';
+import Loading from '@/components/Loaders/Loading';
+import { addPayment } from '@/redux/nextSlice';
+import { getClientSecret } from '@/utils/order/getClientSecret';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { getClientSecret } from '@/utils/order/getClientSecret';
-import { OrderItemsProps, OrderProps, stateProps } from '../../type';
-import CheckoutForm from '../components/Payments/CheckoutForm';
-import { useDispatch, useSelector } from 'react-redux';
-import { addPayment } from '@/redux/nextSlice';
-import { createCustomerSession } from '@/utils/payment/createCustomerSession';
-import Loading from '@/components/Loaders/Loading';
-import FormattedPrice from '@/components/FormattedPrice';
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { OrderItemsProps, stateProps } from '../../type';
+import CheckoutForm from '../components/Payments/CheckoutForm';
 
 // Ensure Stripe key is set before loading Stripe
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {

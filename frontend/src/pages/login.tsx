@@ -1,23 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { signIn } from 'next-auth/react';
-import { FaGoogle } from 'react-icons/fa';
-import {
-  AddressProps,
-  OrderItemsProps,
-  stateProps,
-  StoreProps,
-} from '../../type';
-import { useSelector, useDispatch } from 'react-redux';
-import { addUser, addStore, setCartItems } from '@/redux/nextSlice';
-import axios, { AxiosError } from 'axios';
-import { useRouter } from 'next/router';
-import { createStore } from '../utils/store/createStore';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
+import { addStore, addUser, setCartItems } from '@/redux/nextSlice';
+import { loginUser } from '@/utils/auth/loginUser';
 import { getCart } from '@/utils/cart/getCart';
 import { mergeCartItems } from '@/utils/cart/mergeCartItems';
-import SuccessMessageModal from '@/components/SuccessMessageModal';
-import ErrorMessageModal from '@/components/ErrorMessageModal';
-import { loginUser } from '@/utils/auth/loginUser';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { FaGoogle } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { stateProps } from '../../type';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -70,7 +61,7 @@ const LoginPage = () => {
         // set logged in userInfo to redux for further retrieval
         dispatch(
           addUser({
-            userId: userData._id,
+            _id: userData._id,
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
@@ -158,7 +149,7 @@ const LoginPage = () => {
             loadingButtonTitle='Logging in ...'
             className='w-full h-10'
           />
-          
+
           <button
             type='button'
             onClick={handleGoogleLogin}

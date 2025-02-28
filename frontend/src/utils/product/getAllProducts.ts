@@ -8,7 +8,6 @@ export const getAllProducts = async () => {
       `http://localhost:8000/api/v1/products/all`,
 
       {
-        //   params: { manufacturerId: userInfo.userId },
         withCredentials: true, // Include credentials like cookies for authorization
       }
     );

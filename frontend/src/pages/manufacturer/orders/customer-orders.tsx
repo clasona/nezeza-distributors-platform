@@ -1,7 +1,5 @@
-import React from 'react';
-import ManufacturerLayout from '../layout';
 import SellerCustomerOrders from '@/components/SellerCustomerOrders';
-import SellerProducts from '@/components/SellerProducts';
+import ManufacturerLayout from '../layout';
 
 const ManufacturerCustomerOrders = () => {
   return (

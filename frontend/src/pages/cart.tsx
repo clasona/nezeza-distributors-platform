@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { OrderItemsProps, StoreProduct, stateProps } from '../../type';
+import CartPayment from '@/components/Cart/CartPayment';
 import CartProduct from '@/components/Cart/CartProduct';
 import ResetCart from '@/components/ResetCart';
 import Link from 'next/link';
-import CartPayment from '@/components/Cart/CartPayment';
-import { setCartItems } from '@/redux/nextSlice';
-import { getCart } from '@/utils/cart/getCart';
+import { useSelector } from 'react-redux';
+import { OrderItemsProps, stateProps } from '../../type';
 
 const cartPage = () => {
   const { cartItemsData } = useSelector((state: stateProps) => state.next);

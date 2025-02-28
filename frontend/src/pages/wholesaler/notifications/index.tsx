@@ -1,16 +1,12 @@
-import React from 'react';
-import WholesalerLayout from '../layout';
-import { useSelector } from 'react-redux';
-import { stateProps, UserProps } from '../../../../type';
 import UserNotifications from '@/components/Notifications/UserNotifications';
+import WholesalerLayout from '../layout';
 
 const WholesalerAccount = () => {
-  const { userInfo } = useSelector((state: stateProps) => state.next);
 
   return (
     <div>
       <WholesalerLayout>
-        <UserNotifications userInfo={userInfo} />
+        <UserNotifications />
       </WholesalerLayout>
     </div>
   );

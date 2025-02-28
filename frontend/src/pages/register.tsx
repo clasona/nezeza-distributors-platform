@@ -1,25 +1,15 @@
+import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
+import SubmitButton from '@/components/FormInputs/SubmitButton';
+import TextInput from '@/components/FormInputs/TextInput';
+import { registerUser } from '@/utils/auth/registerUser';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import TextInput from '@/components/FormInputs/TextInput';
-import SubmitButton from '@/components/FormInputs/SubmitButton';
-import ErrorMessageModal from '@/components/ErrorMessageModal';
-import SuccessMessageModal from '@/components/SuccessMessageModal';
-import { registerUser } from '@/utils/auth/registerUser';
-import { createStore } from '../utils/store/createStore';
-import { AddressProps, StoreProps } from '../../type';
 import { FaGoogle } from 'react-icons/fa';
-import { signIn } from 'next-auth/react';
-import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
-import { checkUserVerified } from '@/utils/auth/checkUserVerified';
-import { useRouter } from 'next/router';
 
 const RegisterPage = () => {
   // State hooks
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [verificationPrompt, setVerificationPrompt] = useState(false);
-  const [email, setEmail] = useState('');
-  const [repeatPassword, setRepeatPassword] = useState('');
   const [isSeller, setIsSeller] = useState(false);
   const [storeType, setStoreType] = useState<{
     value: string;
@@ -27,6 +17,8 @@ const RegisterPage = () => {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
 
   // React Hook Form
   const {
@@ -58,9 +50,8 @@ const RegisterPage = () => {
     try {
       console.log(data);
       await registerUser(data);
-      setSuccessMessage('User registered successfully.');
-       localStorage.setItem('verificationEmail', data.email);
-       localStorage.setItem('isSeller', isSeller.toString());
+      localStorage.setItem('verificationEmail', data.email);
+      localStorage.setItem('isSeller', isSeller.toString());
       router.push(`/verify-email`);
     } catch (error: any) {
       console.error('Register error:', error);

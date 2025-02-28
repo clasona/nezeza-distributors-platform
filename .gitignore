@@ -1,0 +1,41 @@
+# Node.js backend
+backend/node_modules/
+backend/dist/
+backend/.env
+backend/.env.*.local
+backend/.env.*.development
+backend/.env.*.production
+backend/.env.*.test
+backend/.env.*.development.local
+backend/.env.*.production.local
+backend/.env.*.test.local
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+
+# Next.js frontend
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/node_modules/
+frontend/.env
+frontend/.env.*.local
+frontend/.env.*.development
+frontend/.env.*.production
+frontend/.env.*.test
+frontend/.env.*.development.local
+frontend/.env.*.production.local
+frontend/.env.*.test.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Common files
+.DS_Store
+*.log
+*.swp
+*.swo
+.vscode/
+.idea/
+.history/
+coverage/

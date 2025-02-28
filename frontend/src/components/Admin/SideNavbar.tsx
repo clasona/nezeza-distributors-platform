@@ -1,32 +1,20 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import logo from '@/images/logo.jpg';
-import { usePathname } from 'next/navigation';
 import {
-    Book,
-  ChartBarStacked,
+  Book,
   CircleDollarSign,
-  House,
-  Inbox,
   LayoutDashboard,
   MessageSquare,
-  Paperclip,
   ShoppingCart,
-  SquareArrowOutUpRight,
   Store,
   Truck,
   UserRoundPen,
-  Users,
-  UsersRound,
-  Warehouse,
+  UsersRound
 } from 'lucide-react';
-import Button from '../FormInputs/Button';
-import { useSelector } from 'react-redux';
-import { stateProps } from '../../../type';
-import { useRouter } from 'next/router';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { LogoutButton } from '../LogoutButton';
 
 interface SideNavbarProps {

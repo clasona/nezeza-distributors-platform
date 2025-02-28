@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import WholesalerLayout from '../layout';
 import FormHeader from '@/components/FormHeader';
 import NewProductForm from '@/components/Product/NewProductForm';
+import WholesalerLayout from '../layout';
 
 const NewProduct = () => {
   const handleFormSubmit = (data: any) => {

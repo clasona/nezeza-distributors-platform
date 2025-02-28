@@ -58,7 +58,7 @@ export interface OrderProps {
   createdAt: string;
   updatedAt: string;
   paymentMethod: string;
-  shippingAddress: AddressProps; //TODO: change to AddressProps;
+  shippingAddress: AddressProps;
   archived: boolean;
 }
 
@@ -87,9 +87,9 @@ export interface PaymentProps {
 
 export interface InventoryProps {
   _id: number;
-  // title: string;
-  // description: string;
-  // image: string;
+  title: string;
+  description: string;
+  image: string;
   owner: number;
   buyerStoreId: number;
   productId: number;
@@ -139,7 +139,7 @@ export interface StoreProps {
 export type NewStoreProps = Omit<StoreProps, '_id' | 'createdAt' | 'updatedAt'>;
 
 export interface StoreApplicationProps {
-  _id: number;
+  _id: string;
   status: string;
   // storeName: string;
   primaryContactId: UserProps;
@@ -174,7 +174,7 @@ export interface stateProps {
 }
 
 export interface AddressProps {
-  _id: number;
+  _id?: number;
   street: string;
   city: string;
   state: string;
