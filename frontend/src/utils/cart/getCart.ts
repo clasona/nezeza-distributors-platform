@@ -13,21 +13,22 @@ export const getCart = async () => {
       return cartItemsData;
     }
   } catch (error: any) {
-    console.error('Error fetching cart items data:', error);
-    if (typeof error === 'string') {
-      console.error(error);
-    } else if (
-      error &&
-      typeof error === 'object' &&
-      'response' in error &&
-      error.response &&
-      'data' in error.response
-    ) {
-      const errorData = error.response.data as ErrorResponse;
-      console.error(errorData.msg || 'An error occured');
-    } else {
-      console.error('An unexpected error occured');
-    }
-    return null;
+    throw error;
+    // console.error('Error fetching cart items data:', error);
+    // if (typeof error === 'string') {
+    //   console.error(error);
+    // } else if (
+    //   error &&
+    //   typeof error === 'object' &&
+    //   'response' in error &&
+    //   error.response &&
+    //   'data' in error.response
+    // ) {
+    //   const errorData = error.response.data as ErrorResponse;
+    //   console.error(errorData.msg || 'An error occured');
+    // } else {
+    //   console.error('An unexpected error occured');
+    // }
+    // return null;
   }
 };

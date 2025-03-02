@@ -11,6 +11,7 @@ import { FaGoogle } from 'react-icons/fa';
 const RegisterPage = () => {
   // State hooks
   const [isSeller, setIsSeller] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [storeType, setStoreType] = useState<{
     value: string;
     label: string;
@@ -31,6 +32,7 @@ const RegisterPage = () => {
   // Form submission handler
   const onSubmit = async (data: any) => {
     setIsLoading(true);
+    setErrorMessage('');
     if (data.password !== data.repeatPassword) {
       setErrorMessage("Passwords don't match");
       setIsLoading(false);
@@ -45,6 +47,12 @@ const RegisterPage = () => {
     // Add storeType to the data object if isSeller is true
     if (isSeller && storeType) {
       data.storeType = storeType.value;
+    }
+
+    if (!termsAccepted) {
+      setErrorMessage('Please accept the terms and conditions.');
+      setIsLoading(false);
+      return;
     }
 
     try {
@@ -90,7 +98,7 @@ const RegisterPage = () => {
 
   return (
     <div className='w-full bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue p-4'>
+      <div className='bg-nezeza_light_blue rounded-lg p-4'>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className='w-full max-w-md bg-white p-6 rounded-lg shadow-lg'
@@ -164,6 +172,26 @@ const RegisterPage = () => {
                 value={storeType}
               />
             )}
+          </div>
+          <div className='flex items-center mt-4'>
+            <input
+              type='checkbox'
+              id='terms'
+              className='mr-2'
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+            />
+            <label htmlFor='terms' className='text-xs text-nezeza_gray_600'>
+              I accept the{' '}
+              <a
+                href='/terms' //TODO: Implement this page
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-nezeza_dark_blue hover:text-nezeza_dark_blue underline transition-colors duration-250'
+              >
+                terms and conditions
+              </a>
+            </label>
           </div>
           {errorMessage && (
             <p className='mt-4 text-center text-nezeza_red_600'>

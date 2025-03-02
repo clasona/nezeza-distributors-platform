@@ -1,30 +1,20 @@
-import axios from 'axios';
 import { OrderProps } from '../../../type';
+import axiosInstance from '../axiosInstance';
 
 export const getMyUnarchivedOrders = async () => {
-  try {
-    const response = await axios.get(
-      'http://localhost:8000/api/v1/orders/buying',
-      {
-        withCredentials: true, // Include credentials like cookies for authorization
-      }
-    );
-    const ordersData = response.data.orders;
-
-    // Filter the orders here:
-    const nonArchivedOrders = ordersData.filter(
-      (order: OrderProps) => order.fulfillmentStatus !== 'Archived'
-    );
+   try {
+    const response = await axiosInstance.get('/orders/buying');
 
     if (response.status !== 200) {
       console.log('my orders data not fetched.');
-      // console.log(ordersData);
+      return null;
     } else {
-      console.log('my orders data fetched successfully...');
-      // console.log(ordersData);
+      const nonArchivedOrders = response.data.orders.filter(
+        (order: OrderProps) => order.fulfillmentStatus !== 'Archived'
+      );
       return nonArchivedOrders;
     }
-  } catch (error) {
-    console.error('Error fetching my orders data:', error);
-  }
+  } catch (error: any) {
+    throw error;
+   }
 };

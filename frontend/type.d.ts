@@ -116,7 +116,7 @@ export interface StoreProduct {
 }
 
 export interface StoreProps {
-  _id: number;
+  _id: string;
   storeType: string;
   registrationNumber: number;
   name: string;

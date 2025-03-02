@@ -1,26 +1,16 @@
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 
 export const getAllStoreApplications = async () => {
   try {
-    const response = await axios.get(
-      'http://localhost:8000/api/v1/admin/store-applications/',
-      {
-        withCredentials: true, // Include credentials like cookies for authorization
-      }
-    );
-    const storeApplicationsData = response.data.storeApplications;
-
-    // console.log(response);
+    const response = await axiosInstance.get('/admin/store-applications');
 
     if (response.status !== 200) {
-      console.log('Store applications data not fetched.');
-      // console.log(storeApplicationsData);
+      console.log('store applications data not fetched.');
+      return null;
     } else {
-      console.log('store applications data fetched successfully...');
-      // console.log(storeApplicationsData);
-      return storeApplicationsData;
+      return response.data.storeApplications;
     }
-  } catch (error) {
-    console.error('Error fetching store applications data:', error);
+  } catch (error: any) {
+    throw error;
   }
 };

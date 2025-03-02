@@ -11,6 +11,7 @@ import { useRouter } from 'next/router';
 import ErrorMessageModal from '../ErrorMessageModal';
 import { getCart } from '@/utils/cart/getCart';
 import { mergeCartItems } from '@/utils/cart/mergeCartItems';
+import { handleError } from '@/utils/errorUtils';
 
 const CartPayment = () => {
   const { cartItemsData, userInfo } = useSelector(
@@ -46,10 +47,12 @@ const CartPayment = () => {
       );
       dispatch(setCartItems(filteredCartItems));
       router.push('/checkout');
-    } catch (error) {
-      setErrorMessage('Error redirecting to checkout. Please try again.');
+    } catch (error: any) {
+      // setErrorMessage('Error redirecting to checkout. Please try again.');
+      // setTimeout(() => setErrorMessage(''), 4000);
+      handleError(error);
+      setErrorMessage(error);
       setTimeout(() => setErrorMessage(''), 4000);
-      console.error('Error retrieving cart items for checkout.:', error);
     }
   };
 

@@ -61,7 +61,6 @@ const getAllProducts = async (req, res) => {
     .skip(parseInt(offset))    // Skip the number of records based on the offset
     .limit(parseInt(limit))    // Limit the number of records to return
     .sort({ createdAt: -1 });  // Sort by creation date, most recent first;
-    //console.log(products);
     if (products.length < 1) {
       products = await Product.find({});  // If no products found, return all products
       return res.status(StatusCodes.OK).json({ products, total:products.length });  // Total number of filtered products

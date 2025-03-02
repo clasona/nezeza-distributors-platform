@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { FaGoogle } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
+import { handleError } from '@/utils/errorUtils';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -97,8 +98,8 @@ const LoginPage = () => {
           ); // Merge the carts
 
           dispatch(setCartItems(mergedCartItems)); // Dispatch the setCartItems action
-        } catch (error) {
-          console.error('Error fetching cart after login:', error);
+        } catch (error: any) {
+          handleError(error);
         }
 
         setTimeout(() => {
@@ -106,14 +107,14 @@ const LoginPage = () => {
         }, 2000);
       }
     } catch (error: any) {
-      console.error('Login error:', error);
+      handleError(error);
       setErrorMessage(error);
     }
   };
 
   return (
     <div className='w-full bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue p-4'>
+      <div className='bg-nezeza_light_blue rounded-lg p-4'>
         <form
           onSubmit={handleSubmit}
           className='w-full bg-white p-6 rounded-lg shadow-lg'
