@@ -8,6 +8,9 @@ const {
 const {
   createProduct,
   getAllProducts,
+  getAllRetailersProducts,
+  getAllWholesalersProducts,
+  getAllManufacturersProducts,
   getSingleProduct,
   getProduct,
   updateProduct,
@@ -24,20 +27,36 @@ router
     createProduct
   );
 
-router.route('/all').get(authenticateUser,authorizePermissions('view_my_products'),getAllProducts);
+router
+  .route('/all')
+  .get(
+    authenticateUser,
+    authorizePermissions('view_my_products'),
+    getAllProducts
+  );
+router.route('/retailers').get(getAllRetailersProducts);
+router.route('/wholesalers').get(getAllWholesalersProducts);
+router.route('/manufacturers').get(getAllManufacturersProducts);
 
-  
-  router
+router
   .route('/uploadImage')
-  .post([authenticateUser, authorizePermissions('upload_product_image')], uploadImage);
-  
-  router
-  .route('/:id')
-  .patch([authenticateUser, authorizePermissions('update_product')], updateProduct)
-  .delete([authenticateUser, authorizePermissions('delete_product')], deleteProduct)
-    // .get(authenticateUser, authorizePermissions('view_my_product'), getSingleProduct);
-    .get(getSingleProduct);
+  .post(
+    [authenticateUser, authorizePermissions('upload_product_image')],
+    uploadImage
+  );
 
+router
+  .route('/:id')
+  .patch(
+    [authenticateUser, authorizePermissions('update_product')],
+    updateProduct
+  )
+  .delete(
+    [authenticateUser, authorizePermissions('delete_product')],
+    deleteProduct
+  )
+  // .get(authenticateUser, authorizePermissions('view_my_product'), getSingleProduct);
+  .get(getSingleProduct);
 
 // router.route('/:id')
 //     .get(authenticateUser, authorizePermissions('view_product'), getProduct);

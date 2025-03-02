@@ -1,18 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { OrderItemsProps, OrderProps, ProductProps } from '../../../type'; // Import OrderItemsProps
-import { updateProduct } from '@/utils/product/updateProduct';
-import { useForm, useWatch } from 'react-hook-form';
-import TextInput from '../FormInputs/TextInput';
-import { getSingleProduct } from '@/utils/product/getSingleProduct';
-import Link from 'next/link';
-import { checkIfProductExists } from '@/utils/product/checkIfProductExists';
-import ErrorMessageModal from '../ErrorMessageModal';
-import { useRouter } from 'next/router';
-import { handleAxiosError } from '@/utils/errorUtils';
+import { handleError } from '@/utils/errorUtils';
 import { updateOrderItem } from '@/utils/order/updateOrderItem';
-import DropdownInputSearchable from '../FormInputs/DropdownInputSearchable';
-import DropdownInputSearchableAsync from '../FormInputs/DropdownInputSearchableAsync';
+import { checkIfProductExists } from '@/utils/product/checkIfProductExists';
 import { updateProductQuantity } from '@/utils/product/updateProductQuantity';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import { OrderItemsProps, ProductProps } from '../../../type'; // Import OrderItemsProps
+import ErrorMessageModal from '../ErrorMessageModal';
+import DropdownInputSearchableAsync from '../FormInputs/DropdownInputSearchableAsync';
 
 interface ConfirmUpdateProductModalProps {
   isOpen: boolean;
@@ -58,25 +53,15 @@ const ConfirmUpdateProductModal = ({
       setIsConfirming(false);
       return; // Stop execution
     }
-
-    const exists = await checkIfProductExists(productId);
-
-    if (exists.code === 404) {
-      setErrorMessage(
-        'Product not found. Please check the product ID and try again.'
-      );
-      setTimeout(() => setErrorMessage(''), 4000);
-    } else if (typeof exists === 'object' && exists !== null && exists.code) {
-      setErrorMessage(handleAxiosError(exists).message);
-      setTimeout(() => setErrorMessage(''), 4000);
-    } else {
+    try {
+      const exists = await checkIfProductExists(productId);
       if (!item.addedToInventory) {
         if (updateType === 'quantity') {
           const productData: Partial<ProductProps> = {
             quantity: exists.quantity + item.quantity,
           };
           await updateProductQuantity(productId, productData);
-          
+
           //update to addedToInventoty= true so ordered item cant be added/updated twice
           const orderItemData: Partial<OrderItemsProps> = {
             addedToInventory: true,
@@ -120,14 +105,18 @@ const ConfirmUpdateProductModal = ({
             }, 3000);
         }
       } else {
-        console.log(productId)
+        console.log(productId);
         setConfirmationMessage(
           '⚠ The selected item has already been updated in your inventory.\n' +
             'An ordered item cannot be updated twice.'
         );
       }
+
+      setIsConfirming(false); // Reset confirming state
+    } catch (error: any) {
+      handleError(error);
+      setErrorMessage(error);
     }
-    setIsConfirming(false); // Reset confirming state
   };
 
   const [selectedProduct, setSelectedProduct] = useState<{

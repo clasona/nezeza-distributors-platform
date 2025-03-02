@@ -3,6 +3,7 @@
 // import { Model } from './yourModel'; // Import your Mongoose model
 const Order = require('../models/Order');
 const SubOrder = require('../models/SubOrder');
+const Cart = require('../models/Cart');
 const mongoose = require('mongoose');
 
 const documentId = '67b54a24da985d733c635f7b'; // Replace with actual ID
@@ -60,7 +61,7 @@ async function deleteManyDocuments() {
     // Define your filter condition (delete orders after 2025-02-20)
     const cutoffDate = new Date('2025-02-19T23:59:59.999Z'); // Include the last millisecond of the 20th to ensure full coverage.
 
-    const result = await Order.deleteMany({
+    const result = await Cart.deleteMany({
       createdAt: { $gt: cutoffDate },
     });
 

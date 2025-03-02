@@ -17,8 +17,8 @@ router.route('/').post(authenticateUser, createStore);
 router
   .route('/:id')
   .get(
-    authenticateUser,
-    authorizePermissions('view_store_details'),
+    // authenticateUser,
+    // authorizePermissions('view_store_details'),
     getStoreDetails
   )
   .patch(

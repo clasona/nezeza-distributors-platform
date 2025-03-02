@@ -5,7 +5,7 @@ const CustomError = require('../errors');
 const { attachCookiesToResponse, createTokenUser } = require('../utils');
 
 const createStore = async (req, res) => {
-  const { email, storeName, address, description, storeType, isActive } =
+  const { name, email, address, description, storeType, isActive } =
     req.body;
 
   const emailAlreadyExists = await Store.findOne({ email });
@@ -14,7 +14,7 @@ const createStore = async (req, res) => {
   }
 
   const store = await Store.create({
-    storeName,
+    name,
     email,
     address,
     description,
@@ -36,18 +36,17 @@ const createStore = async (req, res) => {
 };
 
 const getStoreDetails = async (req, res) => {
-  const user = await User.findById(req.user.userId);
-  console.log(user);
+  // const user = await User.findById(req.user.userId);
   const store = await Store.findById(req.params.id).select('-password');
   if (!store) {
     throw new CustomError.NotFoundError(`No store with id : ${req.params.id}`);
   }
 
-  if (store._id.toString() !== user.storeId.toString()) {
-    throw new CustomError.UnauthorizedError(
-      'You are not authorized to view this store details.'
-    );
-  }
+  // if (store._id.toString() !== user.storeId.toString()) {
+  //   throw new CustomError.UnauthorizedError(
+  //     'You are not authorized to view this store details.'
+  //   );
+  // }
   res.status(StatusCodes.OK).json({ store });
 };
 

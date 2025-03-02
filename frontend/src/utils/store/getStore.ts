@@ -1,24 +1,33 @@
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 
-export const getStore = async (storeId: string|number) => {
+export const getStore = async (storeId: string) => {
+  
   try {
-    const response = await axios.get(
-      `http://localhost:8000/api/v1/store/${storeId}`,
-
-      {
-        withCredentials: true, // Include credentials like cookies for authorization
-      }
-    );
-    const storeData = response.data.store;
+    const response = await axiosInstance.get(`/store/${storeId}`);
 
     if (response.status !== 200) {
-      console.log('store data not fetched.');
+      console.log('store data data not fetched.');
+      return null;
     } else {
-        console.log('store data fetched successfully...');
-        console.log(storeData)
-      return storeData;
+      return response.data.store;
     }
-  } catch (error) {
-    console.error('Error fetching store data:', error);
+  } catch (error: any) {
+    throw error;
+  }
+
+};
+
+export const getStoreName = async (storeId: string) => {
+  try {
+    const response = await axiosInstance.get(`/store/${storeId}`);
+
+    if (response.status !== 200) {
+      console.log('store data data not fetched.');
+      return null;
+    } else {
+      return response.data.store.name;
+    }
+  } catch (error: any) {
+    throw error;
   }
 };

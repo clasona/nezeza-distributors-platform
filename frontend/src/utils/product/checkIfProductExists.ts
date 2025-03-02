@@ -1,20 +1,16 @@
-import axios from 'axios';
-import { handleAxiosError } from '../errorUtils';
+import axiosInstance from '../axiosInstance';
 
 export const checkIfProductExists = async (productId: string) => {
   try {
-    const response = await axios.get(
-      `http://localhost:8000/api/v1/products/${productId}`,
-      { withCredentials: true }
-    );
+    const response = await axiosInstance.get(`/products/${productId}`);
 
-    if (response.status === 200) {
-      return response.data.product;
+    if (response.status !== 200) {
+      console.log(`product with id:${productId} not found.`);
+      return null;
     } else {
-      console.error(`Unexpected status code: ${response.status}`); 
-      return null; 
+      return response.data.product;
     }
   } catch (error: any) {
-    return handleAxiosError(error); // Use the utility function
+    throw error;
   }
 };

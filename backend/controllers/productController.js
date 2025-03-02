@@ -114,6 +114,151 @@ const getAllProducts = async (req, res) => {
   });
 };
 
+const createProductsQuery = (req) => {
+  // Extract query parameters for filtering
+  const {
+    category,
+    minPrice,
+    maxPrice,
+    createdAt,
+    updatedAt,
+    availability,
+    freeShipping,
+    averageRating,
+    featured,
+    name,
+    limit = 0, // Default limit
+    offset = 0, // Default offset
+  } = req.query;
+
+  // Build the query object for filtering
+  const query = {};
+  if (name) query.name = name;
+  if (category) query.category = category;
+  if (createdAt) query.createdAt = { $gte: new Date(createdAt) }; // Filter by creation date
+  if (updatedAt) query.updatedAt = { $gte: new Date(updatedAt) }; // Filter by updated date
+  if (availability) query.availability = availability; // Boolean or status field for availability
+  if (freeShipping) query.freeShipping = freeShipping; // Boolean or status field for free shipping
+  if (averageRating) query.averageRating = averageRating; // average rating field filter
+  if (featured) query.featured = featured; // featured field filter
+
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = parseFloat(minPrice);
+    if (maxPrice) query.price.$lte = parseFloat(maxPrice);
+    console.log(query);
+  }
+
+  return query;
+}
+const getAllRetailersProducts = async (req, res) => {
+  const query = createProductsQuery(req);
+  try {
+    // 1. Find all stores with storeType 'retail'
+    const retailStores = await Store.find({ storeType: 'retail' });
+
+    // 2. Extract storeIds from retail stores
+    const retailStoreIds = retailStores.map((store) => store._id);
+
+    // 3. Add storeId filter to the product query
+    query.storeId = { $in: retailStoreIds };
+
+    // Get the total count of products for pagination purposes
+    const totalCount = await Product.countDocuments(query);
+
+    let products = await Product.find(query)
+      .populate('storeId') //Populate storeId to get store info if needed.
+      .skip(parseInt(query.offset)) // Skip the number of records based on the offset
+      .limit(parseInt(query.limit)) // Limit the number of records to return
+      .sort({ createdAt: -1 }); // Sort by creation date, most recent first;
+
+    res.status(StatusCodes.OK).json({
+      products,
+      total: totalCount, // Total number of filtered products
+      limit: parseInt(query.limit),
+      offset: parseInt(query.offset),
+      count: products.length,
+    });
+  } catch (error) {
+    console.error('Error in getAllRetailersProducts:', error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: 'Internal server error' });
+  }
+};
+
+const getAllWholesalersProducts = async (req, res) => {
+  const query = createProductsQuery(req);
+  try {
+    // 1. Find all stores with storeType 'retail'
+    const retailStores = await Store.find({ storeType: 'wholesale' });
+
+    // 2. Extract storeIds from retail stores
+    const retailStoreIds = retailStores.map((store) => store._id);
+
+    // 3. Add storeId filter to the product query
+    query.storeId = { $in: retailStoreIds };
+
+    // Get the total count of products for pagination purposes
+    const totalCount = await Product.countDocuments(query);
+
+    let products = await Product.find(query)
+      .populate('storeId') //Populate storeId to get store info if needed.
+      .skip(parseInt(query.offset)) // Skip the number of records based on the offset
+      .limit(parseInt(query.limit)) // Limit the number of records to return
+      .sort({ createdAt: -1 }); // Sort by creation date, most recent first;
+
+    res.status(StatusCodes.OK).json({
+      products,
+      total: totalCount, // Total number of filtered products
+      limit: parseInt(query.limit),
+      offset: parseInt(query.offset),
+      count: products.length,
+    });
+  } catch (error) {
+    console.error('Error in getAllWholesalersProducts:', error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: 'Internal server error' });
+  }
+};
+
+const getAllManufacturersProducts = async (req, res) => {
+  const query = createProductsQuery(req);
+  try {
+    // 1. Find all stores with storeType 'retail'
+    const retailStores = await Store.find({ storeType: 'manufacturing' });
+
+    // 2. Extract storeIds from retail stores
+    const retailStoreIds = retailStores.map((store) => store._id);
+
+    // 3. Add storeId filter to the product query
+    query.storeId = { $in: retailStoreIds };
+
+    // Get the total count of products for pagination purposes
+    const totalCount = await Product.countDocuments(query);
+
+    let products = await Product.find(query)
+      .populate('storeId') //Populate storeId to get store info if needed.
+      .skip(parseInt(query.offset)) // Skip the number of records based on the offset
+      .limit(parseInt(query.limit)) // Limit the number of records to return
+      .sort({ createdAt: -1 }); // Sort by creation date, most recent first;
+
+    res.status(StatusCodes.OK).json({
+      products,
+      total: totalCount, // Total number of filtered products
+      limit: parseInt(query.limit),
+      offset: parseInt(query.offset),
+      count: products.length,
+    });
+  } catch (error) {
+    console.error('Error in getAllManufacturersProducts:', error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: 'Internal server error' });
+  }
+};
+
 /*
  * Get a single product.
  * Only wholestoreIds,manufacturers, and admin can view the product.
@@ -273,6 +418,9 @@ const uploadImage = async (req, res) => {
 module.exports = {
   createProduct,
   getAllProducts,
+  getAllRetailersProducts,
+  getAllWholesalersProducts,
+  getAllManufacturersProducts,
   getSingleProduct,
   // getProduct,
   updateProduct,

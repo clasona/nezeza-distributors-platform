@@ -22,6 +22,7 @@ import formatDate from '../../utils/formatDate';
 import { formatIdByShortening } from '../../utils/formatId';
 import { sortItems } from '../../utils/sortItems';
 import { getAllStoreApplications } from '../../utils/store/getAllStoreApplications';
+import { handleError } from '@/utils/errorUtils';
 
 const StoreApplications = () => {
   const [storeApplications, setStoreApplications] = useState<
@@ -77,8 +78,8 @@ const StoreApplications = () => {
       const storeApplicationsData = await getAllStoreApplications();
       setStoreApplications(storeApplicationsData);
       setFilteredApplications(storeApplicationsData); // Initially show all applications
-    } catch (error) {
-      console.error('Error fetching store applications data:', error);
+    } catch (error: any) {
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
@@ -317,7 +318,7 @@ const StoreApplications = () => {
             handleSort={handleSort}
           />
           {isLoading ? ( // Show loading indicator
-            <Loading message='applications' />
+            <Loading message='store applications' />
           ) : filteredApplications.length === 0 ? (
             <p className='text-center'>No applications found</p>
           ) : (
@@ -346,7 +347,7 @@ const StoreApplications = () => {
                       {
                         content: `${application.primaryContactId.firstName} ${application.primaryContactId.lastName}`,
                       },
-                      { content: formatDate(application.createdAt) },
+                      { content: formatDate(application.createdAt) }, 
                       { content: formatDate(application.updatedAt) },
 
                       {

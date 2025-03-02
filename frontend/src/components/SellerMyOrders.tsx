@@ -34,6 +34,7 @@ import SuccessMessageModal from './SuccessMessageModal';
 import ArchiveRowModal from './Table/ArchiveRowModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
+import { handleError } from '@/utils/errorUtils';
 
 const SellerMyOrders = () => {
   const [myOrders, setMyOrders] = useState<OrderProps[]>([]);
@@ -100,7 +101,7 @@ const SellerMyOrders = () => {
       setMyOrders(myOrdersData);
       setFilteredOrders(myOrdersData); // Initially show all orders
     } catch (error) {
-      console.error('Error fetching my orders data:', error);
+       handleError(error);
     } finally {
       setIsLoading(false);
     }
