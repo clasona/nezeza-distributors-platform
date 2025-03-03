@@ -397,8 +397,8 @@ const SellerCustomerOrders = () => {
                                   handleCustomerMoreOrderDetails(order),
                               },
                               {
-                                label: 'Delete',
-                                onClick: () => handleDeleteClick(order),
+                                label: 'Delete', //TODO: change to archive?
+                                onClick: () => handleDeleteClick(order), //TODO: 
                               },
                             ]}
                           />

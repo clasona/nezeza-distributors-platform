@@ -8,6 +8,7 @@ import { fetchCustomerOrders } from '../../utils/order/fetchCustomerOrders';
 import { getMyUnarchivedOrders } from '../../utils/order/getMyUnarchivedOrders';
 import { calculateOrderStats } from '../../utils/orderUtils';
 import ManufacturerLayout from './layout';
+import { createStripeAccount } from '@/utils/stripe/createStripeAccount';
 
 const Dashboard = () => {
   const { userInfo, storeInfo } = useSelector(
@@ -50,12 +51,32 @@ const Dashboard = () => {
         <div className='bg-nezeza_red_200 p-4 rounded-xl shadow-lg text-center mb-4'>
           <p className='text-lg'>
             You haven’t set up your Stripe account yet.{' '}
-            <Link
-              href='/setup-stripe'
-              className='text-nezeza_green_600 font-semibold underline'
+            <span
+              className='font-semibold text-nezeza_green_600 underline cursor-pointer'
+              onClick={async () => {
+                try {
+                  const response = await createStripeAccount(userInfo.email);
+                  if (response && response.url) {
+                    window.open(response.url, '_blank');
+                  } else {
+                    console.error(
+                      'Invalid response from createStripeAccount:',
+                      response
+                    );
+                    alert(
+                      'Error setting up Stripe account. Please try again later.'
+                    );
+                  }
+                } catch (error) {
+                  console.error('Error creating Stripe account:', error);
+                  alert(
+                    'Error setting up Stripe account. Please try again later.'
+                  );
+                }
+              }}
             >
               Set up now
-            </Link>
+            </span>
           </p>
         </div>
       )}

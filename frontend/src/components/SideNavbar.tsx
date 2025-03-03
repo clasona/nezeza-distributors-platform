@@ -132,12 +132,12 @@ const SideNavbar = ({
     },
   ];
 
-  // Filter sidebar links based on store type to exclude My Orders and SHopping for the manufacturers
+  // Filter sidebar links based on store type to exclude My Orders, Shopping and Archivedfor the manufacturers
   const filteredLinks = sidebarLinks.filter(
     (link) =>
       !(
         storeType === 'manufacturing' &&
-        (link.title === 'My Orders' || link.title === 'Shopping')
+        (link.title === 'My Orders' || link.title === 'Shopping' || link.title === 'Archived')
       )
   );
 

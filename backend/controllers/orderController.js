@@ -118,11 +118,11 @@ const createOrder = async (req, res) => {
   for (const item of cartItems) {
     const dbProduct = dbProducts.find(
       (product) => product._id.toString() === item.product._id
+      // (product) => product._id.toString() === item.product._id
     );
-
     if (!dbProduct) {
       throw new CustomError.NotFoundError(
-        `No product with id : ${item.product}`
+        `No product with id : ${item.product._id}`
       );
     }
 
@@ -131,12 +131,12 @@ const createOrder = async (req, res) => {
       price,
       image,
       _id,
-      stock,
+      quantity,
       storeId: sellerStoreId,
     } = dbProduct;
 
     // Check stock availability
-    if (item.amount > stock) {
+    if (item.quantity > quantity) {
       throw new CustomError.BadRequestError(
         `Not enough stock for product: ${_id}, only ${stock} available`
       );
@@ -158,10 +158,14 @@ const createOrder = async (req, res) => {
     };
     orderItems.push(singleOrderItem);
 
+          console.log('yooo', item.quantity, price);
+
     // Calculate subtotal, tax, and shipping
     subtotal += item.quantity * price;
     totalTax += price * 0.1; // Example 10% tax
     totalShipping += 10; // flat shipping
+
+
 
     // Prepare stock update
     stockUpdates.push({ productId: _id, quantity: item.amount });
@@ -169,6 +173,8 @@ const createOrder = async (req, res) => {
 
   // Calculate total
   const totalAmount = totalTax + totalShipping + subtotal;
+
+  console.log('yeeeee', totalAmount)
 
   // getting client secret from payment API
   // const paymentIntent = await fakeStripeAPI({
@@ -217,10 +223,11 @@ const createOrder = async (req, res) => {
   order.paymentIntentId = paymentIntent.id;
 
   // await order.save();
-  res
-    .status(StatusCodes.CREATED)
-    .json({ paymentIntentId: paymentIntent.id, clientSecret: paymentIntent.client_secret });
-}; 
+  res.status(StatusCodes.CREATED).json({
+    paymentIntentId: paymentIntent.id,
+    clientSecret: paymentIntent.client_secret,
+  });
+};
 
 /* 
   Get all orders for the authenticated user
