@@ -1,21 +1,24 @@
+import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
+import SubmitButton from '@/components/FormInputs/SubmitButton';
+import TextInput from '@/components/FormInputs/TextInput';
+import { registerUser } from '@/utils/auth/registerUser';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import TextInput from '@/components/FormInputs/TextInput';
-import SubmitButton from '@/components/FormInputs/SubmitButton';
-import ErrorMessageModal from '@/components/ErrorMessageModal';
-import SuccessMessageModal from '@/components/SuccessMessageModal';
-import { registerUser } from '@/utils/user/registerUser';
-import { createStore } from '../utils/store/createStore';
-import { AddressProps, StoreProps } from '../../type';
 import { FaGoogle } from 'react-icons/fa';
-import { signIn } from 'next-auth/react';
 
-const RegisterSellerPage = () => {
+const RegisterPage = () => {
   // State hooks
+  const [isSeller, setIsSeller] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [storeType, setStoreType] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [verificationPrompt, setVerificationPrompt] = useState(false);
-  const [email, setEmail] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
 
   // React Hook Form
@@ -28,21 +31,41 @@ const RegisterSellerPage = () => {
 
   // Form submission handler
   const onSubmit = async (data: any) => {
+    setIsLoading(true);
+    setErrorMessage('');
     if (data.password !== data.repeatPassword) {
       setErrorMessage("Passwords don't match");
+      setIsLoading(false);
+      return;
+    }
+    if (isSeller && !storeType) {
+      setErrorMessage('Please select a store type.');
+      setIsLoading(false);
+      return;
+    }
+
+    // Add storeType to the data object if isSeller is true
+    if (isSeller && storeType) {
+      data.storeType = storeType.value;
+    }
+
+    if (!termsAccepted) {
+      setErrorMessage('Please accept the terms and conditions.');
+      setIsLoading(false);
       return;
     }
 
     try {
+      console.log(data);
       await registerUser(data);
-      setErrorMessage('');
-      setSuccessMessage('User registered successfully.');
-      setTimeout(() => setSuccessMessage(''), 4000);
-
-      setEmail(data.email); // Save email for verification prompt
-      setVerificationPrompt(true); // Show email verification prompt
-    } catch (error) {
-      setErrorMessage('Error registering user.');
+      localStorage.setItem('verificationEmail', data.email);
+      localStorage.setItem('isSeller', isSeller.toString());
+      router.push(`/verify-email`);
+    } catch (error: any) {
+      console.error('Register error:', error);
+      setErrorMessage(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -55,9 +78,27 @@ const RegisterSellerPage = () => {
     }
   };
 
+  const handleSellerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsSeller(e.target.checked);
+    if (!e.target.checked) {
+      setStoreType(null); // Reset store type if not seller
+    }
+  };
+
+  const handleStoreTypeChange = (
+    value: { value: string; label: string } | null
+  ) => {
+    setStoreType(value);
+  };
+  const storeTypeOptions = [
+    { value: 'manufacturing', label: 'Manufacturing' },
+    { value: 'wholesale', label: 'Wholesale' },
+    { value: 'retail', label: 'Retail' },
+  ];
+
   return (
-    <div className='w-full bg-nezeza_light_blue min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue p-4'>
+    <div className='w-full bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
+      <div className='bg-nezeza_light_blue rounded-lg p-4'>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className='w-full max-w-md bg-white p-6 rounded-lg shadow-lg'
@@ -65,115 +106,127 @@ const RegisterSellerPage = () => {
           <h2 className='text-2xl font-bold text-center text-nezeza_dark_blue mb-4'>
             Create a Nezeza Account
           </h2>
+          {/* Form Fields */}
+          <div className='space-y-2'>
+            <TextInput
+              label='First Name'
+              id='firstName'
+              name='firstName'
+              register={register}
+              errors={errors}
+              type='text'
+            />
+            <TextInput
+              label='Last Name'
+              id='lastName'
+              name='lastName'
+              register={register}
+              errors={errors}
+              type='text'
+            />
 
-          {!verificationPrompt ? (
-            <>
-              {/* Form Fields */}
-              <div className='space-y-2'>
-                <TextInput
-                  label='First Name'
-                  id='firstName'
-                  name='firstName'
-                  register={register}
-                  errors={errors}
-                  type='text'
-                />
-                <TextInput
-                  label='Last Name'
-                  id='lastName'
-                  name='lastName'
-                  register={register}
-                  errors={errors}
-                  type='text'
-                />
+            <TextInput
+              label='Email'
+              id='email'
+              name='email'
+              register={register}
+              errors={errors}
+              type='email'
+            />
 
-                <TextInput
-                  label='Email'
-                  id='email'
-                  name='email'
-                  register={register}
-                  errors={errors}
-                  type='email'
-                />
+            <TextInput
+              label='Password'
+              id='password'
+              name='password'
+              register={register}
+              errors={errors}
+              type='password'
+            />
 
-                <TextInput
-                  label='Password'
-                  id='password'
-                  name='password'
-                  register={register}
-                  errors={errors}
-                  type='password'
-                />
-
-                <TextInput
-                  label='Repeat Password'
-                  id='repeatPassword'
-                  name='repeatPassword'
-                  register={register}
-                  errors={errors}
-                  type='password'
-                  onChange={(e) => setRepeatPassword(e.target.value)}
-                />
-              </div>
-
-              {/* <div className='flex items-center justify-center'> */}
-              {successMessage && (
-                <SuccessMessageModal successMessage={successMessage} />
-              )}
-              {errorMessage && (
-                <ErrorMessageModal errorMessage={errorMessage} />
-              )}
-              {/* <div className='flex flex-col items-center gap-3'> */}
-              <SubmitButton
-                isLoading={false}
-                buttonTitle='Signup'
-                loadingButtonTitle='Registering user...'
-                className='w-full h-10 '
+            <TextInput
+              label='Repeat Password'
+              id='repeatPassword'
+              name='repeatPassword'
+              register={register}
+              errors={errors}
+              type='password'
+              onChange={(e) => setRepeatPassword(e.target.value)}
+            />
+          </div>
+          <div className='flex flex-col text-sm mt-4'>
+            <label className='flex items-center'>
+              <input
+                type='checkbox'
+                checked={isSeller}
+                onChange={handleSellerChange}
+                className='mr-2 peer accent-nezeza_dark_blue'
               />
-              <button
-                type='button'
-                onClick={handleGoogleSignup}
-                className='w-full h-10 flex mt-2 items-center justify-center gap-2 py-2 rounded-md font-medium bg-nezeza_red_600 text-white hover:bg-nezeza_red_700 transition duration-300'
-              >
-                <FaGoogle className='w-5 h-5' />
-                Signup with Google
-              </button>
-              {/* </div> */}
+              Registering as a seller?
+            </label>
 
-              <p className='text-center mt-4 text-nezeza_gray_600'>
-                Already have an account?{' '}
-                <a
-                  href='/login'
-                  className='text-nezeza_dark_blue hover:text-nezeza_dark_blue underline transition-colors duration-250'
-                >
-                  Sign in
-                </a>
-              </p>
-            </>
-          ) : (
-            <div className='text-center mt-6'>
-              <h3 className='text-xl font-semibold text-nezeza_green_600'>
-                Verify Your Email
-              </h3>
-              <p className='mt-4 text-gray-600'>
-                We've sent a verification link to <strong>{email}</strong>.
-                Please check your inbox and follow the instructions to verify
-                your email.
-              </p>
-              <button
-                type='button'
-                className='mt-6 px-4 py-2 rounded-md bg-nezeza_dark_blue text-white hover:bg-nezeza_yellow hover:text-black transition-colors duration-300'
-                onClick={() => (window.location.href = '/login')}
+            {isSeller && (
+              <DropdownInputSearchable
+                label='Select store type'
+                options={storeTypeOptions}
+                onChange={handleStoreTypeChange}
+                value={storeType}
+              />
+            )}
+          </div>
+          <div className='flex items-center mt-4'>
+            <input
+              type='checkbox'
+              id='terms'
+              className='mr-2'
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+            />
+            <label htmlFor='terms' className='text-xs text-nezeza_gray_600'>
+              I accept the{' '}
+              <a
+                href='/terms' //TODO: Implement this page
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-nezeza_dark_blue hover:text-nezeza_dark_blue underline transition-colors duration-250'
               >
-                Continue to Login
-              </button>
-            </div>
+                terms and conditions
+              </a>
+            </label>
+          </div>
+          {errorMessage && (
+            <p className='mt-4 text-center text-nezeza_red_600'>
+              {errorMessage}
+            </p>
           )}
+          <SubmitButton
+            isLoading={isLoading}
+            buttonTitle='Signup'
+            loadingButtonTitle='Processing...'
+            className='w-full h-10 '
+          />
+          <button
+            type='button'
+            onClick={handleGoogleSignup}
+            className='w-full h-10 flex mt-2 items-center justify-center gap-2 py-2 rounded-md font-medium bg-nezeza_red_600 text-white hover:bg-nezeza_red_700 transition duration-300'
+          >
+            <FaGoogle className='w-5 h-5' />
+            Signup with Google
+          </button>
+          {/* </div> */}
+          <p className='text-center mt-4 text-nezeza_gray_600'>
+            Already have an account?{' '}
+            <a
+              href='/login'
+              className='text-nezeza_dark_blue hover:text-nezeza_dark_blue underline transition-colors duration-250'
+            >
+              Sign in
+            </a>
+          </p>
         </form>
       </div>
     </div>
   );
 };
 
-RegisterSellerPage.noLayout = true; // Remove root layout from this page
-export default RegisterSellerPage;
+RegisterPage.noLayout = true; // Remove root layout from this page
+export default RegisterPage;

@@ -8,7 +8,7 @@ import {
   decreaseQuantity,
   deleteProduct,
   increaseQuantity,
-} from '@/store/nextSlice';
+} from '@/redux/nextSlice';
 import { OrderItemsProps } from '../../../type';
 interface Item {
   id: number;
@@ -26,7 +26,7 @@ interface CartProductProps {
 
 const CartProduct = ({ item }: CartProductProps) => {
   const dispatch = useDispatch();
-  
+
   const isOutOfStock = item.product.quantity < 1;
 
   return (

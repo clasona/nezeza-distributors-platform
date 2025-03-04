@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { resetCart } from '@/store/nextSlice';
+import { resetCart } from '@/redux/nextSlice';
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
-import { ProductProps, StoreProduct, stateProps } from '../../type';
-import { createOrder } from '../utils/order/createOrder';
+import { useDispatch } from 'react-redux';
 
 const SuccessPage = () => {
   const dispatch = useDispatch();
 
-  // dispatch(resetCart()); // Clear the cart
+  dispatch(resetCart()); // Clear the cart
 
   return (
     <div className='flex flex-col flex-grow gap-2 items-center justify-center py-20 w-full'>

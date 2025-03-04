@@ -1,27 +1,19 @@
 import axios from 'axios';
-import { handleAxiosError } from './errorUtils';
 import { NotificationProps } from '../../type';
+import axiosInstance from './axiosInstance';
 
 export const getAllNotifications = async () => {
   try {
-    const response = await axios.get(
-      `http://localhost:8000/api/v1/notifications/`,
-
-      {
-        withCredentials: true, // Include credentials like cookies for authorization
-      }
-    );
-    const notificationsData = response.data.notifications;
+    const response = await axiosInstance.get('/notifications');
 
     if (response.status !== 200) {
-      console.log('all notifications data not fetched.');
+      console.log('notifications data not fetched.');
       return null;
     } else {
-      console.log('all notifications data fetched successfully...');
-      return notificationsData;
+      return response.data.notifications;
     }
   } catch (error: any) {
-    return handleAxiosError(error); // Use the utility function
+    throw error;
   }
 };
 
@@ -46,6 +38,6 @@ export const updateNotification = async (
       return null;
     }
   } catch (error) {
-    return handleAxiosError(error); // Use the utility function
+   throw error; // Use the utility function
   }
 };

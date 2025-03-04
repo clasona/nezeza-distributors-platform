@@ -1,15 +1,14 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import FormattedPrice from '@/components/FormattedPrice';
+import Loading from '@/components/Loaders/Loading';
+import { addPayment } from '@/redux/nextSlice';
+import { getClientSecret } from '@/utils/order/getClientSecret';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { getClientSecret } from '@/utils/order/getClientSecret';
-import { OrderItemsProps, OrderProps, stateProps } from '../../type';
-import CheckoutForm from '../components/Payments/CheckoutForm';
-import { useDispatch, useSelector } from 'react-redux';
-import { addPayment } from '@/store/nextSlice';
-import { createCustomerSession } from '@/utils/payment/createCustomerSession';
-import Loading from '@/components/Loaders/Loading';
-import FormattedPrice from '@/components/FormattedPrice';
 import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { OrderItemsProps, stateProps } from '../../type';
+import CheckoutForm from '../components/Payments/CheckoutForm';
 
 // Ensure Stripe key is set before loading Stripe
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
@@ -113,7 +112,9 @@ const CheckoutPage = () => {
   if (!cartItemsData.length)
     return (
       <div className='bg-nezeza_powder_blue flex flex-col gap-2 justify-center items-center h-screen'>
-        <p className=' text-center text-lg font-semibold'>No items in the cart.</p>
+        <p className=' text-center text-lg font-semibold'>
+          No items in the cart.
+        </p>
         <Link
           href='/'
           className='px-6 py-3 bg-nezeza_dark_blue text-white text-lg font-medium rounded-md shadow-md hover:bg-nezeza_green_600 hover:shadow-lg transition duration-300'
@@ -174,7 +175,7 @@ const CheckoutPage = () => {
         {' '}
         {/* Added width for form on larger screens */}
         {loading ? (
-            <Loading message='Payment Details' />
+          <Loading message='Payment Details' />
         ) : clientSecret ? (
           <Elements stripe={stripePromise} options={options}>
             <CheckoutForm clientSecret={clientSecret} />

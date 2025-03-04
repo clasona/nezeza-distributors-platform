@@ -1,18 +1,21 @@
-import RootLayout from "@/components/RootLayout";
-import "@/styles/globals.css";
+import RootLayout from '@/components/RootLayout';
+import { persistor, store } from '@/redux/store';
+import '@/styles/globals.css';
+import { SessionProvider } from 'next-auth/react';
 import type { AppProps as NextAppProps } from 'next/app';
-import "react-responsive-carousel/lib/styles/carousel.min.css"; //for live banner
-import { Provider } from 'react-redux'; 
-import {store, persistor  } from "@/store/store";
+import { Provider } from 'react-redux';
+import 'react-responsive-carousel/lib/styles/carousel.min.css'; //for live banner
 import { PersistGate } from 'redux-persist/integration/react';
-import { SessionProvider } from "next-auth/react";
 
 //extend AppProps type to add a noLayout property
 type AppProps = NextAppProps & {
   Component: NextAppProps['Component'] & { noLayout?: boolean };
 };
 
-export default function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   const NoLayout = Component.noLayout; //returned from pages where we dont want the root layout to be applied
 
   return (

@@ -1,37 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { getMyUnarchivedOrders } from '@/utils/order/getMyUnarchivedOrders';
-import {
-  AddressProps,
-  OrderItemsProps,
-  OrderProps,
-  ProductProps,
-} from '../../type';
-import SmallCards from '@/components/SmallCards';
-import { calculateOrderStats } from '@/utils/orderUtils';
+import MoreOrderDetailsModal from '@/components/Order/MoreOrderDetailsModal';
 import PageHeader from '@/components/PageHeader';
+import SmallCards from '@/components/SmallCards';
+import DeleteRowModal from '@/components/Table/DeleteRowModal';
+import ClearFilters from '@/components/Table/Filters/ClearFilters';
+import DateFilters from '@/components/Table/Filters/DateFilters';
+import Pagination from '@/components/Table/Pagination';
+import RowActionDropdown from '@/components/Table/RowActionDropdown';
+import SearchField from '@/components/Table/SearchField';
+import TableFilters from '@/components/Table/TableFilters';
 import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
-import RowActionDropdown from '@/components/Table/RowActionDropdown';
-import Link from 'next/link';
-import Pagination from '@/components/Table/Pagination';
-import TableFilters from '@/components/Table/TableFilters';
-import StatusFilters from '@/components/Table/Filters/StatusFilters';
-import SearchField from '@/components/Table/SearchField';
-import { sortItems } from '@/utils/sortItems';
-import MoreOrderDetailsModal from '@/components/Order/MoreOrderDetailsModal';
-import DeleteRowModal from '@/components/Table/DeleteRowModal';
+import formatDate from '@/utils/formatDate';
 import formatPrice from '@/utils/formatPrice';
-import PageHeaderLink from '@/components/PageHeaderLink';
-import DateFilters from '@/components/Table/Filters/DateFilters';
-import ClearFilters from '@/components/Table/Filters/ClearFilters';
+import { getMyArchivedOrders } from '@/utils/order/getMyArchivedOrders';
+import { calculateOrderStats } from '@/utils/orderUtils';
+import { sortItems } from '@/utils/sortItems';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import {
+  OrderProps
+} from '../../type';
+import ErrorMessageModal from './ErrorMessageModal';
+import Button from './FormInputs/Button';
+import Loading from './Loaders/Loading';
+import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
-import SuccessMessageModal from './SuccessMessageModal';
-import formatDate from '@/utils/formatDate';
-import Button from './FormInputs/Button';
-import ErrorMessageModal from './ErrorMessageModal';
-import Loading from './Loaders/Loading';
-import { getMyArchivedOrders } from '@/utils/order/getMyArchivedOrders';
+import { handleError } from '@/utils/errorUtils';
 
 const SellerMyOrders = () => {
   const [myOrders, setMyOrders] = useState<OrderProps[]>([]);
@@ -85,11 +80,10 @@ const SellerMyOrders = () => {
     setIsLoading(true);
     try {
       const myOrdersData = await getMyArchivedOrders();
-      console.log('hehehe', myOrdersData);
       setMyOrders(myOrdersData);
       setFilteredOrders(myOrdersData); // Initially show all orders
     } catch (error) {
-      console.error('Error fetching my archived orders data:', error);
+       handleError(error);
     } finally {
       setIsLoading(false); // Set loading to false *after* fetch completes (success or error)
     }
@@ -213,7 +207,7 @@ const SellerMyOrders = () => {
 
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(selectedRows.map((id) => deleteMyOrder(id)));
+      // await Promise.all(selectedRows.map((id) => deleteMyOrder(id)));
 
       setFilteredOrders((prevInventory) =>
         prevInventory.filter((item) => !selectedRows.includes(item._id))

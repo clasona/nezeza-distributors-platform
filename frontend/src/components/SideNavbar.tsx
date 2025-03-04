@@ -1,15 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import logo from '@/images/logo.jpg';
-import { usePathname } from 'next/navigation';
 import {
   Archive,
-  ChartBarStacked,
   CircleDollarSign,
-  House,
+  CircleHelp,
   Inbox,
   LayoutDashboard,
   ListOrdered,
@@ -18,12 +13,15 @@ import {
   Truck,
   UserRoundPen,
   Users,
-  Warehouse,
+  Warehouse
 } from 'lucide-react';
-import Button from './FormInputs/Button';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../type';
-import { useRouter } from 'next/router';
 import { LogoutButton } from './LogoutButton';
 
 interface SideNavbarProps {
@@ -127,14 +125,19 @@ const SideNavbar = ({
       href: `${basePath}/orders/archived`,
       icon: Archive,
     },
+    {
+      title: 'Support',
+      href: `${basePath}/support`,
+      icon: CircleHelp,
+    },
   ];
 
-  // Filter sidebar links based on store type to exclude My Orders and SHopping for the manufacturers
+  // Filter sidebar links based on store type to exclude My Orders, Shopping and Archivedfor the manufacturers
   const filteredLinks = sidebarLinks.filter(
     (link) =>
       !(
         storeType === 'manufacturing' &&
-        (link.title === 'My Orders' || link.title === 'Shopping')
+        (link.title === 'My Orders' || link.title === 'Shopping' || link.title === 'Archived')
       )
   );
 

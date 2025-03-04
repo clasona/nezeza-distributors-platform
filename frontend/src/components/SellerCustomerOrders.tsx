@@ -1,40 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { fetchCustomerOrders } from '@/utils/order/fetchCustomerOrders';
-import { SubOrderProps, ProductProps } from '../../type';
-import axios from 'axios';
-import SmallCards from '@/components/SmallCards';
-import { calculateOrderStats } from '@/utils/orderUtils';
-import Heading from '@/components/Heading';
-import Pagination from '@/components/Table/Pagination';
 import PageHeader from '@/components/PageHeader';
-import TableActions from '@/components/Table/TableActions';
+import PageHeaderLink from '@/components/PageHeaderLink';
+import SmallCards from '@/components/SmallCards';
+import DeleteRowModal from '@/components/Table/DeleteRowModal';
+import ClearFilters from '@/components/Table/Filters/ClearFilters';
+import DateFilters from '@/components/Table/Filters/DateFilters';
+import StatusFilters from '@/components/Table/Filters/StatusFilters';
+import Pagination from '@/components/Table/Pagination';
+import RowActionDropdown from '@/components/Table/RowActionDropdown';
+import SearchField from '@/components/Table/SearchField';
+import TableFilters from '@/components/Table/TableFilters';
 import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
-import RowActionDropdown from '@/components/Table/RowActionDropdown';
-import Link from 'next/link';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import TableFilters from '@/components/Table/TableFilters';
-import StatusFilters from '@/components/Table/Filters/StatusFilters';
-import SearchField from '@/components/Table/SearchField';
-import { sortItems } from '@/utils/sortItems';
-import UpdateRowModal from '@/components/Table/UpdateRowModal';
-import DeleteRowModal from '@/components/Table/DeleteRowModal';
-import formatPrice from '@/utils/formatPrice';
-import PageHeaderLink from '@/components/PageHeaderLink';
-import DateFilters from '@/components/Table/Filters/DateFilters';
-import ClearFilters from '@/components/Table/Filters/ClearFilters';
-import BulkDeleteButton from './Table/BulkDeleteButton';
-import BulkDeleteModal from './Table/BulkDeleteModal';
-import SuccessMessageModal from './SuccessMessageModal';
 import formatDate from '@/utils/formatDate';
 import { formatIdByShortening } from '@/utils/formatId';
+import formatPrice from '@/utils/formatPrice';
+import { fetchCustomerOrders } from '@/utils/order/fetchCustomerOrders';
+import { calculateOrderStats } from '@/utils/orderUtils';
+import { sortItems } from '@/utils/sortItems';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { SubOrderProps } from '../../type';
 import Button from './FormInputs/Button';
 import Loading from './Loaders/Loading';
 import CustomerMoreOrderDetailsModal from './Order/CustomerMoreOrderDetailsModal';
+import SuccessMessageModal from './SuccessMessageModal';
+import BulkDeleteButton from './Table/BulkDeleteButton';
+import BulkDeleteModal from './Table/BulkDeleteModal';
+import { handleError } from '@/utils/errorUtils';
 
 const SellerCustomerOrders = () => {
   const [customerOrders, setCustomerOrders] = useState<SubOrderProps[]>([]);
-  const [sampleOrders, setSampleOrders] = useState<SubOrderProps[]>([]);
 
   const [filteredOrders, setFilteredOrders] = useState<SubOrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState<string>('');
@@ -46,7 +41,7 @@ const SellerCustomerOrders = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-    const [showMoreFilters, setshowMoreFilters] = useState(false);
+  const [showMoreFilters, setshowMoreFilters] = useState(false);
   const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
 
   // for the small cards
@@ -73,8 +68,10 @@ const SellerCustomerOrders = () => {
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
   //for table row dropdown actions i.e: update, remove
-    const [isCustomerMoreOrderDetailsModalOpen, setIsCustomerMoreOrderDetailsModalOpen] =
-      useState(false);
+  const [
+    isCustomerMoreOrderDetailsModalOpen,
+    setIsCustomerMoreOrderDetailsModalOpen,
+  ] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [currentRowData, setCurrentRowData] = useState<SubOrderProps | null>(
@@ -86,14 +83,11 @@ const SellerCustomerOrders = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      //sample orders
-      // const sampleOrdersData = mockCustomerOrders;
       const customerOrdersData = await fetchCustomerOrders();
       setCustomerOrders(customerOrdersData);
-      // setSampleOrders(sampleOrdersData);
       setFilteredOrders(customerOrdersData); // Initially show all orders
     } catch (error) {
-      console.error('Error fetching customer orders data:', error);
+      handleError(error);
     } finally {
       setIsLoading(false); // Set loading to false *after* fetch completes (success or error)
     }
@@ -180,13 +174,13 @@ const SellerCustomerOrders = () => {
     setFilteredOrders(sortedOrders);
   };
 
-   const handleCustomerMoreOrderDetails = (rowData: SubOrderProps) => {
-     setCurrentRowData(rowData);
-     setIsCustomerMoreOrderDetailsModalOpen(true);
-   };
-   const handleCloseCustomerMoreOrderDetailsModal = () => {
-     setIsCustomerMoreOrderDetailsModalOpen(false);
-   };
+  const handleCustomerMoreOrderDetails = (rowData: SubOrderProps) => {
+    setCurrentRowData(rowData);
+    setIsCustomerMoreOrderDetailsModalOpen(true);
+  };
+  const handleCloseCustomerMoreOrderDetailsModal = () => {
+    setIsCustomerMoreOrderDetailsModalOpen(false);
+  };
 
   const handleUpdate = (rowData: SubOrderProps) => {
     setCurrentRowData(rowData);
@@ -250,9 +244,9 @@ const SellerCustomerOrders = () => {
 
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(
-        selectedRows.map((id) => deleteCustomerOrder(userInfo, id))
-      );
+      // await Promise.all(
+      //   selectedRows.map((id) => deleteCustomerOrder(userInfo, id))
+      // );
 
       setFilteredOrders((prevInventory) =>
         prevInventory.filter((item) => !selectedRows.includes(item._id))
@@ -403,8 +397,8 @@ const SellerCustomerOrders = () => {
                                   handleCustomerMoreOrderDetails(order),
                               },
                               {
-                                label: 'Delete',
-                                onClick: () => handleDeleteClick(order),
+                                label: 'Delete', //TODO: change to archive?
+                                onClick: () => handleDeleteClick(order), //TODO: 
                               },
                             ]}
                           />

@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import FormattedStatus from './FormattedStatus';
 import FormattedStock from './FormattedStock';
-import { InventoryProps, OrderProps } from '../../../type';
-// import UpdateRow from './UpdateRow';
-// import DeleteRow from './DeleteRow';
 
 interface TableRowProps<T> {
   hasCollapsibleContent?: boolean;

@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import WholesalerLayout from './layout';
 import Heading from '@/components/Heading';
-import { OrderProps, stateProps } from '../../../type';
-
-import { useSelector } from 'react-redux';
 import SmallCards from '@/components/SmallCards';
+import { createStripeAccount } from '@/utils/stripe/createStripeAccount';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { OrderProps, stateProps } from '../../../type';
+import { fetchCustomerOrders } from '../../utils/order/fetchCustomerOrders';
 import { getMyUnarchivedOrders } from '../../utils/order/getMyUnarchivedOrders';
 import { calculateOrderStats } from '../../utils/orderUtils';
-import { fetchCustomerOrders } from '../../utils/order/fetchCustomerOrders';
-import Link from 'next/link';
-import { createStripeAccount } from '@/utils/stripe/createStripeAccount';
+import WholesalerLayout from './layout';
+import { handleError } from '@/utils/errorUtils';
 
 const Dashboard = () => {
   const { userInfo, storeInfo } = useSelector(
@@ -30,8 +30,8 @@ const Dashboard = () => {
         const customerOrdersData = await fetchCustomerOrders();
         setMyOrders(myOrdersData);
         setCustomerOrders(customerOrdersData);
-      } catch (error) {
-        console.error('Error fetching orders data:', error);
+      } catch (error: any) {
+        handleError(error);
       } finally {
         setIsLoading(false);
       }
@@ -59,7 +59,7 @@ const Dashboard = () => {
           <p className='text-lg'>
             You haven’t set up your Stripe account yet.{' '}
             <span
-              className='font-semibold text-nezeza_green_600 underline cursor-pointer' 
+              className='font-semibold text-nezeza_green_600 underline cursor-pointer'
               onClick={async () => {
                 try {
                   const response = await createStripeAccount(userInfo.email);

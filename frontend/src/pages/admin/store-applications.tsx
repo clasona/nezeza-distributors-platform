@@ -1,46 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import SellerProducts from '@/components/SellerProducts';
-import AdminLayout from '.';
-import PageHeader from '@/components/PageHeader';
-import { getAllStoreApplications } from '../../utils/store/getAllStoreApplications';
-import {
-  UserProps,
-  StoreApplicationProps,
-  StoreProps,
-  BillingInfoProps,
-} from '../../../type';
-import mockStoreApplications from './mock-data/mockStoreApplications';
 import Button from '@/components/FormInputs/Button';
-import { sortItems } from '../../utils/sortItems';
-import TableFilters from '@/components/Table/TableFilters';
+import Loading from '@/components/Loaders/Loading';
+import PageHeader from '@/components/PageHeader';
+import SuccessMessageModal from '@/components/SuccessMessageModal';
 import BulkDeleteButton from '@/components/Table/BulkDeleteButton';
-import StatusFilters from '@/components/Table/Filters/StatusFilters';
-import DateFilters from '@/components/Table/Filters/DateFilters';
-import SearchField from '@/components/Table/SearchField';
+import BulkDeleteModal from '@/components/Table/BulkDeleteModal';
+import DeleteRowModal from '@/components/Table/DeleteRowModal';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
+import DateFilters from '@/components/Table/Filters/DateFilters';
+import StatusFilters from '@/components/Table/Filters/StatusFilters';
+import Pagination from '@/components/Table/Pagination';
+import RowActionDropdown from '@/components/Table/RowActionDropdown';
+import SearchField from '@/components/Table/SearchField';
+import TableFilters from '@/components/Table/TableFilters';
 import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
-import { formatIdByShortening } from '../../utils/formatId';
-import formatDate from '../../utils/formatDate';
-import RowActionDropdown from '@/components/Table/RowActionDropdown';
-import Pagination from '@/components/Table/Pagination';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
-import RemoveRowModal from '@/components/Table/DeleteRowModal';
-import BulkDeleteModal from '@/components/Table/BulkDeleteModal';
-import SuccessMessageModal from '@/components/SuccessMessageModal';
+import { useEffect, useState } from 'react';
+import AdminLayout from '.';
+import { StoreApplicationProps } from '../../../type';
+import formatDate from '../../utils/formatDate';
+import { formatIdByShortening } from '../../utils/formatId';
+import { sortItems } from '../../utils/sortItems';
+import { getAllStoreApplications } from '../../utils/store/getAllStoreApplications';
+import { handleError } from '@/utils/errorUtils';
 
 const StoreApplications = () => {
   const [storeApplications, setStoreApplications] = useState<
     StoreApplicationProps[]
   >([]);
-  const [sampleApplications, setSampleApplications] = useState<
-    StoreApplicationProps[]
-  >([]);
-
   const [filteredApplications, setFilteredApplications] = useState<
     StoreApplicationProps[]
   >([]);
   const [successMessage, setSuccessMessage] = useState<string>('');
+    const [showMoreFilters, setshowMoreFilters] = useState(false);
+  const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
 
   // For sorting and filtering
   const [statusFilter, setStatusFilter] = useState('Status');
@@ -67,37 +60,28 @@ const StoreApplications = () => {
   const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
 
   //for bulk deleting
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
 
-  //for table row dropdown actions i.e: update, remove
+  //for table row dropdown actions i.e: update, Delete
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // const defaultStoreProps: StoreProps = {
-  //   // Initialize all fields of StoreProps
-  // };
-  const [currentRowData, setCurrentRowData] = useState<StoreApplicationProps>({
-    _id: 0,
-    status: '',
-    primaryContactId: {} as UserProps,
-    storeId: {} as StoreProps,
-    billingInfo: {} as BillingInfoProps,
-    createdAt: '',
-    updatedAt: '',
-  });
+  const [currentRowData, setCurrentRowData] =
+    useState<StoreApplicationProps | null>(null);
 
-  //setting my applications data
+  //setting applications data
   const fetchData = async () => {
+    setIsLoading(true);
     try {
-      //sample applications
-      // const storeApplicationsData = mockStoreApplications;
       const storeApplicationsData = await getAllStoreApplications();
       setStoreApplications(storeApplicationsData);
-      // setSampleApplications(sampleApplicationsData);
       setFilteredApplications(storeApplicationsData); // Initially show all applications
-    } catch (error) {
-      console.error('Error fetching store applications data:', error);
+    } catch (error: any) {
+      handleError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   useEffect(() => {
@@ -193,7 +177,6 @@ const StoreApplications = () => {
     setIsUpdateModalOpen(true);
   };
   const handleSaveUpdatedRow = (updatedRow: StoreApplicationProps) => {
-    // Update filteredApplications to reflect the updated row
     setFilteredApplications((prevApplications) =>
       prevApplications.map((application) =>
         application._id === updatedRow._id
@@ -202,7 +185,7 @@ const StoreApplications = () => {
       )
     );
     setSuccessMessage(`Order # ${updatedRow._id} updated successfully.`);
-    setIsUpdateModalOpen(false); // Close the modal after saving
+    setIsUpdateModalOpen(false);
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
@@ -210,30 +193,30 @@ const StoreApplications = () => {
     setIsUpdateModalOpen(false);
   };
 
-  const handleRemove = (id: number) => {
+  const handleDelete = (id: string) => {
     setFilteredApplications((prevApplications) =>
       prevApplications.filter((application) => application._id !== id)
     );
   };
 
-  const handleRemoveClick = (rowData: StoreApplicationProps) => {
-    setCurrentRowData(rowData); // Set the selected row data
-    setIsRemoveModalOpen(true); // Open the modal
+  const handleDeleteClick = (rowData: StoreApplicationProps) => {
+    setCurrentRowData(rowData);
+    setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmRemove = (id: number) => {
+  const handleConfirmDelete = (id: string) => {
     setFilteredApplications((prevApplications) =>
       prevApplications.filter((application) => application._id !== id)
     );
+    //TODO: Delete from database
 
     setSuccessMessage(`Order # ${id} deleted successfully.`);
-    //TODO: Remove from database
-    setIsRemoveModalOpen(false);
+    setIsDeleteModalOpen(false);
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
   //for bulk deleting
-  const handleSelectRow = (id: number) => {
+  const handleSelectRow = (id: string) => {
     setSelectedRows((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((rowId) => rowId !== id)
@@ -250,9 +233,9 @@ const StoreApplications = () => {
 
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(
-        selectedRows.map((id) => deleteStoreApplication(userInfo, id))
-      );
+      // await Promise.all(
+      //   selectedRows.map((id) => deleteStoreApplication(userInfo, id))
+      // );
 
       setFilteredApplications((prevInventory) =>
         prevInventory.filter((item) => !selectedRows.includes(item._id))
@@ -271,11 +254,12 @@ const StoreApplications = () => {
   return (
     <AdminLayout>
       <PageHeader
-        //   className='mt-0'
         heading='Store Applications'
         actions={
           <Button
+            isLoading={isLoading}
             buttonTitle='Refresh'
+            loadingButtonTitle='Refreshing...'
             className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
             onClick={async () => {
               await fetchData();
@@ -300,13 +284,21 @@ const StoreApplications = () => {
           onChange={handleStatusFilterChange}
         />
         {/* Filter by dates */}
-        <DateFilters
-          label='Filter by Date Range'
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={handleStartDateChange}
-          onEndDateChange={handleEndDateChange}
-        />
+        {showMoreFilters && (
+          <DateFilters
+            label='Filter by Date Range'
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={handleStartDateChange}
+            onEndDateChange={handleEndDateChange}
+          />
+        )}
+        <button
+          onClick={toggleMoreFilters}
+          className='text-sm text-nezeza_dark_blue underline'
+        >
+          {showMoreFilters ? 'Less Filters' : 'More Filters'}
+        </button>
 
         {/* Clear Filters Button */}
         <ClearFilters clearFiltersFunction={clearFilters} />
@@ -325,65 +317,71 @@ const StoreApplications = () => {
             columns={tableColumns}
             handleSort={handleSort}
           />
-          <tbody>
-            {filteredApplications
-              .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
-              .map((application) => (
-                <TableRow
-                  key={application._id}
-                  //   hasCollapsibleContent={true}
-                  rowData={application}
-                  rowValues={[
-                    {
-                      content: (
-                        <input
-                          type='checkbox'
-                          checked={selectedRows.includes(application._id)}
-                          onChange={() => handleSelectRow(application._id)}
-                        />
-                      ),
-                    },
-                    { content: application.status, isStatus: true },
-                    { content: formatIdByShortening(application._id) },
-                    { content: application.storeId.name },
-                    { content: application.storeId.storeTypessa },
-                    {
-                      content: `${application.primaryContactId.firstName} ${application.primaryContactId.lastName}`,
-                    },
-                    { content: formatDate(application.createdAt) },
-                    { content: formatDate(application.updatedAt) },
+          {isLoading ? ( // Show loading indicator
+            <Loading message='store applications' />
+          ) : filteredApplications.length === 0 ? (
+            <p className='text-center'>No applications found</p>
+          ) : (
+            <tbody>
+              {filteredApplications
+                .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+                .map((application) => (
+                  <TableRow
+                    key={application._id}
+                    //   hasCollapsibleContent={true}
+                    rowData={application}
+                    rowValues={[
+                      {
+                        content: (
+                          <input
+                            type='checkbox'
+                            checked={selectedRows.includes(application._id)}
+                            onChange={() => handleSelectRow(application._id)}
+                          />
+                        ),
+                      },
+                      { content: application.status, isStatus: true },
+                      { content: formatIdByShortening(application._id) },
+                      { content: application.storeId.name },
+                      { content: application.storeId.storeType },
+                      {
+                        content: `${application.primaryContactId.firstName} ${application.primaryContactId.lastName}`,
+                      },
+                      { content: formatDate(application.createdAt) }, 
+                      { content: formatDate(application.updatedAt) },
 
-                    {
-                      content: (
-                        <RowActionDropdown
-                          actions={[
-                            {
-                              label: 'View',
-                              onClick: () => handleUpdate(application), //TODO:Change
-                            },
-                            {
-                              label: 'Approve',
-                              onClick: () => handleUpdate(application), //TODO:Change
-                            },
-                            {
-                              label: 'Decline',
-                              onClick: () => handleUpdate(application), //TODO:Change
-                            },
-                            {
-                              label: 'Delete',
-                              onClick: () => handleRemoveClick(application), //TODO:Change
-                            },
-                          ]}
-                        />
-                      ),
-                    },
-                  ]}
-                  onUpdate={handleSaveUpdatedRow}
-                  onRemove={handleRemove}
-                />
-              ))}
-            ;
-          </tbody>
+                      {
+                        content: (
+                          <RowActionDropdown
+                            actions={[
+                              {
+                                label: 'View',
+                                onClick: () => handleUpdate(application), //TODO:Change
+                              },
+                              {
+                                label: 'Approve',
+                                onClick: () => handleUpdate(application), //TODO:Change
+                              },
+                              {
+                                label: 'Decline',
+                                onClick: () => handleUpdate(application), //TODO:Change
+                              },
+                              {
+                                label: 'Delete',
+                                onClick: () => handleDeleteClick(application), //TODO:Change
+                              },
+                            ]}
+                          />
+                        ),
+                      },
+                    ]}
+                    onUpdate={handleSaveUpdatedRow}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              ;
+            </tbody>
+          )}
         </table>
         <Pagination
           data={filteredApplications}
@@ -391,19 +389,25 @@ const StoreApplications = () => {
           onPageChange={handlePageChange}
         />
         {/* Update Row Modal */}
-        <UpdateRowModal
-          isOpen={isUpdateModalOpen}
-          rowData={currentRowData}
-          onClose={handleCloseUpdateModal}
-          onSave={handleSaveUpdatedRow}
-        />
-        {/* Remove Row Modal */}
-        <RemoveRowModal
-          isOpen={isRemoveModalOpen}
-          rowData={currentRowData}
-          onClose={() => setIsRemoveModalOpen(false)}
-          onDelete={() => handleConfirmRemove(currentRowData._id)}
-        />
+        {isUpdateModalOpen && currentRowData && (
+          <UpdateRowModal
+            isOpen={isUpdateModalOpen}
+            rowData={currentRowData}
+            onClose={handleCloseUpdateModal}
+            onSave={handleSaveUpdatedRow}
+          />
+        )}
+
+        {/* Delete Row Modal */}
+        {isDeleteModalOpen && currentRowData && (
+          <DeleteRowModal
+            isOpen={isDeleteModalOpen}
+            rowData={currentRowData}
+            onClose={() => setIsDeleteModalOpen(false)}
+            onDelete={() => handleConfirmDelete(currentRowData._id)}
+          />
+        )}
+
         {/* Bulk Delete Confirmation Modal */}
         <BulkDeleteModal
           isOpen={isBulkDeleteModalOpen}

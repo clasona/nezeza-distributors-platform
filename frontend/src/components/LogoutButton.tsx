@@ -1,4 +1,4 @@
-import { removeUser, removeStore, resetCart } from '@/store/nextSlice';
+import { removeUser, removeStore, resetCart } from '@/redux/nextSlice';
 import { signOut } from 'next-auth/react';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,25 +18,21 @@ export const LogoutButton = ({
   noLogoutLabel,
 }: LogoutButtonProps) => {
   const dispatch = useDispatch();
-  const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState(''); // State for error messages
-   const { userInfo, cartItemsData } = useSelector(
-     (state: stateProps) => state.next
-   );
-  
-  const handleLogout = async () => {
- 
+  const { userInfo, cartItemsData } = useSelector(
+    (state: stateProps) => state.next
+  );
 
+  const handleLogout = async () => {
     setIsLoggingOut(true);
     setLogoutError('');
 
     try {
       await signOut(); // Wait for signOut to complete
       const cartItems = cartItemsData; // or get it from useSelector if you need to send the current cart
-      const buyerStoreId = userInfo.userId; // get it from useSelector
+      const buyerStoreId = userInfo._id; // get it from useSelector
       await updateCart(cartItems, buyerStoreId);
-
       dispatch(removeUser());
       dispatch(removeStore());
       dispatch(resetCart());

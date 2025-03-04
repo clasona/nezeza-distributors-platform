@@ -1,47 +1,37 @@
-import React, { useState, useEffect } from 'react';
-import Products from '@/components/Products';
-import { ProductProps, stateProps } from '../../type';
-import axios from 'axios';
-import { MdClose } from 'react-icons/md';
-import Heading from '@/components/Heading';
 import PageHeader from '@/components/PageHeader';
-import TableActions from '@/components/Table/TableActions';
-import TableRow from '@/components/Table/TableRow';
-import TableHead from '@/components/Table/TableHead';
-import RowActionDropdown from '@/components/Table/RowActionDropdown';
-import Image from 'next/image';
-import Pagination from '@/components/Table/Pagination';
-import TableFilters from '@/components/Table/TableFilters';
-import StatusFilters from '@/components/Table/Filters/StatusFilters';
-import SearchField from '@/components/Table/SearchField';
-import { sortItems } from '@/utils/sortItems';
-import UpdateRowModal from '@/components/Table/UpdateRowModal';
-import DeleteRowModal from '@/components/Table/DeleteRowModal';
-import { FaProductHunt } from 'react-icons/fa';
-import formatPrice from '@/utils/formatPrice';
-import formatDate from '@/utils/formatDate';
 import PageHeaderLink from '@/components/PageHeaderLink';
-import DateFilters from '@/components/Table/Filters/DateFilters';
+import DeleteRowModal from '@/components/Table/DeleteRowModal';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
-import { useSelector } from 'react-redux';
-import { formatIdByShortening, formatIdByTimestamp } from '@/utils/formatId';
-import { fetchInventory } from '@/utils/inventory/fetchInventory';
-import { getAllProducts } from '@/utils/product/getAllProducts';
+import DateFilters from '@/components/Table/Filters/DateFilters';
+import Pagination from '@/components/Table/Pagination';
+import RowActionDropdown from '@/components/Table/RowActionDropdown';
+import SearchField from '@/components/Table/SearchField';
+import TableFilters from '@/components/Table/TableFilters';
+import TableHead from '@/components/Table/TableHead';
+import TableRow from '@/components/Table/TableRow';
+import UpdateRowModal from '@/components/Table/UpdateRowModal';
+import formatDate from '@/utils/formatDate';
+import formatPrice from '@/utils/formatPrice';
 import { deleteProduct } from '@/utils/product/deleteProduct';
-import { updateProduct } from '@/utils/product/updateProduct';
+import { getAllProducts } from '@/utils/product/getAllProducts';
+import { sortItems } from '@/utils/sortItems';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { ProductProps, stateProps } from '../../type';
+import Button from './FormInputs/Button';
+import Loading from './Loaders/Loading';
 import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
-import Button from './FormInputs/Button';
-import { useRouter } from 'next/router';
-import Loading from './Loaders/Loading';
+import { handleError } from '@/utils/errorUtils';
 
 // interface SellerProductProps {
 //   inventoryData: ProductProps[];
 // }
 const SellerInventory = () => {
   const [inventoryData, setInventoryData] = useState<ProductProps[]>([]);
-  const [sampleInventory, setSampleInventory] = useState<ProductProps[]>([]);
   const [filteredInventory, setFilteredInventory] = useState<ProductProps[]>(
     []
   );
@@ -89,11 +79,6 @@ const SellerInventory = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false); // State for loading
 
-  // get store info from redux
-  const { userInfo, storeInfo } = useSelector(
-    (state: stateProps) => state.next
-  );
-
   // fetch store inventory data
   const fetchData = async () => {
     setIsLoading(true);
@@ -102,7 +87,7 @@ const SellerInventory = () => {
       setInventoryData(inventoryData);
       setFilteredInventory(inventoryData);
     } catch (error) {
-      console.error('Error fetching inventory data:', error);
+      handleError(error);
     } finally {
       setIsLoading(false); // Set loading to false *after* fetch completes (success or error)
     }

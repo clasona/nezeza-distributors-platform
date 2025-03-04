@@ -1,5 +1,4 @@
-import { ChevronDown, ChevronsUpDown, ChevronUp } from 'lucide-react';
-import React, { useState } from 'react';
+import { ChevronsUpDown } from 'lucide-react';
 
 interface TableHeadProps {
   hasCollapsibleContent?: boolean;

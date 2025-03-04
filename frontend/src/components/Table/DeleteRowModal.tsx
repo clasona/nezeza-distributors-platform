@@ -1,6 +1,5 @@
-import React from 'react';
-import { InventoryProps, OrderProps, stateProps } from '../../../type';
 import { useSelector } from 'react-redux';
+import { stateProps } from '../../../type';
 
 interface DeleteModalProps<T extends object> {
   isOpen: boolean;

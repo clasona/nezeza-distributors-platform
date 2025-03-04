@@ -1,31 +1,23 @@
 'use client';
 
 import ErrorMessageModal from '@/components/ErrorMessageModal';
-import DropdownInput from '@/components/FormInputs/DropdownInput';
-import SubmitButton from '@/components/FormInputs/SubmitButton';
-import TextAreaInput from '@/components/FormInputs/TextAreaInput';
-import TextInput from '@/components/FormInputs/TextInput';
-import SuccessMessageModal from '@/components/SuccessMessageModal';
-import React, { useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import countries from './data/countries.json';
-import { CircleArrowLeft, CircleArrowRight } from 'lucide-react';
-import AddressInput from '@/components/FormInputs/AddressInput';
-import PrimaryContactInput from '@/components/FormInputs/Store/PrimaryContactInput';
-import StoreInfoInput from '@/components/FormInputs/Store/StoreInfoInput';
 import BillingInfoInput from '@/components/FormInputs/Store/BillingInfoInput';
-import VerificationDocsInput from '@/components/FormInputs/Store/VerificationDocsInput';
-import StoreFormHeading from '@/components/FormInputs/Store/StoreFormHeading';
+import PrimaryContactInput from '@/components/FormInputs/Store/PrimaryContactInput';
 import ReviewInfoInput from '@/components/FormInputs/Store/ReviewInfoInput';
-import { createStoreApplication } from '../utils/store/createStoreApplication';
+import StoreInfoInput from '@/components/FormInputs/Store/StoreInfoInput';
+import VerificationDocsInput from '@/components/FormInputs/Store/VerificationDocsInput';
+import SuccessMessageModal from '@/components/SuccessMessageModal';
+import { CircleArrowLeft, CircleArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import {
   AddressProps,
   NewStoreProps,
   stateProps,
-  StoreProps,
 } from '../../type';
 import { createStore } from '../utils/store/createStore';
+import { createStoreApplication } from '../utils/store/createStoreApplication';
 
 interface StoreRegistrationFormProps {
   onSubmitSuccess?: (data: any) => void; // Callback after successful submission
@@ -88,7 +80,7 @@ const StoreRegistrationForm = ({
       name: data.storeName,
       email: data.storeEmail,
       description: data.storeDescription,
-      ownerId: userInfo.userId,
+      ownerId: userInfo._id,
       storeType: data.storeType,
       registrationNumber: data.storeRegistrationNumber,
       category: data.storeCategory,
@@ -107,7 +99,7 @@ const StoreRegistrationForm = ({
     // Use the storeId to create the store application
     const storeApplicationData = {
       ...data,
-      primaryContactId: userInfo.userId,
+      primaryContactId: userInfo._id,
       storeId: storeId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -134,9 +126,9 @@ const StoreRegistrationForm = ({
   };
 
   return (
-    <div className='w-full max-w-4xl mx-auto relative'>
+    <div className='w-full bg-nezeza_powder_blue'>
       <form
-        className='w-full max-w-4xl mx-auto bg-nezeza_light_blue border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 my-4'
+        className='w-full max-w-4xl mx-auto relative bg-nezeza_light_blue rounded-lg shadow sm:p-6 md:p-8 my-4'
         onSubmit={handleSubmit(onSubmit)}
       >
         <h2 className='text-3xl text-nezeza_dark_blue font-bold text-center mb-4'>

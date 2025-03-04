@@ -1,6 +1,5 @@
-import React from 'react';
-import WholesalerLayout from '../layout';
 import SellerInventory from '@/components/SellerInventory';
+import WholesalerLayout from '../layout';
 
 const WholesalerInventory = () => {
   return (

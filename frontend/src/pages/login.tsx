@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { signIn } from 'next-auth/react';
-import { FaGoogle } from 'react-icons/fa';
-import { AddressProps, OrderItemsProps, stateProps, StoreProps } from '../../type';
-import { useSelector, useDispatch } from 'react-redux';
-import { addUser, addStore, setCartItems } from '@/store/nextSlice';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import { createStore } from '../utils/store/createStore';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
+import { addStore, addUser, setCartItems } from '@/redux/nextSlice';
+import { loginUser } from '@/utils/auth/loginUser';
 import { getCart } from '@/utils/cart/getCart';
 import { mergeCartItems } from '@/utils/cart/mergeCartItems';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { FaGoogle } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { stateProps } from '../../type';
+import { handleError } from '@/utils/errorUtils';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const { cartItemsData, userInfo } = useSelector((state: stateProps) => state.next);
+  const { cartItemsData, userInfo } = useSelector(
+    (state: stateProps) => state.next
+  );
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -42,24 +44,10 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        'http://localhost:8000/api/v1/auth/login',
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true, // Include cookies with the request
-          headers: {
-            'Content-Type': 'application/json', // Default header, although Axios sets this automatically for POST
-          },
-        }
-      );
-
+      const response = await loginUser(email, password);
       if (response.status !== 200) {
         setSuccessMessage(''); // Clear any previous error message
         setErrorMessage(response.data.msg || 'Login failed.');
-        //TODO: Do not redirect
       } else {
         setLoginData(response.data);
 
@@ -74,7 +62,7 @@ const LoginPage = () => {
         // set logged in userInfo to redux for further retrieval
         dispatch(
           addUser({
-            userId: userData._id,
+            _id: userData._id,
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
@@ -103,39 +91,30 @@ const LoginPage = () => {
 
         // Fetch and update cart after successful login
         try {
-          // const cartItems = await getCart(); // Call your getCart function
           const serverCartItems = await getCart(); // Get cart from server
-
           const mergedCartItems = mergeCartItems(
             cartItemsData,
             serverCartItems
           ); // Merge the carts
 
           dispatch(setCartItems(mergedCartItems)); // Dispatch the setCartItems action
-        } catch (cartError) {
-          console.error('Error fetching cart after login:', cartError);
-          // Handle the error (e.g., display a message to the user)
-          // Perhaps dispatch an action to set an error state in Redux
+        } catch (error: any) {
+          handleError(error);
         }
 
         setTimeout(() => {
-          // Redirect to home page
-          // window.location.href = '/';
           router.replace('/');
-        }, 2000); // Simulate delay for testing purposes
+        }, 2000);
       }
-    } catch (error) {
-      console.error('Error fetching login data:', error);
-      //add other errors, such as unauthorized, etc
+    } catch (error: any) {
+      handleError(error);
+      setErrorMessage(error);
     }
   };
 
-  
   return (
-    <div className='w-full bg-nezeza_light_blue min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue p-4'>
-        {/* <div className='bg-white shadow-lg rounded-lg p-6'> */}
-        {/* TODO: add shadow such as: shadow-lg shadow-nezeza_light_blue-200 */}
+    <div className='w-full bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
+      <div className='bg-nezeza_light_blue rounded-lg p-4'>
         <form
           onSubmit={handleSubmit}
           className='w-full bg-white p-6 rounded-lg shadow-lg'
@@ -171,13 +150,7 @@ const LoginPage = () => {
             loadingButtonTitle='Logging in ...'
             className='w-full h-10'
           />
-          {/* <button
-            type='submit'
-            className='w-full h-10 rounded-md font-medium bg-nezeza_dark_blue text-white hover:bg-nezeza_yellow 
-            hover:text-black transition-colors duration-300 mt-2'
-          >
-            Login
-          </button> */}
+
           <button
             type='button'
             onClick={handleGoogleLogin}
@@ -195,7 +168,7 @@ const LoginPage = () => {
           <p className='text-center mt-6 text-gray-600'>
             New to Nezeza?{' '}
             <a
-              className='text-nezeza_dark_blue hover:text-nezeza_dark_blue hoverunderline transition-colors
+              className='text-nezeza_dark_blue hover:text-nezeza_dark_blue underline transition-colors
             cursor-pointer duration-250'
               href='http://localhost:3000/register' //TODO: put real address
             >
@@ -203,6 +176,10 @@ const LoginPage = () => {
             </a>
           </p>
         </form>
+        {/* {successMessage && (
+          <SuccessMessageModal successMessage={successMessage} />
+        )} */}
+        {/* {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />} */}
       </div>
     </div>
   );

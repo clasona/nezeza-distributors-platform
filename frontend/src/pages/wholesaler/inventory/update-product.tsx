@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import WholesalerLayout from '../layout';
 import FormHeader from '@/components/FormHeader';
 import UpdateProductForm from '@/components/Product/UpdateProductForm';
+import WholesalerLayout from '../layout';
 
 
 const UpdateProduct = () => {

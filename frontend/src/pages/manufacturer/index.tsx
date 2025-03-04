@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import WholesalerLayout from './layout';
 import Heading from '@/components/Heading';
-import { OrderProps, stateProps } from '../../../type';
-
-import { useSelector } from 'react-redux';
 import SmallCards from '@/components/SmallCards';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { OrderProps, stateProps } from '../../../type';
+import { fetchCustomerOrders } from '../../utils/order/fetchCustomerOrders';
 import { getMyUnarchivedOrders } from '../../utils/order/getMyUnarchivedOrders';
 import { calculateOrderStats } from '../../utils/orderUtils';
-import { fetchCustomerOrders } from '../../utils/order/fetchCustomerOrders';
-import Link from 'next/link';
+import ManufacturerLayout from './layout';
+import { createStripeAccount } from '@/utils/stripe/createStripeAccount';
 
 const Dashboard = () => {
   const { userInfo, storeInfo } = useSelector(
@@ -36,7 +36,6 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  const myOrderStats = calculateOrderStats(myOrders);
   const customerOrderStats = calculateOrderStats(customerOrders);
 
   const notifications = [
@@ -46,18 +45,38 @@ const Dashboard = () => {
   ];
 
   return (
-    <WholesalerLayout>
+    <ManufacturerLayout>
       <Heading title={`Welcome back, ${username}!`}></Heading>
       {!hasStripeAccount && (
         <div className='bg-nezeza_red_200 p-4 rounded-xl shadow-lg text-center mb-4'>
           <p className='text-lg'>
             You haven’t set up your Stripe account yet.{' '}
-            <Link
-              href='/setup-stripe'
-              className='text-nezeza_green_600 font-semibold underline'
+            <span
+              className='font-semibold text-nezeza_green_600 underline cursor-pointer'
+              onClick={async () => {
+                try {
+                  const response = await createStripeAccount(userInfo.email);
+                  if (response && response.url) {
+                    window.open(response.url, '_blank');
+                  } else {
+                    console.error(
+                      'Invalid response from createStripeAccount:',
+                      response
+                    );
+                    alert(
+                      'Error setting up Stripe account. Please try again later.'
+                    );
+                  }
+                } catch (error) {
+                  console.error('Error creating Stripe account:', error);
+                  alert(
+                    'Error setting up Stripe account. Please try again later.'
+                  );
+                }
+              }}
             >
               Set up now
-            </Link>
+            </span>
           </p>
         </div>
       )}
@@ -88,9 +107,9 @@ const Dashboard = () => {
         <div className='bg-white p-6 rounded-xl shadow-lg'>
           {/* {isNotManufacturer } */}
           <h4 className='text-xl font-semibold text-nezeza_dark_blue mb-2'>
-            My Orders Overview
+            Customer Orders Overview
           </h4>
-          <SmallCards orderStats={myOrderStats} />
+          <SmallCards orderStats={customerOrderStats} />
         </div>
         {/* <div className='bg-white p-6 rounded-xl shadow-lg'>
           <h4 className='text-xl font-semibold text-nezeza_dark_blue mb-2'>
@@ -156,7 +175,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </WholesalerLayout>
+    </ManufacturerLayout>
   );
 };
 Dashboard.noLayout = true;

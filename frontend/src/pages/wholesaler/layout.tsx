@@ -1,19 +1,11 @@
 'use client';
 
-import React, { PropsWithChildren, useEffect } from 'react';
-import Link from 'next/link';
-import { useState } from 'react';
-import Sidebar from '../../components/Sidebar';
+import FullScreenLoader from '@/components/Loaders/FullScreenLoader';
 import SideNavbar from '@/components/SideNavbar';
 import TopNavbar from '@/components/TopNavbar';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import Providers from '@/context/Providers';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../../type';
-import FullScreenLoader from '@/components/Loaders/FullScreenLoader';
-// import backgroundImage from '../images/background.jpg'; // Adjust path
-
-// import { AppSidebar } from '@/components/app-sidebar';
 
 const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
   const [showSidebar, setShowSidebar] = useState(true); //TODO: make false
@@ -30,7 +22,7 @@ const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
     } catch (error) {
       console.error('Error setting store name:', error);
     } finally {
-      setIsLoading(false); // Set loading to false after storeInfo is processed
+      setIsLoading(false);
     }
   }, [storeInfo]);
 

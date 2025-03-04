@@ -1,29 +1,18 @@
-import React from 'react';
-import axios from 'axios';
-
-import { OrderItemsProps, ProductProps } from '../../../type';
-import { handleAxiosError } from '../errorUtils';
+import axiosInstance from '../axiosInstance';
 
 export const getOrderByPaymentIntentId = async (paymentIntentId: string) => {
   try {
-    const response = await axios.get(
-      `http://localhost:8000/api/v1/orders/buying/payment/${paymentIntentId}`,
-
-      {
-        withCredentials: true,
-      }
+    const response = await axiosInstance.get(
+      `/orders/buying/payment/${paymentIntentId}`
     );
-
-    const ordersData = response.data.order;
 
     if (response.status !== 200) {
       console.log('order data not fetched.');
       return null;
     } else {
-      return ordersData;
+      return response.data.order;
     }
   } catch (error: any) {
-    console.error('Error fetching order data:', error);
-    return handleAxiosError(error); // Use the utility function
+    throw error;
   }
 };

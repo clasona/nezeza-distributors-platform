@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { resetCart } from '@/store/nextSlice';
-import Link from 'next/link';
-import DropdownInput from '@/components/FormInputs/DropdownInput';
-import { useForm } from 'react-hook-form';
-import SuccessMessageModal from '@/components/SuccessMessageModal';
 import ErrorMessageModal from '@/components/ErrorMessageModal';
+import DropdownInput from '@/components/FormInputs/DropdownInput';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
+import SuccessMessageModal from '@/components/SuccessMessageModal';
 import { useRouter } from 'next/router';
-import { updateUser } from '../utils/user/updateUser';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../type';
 
@@ -37,7 +34,6 @@ const StoreTypeChoose = () => {
       return;
     }
     setErrorMessage('');
-    // updateUser(userInfo.userId, data.selectedStoreType);
     router.push('/store-register');
 
     // Handle the form submission logic here

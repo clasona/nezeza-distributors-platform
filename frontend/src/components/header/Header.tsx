@@ -1,5 +1,3 @@
-import logo from '../../images/logo.jpg';
-import Image from 'next/image';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,18 +6,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import cartIcon from '../../images/cart.png';
-import { BiCaretDown } from 'react-icons/bi';
-import { HiOutlineSearch } from 'react-icons/hi';
-import { SlLocationPin } from 'react-icons/sl';
-import Link from 'next/link';
-import { useSelector, useDispatch } from 'react-redux';
-import { stateProps } from '../../../type';
-import { useSession, signIn, signOut } from 'next-auth/react';
-import { useEffect, useState } from 'react';
-import { addUser } from '@/store/nextSlice';
-import { getUser } from '@/utils/user/getUser';
 import defaultUserImage from '@/images/defaultUserImage.png';
+import { getSellerTypeBaseurl } from '@/lib/utils';
+import { addUser } from '@/redux/nextSlice';
+import { getUser } from '@/utils/user/getUser';
 import {
   Bell,
   CircleDollarSign,
@@ -30,26 +20,36 @@ import {
   ShoppingCart,
   SquareArrowOutUpRight,
 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { BiCaretDown } from 'react-icons/bi';
+import { SlLocationPin } from 'react-icons/sl';
+import { useDispatch, useSelector } from 'react-redux';
+import { stateProps } from '../../../type';
+import cartIcon from '../../images/cart.png';
+import logo from '../../images/logo.jpg';
 import { LogoutButton } from '../LogoutButton';
-import { getSellerTypeBaseurl } from '@/lib/utils';
+import SearchField from '../Table/SearchField';
 
 // import { SessionProvider } from "next-auth/react";
 
 const Header = () => {
   const { data: session } = useSession();
-  const { cartItemsData, productData, favoriteData, userInfo, storeInfo } = useSelector(
+  const { cartItemsData, favoriteData, userInfo, storeInfo } = useSelector(
     (state: stateProps) => state.next
   );
-
   const [currentUserData, setCurrentUserData] = useState<any | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userInfo?.userId) return; // Ensure userId exists before fetching
+      if (!userInfo?._id) return; // Ensure userId exists before fetching
       try {
-        const userData = await getUser(userInfo.userId);
+        const userData = await getUser(userInfo._id);
         setCurrentUserData(userData);
       } catch (error) {
         console.error('Failed to fetch user data', error);
@@ -71,6 +71,24 @@ const Header = () => {
     }
   }, [session]);
 
+  // useEffect(() => {
+  //   const flteredBySearching = myOrders.filter((order) => {
+  //     const searchMatch = Object.values(order)
+  //       .join(' ')
+  //       .toLowerCase()
+  //       .includes(searchQuery.toLowerCase());
+  //     const statusMatch =
+  //       statusFilter === 'Status' || order.fulfillmentStatus === statusFilter;
+  //     return searchMatch && statusMatch;
+  //   });
+
+  //   setFilteredOrders(flteredBySearching);
+  // }, [searchQuery, statusFilter, myOrders]);
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query); // Update the search query
+  };
+
   return (
     <div className='w-full h-20 bg-nezeza_dark_blue text-lightText sticky top-0 z-50'>
       <div className='h-full w-full mx-auto inline-flex items-center justify-between gap-1 mdl:gap-3 px-4 '>
@@ -90,20 +108,10 @@ const Header = () => {
           </div>
         </div>
         {/* searchbar */}
-        <div className='flex-1 h-10 hidden md:inline-flex items-center justify-between relative '>
-          <input
-            className='w-full h-full rounded-3xl px-2 placeholder:text-sm text-base text-black border-[3px] border-transparent outline-none
-                focus-visible:border-nezeza_yellow'
-            type='text'
-            placeholder='Search nezeza products'
-          />
-          <span
-            className='w-12 h-full bg-nezeza_yellow text-black text-2xl flex
-                items-center justify-center absolute right-0 rounded-3xl rounded-br-md'
-          >
-            <HiOutlineSearch />
-          </span>
-        </div>
+        <SearchField
+          searchFieldPlaceholder='nezeza products'
+          onSearchChange={handleSearchChange}
+        />
         <div className='text-xs text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'>
           <Heart size={22} />
           <p className='text-white font-bold text-center'>Favorites</p>{' '}
@@ -170,7 +178,7 @@ const Header = () => {
                   <div>
                     <DropdownMenuItem>
                       <Link
-                        href={`/user/my-account`}
+                        href={`/customer/my-account`}
                         className='flex items-center space-x-2'
                       >
                         <CircleUserRound />
@@ -179,7 +187,7 @@ const Header = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link
-                        href={`/user/orders`}
+                        href={`/customer/orders`}
                         className='flex items-center space-x-2'
                       >
                         <ListOrdered />
@@ -188,7 +196,7 @@ const Header = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link
-                        href={`/user/payments`}
+                        href={`/customer/payments`}
                         className='flex items-center space-x-2'
                       >
                         <CircleDollarSign />
@@ -197,7 +205,7 @@ const Header = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link
-                        href={`/user/notifications`}
+                        href={`/customer/notifications`}
                         className='flex items-center space-x-2'
                       >
                         <Bell />
@@ -212,7 +220,7 @@ const Header = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Link
-                        href={`/user/support`}
+                        href={`/customer/support`}
                         className='flex items-center space-x-2'
                       >
                         <CircleHelp />
@@ -246,21 +254,7 @@ const Header = () => {
               </p>
             </div>
           </Link>
-        )}
-
-        {/* <Link
-          href={'/login'}
-          className='flex items-center border
-            border-transparent hover:border-white cursor-pointer relative'
-        >
-          <p className='text-xs text-white font-bold'>Signin or Signup</p> */}
-        {/* <span className="absolute text-nezeza_yellow text-sm top-2 left-[29px] font-semibold">
-                    {productData ? productData.length: 0}
-                </span> */}
-        {/* </Link> */}
-        {/* </div> */}
-        {/* } */}
-        {/* favorite */}
+        )}       
       </div>
     </div>
   );

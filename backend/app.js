@@ -81,7 +81,7 @@ app.use(fileUpload());
 
 //app.use('/api/v1/admin/users', authRouter);
 // admin routes
-app.use('/api/v1/admin/users', adminRouter);
+app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/admin/stores', adminStoreRouter);
 app.use('/api/v1/admin/notifications', adminNotificationRouter);
 // user routes

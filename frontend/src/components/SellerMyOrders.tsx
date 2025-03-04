@@ -1,56 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { getMyUnarchivedOrders } from '@/utils/order/getMyUnarchivedOrders';
-import {
-  AddressProps,
-  OrderItemsProps,
-  OrderProps,
-  ProductProps,
-} from '../../type';
-import axios from 'axios';
-import SmallCards from '@/components/SmallCards';
-import { calculateOrderStats } from '@/utils/orderUtils';
-import Heading from '@/components/Heading';
+import MoreOrderDetailsModal from '@/components/Order/MoreOrderDetailsModal';
 import PageHeader from '@/components/PageHeader';
-import TableActions from '@/components/Table/TableActions';
+import PageHeaderLink from '@/components/PageHeaderLink';
+import SmallCards from '@/components/SmallCards';
+import DeleteRowModal from '@/components/Table/DeleteRowModal';
+import ClearFilters from '@/components/Table/Filters/ClearFilters';
+import DateFilters from '@/components/Table/Filters/DateFilters';
+import StatusFilters from '@/components/Table/Filters/StatusFilters';
+import Pagination from '@/components/Table/Pagination';
+import RowActionDropdown from '@/components/Table/RowActionDropdown';
+import SearchField from '@/components/Table/SearchField';
+import TableFilters from '@/components/Table/TableFilters';
 import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
-import RowActionDropdown from '@/components/Table/RowActionDropdown';
-import Link from 'next/link';
-import Pagination from '@/components/Table/Pagination';
-import { ChevronDown, ChevronUp, Plus, RotateCw, XCircle } from 'lucide-react';
-import TableFilters from '@/components/Table/TableFilters';
-import StatusFilters from '@/components/Table/Filters/StatusFilters';
-import SearchField from '@/components/Table/SearchField';
-import { sortItems } from '@/utils/sortItems';
-import MoreOrderDetailsModal from '@/components/Order/MoreOrderDetailsModal';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
-import DeleteRowModal from '@/components/Table/DeleteRowModal';
+import { getOrderStatus } from '@/lib/utils';
+import formatDate from '@/utils/formatDate';
 import formatPrice from '@/utils/formatPrice';
-import PageHeaderLink from '@/components/PageHeaderLink';
-import DateFilters from '@/components/Table/Filters/DateFilters';
-import ClearFilters from '@/components/Table/Filters/ClearFilters';
-import { formatIdByTimestamp, formatIdByShortening } from '@/utils/formatId';
+import { archiveOrder } from '@/utils/order/archiveOrder';
+import { getMyUnarchivedOrders } from '@/utils/order/getMyUnarchivedOrders';
+import { calculateOrderStats } from '@/utils/orderUtils';
+import { checkIfProductExists } from '@/utils/product/checkIfProductExists';
+import { sortItems } from '@/utils/sortItems';
+import { Plus, RotateCw } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { OrderItemsProps, OrderProps } from '../../type';
+import ErrorMessageModal from './ErrorMessageModal';
+import Button from './FormInputs/Button';
+import Loading from './Loaders/Loading';
+import ConfirmNewProductModal from './Product/ConfirmNewProductModal';
+import ConfirmUpdateProductModal from './Product/ConfirmUpdateProductModal';
+import SuccessMessageModal from './SuccessMessageModal';
+import ArchiveRowModal from './Table/ArchiveRowModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
-import SuccessMessageModal from './SuccessMessageModal';
-import formatDate from '@/utils/formatDate';
-import { getStore } from '@/utils/store/getStore';
-import Button from './FormInputs/Button';
-import ConfirmUpdateProductModal from './Product/ConfirmUpdateProductModal';
-import { checkIfProductExists } from '@/utils/product/checkIfProductExists';
-import { updateProduct } from '@/utils/product/updateProduct';
-import ErrorMessageModal from './ErrorMessageModal';
-import ConfirmNewProductModal from './Product/ConfirmNewProductModal';
-import { getSingleOrder } from '@/utils/order/getSingleOrder';
-import Loading from './Loaders/Loading';
-import ArchiveRowModal from './Table/ArchiveRowModal';
-import { archiveOrder } from '@/utils/order/archiveOrder';
-import { getOrderStatus } from '@/lib/utils';
+import { handleError } from '@/utils/errorUtils';
 
 const SellerMyOrders = () => {
   const [myOrders, setMyOrders] = useState<OrderProps[]>([]);
-  const [sampleOrders, setSampleOrders] = useState<OrderProps[]>([]);
-
   const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -104,22 +91,19 @@ const SellerMyOrders = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [currentRowData, setCurrentRowData] = useState<OrderProps | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // State for loading
+  const [isLoading, setIsLoading] = useState(false);
 
   //setting my orders data
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      //sample orders
-      // const sampleOrdersData = mockMyOrders;
       const myOrdersData = await getMyUnarchivedOrders();
       setMyOrders(myOrdersData);
-      // setSampleOrders(sampleOrdersData);
       setFilteredOrders(myOrdersData); // Initially show all orders
     } catch (error) {
-      console.error('Error fetching my orders data:', error);
+       handleError(error);
     } finally {
-      setIsLoading(false); // Set loading to false *after* fetch completes (success or error)
+      setIsLoading(false);
     }
   };
   useEffect(() => {
@@ -217,7 +201,6 @@ const SellerMyOrders = () => {
     setIsUpdateModalOpen(true);
   };
   const handleSaveUpdatedRow = (updatedRow: OrderProps) => {
-    // Update filteredOrders to reflect the updated row
     setFilteredOrders((prevOrders) =>
       prevOrders.map((order) =>
         order._id === updatedRow._id ? { ...order, ...updatedRow } : order
@@ -225,7 +208,7 @@ const SellerMyOrders = () => {
     );
     // TODO: Update in db
     setSuccessMessage(`Order # ${updatedRow._id} updated successfully.`);
-    setIsUpdateModalOpen(false); // Close the modal after saving
+    setIsUpdateModalOpen(false);
     setTimeout(() => setSuccessMessage(''), 4000);
   };
 
@@ -306,7 +289,7 @@ const SellerMyOrders = () => {
 
   const handleBulkDelete = async () => {
     try {
-      await Promise.all(selectedRows.map((id) => deleteMyOrder(id)));
+      // await Promise.all(selectedRows.map((id) => deleteMyOrder(id)));
 
       setFilteredOrders((prevInventory) =>
         prevInventory.filter((item) => !selectedRows.includes(item._id))
@@ -457,7 +440,6 @@ const SellerMyOrders = () => {
                       { content: `$${formatPrice(order.totalAmount)}` },
                       { content: formatDate(order.createdAt) },
                       { content: formatDate(order.updatedAt) },
-
                       {
                         content: (
                           <RowActionDropdown

@@ -1,22 +1,28 @@
-// Products displayed at home page for anybody - i.e: from retailers?
-
-import React, { useState } from 'react';
-import { ProductProps } from '../../type';
-import Image from 'next/image';
-import { HiShoppingCart } from 'react-icons/hi';
-import FormattedPrice from './FormattedPrice';
-import { useDispatch } from 'react-redux';
-import { addToCart, addToFavorite } from '@/store/nextSlice';
+import { addToCart, addToFavorite } from '@/redux/nextSlice';
 import { Heart } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { HiShoppingCart } from 'react-icons/hi';
+import { useDispatch, useSelector } from 'react-redux';
+import { ProductProps, stateProps } from '../../type';
+import ErrorMessageModal from './ErrorMessageModal';
+import FormattedPrice from './FormattedPrice';
+import SuccessMessageModal from './SuccessMessageModal';
+import { handleError } from '@/utils/errorUtils';
+import {
+  getManufacturersProducts,
+  getRetailersProducts,
+  getWholesalersProducts,
+} from '@/utils/product/getProductsBySeller';
 
-const Products = ({ productData }: any) => {
-   console.log('productData received:', productData); // Log RIGHT HERE
-   if (!productData || !Array.isArray(productData)) {
-     console.error('productData is missing or not an array!');
-     return <div>No products available.</div>; // Or a loading indicator
-   }
-  
+const Products = () => {
+  const [products, setProducts] = useState<ProductProps[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const { storeInfo } = useSelector((state: stateProps) => state.next);
+  const [isLoading, setIsLoading] = useState(false);
+
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -28,10 +34,41 @@ const Products = ({ productData }: any) => {
     setExpandedProductId((prevId) => (prevId === productId ? null : productId));
   };
 
+  const fetchData = async () => {
+    setIsLoading(true);
+    let productsData;
+    try {
+      if (storeInfo) {
+        if (storeInfo.storeType == 'wholesale') {
+          productsData = await getManufacturersProducts();
+        } else if (storeInfo.storeType == 'retail') {
+          productsData = await getWholesalersProducts();
+        }
+      } else {
+        productsData = await getRetailersProducts();
+      }
+      setProducts(productsData);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (!products) {
+    return (
+      <div className='w-full text-center text-bold'>
+        No products available at the moment.
+      </div>
+    );
+  }
+
   return (
     <div className='w-full px-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6'>
-      {/* choose whichever fileds you wanna grab from the product */}
-      {productData.map((product: ProductProps) => (
+      {products.map((product: ProductProps) => (
         <div
           key={product._id}
           className={`w-full bg-white text-black p-4 border border-gray-300 rounded-lg group overflow-hidden hover:cursor-pointer `}
@@ -62,44 +99,41 @@ const Products = ({ productData }: any) => {
                         border-gray-400 bg-white rounded-md flex flex-col translate-x-20 group-hover:translate-x-0
                         transition-transform duration-300'
             >
-              {
-                
-                  !(product.quantity < 1) && (
-                    <span
-                      onClick={() =>
-                        dispatch(
-                          addToCart({
-                            product,
-                            quantity: 1,
-                          })
-                        )
-                      }
-                      className={`w-full h-full border-b-[1px] border-b-gray-400 flex items-center justify-center 
-                            text-xl bg-transparent hover:bg-nezeza_yellow cursor-pointer duration-300
+              {!(product.quantity < 1) && (
+                <span
+                  onClick={() => {
+                    dispatch(
+                      addToCart({
+                        product,
+                        quantity: 1,
+                      })
+                    );
+                    setSuccessMessage('Added successfully!');
+                  }}
+                  className={`w-full h-full border-b-[1px] border-b-gray-400 flex items-center justify-center 
+                            text-xl bg-transparent hover:bg-nezeza_green_600 cursor-pointer duration-300
                             ${
                               product.quantity < 1
                                 ? 'cursor-not-allowed opacity-50'
                                 : ''
                             }`}
-                    >
-                      <HiShoppingCart />
-                    </span>
-                  )
-                
-              }
+                >
+                  <HiShoppingCart />
+                </span>
+              )}
 
-              {/* TODO: Not sure if we need this favoritefunctionality tho  */}
               <span
-                onClick={() =>
+                onClick={() => {
                   dispatch(
                     addToFavorite({
                       product,
                       quantity: 1,
                     })
-                  )
-                }
+                  );
+                  setSuccessMessage('Added successfully!');
+                }}
                 className='w-full h-full border-b-[1px] border-b-gray-400 flex items-center justify-center 
-                            text-xl bg-transparent hover:bg-nezeza_yellow cursor-pointer duration-300
+                            text-xl bg-transparent hover:bg-nezeza_green_600 cursor-pointer duration-300
                             '
               >
                 <Heart />
@@ -108,18 +142,20 @@ const Products = ({ productData }: any) => {
           </div>
           <hr />
           <div className='px-4 py-3 flex flex-col gap-1'>
-            <p className='text-xs text-nezeza_gray_600 tracking-wide'>
-              {product.category}
-            </p>
+            <div className='flex justify-between w-full'>
+              <p className='text-xs text-nezeza_gray_600 tracking-wide'>
+                {product.category}
+              </p>
+              {/* <p className='text-xs text-nezeza_gray_600 tracking-wide'>
+                {getStoreName(product.storeId._id)}
+              </p> */}
+            </div>
             <p className='text-base font-medium'>{product.title}</p>
             <p className='flex items-center'>
               <span className='text-nezeza_dark_blue font-bold'>
                 <FormattedPrice amount={product.price} />
               </span>
             </p>
-            {/* <p className='text-xs text-gray-600 text-justify'>
-                {description.substring(0, 50)}
-              </p> */}
             <p
               className='text-xs text-gray-600 text-justify'
               onClick={() => {
@@ -155,9 +191,10 @@ const Products = ({ productData }: any) => {
                         quantity: 1,
                       })
                     );
+                setSuccessMessage('Added successfully!');
               }}
-              className='h-10 font-medium bg-nezeza_dark_blue text-white round-md hover:bg-nezeza_yellow 
-                            hover:text-black duration-300 mt-2'
+              className='h-10 font-medium bg-nezeza_dark_blue text-white round-md hover:bg-nezeza_green_600 
+                             duration-300 mt-2'
             >
               {product.quantity < 1 ? 'Add to Favorites' : 'Add to Cart'}
             </button>
@@ -171,6 +208,10 @@ const Products = ({ productData }: any) => {
           </div>
         </div>
       ))}
+      {successMessage && (
+        <SuccessMessageModal successMessage={successMessage} />
+      )}
+      {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
     </div>
   );
 };

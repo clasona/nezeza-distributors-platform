@@ -1,24 +1,17 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import logo from '@/images/logo.jpg';
-import { usePathname } from 'next/navigation';
-import Button from './FormInputs/Button';
-import { useSelector } from 'react-redux';
-import { stateProps } from '../../type';
-import { useRouter } from 'next/router';
-import { LogoutButton } from './LogoutButton';
 import {
   Bell,
   CircleDollarSign,
   CircleHelp,
   ListOrdered,
   ShoppingCart,
-  Truck,
-  UserRoundPen,
+  UserRoundPen
 } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
+import { LogoutButton } from './LogoutButton';
 
 interface CustomerSideNavbarProps {
   showSidebar: boolean;
