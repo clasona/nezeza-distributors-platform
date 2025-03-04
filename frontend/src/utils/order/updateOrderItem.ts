@@ -10,7 +10,7 @@ export const updateOrderItem = async (
 ) => {
   try {
     const response = await axios.patch(
-      `http://localhost:8000/api/v1/orders/${orderId}/${orderItemId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/${orderId}/${orderItemId}`,
       updatedOrderItemsData,
       {
         withCredentials: true,

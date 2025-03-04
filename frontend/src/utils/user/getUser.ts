@@ -4,7 +4,7 @@ import { UserProps } from '../../../type';
 export const getUser = async (userId: string | number): Promise<UserProps> => {
   try {
     const response = await axios.get(
-      `http://localhost:8000/api/v1/users/${userId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/${userId}`,
 
       {
         withCredentials: true, // Include credentials like cookies for authorization

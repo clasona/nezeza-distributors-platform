@@ -29,7 +29,7 @@ export const updateUser = async (
     console.log(dataToUpdate);
 
     const response = await axios.patch(
-      `http://localhost:8000/api/v1/users/${userId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/${userId}`,
       dataToUpdate,
       {
         withCredentials: true, // Include credentials like cookies for authorization

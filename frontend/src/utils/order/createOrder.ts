@@ -15,7 +15,7 @@ export const createOrder = async (orderItems: OrderItemsProps) => {
   };
   try {
     const response = await axios.post(
-      `http://localhost:8000/api/v1/orders`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders`,
       orderData,
       {
         withCredentials: true,

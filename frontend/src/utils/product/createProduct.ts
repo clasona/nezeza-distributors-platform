@@ -3,12 +3,10 @@ import axios from 'axios';
 
 import { ProductProps } from '../../../type';
 
-export const createProduct = async (
-  productData: ProductProps
-) => {
+export const createProduct = async (productData: ProductProps) => {
   try {
     const response = await axios.post(
-      `http://localhost:8000/api/v1/products`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products`,
       productData,
       {
         withCredentials: true,

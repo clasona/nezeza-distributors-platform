@@ -3,15 +3,15 @@ import axios from 'axios';
 export const clearCart = async () => {
   try {
     const response = await axios.delete(
-      `http://localhost:8000/api/v1/cart`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cart`,
       {
         withCredentials: true,
       }
     );
 
     if (response.status !== 201) {
-        console.error('Cart not cleared. Status:', response.status);
-        return null;
+      console.error('Cart not cleared. Status:', response.status);
+      return null;
     } else {
       console.log('Cart cleared successfully...');
     }

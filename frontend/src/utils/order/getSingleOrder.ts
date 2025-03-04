@@ -3,7 +3,7 @@ import axios from 'axios';
 export const getSingleOrder = async (id: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:8000/api/v1/orders/buying/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/buying/${id}`,
       {
         withCredentials: true, // Include credentials like cookies for authorization
       }

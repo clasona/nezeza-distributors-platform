@@ -23,7 +23,7 @@ export const updateNotification = async (
 ) => {
   try {
     const response = await axios.patch(
-      `http://localhost:8000/api/v1/notifications/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/notifications/${id}`,
       updatedData,
       {
         withCredentials: true,
@@ -38,6 +38,6 @@ export const updateNotification = async (
       return null;
     }
   } catch (error) {
-   throw error; // Use the utility function
+    throw error; // Use the utility function
   }
 };

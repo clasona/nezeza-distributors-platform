@@ -4,13 +4,12 @@ import { OrderProps } from '../../../type';
 export const getMyAllOrders = async () => {
   try {
     const response = await axios.get(
-      'http://localhost:8000/api/v1/orders/buying',
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/buying`,
       {
         withCredentials: true, // Include credentials like cookies for authorization
       }
     );
     const ordersData = response.data.orders;
-
 
     if (response.status !== 200) {
       console.log('all my orders data not fetched.');
