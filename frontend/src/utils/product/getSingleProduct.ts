@@ -5,7 +5,7 @@ import { stateProps, StoreProps } from '../../../type';
 export const getSingleProduct = async (id: any) => {
   try {
     const response = await axios.get(
-      `http://localhost:8000/api/v1/products/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/${id}`,
 
       {
         withCredentials: true, // Include credentials like cookies for authorization

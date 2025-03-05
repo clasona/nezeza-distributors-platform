@@ -2,13 +2,11 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import { ErrorResponse } from './types/ErrorResponse'; 
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:8000/api/v1', // Base URL
+  baseURL: `${BACKEND_URL}/api/v1`, // Base URL
   withCredentials: true, // Include cookies
-//   headers: {
-//     'Content-Type': 'application/json',
-//   },
 });
 axiosInstance.interceptors.request.use(
   (config) => {

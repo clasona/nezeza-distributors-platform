@@ -3,11 +3,11 @@ import axios from 'axios';
 
 import { UserProps } from '../../../type';
 
-export const createStripeAccount = async (email:string) => {
+export const createStripeAccount = async (email: string) => {
   try {
     const response = await axios.post(
-      `http://localhost:8000/api/v1/payment/create-stripe-connect-account/`,
-      {email},
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/payment/create-stripe-connect-account/`,
+      { email },
       {
         withCredentials: true,
         headers: {

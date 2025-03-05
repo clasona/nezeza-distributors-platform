@@ -5,7 +5,7 @@ import { StoreProps } from '../../../type';
 export const fetchInventory = async (storeInfo: StoreProps) => {
   try {
     const response = await axios.get(
-      'http://localhost:8000/api/v1/wholesaler/inventory-items',
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/wholesaler/inventory-items`,
 
       {
         params: { storeId: storeInfo._id }, //TODO: get this from redux user info
