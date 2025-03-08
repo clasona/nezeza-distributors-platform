@@ -170,7 +170,7 @@ const LoginPage = () => {
             <a
               className='text-nezeza_dark_blue hover:text-nezeza_dark_blue underline transition-colors
             cursor-pointer duration-250'
-              href='http://localhost:3000/register' //TODO: put real address
+              href='/register'
             >
               Signup
             </a>

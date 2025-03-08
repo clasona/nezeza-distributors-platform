@@ -19,16 +19,15 @@ import {
   ListOrdered,
   ShoppingCart,
   SquareArrowOutUpRight,
+  User,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { BiCaretDown } from 'react-icons/bi';
-import { SlLocationPin } from 'react-icons/sl';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../../type';
-import cartIcon from '../../images/cart.png';
 import logo from '../../images/logo.jpg';
 import { LogoutButton } from '../LogoutButton';
 import SearchField from '../Table/SearchField';
@@ -91,65 +90,73 @@ const Header = () => {
 
   return (
     <div className='w-full h-20 bg-nezeza_dark_blue text-lightText sticky top-0 z-50'>
-      <div className='h-full w-full mx-auto inline-flex items-center justify-between gap-1 mdl:gap-3 px-4 '>
+      <div className='h-full w-full mx-auto flex items-center justify-between gap-2 sm:gap-3 px-4'>
         {/* logo */}
         <Link
           href={'/'}
           className='px-2 border border-transparent hover:border-white cursor-pointer duration-300 flex items-center justify-center h-[70%]'
         >
-          <Image className='w-32 object-cover ' src={logo} alt='logoImg' />
+          <Image
+            className='w-24 sm:w-32 object-cover'
+            src={logo}
+            alt='logoImg'
+          />
         </Link>
         {/* delivery */}
-        <div className='px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] hidden xl:inline-flex gap-1'>
+        {/* <div className='px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] hidden lg:flex gap-1'>
           <SlLocationPin />
           <div className='text-xs'>
             <p>Deliver to</p>
             <p className='text-white font-bold uppercase'>Chicago</p>
           </div>
-        </div>
+        </div> */}
         {/* searchbar */}
-        <SearchField
-          searchFieldPlaceholder='nezeza products'
-          onSearchChange={handleSearchChange}
-        />
-        <div className='text-xs text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'>
+        <div className='flex-grow'>
+          <SearchField
+            searchFieldPlaceholder='nezeza products'
+            onSearchChange={handleSearchChange}
+          />
+        </div>
+
+        <div className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'>
           <Heart size={22} />
-          <p className='text-white font-bold text-center'>Favorites</p>{' '}
-          {favoriteData.length > 0 && (
-            <span className='absolute right-2 top-2 w-4 h-4 border-[1px] border-gray-400 flex items-center justify-center text-xs text-nezeza_yellow'>
-              {favoriteData.length}
-            </span>
-          )}
+          <p className='text-white font-bold text-center'>Favorites</p>
+
+          <span className='absolute right-2 top-2 w-4 h-4 border border-nezeza_yellow flex items-center justify-center top-[-1px] text-xs font-semibold text-nezeza_yellow'>
+            {favoriteData ? favoriteData.length : 0}
+          </span>
         </div>
 
         {/* cart */}
         <Link
           href={'/cart'}
-          className='flex items-center px-2  border
-            border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
+          className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
         >
-          <Image
-            className='w-auto object-cover h-8'
-            src={cartIcon}
-            alt='cartImg'
-          />
-          <p className='text-xs text-white font-bold mt-3'>Cart</p>
-          <span className='absolute text-nezeza_yellow text-sm top-2 left-[29px] font-semibold'>
+          <ShoppingCart size={22} className='text-white' />
+          <span className='absolute text-nezeza_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-nezeza_dark_blue border border-nezeza_yellow'>
             {cartItemsData ? cartItemsData.length : 0}
           </span>
+          <p className='text-white font-bold text-center'>Cart</p>
         </Link>
+
         {/* signin */}
         {userInfo ? (
           <div className='flex items-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] gap-1'>
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <Image
-                  src={currentUserData?.image || defaultUserImage}
-                  alt='userProfilePicture'
-                  width={50} // Adjust the width as needed
-                  height={50} // Adjust the height as needed
-                  className='w-8 h-8 rounded-full object-cover'
-                />
+                <div className='w-8 h-8 rounded-full overflow-hidden'>
+                  {' '}
+                  {/* Wrapper div */}
+                  <Image
+                    src={currentUserData?.image || defaultUserImage}
+                    alt='userProfilePicture'
+                    width={40}
+                    height={40}
+                    layout='responsive'
+                    sizes='40px'
+                    className='w-full h-full object-cover'
+                  />
+                </div>
 
                 {/* <div
                   className='text-xs text-gray-100 flec flex-col
@@ -240,21 +247,12 @@ const Header = () => {
         ) : (
           <Link
             href={'/login'}
-            // onClick={() => signIn()}
-            className='text-xs text-gray-100 flex flex-col justify-center px-2 border
-        border-transparent hover:border-white cursor-pointer duration-300 h-[70%]'
+            className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
           >
-            <div>
-              {/* <p>Hello, sign in</p> */}
-              <p className='text-white font-bold flex'>
-                Signin or Signup{' '}
-                <span>
-                  <BiCaretDown />
-                </span>
-              </p>
-            </div>
+            <CircleUserRound size={22} className='text-white' />
+            <p className='text-white font-bold text-center'>Account</p>
           </Link>
-        )}       
+        )}
       </div>
     </div>
   );

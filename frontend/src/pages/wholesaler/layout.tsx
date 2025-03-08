@@ -26,9 +26,9 @@ const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
     }
   }, [storeInfo]);
 
-  if (isLoading) {
-    return <FullScreenLoader />;
-  }
+  // if (isLoading) {
+  //   return <FullScreenLoader />;
+  // }
 
   return (
     <div className='flex'>

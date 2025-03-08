@@ -1,41 +1,88 @@
-// For the sliders
-// uses the 'react-responsive-carousel' library
+import Image from 'next/image';
+import { useSelector } from 'react-redux';
+import { Carousel } from 'react-responsive-carousel';
+import sliderImg_1 from '../images/slider/slide1.png';
+import sliderImg_2 from '../images/slider/slide2.jpeg';
+import sliderImg_3 from '../images/slider/slide3.jpg';
+import sliderImg_4 from '../images/slider/slide4.jpg';
+import { stateProps } from '../../type';
+import Link from 'next/link';
+import { SquareArrowOutUpRight } from 'lucide-react';
 
-import React from "react";
-import { Carousel }  from 'react-responsive-carousel';
-import sliderImg_1 from "../images/slider/slide1.png"
-import sliderImg_2 from "../images/slider/slide2.jpeg"
-import sliderImg_3 from "../images/slider/slide3.jpg"
-import sliderImg_4 from "../images/slider/slide4.jpg"
-// import sliderImg_5 from "../images/slider/slide5.jpg"
-// import sliderImg_6 from "../images/slider/slide6.jpg"
-// import sliderImg_7 from "../images/slider/slide7.jpg"
-// import sliderImg_8 from "../images/slider/slide8.jpg"
-import Image from "next/image";
-
-const Banner = () => {
-    // NOTE: We can keep the sliding banners or have a live video playing in the background as in current nzz site
-    return (
-        /*
-        TODO: 
-          - Find ways to add some links on the live pictures like "SHOP NOW"
-          - Add more relevant pictures to the carousel
-        
-        */
-        <div className="relative">
-             <Carousel autoPlay infiniteLoop showStatus={false} showIndicators={false} interval={3000}>
-                <div><Image priority src={sliderImg_1} alt="sliderImg" /></div>
-                <div><Image src={sliderImg_2} alt="sliderImg" /></div>
-                <div><Image src={sliderImg_3} alt="sliderImg" /></div>
-                <div><Image src={sliderImg_4} alt="sliderImg" /></div>
-                {/* <div><Image src={sliderImg_5} alt="sliderImg" /></div>
-                <div><Image src={sliderImg_6} alt="sliderImg" /></div>
-                <div><Image src={sliderImg_7} alt="sliderImg" /></div>
-                <div><Image src={sliderImg_8} alt="sliderImg" /></div> */}
-            </Carousel>
-            <div className="w-full h-40 bg-gradient-to-t from-gray-100 to-transparent absolute bottom-0 z-20"></div>
-        </div>
-    );
+interface BannerProps{
+  onBuyClick: () => void;
 }
+const Banner = ({ onBuyClick }: BannerProps) => {
+  const { userInfo } = useSelector((state: stateProps) => state.next);
+  return (
+    <div className='relative mb-4 banner-bottom'>
+      {!userInfo ? (
+        <div>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline // Important for mobile browsers
+            className='w-full h-full object-cover'
+          >
+            <source
+              src='/videos/nezeza_banner_videos_combined.mp4'
+              type='video/mp4'
+            />
+            Your browser does not support the video tag.
+          </video>
+
+          <div className='absolute inset-0 flex flex-col items-center justify-center text-white text-center z-10'>
+            <p className='text-2xl font-semibold mb-4'>
+              {' '}
+              Discover amazing products or sell your own on the Nezeza platform.
+            </p>
+            <div className='flex w-full max-w-xs gap-4 justify-center'>
+              {' '}
+              <button
+                className='flex items-center justify-center bg-nezeza_dark_blue hover:bg-blue-800 hover:underline text-white font-bold py-2 px-4 rounded-md w-1/2'
+                onClick={onBuyClick}
+              >
+                Buy
+              </button>
+              <span className='text-white self-center'>or</span>{' '}
+              <Link
+                href='/store-type-choose'
+                target='_blank'
+                className='flex items-center justify-center bg-nezeza_green_600 hover:bg-nezeza_green_800 hover:underline  text-white font-bold py-2 px-4 rounded-md w-1/2 '
+              >
+                <SquareArrowOutUpRight className='h-3' />
+                Sell
+              </Link>
+            </div>
+          </div>
+
+          <div className='w-full h-[20%] bg-gradient-to-t from-gray-100 to-transparent absolute bottom-0 z-20'></div>
+        </div>
+      ) : (
+        <Carousel
+          autoPlay
+          infiniteLoop
+          showStatus={false}
+          showIndicators={false}
+          interval={3000}
+        >
+          <div>
+            <Image priority src={sliderImg_1} alt='sliderImg' />
+          </div>
+          <div>
+            <Image src={sliderImg_2} alt='sliderImg' />
+          </div>
+          <div>
+            <Image src={sliderImg_3} alt='sliderImg' />
+          </div>
+          <div>
+            <Image src={sliderImg_4} alt='sliderImg' />
+          </div>
+        </Carousel>
+      )}
+    </div>
+  );
+};
 
 export default Banner;
