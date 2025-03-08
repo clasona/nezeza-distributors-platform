@@ -19,6 +19,7 @@ import {
   ListOrdered,
   ShoppingCart,
   SquareArrowOutUpRight,
+  User,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -90,183 +91,168 @@ const Header = () => {
   return (
     <div className='w-full h-20 bg-nezeza_dark_blue text-lightText sticky top-0 z-50'>
       <div className='h-full w-full mx-auto flex items-center justify-between gap-2 sm:gap-3 px-4'>
-        
-          {/* logo */}
-          <Link
-            href={'/'}
-            className='px-2 border border-transparent hover:border-white cursor-pointer duration-300 flex items-center justify-center h-[70%]'
-          >
-            <Image
-              className='w-24 sm:w-32 object-cover'
-              src={logo}
-              alt='logoImg'
-            />
-          </Link>
-          {/* delivery */}
-          {/* <div className='px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] hidden lg:flex gap-1'>
+        {/* logo */}
+        <Link
+          href={'/'}
+          className='px-2 border border-transparent hover:border-white cursor-pointer duration-300 flex items-center justify-center h-[70%]'
+        >
+          <Image
+            className='w-24 sm:w-32 object-cover'
+            src={logo}
+            alt='logoImg'
+          />
+        </Link>
+        {/* delivery */}
+        {/* <div className='px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] hidden lg:flex gap-1'>
           <SlLocationPin />
           <div className='text-xs'>
             <p>Deliver to</p>
             <p className='text-white font-bold uppercase'>Chicago</p>
           </div>
         </div> */}
-          {/* searchbar */}
-          <div className='flex-grow'>
-            <SearchField
-              searchFieldPlaceholder='nezeza products'
-              onSearchChange={handleSearchChange}
-            />
-          </div>
-        
-       
-          <div className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'>
-            <Heart size={22} />
-            <p className='text-white font-bold text-center'>Favorites</p>
+        {/* searchbar */}
+        <div className='flex-grow'>
+          <SearchField
+            searchFieldPlaceholder='nezeza products'
+            onSearchChange={handleSearchChange}
+          />
+        </div>
 
-            <span className='absolute right-2 top-2 w-4 h-4 border border-nezeza_yellow flex items-center justify-center top-[-1px] text-xs font-semibold text-nezeza_yellow'>
-              {favoriteData ? favoriteData.length : 0}
-            </span>
-          </div>
+        <div className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'>
+          <Heart size={22} />
+          <p className='text-white font-bold text-center'>Favorites</p>
 
-          {/* cart */}
-          <Link
-            href={'/cart'}
-            className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
-          >
-            {/* <div className='relative'> */}
-            <ShoppingCart size={22} className=' text-white ' />
-            <span className='absolute text-nezeza_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-nezeza_dark_blue border border-nezeza_yellow'>
-              {cartItemsData ? cartItemsData.length : 0}
-            </span>
-            <p className='text-white font-bold text-center'>Cart</p>
-            {/* </div> */}
-            {/* <p className='text-xs text-white font-bold mt-1'>Cart</p> */}
-          </Link>
-          {/* signin */}
-          {userInfo ? (
-            <div className='flex items-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] gap-1'>
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <div className='w-8 h-8 rounded-full overflow-hidden'>
-                    {' '}
-                    {/* Wrapper div */}
-                    <Image
-                      src={currentUserData?.image || defaultUserImage}
-                      alt='userProfilePicture'
-                      width={40}
-                      height={40}
-                      layout='responsive'
-                      sizes='40px'
-                      className='w-full h-full object-cover'
-                    />
-                  </div>
+          <span className='absolute right-2 top-2 w-4 h-4 border border-nezeza_yellow flex items-center justify-center top-[-1px] text-xs font-semibold text-nezeza_yellow'>
+            {favoriteData ? favoriteData.length : 0}
+          </span>
+        </div>
 
-                  {/* <div
+        {/* cart */}
+        <Link
+          href={'/cart'}
+          className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
+        >
+          <ShoppingCart size={22} className='text-white' />
+          <span className='absolute text-nezeza_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-nezeza_dark_blue border border-nezeza_yellow'>
+            {cartItemsData ? cartItemsData.length : 0}
+          </span>
+          <p className='text-white font-bold text-center'>Cart</p>
+        </Link>
+
+        {/* signin */}
+        {userInfo ? (
+          <div className='flex items-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] gap-1'>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <div className='w-8 h-8 rounded-full overflow-hidden'>
+                  {' '}
+                  {/* Wrapper div */}
+                  <Image
+                    src={currentUserData?.image || defaultUserImage}
+                    alt='userProfilePicture'
+                    width={40}
+                    height={40}
+                    layout='responsive'
+                    sizes='40px'
+                    className='w-full h-full object-cover'
+                  />
+                </div>
+
+                {/* <div
                   className='text-xs text-gray-100 flec flex-col
                 justify-between'
                 >
                   <p className='text-white font-bold'>Hi,</p>
                   <p>{userInfo.firstName}</p>
                 </div> */}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className='px-2 py-4 pr-8'>
-                  <DropdownMenuLabel>Account</DropdownMenuLabel>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className='px-2 py-4 pr-8'>
+                <DropdownMenuLabel>Account</DropdownMenuLabel>
 
-                  <DropdownMenuSeparator />
-                  {storeInfo ? (
+                <DropdownMenuSeparator />
+                {storeInfo ? (
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/${getSellerTypeBaseurl()}`}
+                      target='_blank'
+                      className='flex items-center space-x-2'
+                    >
+                      <SquareArrowOutUpRight />
+                      <span>Seller Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ) : (
+                  <div>
                     <DropdownMenuItem>
                       <Link
-                        href={`/${getSellerTypeBaseurl()}`}
-                        target='_blank'
+                        href={`/customer/my-account`}
                         className='flex items-center space-x-2'
                       >
-                        <SquareArrowOutUpRight />
-                        <span>Seller Dashboard</span>
+                        <CircleUserRound />
+                        <span>My Account</span>
                       </Link>
                     </DropdownMenuItem>
-                  ) : (
-                    <div>
-                      <DropdownMenuItem>
-                        <Link
-                          href={`/customer/my-account`}
-                          className='flex items-center space-x-2'
-                        >
-                          <CircleUserRound />
-                          <span>My Account</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Link
-                          href={`/customer/orders`}
-                          className='flex items-center space-x-2'
-                        >
-                          <ListOrdered />
-                          <span>Orders</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Link
-                          href={`/customer/payments`}
-                          className='flex items-center space-x-2'
-                        >
-                          <CircleDollarSign />
-                          <span>Payments</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Link
-                          href={`/customer/notifications`}
-                          className='flex items-center space-x-2'
-                        >
-                          <Bell />
-                          <span>Notifications</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Link
-                          href={`/`}
-                          className='flex items-center space-x-2'
-                        >
-                          <ShoppingCart />
-                          <span>Shopping</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Link
-                          href={`/customer/support`}
-                          className='flex items-center space-x-2'
-                        >
-                          <CircleHelp />
-                          <span>Support</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </div>
-                  )}
-                  <DropdownMenuItem>
-                    <div>
-                      <LogoutButton />
-                    </div>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ) : (
-            <Link
-              href={'/login'}
-              className='text-xs text-gray-100 flex flex-col justify-center px-2 border
-        border-transparent hover:border-white cursor-pointer duration-300 h-[70%]'
-            >
-              <div>
-                <p className='text-white font-bold flex'>
-                  Signin or Signup
-                  <span>
-                    <BiCaretDown />
-                  </span>
-                </p>
-              </div>
-            </Link>
-          )}
-        
+                    <DropdownMenuItem>
+                      <Link
+                        href={`/customer/orders`}
+                        className='flex items-center space-x-2'
+                      >
+                        <ListOrdered />
+                        <span>Orders</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        href={`/customer/payments`}
+                        className='flex items-center space-x-2'
+                      >
+                        <CircleDollarSign />
+                        <span>Payments</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        href={`/customer/notifications`}
+                        className='flex items-center space-x-2'
+                      >
+                        <Bell />
+                        <span>Notifications</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link href={`/`} className='flex items-center space-x-2'>
+                        <ShoppingCart />
+                        <span>Shopping</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        href={`/customer/support`}
+                        className='flex items-center space-x-2'
+                      >
+                        <CircleHelp />
+                        <span>Support</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </div>
+                )}
+                <DropdownMenuItem>
+                  <div>
+                    <LogoutButton />
+                  </div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <Link
+            href={'/login'}
+            className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
+          >
+            <CircleUserRound size={22} className='text-white' />
+            <p className='text-white font-bold text-center'>Account</p>
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -18,35 +18,36 @@ const RootLayout = ({ children }: Props) => {
 
   const [showSidebar, setShowSidebar] = useState(true); //TODO: make false
 
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true); 
 
   useEffect(() => {
-    // Determine when your data loading is complete.  This is a placeholder.
-    // Replace this logic with your actual data fetching/processing.
-    const dataLoaded = !!userInfo && !!storeInfo; // Example: Data is loaded when both userInfo and storeInfo are available
+    const dataLoaded = !!userInfo && !!storeInfo; 
 
     if (dataLoaded) {
       setIsLoading(false);
     } else {
-      // If needed, you can add a timeout or other condition to set isLoading to false after a certain time, even if data isn't fully loaded.
-      // This is helpful if you want to prevent a perpetually loading screen in case of errors.
       const timeout = setTimeout(() => {
-        setIsLoading(false); // Set to false after a timeout (e.g., 10 seconds)
+        setIsLoading(false);
         console.warn('Data loading timed out.');
       }, 10000);
 
-      return () => clearTimeout(timeout); // Clear the timeout if data loads before it.
+      return () => clearTimeout(timeout);
     }
   }, [userInfo, storeInfo]);
 
-  if (isLoading) {
-    return <FullScreenLoader />;
-  }
+  // if (isLoading) {
+  //   return <FullScreenLoader />;
+  // }
 
   return (
     <div className='flex flex-col min-h-screen bg-nezeza_powder_blue'>
       <Header />
-      {/* <HeaderBottom showSidebar={showSidebar} setShowSidebar={setShowSidebar} /> */}
+      {userInfo && (
+        <HeaderBottom
+          showSidebar={showSidebar}
+          setShowSidebar={setShowSidebar}
+        />
+      )}
       <div className='flex flex-1'>
         {/* {userInfo && !storeInfo && (
           <>

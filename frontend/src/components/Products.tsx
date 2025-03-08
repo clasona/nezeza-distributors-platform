@@ -67,7 +67,7 @@ const Products = () => {
   }
 
   return (
-    <div className='w-full px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
+    <div className='w-full px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 products-top'>
       {products.map((product: ProductProps) => (
         <div
           key={product._id}
@@ -202,7 +202,7 @@ const Products = () => {
             {product.quantity < 1 && (
               <div className='text-xs text-center'>
                 <span className='text-nezeza_red_600'>
-                  We'll notify you when it's available.
+                  If favorited, we'll notify you when it's available.
                 </span>
               </div>
             )}
