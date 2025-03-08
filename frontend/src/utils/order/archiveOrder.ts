@@ -9,7 +9,7 @@ export const archiveOrder = async (
 ) => {
   try {
     const response = await axios.patch(
-      `http://localhost:8000/api/v1/orders/buying/archive/${orderId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/buying/archive/${orderId}`,
       updatedOrderData,
       {
         withCredentials: true,

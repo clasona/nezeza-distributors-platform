@@ -7,10 +7,9 @@ export const updateProduct = async (
   productId: string | number,
   updatedProductData: ProductProps
 ) => {
-
   try {
     const response = await axios.patch(
-      `http://localhost:8000/api/v1/products/${productId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/${productId}`,
       updatedProductData,
       {
         withCredentials: true,

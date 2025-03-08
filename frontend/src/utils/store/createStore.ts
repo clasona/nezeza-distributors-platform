@@ -7,7 +7,7 @@ export const createStore = async (storeData: NewStoreProps) => {
   console.log(storeData);
   try {
     const response = await axios.post(
-      `http://localhost:8000/api/v1/store/`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/store/`,
       storeData,
       {
         withCredentials: true,

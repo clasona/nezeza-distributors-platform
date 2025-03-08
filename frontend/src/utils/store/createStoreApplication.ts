@@ -11,7 +11,7 @@ export const createStoreApplication = async (
 
   try {
     const response = await axios.post(
-      `http://localhost:8000/api/v1/store-application/${ownerId}/applications/`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/store-application/${ownerId}/applications/`,
       storeApplicationData,
       {
         withCredentials: true,

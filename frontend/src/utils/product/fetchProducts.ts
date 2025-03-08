@@ -5,7 +5,7 @@ import axios from 'axios';
 export const fetchProducts = async () => {
   try {
     const response = await axios.get(
-      'http://localhost:8000/api/v1/marketplace/products',
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/marketplace/products`,
       {
         withCredentials: true, // Include credentials like cookies for authorization
       }

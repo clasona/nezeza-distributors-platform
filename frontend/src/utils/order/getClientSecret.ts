@@ -16,7 +16,7 @@ export const getClientSecret = async (orderItems: any) => {
   // };
   try {
     const response = await axios.post(
-      `http://localhost:8000/api/v1/orders`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders`,
       {
         items: orderItems,
         tax: tax,
@@ -35,7 +35,7 @@ export const getClientSecret = async (orderItems: any) => {
       console.log('Client secret generated successfully...');
       return response.data;
     } else {
-      throw new Error('Error generating client secret'); 
+      throw new Error('Error generating client secret');
     }
   } catch (error) {
     console.error('Error generating client secret:', error);

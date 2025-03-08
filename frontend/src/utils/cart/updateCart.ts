@@ -2,16 +2,19 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { OrderItemsProps, stateProps, StoreProps } from '../../../type';
 
-interface updateCartProps{
-    cartItems: OrderItemsProps;
-    buyerStoreId: string; // Add buyerStoreId to the request body
+interface updateCartProps {
+  cartItems: OrderItemsProps;
+  buyerStoreId: string; // Add buyerStoreId to the request body
 }
-export const updateCart = async (cartItems: OrderItemsProps, buyerStoreId:string) => {
+export const updateCart = async (
+  cartItems: OrderItemsProps,
+  buyerStoreId: string
+) => {
   // Add buyerStoreId
   try {
     const response = await axios.patch(
       // Use PATCH for updates
-      `http://localhost:8000/api/v1/cart`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cart`,
       {
         cartItems: cartItems,
         buyerStoreId: buyerStoreId, // Send buyerStoreId in the request body

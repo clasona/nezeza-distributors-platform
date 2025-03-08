@@ -208,7 +208,7 @@ const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
                   </button>
                   <button
                     className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-nezeza_dark_blue hover:text-white transition duration-300'
-                    onClick={() => router.push(`/user/order/${order._id}`)}
+                    onClick={() => router.push(`/customer/order/${order._id}`)}
                   >
                     More Info
                   </button>

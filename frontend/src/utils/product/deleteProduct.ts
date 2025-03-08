@@ -3,14 +3,11 @@ import axios from 'axios';
 
 import { ProductProps } from '../../../type';
 
-export const deleteProduct = async (
-  productId: string | number
-) => {
-
+export const deleteProduct = async (productId: string | number) => {
   try {
     const response = await axios.delete(
-      `http://localhost:8000/api/v1/products/${productId}`,
-      //   'http://localhost:8000/api/v1/wholesaler/inventory-items', //for other sellers
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/${productId}`,
+      //   '${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/wholesaler/inventory-items', //for other sellers
       {
         withCredentials: true,
       }
