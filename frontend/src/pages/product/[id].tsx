@@ -10,18 +10,44 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getSingleProduct } from '../../utils/product/getSingleProduct';
-import { ProductProps } from '../../../type';
+import { ProductProps, stateProps } from '../../../type';
+import { addToCart, addToFavorite } from '@/redux/nextSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import SuccessMessageModal from '@/components/SuccessMessageModal';
 
 const ProductDetails = () => {
+    const { userInfo } = useSelector(
+      (state: stateProps) => state.next
+    );
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState<ProductProps | null>(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (id) {
       getSingleProduct(id).then(setProduct).catch(console.error);
     }
   }, [id]);
+
+  // Add to Cart
+  const handleAddToCart = () => {
+    dispatch(addToCart({ product, quantity: 1 }));
+    setSuccessMessage('Added to Cart!');
+  };
+
+  // Add to Favorites
+  const handleAddToFavorite = () => {
+    dispatch(addToFavorite({ product, quantity: 1 }));
+    setSuccessMessage('Added to Favorites!');
+  };
+
+  // Buy Now (Redirect to Checkout)
+  const handleBuyNow = () => {
+    // handleAddToCart();
+    router.push('/checkout');
+  };
 
   if (!product) return <p className='text-center text-lg'>Loading...</p>;
 
@@ -33,7 +59,7 @@ const ProductDetails = () => {
       >
         Back
       </button>
-      <div className='container mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='w-full p-6 grid grid-cols-1 md:grid-cols-2 gap-6'>
         {/* Product Images */}
         <div className='flex flex-col items-center'>
           <img
@@ -99,16 +125,42 @@ const ProductDetails = () => {
           )}
 
           {/* Actions */}
-          <div className='mt-6 flex gap-4'>
-            <Button className='bg-nezeza_dark_blue text-white flex items-center px-6 py-2 rounded-lg hover:bg-blue-700 transition'>
+          <div className='mt-6 flex flex-wrap gap-4 w-full justify-center sm:justify-start'>
+            <Button
+              onClick={handleAddToCart}
+              className='bg-nezeza_dark_blue text-white flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-blue-800 transition w-full sm:w-auto'
+            >
               <ShoppingCart className='mr-2' /> Add to Cart
             </Button>
-            <Button className='bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition'>
-              Buy Now
-            </Button>
-            <Button className='border border-gray-300 flex items-center px-6 py-2 rounded-lg hover:bg-gray-100 transition'>
+            <Button
+              onClick={handleAddToFavorite}
+              className='border border-gray-300 flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-gray-100 hover:text-nezeza_green_800 transition w-full sm:w-auto'
+            >
               <Heart className='mr-2 text-red-500' /> Add to Favorites
             </Button>
+            {/* <Button
+              onClick={handleBuyNow}
+              className='bg-nezeza_green_600 text-white flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-nezeza_green_800 transition w-full sm:w-auto'
+            >
+              Buy Now
+            </Button> */}
+
+            <div className='flex flex-col items-center text-center justify-center'>
+              <button
+                onClick={handleBuyNow}
+                className={`w-full p-2 text-sm font-semibold bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 ${
+                  !userInfo ? 'pointer-events-none bg-nezeza_gray_600' : ''
+                }`}
+              >
+                Buy Now
+              </button>
+
+              {!userInfo && (
+                <p className='text-xs mt-1 text-nezeza_red_600 font-semibold animate-bounce'>
+                  Please Login to buy now!
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Additional Info */}
@@ -132,6 +184,9 @@ const ProductDetails = () => {
             </span>
           </div>
         </div>
+        {successMessage && (
+          <SuccessMessageModal successMessage={successMessage} />
+        )}
       </div>
     </div>
   );
