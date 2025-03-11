@@ -4,6 +4,8 @@ import Select, { StylesConfig } from 'react-select';
 
 interface DropdownInputSearchableProps {
   label?: string;
+  id?: string;
+  name?: string;
   options: { value: string; label: string; [key: string]: any }[];
   className?: string;
   isRequired?: boolean;

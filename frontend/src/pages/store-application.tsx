@@ -1,7 +1,6 @@
 'use client';
 
 import ErrorMessageModal from '@/components/ErrorMessageModal';
-import BillingInfoInput from '@/components/FormInputs/Store/BillingInfoInput';
 import PrimaryContactInput from '@/components/FormInputs/Store/PrimaryContactInput';
 import ReviewInfoInput from '@/components/FormInputs/Store/ReviewInfoInput';
 import StoreInfoInput from '@/components/FormInputs/Store/StoreInfoInput';
@@ -43,7 +42,6 @@ const StoreRegistrationForm = ({
   const sections = [
     'Primary Contact',
     'Store Info',
-    'Billing Info',
     'Verification Docs',
     'Review & Submit',
   ];
@@ -126,13 +124,13 @@ const StoreRegistrationForm = ({
   };
 
   return (
-    <div className='w-full bg-nezeza_powder_blue'>
+    <div className='bg-nezeza_powder_blue sm:px-2 md:px-4'>
       <form
-        className='w-full max-w-4xl mx-auto relative bg-nezeza_light_blue rounded-lg shadow sm:p-6 md:p-8 my-4'
+        className='relative rounded-lg sm:p-6 md:p-8'
         onSubmit={handleSubmit(onSubmit)}
       >
         <h2 className='text-3xl text-nezeza_dark_blue font-bold text-center mb-4'>
-          Nezeza Store Registration
+          Nezeza Store Application
         </h2>
         <p className='text-center mb-6 text-nezeza_gray_600'>
           Please fill in information as it appears on your official ID and
@@ -172,14 +170,7 @@ const StoreRegistrationForm = ({
           {currentSection === 1 && (
             <StoreInfoInput
               register={register}
-              errors={errors}
-              control={control}
-            />
-          )}
-          {/* Billing Info Section */}
-          {currentSection === 2 && (
-            <BillingInfoInput
-              register={register}
+              setValue={setValue}
               errors={errors}
               control={control}
             />

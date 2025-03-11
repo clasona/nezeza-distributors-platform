@@ -35,8 +35,6 @@ const CartPayment = () => {
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
   );
 
-  const { data: session } = useSession();
-
   const handleCheckout = async () => {
     try {
       //  const serverCartItems = await getCart(); // Get cart from server

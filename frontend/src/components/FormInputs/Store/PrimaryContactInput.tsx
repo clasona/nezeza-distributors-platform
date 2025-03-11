@@ -47,9 +47,11 @@ const PrimaryContactInput = ({
   }, [userInfo, setValue]);
 
   return (
-    <>
-      <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6'>
-        <StoreFormHeading heading='Contact Info' />
+    <div className='w-full p-2'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-x-6 w-full'>
+        <StoreFormHeading
+          heading='Contact Info'
+        />
         <TextInput
           label='First Name'
           id='firstName'
@@ -57,7 +59,7 @@ const PrimaryContactInput = ({
           register={register}
           errors={errors}
           type='text'
-          // disabled
+          className='col-span-1'
         />
         <TextInput
           label='Last Name'
@@ -66,7 +68,7 @@ const PrimaryContactInput = ({
           register={register}
           errors={errors}
           type='text'
-          // disabled
+          className='col-span-1'
         />
         <TextInput
           label='Email'
@@ -122,7 +124,7 @@ const PrimaryContactInput = ({
           control={control}
         />
       </div>
-    </>
+    </div>
   );
 };
 

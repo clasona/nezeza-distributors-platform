@@ -47,7 +47,7 @@ const Banner = ({ onBuyClick }: BannerProps) => {
               </button>
               <span className='text-white self-center'>or</span>{' '}
               <Link
-                href='/store-type-choose'
+                href='/seller-onboarding'
                 className='flex items-center justify-center bg-nezeza_green_600 hover:bg-nezeza_green_800 hover:underline  text-white font-bold py-2 px-4 rounded-md w-1/2 '
               >
                 Sell

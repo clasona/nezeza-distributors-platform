@@ -42,7 +42,7 @@ const HeaderBottom = ({ showSidebar, setShowSidebar }: HeaderBottomProps) => {
       >
         Drinks
       </p>
-  
+
       <p
         className='hidden md:inline-flex flex items-center gap-1 h-8 px-2 border border-transparent
         hover:border-white cursor-pointer duration-300'
@@ -62,7 +62,7 @@ const HeaderBottom = ({ showSidebar, setShowSidebar }: HeaderBottomProps) => {
           {/* Conditional rendering for "Become a Seller" */}
           {!storeInfo && (
             <Link
-              href='/store-type-choose'
+              href='/select-store-type'
               target='_blank'
               className='flex items-center text-blue-500 hover:underline'
             >

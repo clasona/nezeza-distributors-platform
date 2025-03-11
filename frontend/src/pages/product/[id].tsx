@@ -1,19 +1,19 @@
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import SuccessMessageModal from '@/components/SuccessMessageModal';
+import { Button } from '@/components/ui/button';
+import { addToCart, addToFavorite } from '@/redux/nextSlice';
 import {
-  Star,
+  AlertTriangle,
+  CheckCircle,
   Heart,
   ShoppingCart,
+  Star,
   Truck,
-  CheckCircle,
-  AlertTriangle,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { getSingleProduct } from '../../utils/product/getSingleProduct';
-import { ProductProps, stateProps } from '../../../type';
-import { addToCart, addToFavorite } from '@/redux/nextSlice';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import SuccessMessageModal from '@/components/SuccessMessageModal';
+import { ProductProps, stateProps } from '../../../type';
+import { getSingleProduct } from '../../utils/product/getSingleProduct';
 
 const ProductDetails = () => {
     const { userInfo } = useSelector(
