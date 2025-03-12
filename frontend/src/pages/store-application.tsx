@@ -6,16 +6,10 @@ import ReviewInfoInput from '@/components/FormInputs/Store/ReviewInfoInput';
 import StoreInfoInput from '@/components/FormInputs/Store/StoreInfoInput';
 import VerificationDocsInput from '@/components/FormInputs/Store/VerificationDocsInput';
 import SuccessMessageModal from '@/components/SuccessMessageModal';
+import { handleError } from '@/utils/errorUtils';
 import { CircleArrowLeft, CircleArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
-import {
-  AddressProps,
-  NewStoreProps,
-  stateProps,
-} from '../../type';
-import { createStore } from '../utils/store/createStore';
 import { createStoreApplication } from '../utils/store/createStoreApplication';
 
 interface StoreRegistrationFormProps {
@@ -38,89 +32,109 @@ const StoreRegistrationForm = ({
   const [currentSection, setCurrentSection] = useState(0);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+    const [identityDocResource, setIdentityDocResource] = useState<any>(null);
+    const [businessDocResource, setBusinessDocResource] = useState<any>(null);
 
-  const sections = [
-    'Primary Contact',
-    'Store Info',
-    'Verification Docs',
-    'Review & Submit',
-  ];
+  const sections = ['Primary Contact', 'Store Info', 'Docs', 'Review & Submit'];
 
   const handleNext = () => {
     if (currentSection < sections.length - 1) {
-      setCurrentSection((prev) => prev + 1);
+      setCurrentSection(currentSection + 1);
     }
   };
 
   const handlePrevious = () => {
     if (currentSection > 0) {
-      setCurrentSection((prev) => prev - 1);
+      setCurrentSection(currentSection - 1);
     }
   };
 
-  const { userInfo, storeInfo } = useSelector(
-    (state: stateProps) => state.next
-  );
-
   const onSubmit = async (data: any) => {
-    //change default customer role to role of current user?
+    if (currentSection === sections.length - 1) {
+            console.log(
+              'Identity Doc Resource (Before Submit):',
+              identityDocResource
+            );
+            console.log(
+              'Business Doc Resource (Before Submit):',
+              businessDocResource
+            );
+          if (!identityDocResource || !businessDocResource) {
+            console.log('yvesssss')
+            // setErrorMessage(
+            //   'Please upload both identity document and business document.'
+            // );
+                alert(
+                  'Please upload both identity document and business document.'
+                );
 
-    // Create the store first
-    const storeAddress: AddressProps = {
-      street: data.storeStreet,
-      city: data.storeCity,
-      state: data.storeState,
-      country: data.storeCountry,
-      zipCode: data.storeZipCode,
-    };
+            return;
+          }
+          const storeApplicationData = {
+            primaryContactInfo: {
+              firstName: data.firstName,
+              lastName: data.lastName,
+              email: data.email,
+              phone: data.phone,
+              citizenshipCountry: data.citizenshipCountry,
+              birthCountry: data.birthCountry,
+              dob: data.dob,
+              residenceAddress: {
+                street: data.residenceStreet,
+                city: data.residenceCity,
+                state: data.residenceState,
+                zipCode: data.residenceZipCode,
+                country: data.residenceCountry,
+              },
+            },
+            storeInfo: {
+              storeType: data.storeType,
+              storeRegistrationNumber: data.storeRegistrationNumber,
+              storeName: data.storeName,
+              storeCategory: data.storeCategory,
+              storeDescription: data.storeDescription,
+              storeEmail: data.storeEmail,
+              storePhone: data.storePhone,
+              storeAddress: {
+                street: data.storeStreet,
+                city: data.storeCity,
+                state: data.storeState,
+                zipCode: data.storeZipCode,
+                country: data.storeCountry,
+              },
+            },
+            verificationDocs: {
+              businessDocument: businessDocResource.secure_url,
+              primaryContactIdentityDocument: identityDocResource.secure_url,
+            },
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
 
-    const storePayload: NewStoreProps = {
-      name: data.storeName,
-      email: data.storeEmail,
-      description: data.storeDescription,
-      ownerId: userInfo._id,
-      storeType: data.storeType,
-      registrationNumber: data.storeRegistrationNumber,
-      category: data.storeCategory,
-      phone: data.storePhone,
-      // logo
-      address: storeAddress,
-      isActive: false,
-    };
+          try {
+            const response = await createStoreApplication(storeApplicationData);
+ console.log(response)
+            if (response.status !== 201) {
+              setSuccessMessage('');
+              setErrorMessage(response.data.msg || 'Store application failed.');
+            } else {
+              setErrorMessage('');
+              setSuccessMessage('Store application submitted successfully.');
 
-    const storeResponse = await createStore(storePayload);
+              // TODO: Reset form inputs
+              // reset();
 
-    const { storeId } = storeResponse; // Extract the created store's ID
-
-    console.log(storeId);
-
-    // Use the storeId to create the store application
-    const storeApplicationData = {
-      ...data,
-      primaryContactId: userInfo._id,
-      storeId: storeId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    try {
-      const response = await createStoreApplication(
-        userInfo,
-        storeApplicationData
-      );
-      setErrorMessage('');
-      setSuccessMessage('Store application submitted successfully.');
-      setTimeout(() => setSuccessMessage(''), 4000);
-
-      // TODO: Reset form inputs
-      // reset();
-
-      if (onSubmitSuccess) {
-        onSubmitSuccess(response.data); // Call the callback with the response data
-      }
-    } catch (error) {
-      setErrorMessage('Error submitting store data.');
-    }
+              if (onSubmitSuccess) {
+                onSubmitSuccess(response.data); // Call the callback with the response data
+              }
+            }
+          } catch (error: any) {
+            handleError(error);
+            setErrorMessage(error);
+          }
+        } else {
+          handleNext();
+        }
   };
 
   return (
@@ -176,16 +190,28 @@ const StoreRegistrationForm = ({
             />
           )}
           {/* Verification Docs  Section */}
-          {currentSection === 3 && (
-            <VerificationDocsInput register={register} errors={errors} />
+          {currentSection === 2 && (
+            <VerificationDocsInput
+              register={register}
+              errors={errors}
+              setIdentityDocResource={setIdentityDocResource}
+              setBusinessDocResource={setBusinessDocResource}
+            />
           )}
           {/* Review & Submit Section */}
-          {currentSection === 4 && <ReviewInfoInput getValues={getValues} />}
+          {currentSection === 3 && (
+            <ReviewInfoInput
+              getValues={getValues}
+              identityDocResource={identityDocResource}
+              businessDocResource={businessDocResource}
+            />
+          )}
         </div>
 
         {/* Absolute Positioned Navigation Arrows */}
 
         <button
+          type='button'
           className={`absolute left-0 top-1/2 transform -translate-y-1/2 ${
             currentSection > 0 ? 'text-nezeza_dark_blue' : 'text-gray-400'
           }`}
@@ -197,6 +223,7 @@ const StoreRegistrationForm = ({
         </button>
 
         <button
+          type='button'
           className={`absolute right-0 top-1/2 transform -translate-y-1/2 ${
             currentSection < sections.length - 1
               ? 'text-nezeza_dark_blue'
@@ -213,6 +240,7 @@ const StoreRegistrationForm = ({
         <div className='flex justify-end mt-4'>
           {currentSection > 0 && (
             <button
+              type='button'
               className='px-4 py-1 bg-gray-200 text-gray-700 rounded-md mr-2'
               onClick={() => setCurrentSection(currentSection - 1)}
             >
@@ -221,6 +249,7 @@ const StoreRegistrationForm = ({
           )}
           {currentSection < sections.length - 1 ? (
             <button
+              type='button'
               className='bg-nezeza_dark_blue text-white px-4 py-1 rounded-md hover:bg-nezeza_yellow hover:text-black'
               onClick={handleNext}
             >
@@ -229,10 +258,11 @@ const StoreRegistrationForm = ({
           ) : (
             <button
               type='submit'
-              className='bg-nezeza_green_600 text-white px-4 py-1 rounded-md hover:bg-green-700'
+              className='bg-nezeza_green_600 text-white px-4 py-1 rounded-md hover:bg-nezeza_green_800'
               // onClick={() =>
               //   (window.location.href = '/post-store-application-submission')
               // }
+              // onClick={handleNext}
             >
               SUBMIT
             </button>

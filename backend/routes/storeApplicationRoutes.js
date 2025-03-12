@@ -12,9 +12,8 @@ const {
 } = require('../controllers/storeApplicationController');
 
 router
-  .route('/:ownerId/applications')
+  .route('/')
   .post(
-    [authenticateUser, authorizePermissions('create_store_application')],
     createStoreApplication
 );
   

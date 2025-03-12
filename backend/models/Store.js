@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const AddressSchema = require('./AddressSchema'); // Adjust the path as needed
+const AddressSchema = require('./AddressSchema'); 
 
 const storeSchema = new mongoose.Schema(
   {

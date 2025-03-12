@@ -7,7 +7,7 @@ const PostStoreApplicationsubmission = () => {
               Thank you for submitting your store details!
             </h1>
             <p className='mt-4 text-gray-600'>
-              We will review your application and get back to you within 3-5 days. In
+              We will review your application and get back to you within 1-2 days. In
               the meantime, you can browsing through the products on our platform.
             </p>
             <button

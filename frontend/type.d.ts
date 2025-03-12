@@ -118,36 +118,35 @@ export interface StoreProduct {
 export interface StoreProps {
   _id: string;
   storeType: string;
-  registrationNumber: number;
-  name: string;
-  category: string;
-  description: string;
-  email: string;
-  phone: string;
+  storeRegistrationNumber: number;
+  storeName: string;
+  storeCategory: string;
+  storeDescription: string;
+  storeEmail: string;
+  storePhone: string;
   ownerId: number;
-  // logo: string;
-  // products: StoreProduct[];
-  // orders: OrderProps[];
-  // inventory: InventoryProps[];
-  address?: AddressProps;
-  isActive: boolean;
+  // storeLogo: File;
+  storeAddress?: AddressProps;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 // When creating a new store, omit these since MongoDB will generate them
-export type NewStoreProps = Omit<StoreProps, '_id' | 'createdAt' | 'updatedAt'>;
+export type NewStoreProps = Omit<StoreProps, '_id' | 'ownerId' | 'createdAt' | 'updatedAt'>;
 
 export interface StoreApplicationProps {
-  _id: string;
-  status: string;
-  // storeName: string;
-  primaryContactId: UserProps;
-  storeId: StoreProps;
-  billingInfo: BillingInfoProps;
-  // VerificationDocs: VerificationDocsProps;
+  _id?: string;
+  primaryContactInfo: Partial<UserProps>;
+  storeInfo: NewStoreProps;
+  verificationDocs: VerificationDocsProps;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface VerificationDocsProps {
+  primaryContactIdentityDocument: any;
+  businessDocument: any;
 }
 
 export interface UserProps {
@@ -161,6 +160,10 @@ export interface UserProps {
   isVerified: boolean;
   verifiedAt: string;
   storeId: string;
+  citizenshipCountry?: string;
+  birthCountry?: string;
+  dob?: string;
+  residenceAddress?: AddressProps;
 }
 
 export interface stateProps {

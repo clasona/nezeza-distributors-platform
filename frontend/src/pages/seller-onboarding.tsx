@@ -23,7 +23,7 @@ const SellerOnboarding = () => {
           </button>
         </div>
         <p className='mt-4 text-nezeza_gray_800 font-semibold'>
-          Store applications take 3-5 days for approval.
+          Store applications take 1-2 days for approval.
         </p>
       </div>
     </div>
