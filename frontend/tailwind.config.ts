@@ -10,15 +10,22 @@ export default withUt({
   ],
   theme: {
     extend: {
+      // screens: {
+      //   xs: '320px',
+      //   sm: '375px',
+      //   sml: '500px',
+      //   md: '667px',
+      //   mdl: '768px',
+      //   lg: '960px',
+      //   lgl: '1024px',
+      //   xl: '1280px',
+      // },
       screens: {
-        xs: '320px',
-        sm: '375px',
-        sml: '500px',
-        md: '667px',
-        mdl: '768px',
-        lg: '960px',
-        lgl: '1024px',
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
         xl: '1280px',
+        '2xl': '1536px',
       },
       colors: {
         nezeza_dark_blue: '#3182ce', //0074d9

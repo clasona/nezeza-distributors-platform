@@ -51,9 +51,9 @@ const Dashboard = () => {
 
   return (
     <WholesalerLayout>
-      <Heading title={`Welcome back, ${username}!`}></Heading>
+      <h2 className='flex text-2xl font-semibold text-center justify-center text-nezeza_dark_slate mb-4'>{`Welcome back, ${username}!`}</h2>
       {!hasStripeAccount && (
-        <div className='bg-nezeza_red_200 p-4 rounded-xl shadow-lg text-center mb-4'>
+        <div className='bg-nezeza_red_200 p-2 sm:p-4 rounded-xl shadow-lg text-center sm:mb-4'>
           {' '}
           {/* Use flex items-center for single line */}
           <p className='text-lg'>
@@ -91,41 +91,41 @@ const Dashboard = () => {
       {/* <LargeCards /> */}
       {/* Small Cards */}
 
-      <div className='p-6 space-y-6'>
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl font-semibold text-nezeza_dark_blue mb-2'>
+      <div className='p-4 sm:p-6 space-y-4 sm:space-y-6'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
+          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
             Store Overview
           </h4>
           {/* <LargeCard className='bg-nezeza_green_600 ' /> */}
           <div className='grid md:grid-cols-2 gap-6 '>
-            <div className='p-6 bg-yellow-100 rounded-xl text-center shadow-md'>
+            <div className='p-2 sm:p-4 bg-yellow-100 rounded-xl text-center shadow-md'>
               <span className='text-lg font-medium'>Total Expenses</span>
               <p className='text-xl font-bold text-nezeza_yellow_600'>
                 $6, 000
               </p>
             </div>
 
-            <div className='p-6 bg-green-100 rounded-xl text-center shadow-md'>
+            <div className='p-2 sm:p-4 bg-green-100 rounded-xl text-center shadow-md'>
               <span className='text-lg font-medium'>Total Sales </span>
               <p className='text-xl font-bold text-nezea_green_600'>$10, 000</p>
             </div>
           </div>
         </div>
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
           {/* {isNotManufacturer } */}
-          <h4 className='text-xl font-semibold text-nezeza_dark_blue mb-2'>
+          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
             My Orders Overview
           </h4>
           <SmallCards orderStats={myOrderStats} />
         </div>
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl font-semibold text-nezeza_dark_blue mb-2'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
+          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
             Customer Orders Overview
           </h4>
           <SmallCards orderStats={customerOrderStats} />
         </div>
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl font-semibold text-nezeza_dark_blue mb-2'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
+          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
             Payments Overview
           </h4>
           {/* <div className='p-4 bg-purple-100 rounded-xl text-center shadow-md'>
@@ -150,8 +150,8 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl font-semibold text-nezeza_dark_blue mb-2'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
+          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
             Inventory Alerts
           </h4>
           <p className='text-lg font-medium'>
@@ -160,8 +160,8 @@ const Dashboard = () => {
           </p>
         </div>
 
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl font-semibold text-nezeza_dark_blue mb-2'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
+          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
             Store Notifications
           </h4>
           <ul className='space-y-2'>
@@ -173,8 +173,8 @@ const Dashboard = () => {
           </ul>
         </div>
 
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl font-semibold text-nezeza_dark_blue'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
+          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue'>
             Weekly Sales Charts
           </h4>
           <div className='bg-gray-200 p-10 text-center rounded-xl shadow-md'>

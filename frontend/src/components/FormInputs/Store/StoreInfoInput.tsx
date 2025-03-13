@@ -58,7 +58,7 @@ const StoreInfoInput = ({
   
   return (
     <>
-      <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-x-6 px-4 sm:px-6 w-full'>
         <StoreFormHeading heading='Store Info' />
         <DropdownInput
           label='Store Type'

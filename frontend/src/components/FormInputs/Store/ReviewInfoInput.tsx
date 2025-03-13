@@ -15,7 +15,7 @@ const ReviewInfoInput = ({
 }: ReviewInfoInputProps) => {
   return (
     <>
-      <div className='space-y-4'>
+      <div className='space-y-4 px-4 sm:px-6'>
         <StoreFormHeading heading='Review Your Information' />
 
         {/* Display the collected data */}

@@ -13,7 +13,7 @@ import {
   Truck,
   UserRoundPen,
   Users,
-  Warehouse
+  Warehouse,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -137,7 +137,9 @@ const SideNavbar = ({
     (link) =>
       !(
         storeType === 'manufacturing' &&
-        (link.title === 'My Orders' || link.title === 'Shopping' || link.title === 'Archived')
+        (link.title === 'My Orders' ||
+          link.title === 'Shopping' ||
+          link.title === 'Archived')
       )
   );
 
@@ -150,9 +152,9 @@ const SideNavbar = ({
       className={`${
         // TODO: add some styling for the sidebar side scroll at some point?
         showSidebar
-          ? 'sm:block bg-nezeza_dark_blue space-y-6 w-60 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
-          : ' sm:block bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll' // add hidden to hide it
-      }`}
+          ? 'bg-nezeza_dark_blue space-y-6 w-60 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+          : 'bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+      } hidden sm:block`}
     >
       <div className=' px-6 py-2'>
         <Link href='#'>

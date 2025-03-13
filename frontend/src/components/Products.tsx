@@ -67,7 +67,7 @@ const Products = () => {
   }
 
   return (
-    <div className='w-full px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 products-top'>
+    <div className='w-full px-2 sm:px-4 grid grid-cols-2 sm:grid-cols-4 gap-4 products-top'>
       {products.map((product: ProductProps) => (
         <div
           key={product._id}
@@ -157,18 +157,27 @@ const Products = () => {
                 <FormattedPrice amount={product.price} />
               </span>
             </p>
-            
+
             <p
               className='text-xs text-gray-600 text-justify'
               onClick={() => {
                 router.push(`/product/${product._id}`);
               }}
             >
-              {product.description.length > 100
-                ? expandedProductId === product._id
-                  ? product.description
-                  : `${product.description.substring(0, 50)}...`
-                : product.description}
+              <span className='block sm:hidden'>
+                {product.description.length > 100
+                  ? expandedProductId === product._id
+                    ? product.description
+                    : `${product.description.substring(0, 20)}...`
+                  : product.description}
+              </span>
+              <span className='hidden sm:block'>
+                {product.description.length > 100
+                  ? expandedProductId === product._id
+                    ? product.description
+                    : `${product.description.substring(0, 50)}...`
+                  : product.description}
+              </span>
             </p>
             {product.description.length > 100 && (
               <button

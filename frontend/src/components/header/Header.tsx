@@ -90,7 +90,7 @@ const Header = () => {
 
   return (
     <div className='w-full h-20 bg-nezeza_dark_blue text-lightText sticky top-0 z-50'>
-      <div className='h-full w-full mx-auto flex items-center justify-between gap-2 sm:gap-3 px-4'>
+      <div className='h-full w-full mx-auto flex items-center justify-between gap-1 sm:gap-3 px-4'>
         {/* logo */}
         <Link
           href={'/'}
@@ -120,7 +120,7 @@ const Header = () => {
 
         <div className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-1 sm:px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[60%] sm:h-[70%] relative flex-shrink'>
           <Heart className='w-22 h-22' />
-          <p className='text-white font-bold text-center text-[.6rem] sm:text-xs'>
+          <p className='text-white font-bold text-center sm:text-xs'>
             Favorites
           </p>
 
@@ -132,13 +132,13 @@ const Header = () => {
         {/* cart */}
         <Link
           href={'/cart'}
-          className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
+          className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
         >
           <ShoppingCart className='w-22 h-22 text-white' />
           <span className='absolute text-nezeza_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-nezeza_dark_blue border border-nezeza_yellow'>
             {cartItemsData ? cartItemsData.length : 0}
           </span>
-          <p className='text-white font-bold text-center'>Cart</p>
+          <p className='text-white font-bold text-center sm:text-xs'>Cart</p>
         </Link>
 
         {/* signin */}
@@ -249,10 +249,12 @@ const Header = () => {
         ) : (
           <Link
             href={'/login'}
-            className='text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
+            className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
           >
             <CircleUserRound size={22} className='text-white' />
-            <p className='text-white font-bold text-center'>Account</p>
+            <p className='text-white font-bold text-center sm:text-xs'>
+              Account
+            </p>
           </Link>
         )}
       </div>

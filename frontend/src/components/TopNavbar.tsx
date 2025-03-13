@@ -10,7 +10,12 @@ import { useEffect, useState } from 'react';
 import { GoSidebarCollapse } from 'react-icons/go';
 import { MdOutlineClose } from 'react-icons/md';
 import { getAllNotifications } from '@/utils/notificationUtils';
-import { Bell, CircleHelp, CircleUserRound, LayoutDashboard } from 'lucide-react';
+import {
+  Bell,
+  CircleHelp,
+  CircleUserRound,
+  LayoutDashboard,
+} from 'lucide-react';
 import Link from 'next/link';
 import { NotificationProps } from '../../type';
 import { LogoutButton } from './LogoutButton';
@@ -49,24 +54,23 @@ const TopNavbar = ({
     fetchData();
   }, []);
 
-  // add fixed to fix top nav bar
   return (
     <div
-      className={`${
-        showSidebar
-          ? 'flex items-center justify-between bg-nezeza_light_blue dark:bg-slate-800 text-nezeza_dark_slate dark:text-nezeza_light_slate ml-60 h-20 px-8 py-4 fixed top-0 w-full z-50 pr-[20rem]'
-          : 'flex items-center justify-between bg-nezeza_light_blue dark:bg-slate-800 text-nezeza_dark_slate dark:text-nezeza_light_slate h-20 px-8 py-4 fixed top-0 w-full z-50'
+      className={`flex items-center justify-between bg-nezeza_light_blue dark:bg-slate-800 text-nezeza_dark_slate dark:text-nezeza_light_slate h-20 px-8 py-4 fixed top-0 w-full z-50 ${
+        showSidebar ? 'sm:ml-60 sm:pr-[20rem]' : ''
       }`}
     >
-      <button onClick={() => setShowSidebar(!showSidebar)}>
+      <button
+        className='hidden sm:block'
+        onClick={() => setShowSidebar(!showSidebar)}
+      >
         <GoSidebarCollapse />
-        {/* <SidebarTrigger /> */}
       </button>
       <h2 className='text-2xl font-bold text-center text-nezeza_dark_blue'>
         {storeName}
       </h2>
 
-      <div className='flex space-x-3'>
+      <div className='flex items-center space-x-3'>
         <button>
           {/* <ThemeSwitcher /> */}
           {/* <MdOutlineLightMode className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate '></MdOutlineLightMode> */}

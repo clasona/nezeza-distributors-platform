@@ -12,6 +12,6 @@ export const createStoreApplication = async (storeApplicationData: StoreApplicat
     );
     return response;
   } catch (error) {
-    throw error; // Let the component handle the error
+    throw error; 
   }
 };
