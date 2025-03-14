@@ -40,27 +40,27 @@ const StoreInfoSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  storeRegistrationNumber: {
+  registrationNumber: {
     type: Number, // Changed to Number to match your input type
     required: true,
   },
-  storeName: {
+  name: {
     type: String,
     required: true,
   },
-  storeCategory: {
+  category: {
     type: String,
     required: true,
   },
-  storeDescription: {
+  description: {
     type: String,
     required: true,
   },
-  storeEmail: {
+  email: {
     type: String,
     required: true,
   },
-  storePhone: {
+  phone: {
     type: String,
     required: true,
   },
@@ -68,7 +68,7 @@ const StoreInfoSchema = new mongoose.Schema({
   //   type: Object, // Store the Cloudinary resource object
   //   required: true,
   // },
-  storeAddress: { type: AddressSchema, required: true },
+  address: { type: AddressSchema, required: true },
   isActive: {
     type: Boolean,
     default: false,
@@ -89,11 +89,12 @@ const storeApplicationSchema = new mongoose.Schema(
   {
     status: {
       type: String,
+      enum: ['Pending', 'Approved', 'Declined'],
       default: 'Pending',
     },
-    // primaryContactInfo: { type: PrimaryContactInfoSchema },
-    // storeInfo: { type: StoreInfoSchema},
-    verificationDocs:  { type: VerificationDocsSchema },
+    primaryContactInfo: { type: PrimaryContactInfoSchema },
+    storeInfo: { type: StoreInfoSchema },
+    verificationDocs: { type: VerificationDocsSchema },
   },
   { timestamps: true }
 );

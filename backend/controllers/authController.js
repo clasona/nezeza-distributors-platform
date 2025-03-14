@@ -15,94 +15,100 @@ const {
   createHash,
 } = require('../utils');
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   const { firstName, lastName, email, password, storeType } = req.body;
-  console.log(req.body);
-  const emailAlreadyExists = await User.findOne({ email });
-  if (emailAlreadyExists) {
-    throw new CustomError.BadRequestError('Email already exists');
-  }
+  try {
+    const emailAlreadyExists = await User.findOne({ email });
+    if (emailAlreadyExists) {
+      throw new CustomError.BadRequestError('Email already exists');
+    }
 
-  // first registered user is an admin
-  ///const isFirstAccount = (await Store.countDocuments({})) === 0;
-  //const {storeType } = await Store.findById(storeId);
+    // first registered user is an admin
+    ///const isFirstAccount = (await Store.countDocuments({})) === 0;
+    //const {storeType } = await Store.findById(storeId);
 
-  //   const role = isFirstAccount ? 'admin' : 'user';
-  let roleNames = [];
+    //   const role = isFirstAccount ? 'admin' : 'user';
+    let roleNames = [];
 
-  switch (storeType) {
-    case 'admin':
-      roleNames[0] = 'admin';
-      break;
-    case 'manufacturing':
-      roleNames[0] = 'owner';
-      roleNames[1] = 'manufacturer';
-      break;
-    case 'wholesale':
-      roleNames[0] = 'owner';
-      roleNames[1] = 'wholesaler';
-      break;
-    case 'retail':
-      roleNames[0] = 'owner';
-      roleNames[1] = 'retailer';
-      break;
-    case 'retailer':
-      roleNames[0] = 'owner';
-      roleNames[1] = 'retailer';
-      break;
-    default:
-    case 'user':
-      // roleNames[0] = 'owner';
-      roleNames[0] = 'customer';
-  }
+    switch (storeType) {
+      case 'admin':
+        roleNames[0] = 'admin';
+        break;
+      case 'manufacturing':
+        roleNames[0] = 'owner';
+        roleNames[1] = 'manufacturer';
+        break;
+      case 'wholesale':
+        roleNames[0] = 'owner';
+        roleNames[1] = 'wholesaler';
+        break;
+      case 'retail':
+        roleNames[0] = 'owner';
+        roleNames[1] = 'retailer';
+        break;
+      case 'retailer':
+        roleNames[0] = 'owner';
+        roleNames[1] = 'retailer';
+        break;
+      default:
+      case 'user':
+        // roleNames[0] = 'owner';
+        roleNames[0] = 'customer';
+    }
 
-  //console.log(roleNames);
-  // fine user roleNames from Role js
-  let roles = await Role.find({ name: { $in: roleNames } });
+    //console.log(roleNames);
+    // fine user roleNames from Role js
+    let roles = await Role.find({ name: { $in: roleNames } });
 
-  console.log(roles);
+    console.log(roles);
 
-  if (!roles || roles.length === 0) {
-    return res
-      .status(StatusCodes.OK)
-      .json({ message: 'Please provide valid role(s)' });
-  }
-  const verificationToken = crypto.randomBytes(40).toString('hex');
-  const user = await User.create({
-    firstName,
-    lastName,
-    email,
-    password,
-    roles: roles.map((role) => role._id), // Assign multiple role IDs
-    verificationToken,
-    previousPasswords: [], // Initialize previousPasswords array
-  });
-
-  // Add the current password to the previousPasswords array
-  user.previousPasswords.push(user.password);
-  await user.save();
-  const origin = process.env.SERVER_URL; // server where the frontend is running
-  // send verification email
-  await sendVerificationEmail({
-    name: user.name,
-    email: user.email,
-    verificationToken,
-    origin,
-  });
-
-  //  Create a token for the user and attach it to the response as a cookie
-  // we are no longer attaching the token to the response during registration
-  /*    const tokenUser = createTokenUser(user);
-   console.log(tokenUser);
-   attachCookiesToResponse({ res, user: tokenUser }); */
-
-  //  Send a verification token to the user while testng in the Postman
-  res
-    .status(StatusCodes.CREATED)
-    .json({
-      msg: 'Success! Please check your email to verify the account',
-      verificationToken: user.verificationToken,
+    if (!roles || roles.length === 0) {
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: 'Please provide valid role(s)' });
+    }
+    const verificationToken = crypto.randomBytes(40).toString('hex');
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password,
+      roles: roles.map((role) => role._id), // Assign multiple role IDs
+      verificationToken,
+      previousPasswords: [], // Initialize previousPasswords array
     });
+
+    // Add the current password to the previousPasswords array
+    user.previousPasswords.push(user.password);
+    await user.save();
+    const origin = process.env.SERVER_URL; // server where the frontend is running
+    // send verification email
+    await sendVerificationEmail({
+      name: user.name,
+      email: user.email,
+      verificationToken,
+      origin,
+    });
+
+    //  Create a token for the user and attach it to the response as a cookie
+    // we are no longer attaching the token to the response during registration
+    /*    const tokenUser = createTokenUser(user);
+     console.log(tokenUser);
+     attachCookiesToResponse({ res, user: tokenUser }); */
+
+    res.locals.user = user; // used when approving/declining store application
+
+    // Check if a response has already been sent
+    if (!res.skipResponse) {
+      //  Send a verification token to the user while testng in the Postman
+      res.status(StatusCodes.CREATED).json({
+        msg: 'Success! Please check your email to verify the account',
+        verificationToken: user.verificationToken,
+      });
+    } 
+  } catch (error) {
+    next(error);
+  }
 };
 
 /* 
@@ -198,26 +204,26 @@ const verifyEmail = async (req, res) => {
    - verificationToken 
  */
 const checkUserVerified = async (req, res) => {
-   const { email } = req.query; // Assuming email is sent as a query parameter
+  const { email } = req.query; // Assuming email is sent as a query parameter
 
-   try {
-     const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
 
-     if (!user) {
-       return res
-         .status(StatusCodes.NOT_FOUND)
-         .json({ verified: false, msg: 'User not found' });
-     }
+    if (!user) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ verified: false, msg: 'User not found' });
+    }
 
-     return res
-       .status(StatusCodes.OK)
-       .json({ verified: user.isVerified, msg: 'Verification status checked' });
-   } catch (error) {
-     console.error('Error checking verification status:', error);
-     return res
-       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-       .json({ verified: false, msg: 'Internal server error' });
-   }
+    return res
+      .status(StatusCodes.OK)
+      .json({ verified: user.isVerified, msg: 'Verification status checked' });
+  } catch (error) {
+    console.error('Error checking verification status:', error);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ verified: false, msg: 'Internal server error' });
+  }
 };
 
 /* 

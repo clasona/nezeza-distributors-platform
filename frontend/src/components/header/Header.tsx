@@ -173,7 +173,7 @@ const Header = () => {
                 {storeInfo ? (
                   <DropdownMenuItem>
                     <Link
-                      href={`/${getSellerTypeBaseurl()}`}
+                      href={`/${getSellerTypeBaseurl(storeInfo.storeType)}`}
                       className='flex items-center space-x-2'
                     >
                       <LayoutDashboard className='w-4 h-4' />

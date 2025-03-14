@@ -13,8 +13,8 @@ const SellerDashboard = () => {
   const { userInfo, storeInfo } = useSelector(
     (state: stateProps) => state.next
   );
-  const username = userInfo.firstName;
-  const storeType = storeInfo.storeType;
+  const username = userInfo?.firstName;
+  const storeType = storeInfo?.storeType;
   const [myOrders, setMyOrders] = useState<OrderProps[]>([]);
   const [customerOrders, setCustomerOrders] = useState<OrderProps[]>([]);
   // const hasStripeAccount = userInfo.hasStripeAccount;

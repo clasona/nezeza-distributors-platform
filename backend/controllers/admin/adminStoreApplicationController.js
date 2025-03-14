@@ -47,8 +47,8 @@ const getAllStoreApplications = async (req, res, next) => {
 
     // Execute query with filtering, sorting, and pagination
     const storeApplications = await StoreApplication.find(queryObject)
-      .populate('storeId')
-      .populate('primaryContactId') 
+      .populate('storeInfo')
+      .populate('primaryContactInfo') 
       .sort(sort)
       .skip(skip)
       .limit(Number(limit));

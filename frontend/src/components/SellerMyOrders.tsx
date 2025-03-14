@@ -357,8 +357,6 @@ const SellerMyOrders = () => {
       {/* Replacing Overview Section with SmallCards */}
       <SmallCards orderStats={orderStats} />
 
-      {/* <TableActions /> */}
-
       {/* Table Search field and Filter Dropdown*/}
       <TableFilters>
         <BulkDeleteButton

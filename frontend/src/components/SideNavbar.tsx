@@ -12,7 +12,7 @@ import {
   Truck,
   UserRoundPen,
   UsersRound,
-  Warehouse
+  Warehouse,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -38,8 +38,7 @@ const SideNavbar = ({
   const pathname = usePathname();
   const { storeInfo } = useSelector((state: stateProps) => state.next);
   const router = useRouter();
-   const storeType = storeInfo.storeType;
-
+  const storeType = storeInfo?.storeType;
 
   const sidebarLinks = [
     {
@@ -174,7 +173,7 @@ const SideNavbar = ({
         ))}
 
         <div className='flex px-6 py-8'>
-          <LogoutButton className='py-2' redirectTo='login' />
+          <LogoutButton className='py-2'/>
         </div>
       </div>
     </div>

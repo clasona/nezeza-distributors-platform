@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux';
-import { stateProps } from '../../../type';
 
 interface DeleteModalProps<T extends object> {
   isOpen: boolean;
@@ -15,20 +13,6 @@ const DeleteRowModal = <T extends { _id: number | string }>({
   onDelete,
 }: DeleteModalProps<T>) => {
   if (!isOpen) return null;
-
-  // Type guard for OrderProps
-  const isOrderProps = (
-    data: any
-  ): data is { _id: number; fulfillmentStatus?: string } =>
-    'fulfillmentStatus' in data;
-
-  // Type guard for InventoryProps
-  const isInventoryProps = (
-    data: any
-  ): data is { _id: number; quantity?: number; price?: number } =>
-    'quantity' in data && 'price' in data;
-
-  const { userInfo } = useSelector((state: stateProps) => state.next);
 
   const handleDelete = async () => {
     if ('_id' in rowData) {

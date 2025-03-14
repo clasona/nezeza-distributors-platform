@@ -50,7 +50,7 @@ const TopNavbar = ({
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const { storeInfo } = useSelector((state: stateProps) => state.next);
-  const storeType = storeInfo.storeType;
+  const storeType = storeInfo?.storeType;
 
   useEffect(() => {
     const fetchData = async () => {

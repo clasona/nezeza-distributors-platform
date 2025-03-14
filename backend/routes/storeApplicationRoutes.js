@@ -9,6 +9,7 @@ const {
 const {
   createStoreApplication,
   getStoreApplicationDetails,
+  approveStoreApplication
 } = require('../controllers/storeApplicationController');
 
 router
@@ -18,11 +19,11 @@ router
 );
   
 router
-  .route('/applications/:id')
+  .route('/:id')
   // .route('/:storeId/applications/:id')
   .get(
-    authenticateUser,
-    authorizePermissions('view_store_application_details'),
+    // authenticateUser,
+    // authorizePermissions('view_store_application_details'),
     getStoreApplicationDetails
   );
 //   .patch(
@@ -31,5 +32,14 @@ router
 //     updateStoreDetails
 //   )
 //   .delete(deactivateStore);
+
+router
+  .route('/:id/approve')
+  // .route('/:storeId/applications/:id')
+  .patch(
+    // authenticateUser, //TODO: authenticate its the admin and has permissions
+    // authorizePermissions('view_store_application_details'),
+    approveStoreApplication
+  );
 
 module.exports = router;

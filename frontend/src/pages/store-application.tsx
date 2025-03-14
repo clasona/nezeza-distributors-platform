@@ -69,6 +69,7 @@ const StoreRegistrationForm = ({
         return;
       }
       const storeApplicationData = {
+        status: 'Pending',
         primaryContactInfo: {
           firstName: data.firstName,
           lastName: data.lastName,

@@ -4,35 +4,55 @@ const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const { attachCookiesToResponse, createTokenUser } = require('../utils');
 
-const createStore = async (req, res) => {
-  const { name, email, address, description, storeType, isActive } =
+const createStore = async (req, res, next) => {
+  const { name, email, address, description, storeType, isActive, ownerId } =
     req.body;
+  try {
+    const emailAlreadyExists = await Store.findOne({ email });
+    if (emailAlreadyExists) {
+      throw new CustomError.BadRequestError('Email already exists');
+    }
+    let actualOwnerId = ownerId;
+    // Check if the owner exists
+    if (!ownerId) {
+      // If ownerId is not provided, use logged-in user id
+      console.log('OwnerId not provided, using logged in user id...');
+      actualOwnerId = req.user.userId;
+    } else {
+      console.log('OwnerId provided.');
+    }
 
-  const emailAlreadyExists = await Store.findOne({ email });
-  if (emailAlreadyExists) {
-    throw new CustomError.BadRequestError('Email already exists');
+    const store = await Store.create({
+      name,
+      email,
+      address,
+      description,
+      isActive,
+      ownerId: actualOwnerId, // Set the user as the owner
+      storeType,
+      members: [actualOwnerId], // Add the user as a member
+    });
+
+    const user = await User.findById(actualOwnerId)
+      .select('-password')
+      .populate('roles');
+    if (!user) {
+      throw new CustomError.UnauthorizedError('Not authorized to create store');
+    }
+    res.locals.store = store; // used when approving/declining store application
+
+    // Check if a response has already been sent
+    if (!res.skipResponse) {
+      user.storeId = store._id;
+      await user.save();
+      res.status(StatusCodes.CREATED).json({ store });
+    } else {
+      user.storeId = store._id;
+      await user.save();
+    }
+  } catch (error) {
+    next(error);
   }
-
-  const store = await Store.create({
-    name,
-    email,
-    address,
-    description,
-    isActive,
-    ownerId: req.user.userId, // Set the user as the owner
-    storeType,
-    members: [req.user.userId], // Add the user as a member
-  });
-
-  const user = await User.findById(req.user.userId)
-    .select('-password')
-    .populate('roles');
-  if (!user) {
-    throw new CustomError.UnauthorizedError('Not authorized to create store');
-  }
-  user.storeId = store._id;
-  await user.save();
-  res.status(StatusCodes.CREATED).json({ store });
 };
 
 const getStoreDetails = async (req, res) => {

@@ -135,8 +135,19 @@ export interface StoreProps {
 // When creating a new store, omit these since MongoDB will generate them
 export type NewStoreProps = Omit<StoreProps, '_id' | 'ownerId' | 'createdAt' | 'updatedAt'>;
 
-export interface StoreApplicationProps {
-  _id?: string;
+// export interface StoreApplicationProps {
+//   _id: string;
+//   status: string;
+//   primaryContactInfo: Partial<UserProps>;
+//   storeInfo: NewStoreProps;
+//   verificationDocs: VerificationDocsProps;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
+// Interface for creating a new store application (no _id)
+export interface CreateStoreApplicationProps {
+  status: string;
   primaryContactInfo: Partial<UserProps>;
   storeInfo: NewStoreProps;
   verificationDocs: VerificationDocsProps;
@@ -144,6 +155,10 @@ export interface StoreApplicationProps {
   updatedAt: string;
 }
 
+// Interface for displaying or working with existing store applications (_id required)
+export interface StoreApplicationProps extends CreateStoreApplicationProps {
+  _id: string;
+}
 export interface VerificationDocsProps {
   primaryContactIdentityDocument: any;
   businessDocument: any;

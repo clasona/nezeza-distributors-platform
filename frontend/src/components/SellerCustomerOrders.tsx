@@ -1,5 +1,4 @@
 import PageHeader from '@/components/PageHeader';
-import PageHeaderLink from '@/components/PageHeaderLink';
 import SmallCards from '@/components/SmallCards';
 import DeleteRowModal from '@/components/Table/DeleteRowModal';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
@@ -11,12 +10,13 @@ import SearchField from '@/components/Table/SearchField';
 import TableFilters from '@/components/Table/TableFilters';
 import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
+import { handleError } from '@/utils/errorUtils';
 import formatDate from '@/utils/formatDate';
-import { formatIdByShortening } from '@/utils/formatId';
 import formatPrice from '@/utils/formatPrice';
 import { fetchCustomerOrders } from '@/utils/order/fetchCustomerOrders';
 import { calculateOrderStats } from '@/utils/orderUtils';
 import { sortItems } from '@/utils/sortItems';
+import { RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { SubOrderProps } from '../../type';
@@ -26,8 +26,6 @@ import CustomerMoreOrderDetailsModal from './Order/CustomerMoreOrderDetailsModal
 import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
-import { handleError } from '@/utils/errorUtils';
-import { RotateCcw } from 'lucide-react';
 
 const SellerCustomerOrders = () => {
   const [customerOrders, setCustomerOrders] = useState<SubOrderProps[]>([]);
@@ -385,7 +383,7 @@ const [statusFilter, setStatusFilter] = useState<{
                         ),
                       },
                       { content: order.fulfillmentStatus, isStatus: true },
-                      { content: formatIdByShortening(order._id) },
+                      { content: order._id },
                       { content: order.buyerId },
                       // {
                       //   content: `${order.buyerId.firstName} ${order.buyerId.lastName}`, TODO: user user names
