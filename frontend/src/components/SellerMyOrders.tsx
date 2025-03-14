@@ -14,6 +14,7 @@ import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
 import { getOrderStatus } from '@/lib/utils';
+import { handleError } from '@/utils/errorUtils';
 import formatDate from '@/utils/formatDate';
 import formatPrice from '@/utils/formatPrice';
 import { archiveOrder } from '@/utils/order/archiveOrder';
@@ -21,7 +22,7 @@ import { getMyUnarchivedOrders } from '@/utils/order/getMyUnarchivedOrders';
 import { calculateOrderStats } from '@/utils/orderUtils';
 import { checkIfProductExists } from '@/utils/product/checkIfProductExists';
 import { sortItems } from '@/utils/sortItems';
-import { Plus, RotateCw } from 'lucide-react';
+import { Plus, RotateCcw, RotateCw } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { OrderItemsProps, OrderProps } from '../../type';
@@ -34,7 +35,6 @@ import SuccessMessageModal from './SuccessMessageModal';
 import ArchiveRowModal from './Table/ArchiveRowModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
-import { handleError } from '@/utils/errorUtils';
 
 const SellerMyOrders = () => {
   const [myOrders, setMyOrders] = useState<OrderProps[]>([]);
@@ -50,7 +50,11 @@ const SellerMyOrders = () => {
   const [selectedItemToCreate, setSelectedItemToCreate] =
     useState<OrderItemsProps | null>(null);
   // For sorting and filtering
-  const [statusFilter, setStatusFilter] = useState('Status');
+  const [statusFilter, setStatusFilter] = useState<{
+    value: string;
+    label: string;
+  } | null>({ value: 'All', label: 'All' });
+
   const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchQuery, setSearchQuery] = useState('');
@@ -101,7 +105,7 @@ const SellerMyOrders = () => {
       setMyOrders(myOrdersData);
       setFilteredOrders(myOrdersData); // Initially show all orders
     } catch (error) {
-       handleError(error);
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +122,9 @@ const SellerMyOrders = () => {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       const statusMatch =
-        statusFilter === 'Status' || order.fulfillmentStatus === statusFilter;
+        statusFilter === null ||
+        (statusFilter.value === 'All' && statusFilter.label === 'All') ||
+        order.fulfillmentStatus === statusFilter.value;
       return searchMatch && statusMatch;
     });
 
@@ -129,14 +135,22 @@ const SellerMyOrders = () => {
     setSearchQuery(query); // Update the search query
   };
 
-  const handleStatusFilterChange = (status: string) => {
+  const handleStatusFilterChange = (
+    status: {
+      value: string;
+      label: string;
+    } | null
+  ) => {
     setStatusFilter(status);
-    const filteredByStatusFiltering =
-      status === 'Status'
-        ? myOrders
-        : myOrders.filter((order) => order.fulfillmentStatus === status);
 
-    setFilteredOrders(filteredByStatusFiltering);
+    if (status && status.value !== 'Status') {
+      const filteredByStatusFiltering = myOrders.filter(
+        (order) => order.fulfillmentStatus === status.value
+      );
+      setFilteredOrders(filteredByStatusFiltering);
+    } else {
+      setFilteredOrders(myOrders); // Reset to all orders if no filter
+    }
   };
 
   const handleStartDateChange = (value: string) => {
@@ -160,7 +174,7 @@ const SellerMyOrders = () => {
   };
 
   const clearFilters = () => {
-    setStatusFilter('Status');
+    setStatusFilter({ value: 'All', label: 'All' });
     setStartDate('');
     setEndDate('');
     setFilteredOrders(myOrders); // Reset to all orders
@@ -326,7 +340,9 @@ const SellerMyOrders = () => {
         actions={
           <Button
             isLoading={isLoading}
+            icon={RotateCcw}
             buttonTitle='Refresh'
+            buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
             className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
             onClick={async () => {
@@ -335,10 +351,7 @@ const SellerMyOrders = () => {
           />
         }
         extraComponent={
-          <PageHeaderLink
-            linkTitle={'Create New Order'}
-            href={'./orders/new'}
-          />
+          <PageHeaderLink linkTitle={'Create New Order'} href={'/'} />
         }
       />
       {/* Replacing Overview Section with SmallCards */}
@@ -352,44 +365,50 @@ const SellerMyOrders = () => {
           onClick={() => setIsBulkDeleteModalOpen(true)}
           isDisabled={selectedRows.length === 0}
         />
-        <SearchField
-          searchFieldPlaceholder='my orders'
-          onSearchChange={handleSearchChange}
-        />
+
         {/* Filter by status */}
         <StatusFilters
           label='Filter by Status'
           options={[
-            'Status',
-            'Pending',
-            'Fulfilled',
-            'Shipped',
-            'Delivered',
-            'Completed',
-            'Canceled',
+            { value: 'All', label: 'All' },
+            { value: 'Pending', label: 'Pending' },
+            { value: 'Fulfilled', label: 'Fulfilled' },
+            { value: 'Shipped', label: 'Shipped' },
+            { value: 'Delivered', label: 'Delivered' },
+            { value: 'Completed', label: 'Completed' },
+            { value: 'Canceled', label: 'Canceled' },
           ]}
           selectedOption={statusFilter}
           onChange={handleStatusFilterChange}
         />
-        {/* Filter by dates */}
-        {showMoreFilters && (
-          <DateFilters
-            label='Filter by Date Range'
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={handleStartDateChange}
-            onEndDateChange={handleEndDateChange}
-          />
-        )}
-        <button
+
+        {/* Filter by dates (always on large, conditional on small) */}
+        <div className='md:block block'>
+          {showMoreFilters || window.innerWidth >= 768 ? ( // Condition for visibility
+            <DateFilters
+              label='Filter by Date Range'
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={handleStartDateChange}
+              onEndDateChange={handleEndDateChange}
+            />
+          ) : null}
+        </div>
+        {/* TODO: Currently disabled. Can be used if we have to more filters.
+         Filter by dates (always on large, conditional on small) */}
+        {/* <button
           onClick={toggleMoreFilters}
-          className='text-sm text-nezeza_dark_blue underline'
+          className='hidden sm:inline text-sm text-nezeza_dark_blue underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
-        </button>
+        </button> */}
         {/* Clear Filters Button */}
         <ClearFilters clearFiltersFunction={clearFilters} />
       </TableFilters>
+      <SearchField
+        searchFieldPlaceholder='my orders'
+        onSearchChange={handleSearchChange}
+      />
 
       {/* My Orders Table */}
       <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>

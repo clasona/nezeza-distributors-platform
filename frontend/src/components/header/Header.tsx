@@ -16,16 +16,14 @@ import {
   CircleHelp,
   CircleUserRound,
   Heart,
+  LayoutDashboard,
   ListOrdered,
-  ShoppingCart,
-  SquareArrowOutUpRight,
-  User,
+  ShoppingCart
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { BiCaretDown } from 'react-icons/bi';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../../type';
 import logo from '../../images/logo.jpg';
@@ -176,10 +174,9 @@ const Header = () => {
                   <DropdownMenuItem>
                     <Link
                       href={`/${getSellerTypeBaseurl()}`}
-                      target='_blank'
                       className='flex items-center space-x-2'
                     >
-                      <SquareArrowOutUpRight />
+                      <LayoutDashboard className='w-4 h-4' />
                       <span>Seller Dashboard</span>
                     </Link>
                   </DropdownMenuItem>
@@ -253,7 +250,7 @@ const Header = () => {
           >
             <CircleUserRound size={22} className='text-white' />
             <p className='text-white font-bold text-center sm:text-xs'>
-              Account
+              Login
             </p>
           </Link>
         )}

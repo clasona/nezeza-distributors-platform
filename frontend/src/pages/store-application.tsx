@@ -87,13 +87,13 @@ const StoreRegistrationForm = ({
         },
         storeInfo: {
           storeType: data.storeType,
-          storeRegistrationNumber: data.storeRegistrationNumber,
-          storeName: data.storeName,
-          storeCategory: data.storeCategory,
-          storeDescription: data.storeDescription,
-          storeEmail: data.storeEmail,
-          storePhone: data.storePhone,
-          storeAddress: {
+          registrationNumber: data.storeRegistrationNumber,
+          name: data.storeName,
+          category: data.storeCategory,
+          description: data.storeDescription,
+          email: data.storeEmail,
+          phone: data.storePhone,
+          address: {
             street: data.storeStreet,
             city: data.storeCity,
             state: data.storeState,
@@ -168,7 +168,7 @@ const StoreRegistrationForm = ({
         </div>
 
         {/* Section Forms */}
-        <div >
+        <div>
           {/* Primary Contact Info Section */}
           {currentSection === 0 && (
             <PrimaryContactInput

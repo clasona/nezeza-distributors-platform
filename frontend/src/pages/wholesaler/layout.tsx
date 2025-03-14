@@ -47,8 +47,8 @@ const WholesalerLayout = ({ children }: PropsWithChildren<{}>) => {
         <main
           className={`${
             showSidebar
-              ? 'sm:ml-60 p-8 bg-nezeza_powder_blue dark:bg-slate-900 text-nezeza_light_slate min-h-screen mt-16'
-              : 'p-8 bg-nezeza_powder_blue dark:bg-slate-900 text-nezeza_light_slate min-h-screen mt-16'
+              ? 'sm:ml-60 p-4 sm:p-8 bg-nezeza_powder_blue dark:bg-slate-900 text-nezeza_light_slate min-h-screen mt-16'
+              : 'p-4 sm:p-8 bg-nezeza_powder_blue dark:bg-slate-900 text-nezeza_light_slate min-h-screen mt-16'
           }`}
         >
           {children}

@@ -10,6 +10,7 @@ import SearchField from '@/components/Table/SearchField';
 import TableFilters from '@/components/Table/TableFilters';
 import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
+import { handleError } from '@/utils/errorUtils';
 import formatDate from '@/utils/formatDate';
 import formatPrice from '@/utils/formatPrice';
 import { getMyArchivedOrders } from '@/utils/order/getMyArchivedOrders';
@@ -26,7 +27,7 @@ import Loading from './Loaders/Loading';
 import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
-import { handleError } from '@/utils/errorUtils';
+import { RotateCcw } from 'lucide-react';
 
 const SellerMyOrders = () => {
   const [myOrders, setMyOrders] = useState<OrderProps[]>([]);
@@ -38,8 +39,10 @@ const SellerMyOrders = () => {
   const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
 
   // For sorting and filtering
-  const [statusFilter, setStatusFilter] = useState('Status');
-  const [sortColumn, setSortColumn] = useState('');
+const [statusFilter, setStatusFilter] = useState<{
+  value: string;
+  label: string;
+} | null>({ value: 'All', label: 'All' });  const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -100,7 +103,9 @@ const SellerMyOrders = () => {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       const statusMatch =
-        statusFilter === 'Status' || order.fulfillmentStatus === statusFilter;
+        statusFilter === null ||
+        (statusFilter.value === 'All' && statusFilter.label === 'All') ||
+        order.fulfillmentStatus === statusFilter.value;
       return searchMatch && statusMatch;
     });
 
@@ -132,7 +137,7 @@ const SellerMyOrders = () => {
   };
 
   const clearFilters = () => {
-    setStatusFilter('Status');
+    setStatusFilter({ value: 'All', label: 'All' });
     setStartDate('');
     setEndDate('');
     setFilteredOrders(myOrders); // Reset to all orders
@@ -230,7 +235,9 @@ const SellerMyOrders = () => {
         actions={
           <Button
             isLoading={isLoading}
+            icon={RotateCcw}
             buttonTitle='Refresh'
+            buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
             className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
             onClick={async () => {
@@ -250,30 +257,31 @@ const SellerMyOrders = () => {
           onClick={() => setIsBulkDeleteModalOpen(true)}
           isDisabled={selectedRows.length === 0}
         />
-        <SearchField
-          searchFieldPlaceholder='my orders'
-          onSearchChange={handleSearchChange}
-        />
 
         {/* Filter by dates */}
-        {showMoreFilters && (
-          <DateFilters
-            label='Filter by Date Range'
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={handleStartDateChange}
-            onEndDateChange={handleEndDateChange}
-          />
-        )}
-        <button
+        {/* Filter by dates (always on large, conditional on small) */}
+        <DateFilters
+          label='Filter by Date Range'
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+        />
+        {/* TODO: Currently disabled. Can be used if we have to more filters.
+         Filter by dates (always on large, conditional on small) */}
+        {/* <button
           onClick={toggleMoreFilters}
-          className='text-sm text-nezeza_dark_blue underline'
+          className='hidden sm:inline text-sm text-nezeza_dark_blue underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
-        </button>
+        </button> */}
         {/* Clear Filters Button */}
         <ClearFilters clearFiltersFunction={clearFilters} />
       </TableFilters>
+      <SearchField
+        searchFieldPlaceholder='my archived orders'
+        onSearchChange={handleSearchChange}
+      />
 
       {/* My Orders Table */}
       <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>

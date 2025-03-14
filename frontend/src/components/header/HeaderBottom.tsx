@@ -74,10 +74,8 @@ const HeaderBottom = ({ showSidebar, setShowSidebar }: HeaderBottomProps) => {
           {storeInfo && (
             <Link
               href={`/${getSellerTypeBaseurl()}`}
-              target='_blank'
               className='flex items-center text-blue-500 hover:underline'
             >
-              <SquareArrowOutUpRight className='h-3' />
               Seller Dashboard
             </Link>
           )}

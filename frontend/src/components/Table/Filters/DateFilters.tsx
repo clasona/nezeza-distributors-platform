@@ -16,17 +16,17 @@ const DateFilters: React.FC<DateFiltersProps> = ({
   onEndDateChange,
 }) => {
   return (
-    <div className='flex flex-col md:flex-row items-center gap-4'>
+    <div className='flex flex-col md:flex-row items-center gap-2 sm:gap-4'>
       <label htmlFor='date-filter' className='sr-only'>
         {label}
       </label>
-      <div className='flex items-center gap-2'>
+      <div className='flex items-center sm:gap-2'>
         <input
           type='date'
           id='start-date'
           value={startDate}
           onChange={(e) => onStartDateChange(e.target.value)}
-          className='py-2 px-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-nezeza_light_blue focus:border-nezeza_light_blue'
+          className='sm:py-2 sm:px-2 text-xs sm:text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-nezeza_light_blue focus:border-nezeza_light_blue'
           placeholder='Start Date'
         />
         <span className='text-nezeza_gray_600'>to</span>
@@ -35,7 +35,7 @@ const DateFilters: React.FC<DateFiltersProps> = ({
           id='end-date'
           value={endDate}
           onChange={(e) => onEndDateChange(e.target.value)}
-          className='py-2 px-2 text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-nezeza_light_blue focus:border-nezeza_light_blue'
+          className='sm:py-2 sm:px-2 text-xs sm:text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-nezeza_light_blue focus:border-nezeza_light_blue'
           placeholder='End Date'
         />
       </div>

@@ -118,15 +118,15 @@ export interface StoreProduct {
 export interface StoreProps {
   _id: string;
   storeType: string;
-  storeRegistrationNumber: number;
-  storeName: string;
-  storeCategory: string;
-  storeDescription: string;
-  storeEmail: string;
-  storePhone: string;
+  registrationNumber: number;
+  name: string;
+  category: string;
+  description: string;
+  email: string;
+  phone: string;
   ownerId: number;
   // storeLogo: File;
-  storeAddress?: AddressProps;
+  address?: AddressProps;
   isActive?: boolean;
   createdAt: string;
   updatedAt: string;

@@ -1,12 +1,12 @@
 import PageHeader from '../PageHeader';
 
-const UserSupport = () => {
+const StoreAccount = () => {
   return (
     <div>
-      <PageHeader heading='Support Page' />
+      <PageHeader heading='Store Account' />
       <div>Coming soon</div>
     </div>
   );
 };
 
-export default UserSupport;
+export default StoreAccount;

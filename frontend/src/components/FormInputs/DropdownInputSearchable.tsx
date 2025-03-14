@@ -31,6 +31,18 @@ const DropdownInputSearchable = ({
     }
   };
 
+  const customStyles: StylesConfig<{ value: string; label: string }, false> = {
+    control: (provided, state) => ({
+      ...provided,
+      borderColor: state.isFocused ? '#38a169' : 'transparent', // nezeza_green_600
+      borderWidth: '1px',
+      boxShadow: state.isFocused ? '0 0 0 1px #38a169' : 'none',
+      '&:hover': {
+        borderColor: '#38a169',
+      },
+    }),
+  };
+
   return (
     <div className={className}>
       {label && (
@@ -44,6 +56,7 @@ const DropdownInputSearchable = ({
         onChange={handleChange}
         value={value}
         isDisabled={disabled}
+        styles={customStyles}
       />
     </div>
   );
