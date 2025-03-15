@@ -23,8 +23,7 @@ const {
   updateShippingInfo,
 } = require('../controllers/orderController');
 
-router.route('/').post(createOrder);
-//authenticateUser, authorizePermissions('create_order')
+router.route('/').post(authenticateUser, authorizePermissions('create_order'), createOrder);
 
 router
   .route('/selling')
@@ -56,8 +55,8 @@ router
     authenticateUser,
     authorizePermissions('view_current_order'),
     getSingleOrder
-);
-  
+  );
+
 router
   .route('/buying/payment/:paymentIntentId')
   .get(
@@ -65,7 +64,6 @@ router
     authorizePermissions('view_current_order'),
     getOrderByPaymentIntentId
   );
-
 
 router.route('/buying/archive/:id').patch(authenticateUser, archiveOrder);
 
@@ -75,8 +73,8 @@ router
     authenticateUser,
     authorizePermissions('view_current_order'),
     getSellerSingleOrder
-);
-  
+  );
+
 // order updates routes
 router
   .route('/:id/update/fulfillment/fulfilled')

@@ -99,8 +99,7 @@ const register = async (req, res, next) => {
     res.locals.user = user; // used when approving/declining store application
 
     // Check if a response has already been sent
-    if (!res.skipResponse) {
-      //  Send a verification token to the user while testng in the Postman
+    if (!req.skipResponse) {
       res.status(StatusCodes.CREATED).json({
         msg: 'Success! Please check your email to verify the account',
         verificationToken: user.verificationToken,

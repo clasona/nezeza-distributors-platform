@@ -81,9 +81,9 @@ const getStoreApplicationDetails = async (req, res, next) => {
     // }
 
     // Check if a response has already been sent
-    if (!res.skipResponse) {
+    if (!req.skipResponse) {
       res.status(StatusCodes.OK).json({ application });
-    } 
+    }
   } catch (error) {
     // Pass error to the global error handler
     next(error);
@@ -96,7 +96,7 @@ const approveStoreApplication = async (req, res, next) => {
 
   // create primary contact user and store
   try {
-    res.skipResponse = true; // to prevent other functions in here from sening response
+    req.skipResponse = true; // to prevent other functions in here from sening response
     await getStoreApplicationDetails(req, res, next);
     const application = res.locals.application;
     if (!application) {
@@ -115,10 +115,13 @@ const approveStoreApplication = async (req, res, next) => {
         password: primaryContactInfo.email, // Using email as a temporary password - TODO: ask use to change later
         storeType: storeInfo.storeType.toLowerCase(),
       },
+      skipResponse: true,
     };
 
     await register(userReq, res, next);
     const user = res.locals.user;
+    if (!user)
+      throw new CustomError.BadRequestError('User registration failed');
 
     // Create a new request object to pass to createSrore
     const storeReq = {
@@ -131,15 +134,21 @@ const approveStoreApplication = async (req, res, next) => {
         ownerId: user._id,
         // isActive: storeInfo.isActive, // Activated after stripe?
       },
+      skipResponse: true,
     };
     await createStore(storeReq, res, next);
+    const store = res.locals.store;
+
+    if (!store) throw new CustomError.BadRequestError('Store creation failed');
 
     await StoreApplication.findByIdAndUpdate(
       storeApplicationId,
       { status: 'Approved' },
       { new: true }
     );
-    res.status(StatusCodes.OK).json({ msg: 'Store application approved' }); // Or whatever response you want to send
+    res
+      .status(StatusCodes.OK)
+      .json({ msg: 'Store application approved', user, store });
   } catch (error) {
     next(error);
   }

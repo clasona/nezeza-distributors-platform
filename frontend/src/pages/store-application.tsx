@@ -60,7 +60,6 @@ const StoreRegistrationForm = ({
         businessDocResource
       );
       if (!identityDocResource || !businessDocResource) {
-        console.log('yvesssss');
         // setErrorMessage(
         //   'Please upload both identity document and business document.'
         // );
@@ -112,7 +111,6 @@ const StoreRegistrationForm = ({
 
       try {
         const response = await createStoreApplication(storeApplicationData);
-        console.log(response);
         if (response.status !== 201) {
           setSuccessMessage('');
           setErrorMessage(response.data.msg || 'Store application failed.');

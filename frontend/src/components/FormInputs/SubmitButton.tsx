@@ -2,7 +2,7 @@ import React from 'react';
 import { Plus } from 'lucide-react';
 
 interface SubmitButtonProps {
-  isLoading: boolean;
+  isLoading?: boolean;
   buttonTitle: string;
   loadingButtonTitle?: string;
   className?: string;
