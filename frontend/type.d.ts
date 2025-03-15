@@ -125,29 +125,43 @@ export interface StoreProps {
   email: string;
   phone: string;
   ownerId: number;
-  // logo: string;
-  // products: StoreProduct[];
-  // orders: OrderProps[];
-  // inventory: InventoryProps[];
+  // storeLogo: File;
   address?: AddressProps;
-  isActive: boolean;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 // When creating a new store, omit these since MongoDB will generate them
-export type NewStoreProps = Omit<StoreProps, '_id' | 'createdAt' | 'updatedAt'>;
+export type NewStoreProps = Omit<StoreProps, '_id' | 'ownerId' | 'createdAt' | 'updatedAt'>;
 
-export interface StoreApplicationProps {
-  _id: string;
+// export interface StoreApplicationProps {
+//   _id: string;
+//   status: string;
+//   primaryContactInfo: Partial<UserProps>;
+//   storeInfo: NewStoreProps;
+//   verificationDocs: VerificationDocsProps;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
+// Interface for creating a new store application (no _id)
+export interface CreateStoreApplicationProps {
   status: string;
-  // storeName: string;
-  primaryContactId: UserProps;
-  storeId: StoreProps;
-  billingInfo: BillingInfoProps;
-  // VerificationDocs: VerificationDocsProps;
+  primaryContactInfo: Partial<UserProps>;
+  storeInfo: NewStoreProps;
+  verificationDocs: VerificationDocsProps;
   createdAt: string;
   updatedAt: string;
+}
+
+// Interface for displaying or working with existing store applications (_id required)
+export interface StoreApplicationProps extends CreateStoreApplicationProps {
+  _id: string;
+}
+export interface VerificationDocsProps {
+  primaryContactIdentityDocument: any;
+  businessDocument: any;
 }
 
 export interface UserProps {
@@ -161,6 +175,10 @@ export interface UserProps {
   isVerified: boolean;
   verifiedAt: string;
   storeId: string;
+  citizenshipCountry?: string;
+  birthCountry?: string;
+  dob?: string;
+  residenceAddress?: AddressProps;
 }
 
 export interface stateProps {

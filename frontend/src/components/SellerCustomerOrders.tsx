@@ -1,5 +1,4 @@
 import PageHeader from '@/components/PageHeader';
-import PageHeaderLink from '@/components/PageHeaderLink';
 import SmallCards from '@/components/SmallCards';
 import DeleteRowModal from '@/components/Table/DeleteRowModal';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
@@ -11,12 +10,13 @@ import SearchField from '@/components/Table/SearchField';
 import TableFilters from '@/components/Table/TableFilters';
 import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
+import { handleError } from '@/utils/errorUtils';
 import formatDate from '@/utils/formatDate';
-import { formatIdByShortening } from '@/utils/formatId';
 import formatPrice from '@/utils/formatPrice';
 import { fetchCustomerOrders } from '@/utils/order/fetchCustomerOrders';
 import { calculateOrderStats } from '@/utils/orderUtils';
 import { sortItems } from '@/utils/sortItems';
+import { RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { SubOrderProps } from '../../type';
@@ -26,7 +26,6 @@ import CustomerMoreOrderDetailsModal from './Order/CustomerMoreOrderDetailsModal
 import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
-import { handleError } from '@/utils/errorUtils';
 
 const SellerCustomerOrders = () => {
   const [customerOrders, setCustomerOrders] = useState<SubOrderProps[]>([]);
@@ -35,8 +34,10 @@ const SellerCustomerOrders = () => {
   const [successMessage, setSuccessMessage] = useState<string>('');
 
   // For sorting and filtering
-  const [statusFilter, setStatusFilter] = useState('Status');
-  const [sortColumn, setSortColumn] = useState('');
+const [statusFilter, setStatusFilter] = useState<{
+  value: string;
+  label: string;
+} | null>({ value: 'All', label: 'All' });  const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -105,7 +106,9 @@ const SellerCustomerOrders = () => {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       const statusMatch =
-        statusFilter === 'Status' || order.fulfillmentStatus === statusFilter;
+        statusFilter === null ||
+        (statusFilter.value === 'All' && statusFilter.label === 'All') ||
+        order.fulfillmentStatus === statusFilter.value;
       return searchMatch && statusMatch;
     });
 
@@ -116,14 +119,22 @@ const SellerCustomerOrders = () => {
     setSearchQuery(query); // Update the search query
   };
 
-  const handleStatusFilterChange = (status: string) => {
+  const handleStatusFilterChange = (
+    status: {
+      value: string;
+      label: string;
+    } | null
+  ) => {
     setStatusFilter(status);
-    const filteredByStatusFiltering =
-      status === 'Status'
-        ? customerOrders
-        : customerOrders.filter((order) => order.fulfillmentStatus === status);
 
-    setFilteredOrders(filteredByStatusFiltering);
+    if (status && status.value !== 'Status') {
+      const filteredByStatusFiltering = customerOrders.filter(
+        (order) => order.fulfillmentStatus === status.value
+      );
+      setFilteredOrders(filteredByStatusFiltering);
+    } else {
+      setFilteredOrders(customerOrders); // Reset to all orders if no filter
+    }
   };
 
   const handleStartDateChange = (value: string) => {
@@ -147,7 +158,7 @@ const SellerCustomerOrders = () => {
   };
 
   const clearFilters = () => {
-    setStatusFilter('Status');
+    setStatusFilter({ value: 'All', label: 'All' });
     setStartDate('');
     setEndDate('');
     setFilteredOrders(customerOrders); // Reset to all orders
@@ -269,18 +280,14 @@ const SellerCustomerOrders = () => {
         actions={
           <Button
             isLoading={isLoading}
+            icon={RotateCcw}
             buttonTitle='Refresh'
+            buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
             className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
             onClick={async () => {
               await fetchData();
             }}
-          />
-        }
-        extraComponent={
-          <PageHeaderLink
-            linkTitle={'Create New Order'}
-            href={'./orders/new'}
           />
         }
       />
@@ -295,44 +302,49 @@ const SellerCustomerOrders = () => {
           onClick={() => setIsBulkDeleteModalOpen(true)}
           isDisabled={selectedRows.length === 0}
         />
-        <SearchField
-          searchFieldPlaceholder='customer orders'
-          onSearchChange={handleSearchChange}
-        />
+
         {/* Filter by status */}
         <StatusFilters
           label='Filter by Status'
           options={[
-            'Status',
-            'Pending',
-            'Fulfilled',
-            'Shipped',
-            'Delivered',
-            'Completed',
-            'Canceled',
+            { value: 'All', label: 'All' },
+            { value: 'Pending', label: 'Pending' },
+            { value: 'Fulfilled', label: 'Fulfilled' },
+            { value: 'Shipped', label: 'Shipped' },
+            { value: 'Delivered', label: 'Delivered' },
+            { value: 'Completed', label: 'Completed' },
+            { value: 'Canceled', label: 'Canceled' },
           ]}
           selectedOption={statusFilter}
           onChange={handleStatusFilterChange}
         />
-        {/* Filter by dates */}
-        {showMoreFilters && (
-          <DateFilters
-            label='Filter by Date Range'
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={handleStartDateChange}
-            onEndDateChange={handleEndDateChange}
-          />
-        )}
-        <button
+        {/* Filter by dates (always on large, conditional on small) */}
+        <div className='md:block block'>
+          {showMoreFilters || window.innerWidth >= 768 ? ( // Condition for visibility
+            <DateFilters
+              label='Filter by Date Range'
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={handleStartDateChange}
+              onEndDateChange={handleEndDateChange}
+            />
+          ) : null}
+        </div>
+        {/* TODO: Currently disabled. Can be used if we have to more filters.
+         Filter by dates (always on large, conditional on small) */}
+        {/* <button
           onClick={toggleMoreFilters}
-          className='text-sm text-nezeza_dark_blue underline'
+          className='hidden sm:inline text-sm text-nezeza_dark_blue underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
-        </button>
+        </button> */}
         {/* Clear Filters Button */}
         <ClearFilters clearFiltersFunction={clearFilters} />
       </TableFilters>
+      <SearchField
+        searchFieldPlaceholder='customer orders'
+        onSearchChange={handleSearchChange}
+      />
 
       {/* Customer Orders Table */}
       <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
@@ -371,7 +383,7 @@ const SellerCustomerOrders = () => {
                         ),
                       },
                       { content: order.fulfillmentStatus, isStatus: true },
-                      { content: formatIdByShortening(order._id) },
+                      { content: order._id },
                       { content: order.buyerId },
                       // {
                       //   content: `${order.buyerId.firstName} ${order.buyerId.lastName}`, TODO: user user names
@@ -398,7 +410,7 @@ const SellerCustomerOrders = () => {
                               },
                               {
                                 label: 'Delete', //TODO: change to archive?
-                                onClick: () => handleDeleteClick(order), //TODO: 
+                                onClick: () => handleDeleteClick(order), //TODO:
                               },
                             ]}
                           />

@@ -3,32 +3,34 @@ import { addStore, addUser, setCartItems } from '@/redux/nextSlice';
 import { loginUser } from '@/utils/auth/loginUser';
 import { getCart } from '@/utils/cart/getCart';
 import { mergeCartItems } from '@/utils/cart/mergeCartItems';
+import { handleError } from '@/utils/errorUtils';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FaGoogle } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
-import { handleError } from '@/utils/errorUtils';
+import { getSellerTypeBaseurl } from '@/lib/utils';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const { cartItemsData, userInfo } = useSelector(
+  const { cartItemsData, userInfo, storeInfo } = useSelector(
     (state: stateProps) => state.next
   );
   const router = useRouter();
   const dispatch = useDispatch();
 
-  //initialize loginData as an object
-  const [loginData, setLoginData] = useState<any | null>(null);
-
   // Redirect authenticated users away from login
   useEffect(() => {
     if (userInfo) {
-      router.replace('/'); // Redirect to the homepage or dashboard
+      if (storeInfo) {
+        router.replace(`/${getSellerTypeBaseurl(storeInfo.storeType)}`);
+      } else {
+        router.replace('/');
+      }
     }
   }, [userInfo, router]);
 
@@ -49,8 +51,6 @@ const LoginPage = () => {
         setSuccessMessage(''); // Clear any previous error message
         setErrorMessage(response.data.msg || 'Login failed.');
       } else {
-        setLoginData(response.data);
-
         const userData = response.data.user;
         const storeData = response.data.user.storeId;
         let storeId = 0;
@@ -101,10 +101,11 @@ const LoginPage = () => {
         } catch (error: any) {
           handleError(error);
         }
-
-        setTimeout(() => {
+        if (storeData) {
+          router.replace(`/${getSellerTypeBaseurl(storeData.storeType)}`);
+        } else {
           router.replace('/');
-        }, 2000);
+        }
       }
     } catch (error: any) {
       handleError(error);

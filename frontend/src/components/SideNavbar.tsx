@@ -3,17 +3,16 @@
 import logo from '@/images/logo.jpg';
 import {
   Archive,
+  Bell,
   CircleDollarSign,
   CircleHelp,
-  Inbox,
   LayoutDashboard,
   ListOrdered,
   ShoppingCart,
-  SquareArrowOutUpRight,
   Truck,
   UserRoundPen,
-  Users,
-  Warehouse
+  UsersRound,
+  Warehouse,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -39,16 +38,7 @@ const SideNavbar = ({
   const pathname = usePathname();
   const { storeInfo } = useSelector((state: stateProps) => state.next);
   const router = useRouter();
-
-  const [storeType, setStoreType] = useState('');
-
-  useEffect(() => {
-    if (storeInfo) {
-      setStoreType(storeInfo.storeType);
-    } else {
-      setStoreType(''); // Reset to default if storeInfo is null
-    }
-  }, [storeInfo]);
+  const storeType = storeInfo?.storeType;
 
   const sidebarLinks = [
     {
@@ -96,12 +86,12 @@ const SideNavbar = ({
     {
       title: 'Customers',
       href: `${basePath}/customers`,
-      icon: Users,
+      icon: UsersRound,
     },
     {
       title: 'Notifications',
       href: `${basePath}/notifications`,
-      icon: Inbox,
+      icon: Bell,
     },
     {
       title: 'My Account',
@@ -117,8 +107,8 @@ const SideNavbar = ({
       title: 'Shopping',
       href: '/',
       icon: ShoppingCart,
-      extraIcon: SquareArrowOutUpRight,
-      target: '_blank',
+      // extraIcon: SquareArrowOutUpRight,
+      // target: '_blank',
     },
     {
       title: 'Archived',
@@ -137,7 +127,9 @@ const SideNavbar = ({
     (link) =>
       !(
         storeType === 'manufacturing' &&
-        (link.title === 'My Orders' || link.title === 'Shopping' || link.title === 'Archived')
+        (link.title === 'My Orders' ||
+          link.title === 'Shopping' ||
+          link.title === 'Archived')
       )
   );
 
@@ -150,9 +142,9 @@ const SideNavbar = ({
       className={`${
         // TODO: add some styling for the sidebar side scroll at some point?
         showSidebar
-          ? 'sm:block bg-nezeza_dark_blue space-y-6 w-60 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
-          : ' sm:block bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll' // add hidden to hide it
-      }`}
+          ? 'bg-nezeza_dark_blue space-y-6 w-60 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+          : 'bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+      } hidden sm:block`}
     >
       <div className=' px-6 py-2'>
         <Link href='#'>
@@ -167,7 +159,7 @@ const SideNavbar = ({
             // onClick={() => setShowSidebar(true)} // make false: collapses side bar when item clicked, might remove
             key={item.title}
             href={item.href}
-            target={item.target}
+            // target={item.target}
             className={`${
               item.href == pathname
                 ? 'flex items-center space-x-3 px-6 py-1 bg-nezeza_green_600 rounded-md border-l-4 border-white'
@@ -176,12 +168,12 @@ const SideNavbar = ({
           >
             <item.icon />
             <span>{item.title}</span>
-            {item.extraIcon && <item.extraIcon className='w-4 h-4 ' />}{' '}
+            {/* {item.extraIcon && <item.extraIcon className='w-4 h-4 ' />}{' '} */}
           </Link>
         ))}
 
         <div className='flex px-6 py-8'>
-          <LogoutButton className='py-2' redirectTo='login' />
+          <LogoutButton className='py-2'/>
         </div>
       </div>
     </div>

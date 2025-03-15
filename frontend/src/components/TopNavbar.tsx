@@ -3,17 +3,36 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { getAllNotifications } from '@/utils/notificationUtils';
+import {
+  Archive,
+  Bell,
+  CircleDollarSign,
+  CircleHelp,
+  CircleUserRound,
+  LayoutDashboard,
+  ListOrdered,
+  PlusCircle,
+  ShoppingCart,
+  Store,
+  Truck,
+  UsersRound,
+  Warehouse,
+} from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { GoSidebarCollapse } from 'react-icons/go';
 import { MdOutlineClose } from 'react-icons/md';
-import { getAllNotifications } from '@/utils/notificationUtils';
-import { Bell, CircleHelp, CircleUserRound, LayoutDashboard } from 'lucide-react';
-import Link from 'next/link';
-import { NotificationProps } from '../../type';
+import { NotificationProps, stateProps } from '../../type';
 import { LogoutButton } from './LogoutButton';
+import { useSelector } from 'react-redux';
 
 interface TopNavbarProps {
   storeName: string;
@@ -29,7 +48,9 @@ const TopNavbar = ({
   basePath,
 }: TopNavbarProps) => {
   const [notifications, setNotifications] = useState<NotificationProps[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0); // State for unread count
+  const [unreadCount, setUnreadCount] = useState(0);
+  const { storeInfo } = useSelector((state: stateProps) => state.next);
+  const storeType = storeInfo?.storeType;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,24 +70,23 @@ const TopNavbar = ({
     fetchData();
   }, []);
 
-  // add fixed to fix top nav bar
   return (
     <div
-      className={`${
-        showSidebar
-          ? 'flex items-center justify-between bg-nezeza_light_blue dark:bg-slate-800 text-nezeza_dark_slate dark:text-nezeza_light_slate ml-60 h-20 px-8 py-4 fixed top-0 w-full z-50 pr-[20rem]'
-          : 'flex items-center justify-between bg-nezeza_light_blue dark:bg-slate-800 text-nezeza_dark_slate dark:text-nezeza_light_slate h-20 px-8 py-4 fixed top-0 w-full z-50'
+      className={`flex items-center justify-between bg-nezeza_light_blue dark:bg-slate-800 text-nezeza_dark_slate dark:text-nezeza_light_slate h-20 px-8 py-4 fixed top-0 w-full z-50 ${
+        showSidebar ? 'sm:ml-60 sm:pr-[20rem]' : ''
       }`}
     >
-      <button onClick={() => setShowSidebar(!showSidebar)}>
+      <button
+        className='hidden sm:block'
+        onClick={() => setShowSidebar(!showSidebar)}
+      >
         <GoSidebarCollapse />
-        {/* <SidebarTrigger /> */}
       </button>
       <h2 className='text-2xl font-bold text-center text-nezeza_dark_blue'>
         {storeName}
       </h2>
 
-      <div className='flex space-x-3'>
+      <div className='flex items-center space-x-3'>
         <button>
           {/* <ThemeSwitcher /> */}
           {/* <MdOutlineLightMode className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate '></MdOutlineLightMode> */}
@@ -138,7 +158,7 @@ const TopNavbar = ({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className='px-2 py-4 pr-8'>
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>My Store</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link
@@ -151,33 +171,144 @@ const TopNavbar = ({
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Link
-                href={`/${basePath}/my-account`}
+                href={`/${basePath}/inventory`}
                 className='flex items-center space-x-2'
               >
-                {/* <CgProfile /> */}
+                <Warehouse />
+                <span>Inventory</span>
+              </Link>
+            </DropdownMenuItem>
+            {storeType === 'manufacturing' ? (
+              <DropdownMenuItem>
+                <Link
+                  href={`/${basePath}/orders/customer-orders`}
+                  className='flex items-center space-x-2'
+                >
+                  <Truck />
+                  <span>Customer Orders</span>
+                </Link>
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <ListOrdered />
+                  <span>Orders</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem>
+                      <Link
+                        href={`/${basePath}/orders/my-orders`}
+                        className='flex items-center space-x-2'
+                      >
+                        <ListOrdered />
+                        <span>My Orders</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        href={`/${basePath}/orders/customer-orders`}
+                        className='flex items-center space-x-2'
+                      >
+                        <Truck />
+                        <span>Customer Orders</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        href={`/${basePath}/orders/archived`}
+                        className='flex items-center space-x-2'
+                      >
+                        <Archive />
+                        <span>Archived</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            )}
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
                 <CircleUserRound />
-                <span>My Account</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link
-                href={`/${basePath}/store-account`}
-                className='flex items-center space-x-2'
-              >
-                {/* <CgProfile /> */}
-                <CircleUserRound />
-                <span>Store Account</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Link
-                href={`/${basePath}/support`}
-                className='flex items-center space-x-2'
-              >
-                <CircleHelp />
-                <span>Support</span>
-              </Link>
-            </DropdownMenuItem>
+                <span>Account</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/${basePath}/my-account`}
+                      className='flex items-center space-x-2'
+                    >
+                      <CircleUserRound />
+                      <span>My Account</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/${basePath}/store-account`}
+                      className='flex items-center space-x-2'
+                    >
+                      <Store />
+                      <span>Store Account</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+            {storeType !== 'manufacturing' && (
+              <DropdownMenuItem>
+                <Link href={`/`} className='flex items-center space-x-2'>
+                  <ShoppingCart />
+                  <span>Shopping</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <PlusCircle />
+                <span>More...</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/${basePath}/payments`}
+                      className='flex items-center space-x-2'
+                    >
+                      <CircleDollarSign />
+                      <span>Payments</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/${basePath}/customers`}
+                      className='flex items-center space-x-2'
+                    >
+                      <UsersRound />
+                      <span>Customers</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/${basePath}/notifications`}
+                      className='flex items-center space-x-2'
+                    >
+                      <Bell />
+                      <span>Notifications</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/${basePath}/support`}
+                      className='flex items-center space-x-2'
+                    >
+                      <CircleHelp />
+                      <span>Support</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
             <DropdownMenuItem>
               <div>
                 <LogoutButton />

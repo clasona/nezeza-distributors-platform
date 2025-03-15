@@ -1,7 +1,7 @@
-import { CldUploadWidget, CloudinaryUploadWidgetInfo } from 'next-cloudinary';
-import React, { useState } from 'react';
-import Button from './Button';
 import { Upload } from 'lucide-react';
+import { CldUploadWidget } from 'next-cloudinary';
+import { useState } from 'react';
+import Button from './Button';
 
 interface CloudinaryFileUploadProps {
   label?: string;
@@ -30,7 +30,9 @@ const CloudinaryFileUpload = ({
         uploadPreset='nezeza-preset-unsigned-1'
         options={{
           resourceType: 'raw', // Cloudinary supports 'raw' for files
-          // sources: ['local', 'url'], // Restrict sources as needed
+          // TODO: Restrict to PDF files
+          sources: ['local', 'google_drive', 'dropbox'], // Restrict sources as needed
+          multiple: false,
         }}
         onSuccess={(result, { widget }) => {
           if (result.info) {

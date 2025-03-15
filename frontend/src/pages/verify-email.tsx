@@ -24,7 +24,7 @@ const RegisterVerifyPage = () => {
         setErrorMessage('Please verify your email before proceeding.');
       } else {
         if (isSeller) {
-          router.push('/store-register');
+          router.push('/store-application');
         } else {
           router.push('/login');
         }
@@ -58,7 +58,7 @@ const RegisterVerifyPage = () => {
       setErrorMessage(null);
     } catch (error) {
       console.error('Error resending verification email:', error);
-      setErrorMessage(null); 
+      setErrorMessage(null);
       setErrorMessage('Failed to resend verification email. Please try again.');
     }
   };
@@ -107,7 +107,7 @@ const RegisterVerifyPage = () => {
               onClick={checkVerification}
               disabled={isLoading}
             >
-              {isLoading ? ( 
+              {isLoading ? (
                 <span>Processing...</span>
               ) : isSeller ? (
                 'Continue to Store Registration'

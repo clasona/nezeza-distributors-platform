@@ -32,7 +32,7 @@ const TextInput = ({
   value,
 }: TextInputProps) => {
   return (
-    <div className={className}>
+    <div className={`${className} col-span-1`}>
       <label
         htmlFor={name}
         className='block text-sm font-medium leading-6 text-gray-700'

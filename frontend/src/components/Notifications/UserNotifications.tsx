@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Bell, Trash2, Eye, XCircle, Filter, Search } from 'lucide-react';
+import { Bell, Trash2, Eye, XCircle, Filter, Search, RotateCcw } from 'lucide-react';
 import SearchField from '@/components/Table/SearchField';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
@@ -40,8 +40,14 @@ const UserNotifications = () => {
   }, []);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [priorityFilter, setPriorityFilter] = useState('All Priorities');
-  const [statusFilter, setStatusFilter] = useState('All Statuses');
+  const [priorityFilter, setPriorityFilter] = useState<{
+    value: string;
+    label: string;
+  } | null>({ value: 'All Priorities', label: 'All Priorities' });
+  const [statusFilter, setStatusFilter] = useState<{
+    value: string;
+    label: string;
+  } | null>({ value: 'All Statuses', label: 'All Statuses' });
   const [sortPriority, setSortPriority] = useState<null | 'asc' | 'desc'>(null); // Correct type
   const priorityOrder = {
     low: 1,
@@ -64,9 +70,18 @@ const UserNotifications = () => {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
-  const handlePriorityChange = (priority: string) =>
-    setPriorityFilter(priority);
-  const handleStatusChange = (status: string) => setStatusFilter(status);
+  const handlePriorityChange = (
+    priority: {
+      value: string;
+      label: string;
+    } | null
+  ) => setPriorityFilter(priority);
+  const handleStatusChange = (
+    status: {
+      value: string;
+      label: string;
+    } | null
+  ) => setStatusFilter(status);
   //   const toggleSortPriority = () => setSortPriority((prev) => !prev);
   const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
 
@@ -80,12 +95,15 @@ const UserNotifications = () => {
     })
     .filter(
       (n) =>
-        priorityFilter === 'All Priorities' || n.priority === priorityFilter
+        (statusFilter?.value === 'All Priorities' &&
+          statusFilter.label === 'All Priorities') ||
+        n.priority === priorityFilter?.value
     )
     .filter(
       (n) =>
-        statusFilter === 'All Statuses' ||
-        (statusFilter === 'unread' ? !n.read : n.read)
+        (statusFilter?.value === 'All Statuses' &&
+          statusFilter.label === 'All Statuses') ||
+        (statusFilter?.value === 'unread' ? !n.read : n.read)
     )
     .filter((n) => {
       if (!startDate && !endDate) return true;
@@ -165,7 +183,9 @@ const UserNotifications = () => {
         actions={
           <Button
             isLoading={isLoading}
+            icon={RotateCcw}
             buttonTitle='Refresh'
+            buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
             className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
             onClick={async () => {
@@ -180,7 +200,8 @@ const UserNotifications = () => {
           onClick={() => setNotifications([])}
           className='bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 flex items-center'
         >
-          <Trash2 className='w-4 h-4 mr-1' /> Delete All
+          <Trash2 className='w-4 h-4 sm:mr-1' />{' '}
+          <span className='hidden sm:inline'>Delete All</span>
         </button>
         {/* <button
           onClick={toggleSortPriority}
@@ -190,7 +211,7 @@ const UserNotifications = () => {
         </button> */}
         <button
           onClick={toggleSortPriority}
-          className='text-nezeza_dark_blue outline hover:text-white hover:bg-nezeza_dark_blue px-3 py-1 rounded-md'
+          className='text-xs sm:text-base text-nezeza_dark_blue outline hover:text-white hover:bg-nezeza_dark_blue sm:px-3 py-1 rounded-md'
         >
           Sort by priority{' '}
           {sortPriority === 'asc'
@@ -199,47 +220,66 @@ const UserNotifications = () => {
             ? '(desc)'
             : ''}
         </button>
-        <SearchField
-          searchFieldPlaceholder='notifications...'
-          onSearchChange={handleSearch}
-        />
 
         <StatusFilters
           label='Status'
-          options={['All Statuses', 'unread', 'read']}
+          options={[
+            { value: 'All Statuses', label: 'All Statuses' },
+            { value: 'unread', label: 'Unread' },
+            { value: 'read', label: 'Read' },
+          ]}
           selectedOption={statusFilter}
           onChange={handleStatusChange}
         />
-        <StatusFilters
-          label='Priority'
-          options={['All Priorities', 'high', 'medium', 'low']}
-          selectedOption={priorityFilter}
-          onChange={handlePriorityChange}
-        />
-
-        {showMoreFilters && (
-          <DateFilters
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={setStartDate}
-            onEndDateChange={setEndDate}
+        <div className='hidden sm:inline'>
+          <StatusFilters
+            label='Priority'
+            options={[
+              { value: 'All Priorities', label: 'All Priorities' },
+              { value: 'high', label: 'Hight' },
+              { value: 'medium', label: 'Medium' },
+              { value: 'low', label: 'Low' },
+            ]}
+            selectedOption={priorityFilter}
+            onChange={handlePriorityChange}
           />
-        )}
-        <button
+        </div>
+        {/* Filter by dates (always on large, conditional on small) */}
+        <div className='md:block block'>
+          {showMoreFilters || window.innerWidth >= 768 ? ( // Condition for visibility
+            <DateFilters
+              label='Filter by Date Range'
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          ) : null}
+        </div>
+        {/* TODO: Currently disabled. Can be used if we have to more filters.
+         Filter by dates (always on large, conditional on small) */}
+        {/* <button
           onClick={toggleMoreFilters}
-          className='text-sm text-nezeza_dark_blue underline'
+          className='hidden sm:inline text-sm text-nezeza_dark_blue underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
-        </button>
+        </button> */}
         <ClearFilters
           clearFiltersFunction={() => {
-            setPriorityFilter('All Priorities');
-            setStatusFilter('All Statuses');
+            setPriorityFilter({
+              value: 'All Priorities',
+              label: 'All Priorities',
+            });
+            setStatusFilter({ value: 'All Statuses', label: 'All Statuses' });
             setStartDate('');
             setEndDate('');
           }}
         />
       </TableFilters>
+      <SearchField
+        searchFieldPlaceholder='notifications...'
+        onSearchChange={handleSearch}
+      />
 
       <div className='p-6 bg-white shadow-lg rounded-xl mt-4'>
         {isLoading ? ( // Show loading indicator

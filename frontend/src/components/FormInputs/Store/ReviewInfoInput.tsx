@@ -5,17 +5,23 @@ import ReviewInputItem from './ReviewInputItem';
 
 interface ReviewInfoInputProps {
   getValues: UseFormGetValues<FieldValues>;
+  identityDocResource: any;
+  businessDocResource: any;
 }
-const ReviewInfoInput = ({ getValues }: ReviewInfoInputProps) => {
+const ReviewInfoInput = ({
+  getValues,
+  identityDocResource,
+  businessDocResource,
+}: ReviewInfoInputProps) => {
   return (
     <>
-      <div className='space-y-4'>
+      <div className='space-y-4 px-4 sm:px-6'>
         <StoreFormHeading heading='Review Your Information' />
 
         {/* Display the collected data */}
         <div className='bg-gray-100 p-4 rounded-md'>
           <StoreFormHeading heading='Primary Contact Info' />
-          <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6'>
+          <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6 w-full'>
             <ReviewInputItem
               label='First Name'
               fieldName='firstName'
@@ -153,84 +159,63 @@ const ReviewInfoInput = ({ getValues }: ReviewInfoInputProps) => {
             />
           </div>
         </div>
-
+        {/* <div className='bg-gray-100 p-4 rounded-md'>
+          <StoreFormHeading heading='Verification Docs - TBD' />
+        </div> */}
         <div className='bg-gray-100 p-4 rounded-md'>
-          <StoreFormHeading heading='Bank Details' />
-          <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6'>
-            <ReviewInputItem
-              label='Routing Number'
-              fieldName='routingNumber'
-              getValues={getValues}
-            />
-            <ReviewInputItem
-              label='Account Number'
-              fieldName='accountNumber'
-              getValues={getValues}
-            />
-            <StoreFormHeading heading='Card Details' />
-            <ReviewInputItem
-              label="Cardholder's Full Name"
-              fieldName='cardholderFullName'
-              getValues={getValues}
-            />
-            <ReviewInputItem
-              label='Card Number'
-              fieldName='cardNumber'
-              getValues={getValues}
-            />
-            <ReviewInputItem
-              label='Expiration Date'
-              fieldName='expirationDate'
-              getValues={getValues}
-            />
-            <ReviewInputItem
-              label='CVV'
-              fieldName='cvv'
-              getValues={getValues}
-            />
-            <StoreFormHeading heading='Billing Address' />
-            <ReviewInputItem
-              label='Street Address'
-              fieldName='billingStreet'
-              getValues={getValues}
-            />
-            <ReviewInputItem
-              label='City'
-              fieldName='billingCity'
-              getValues={getValues}
-            />
-            <ReviewInputItem
-              label='State'
-              fieldName='billingState'
-              getValues={getValues}
-            />
-
-            <ReviewInputItem
-              label='Country'
-              fieldName='billingCountry'
-              getValues={getValues}
-            />
-            <ReviewInputItem
-              label='Zip Code'
-              fieldName='billingZipCode'
-              getValues={getValues}
-            />
+          <StoreFormHeading heading='Verification Documents' />
+          <div className='grid grid-cols-1 gap-y-2'>
+            {identityDocResource && (
+              <div className='mb-2'>
+                <p className='text-sm font-semibold'>Identity Document:</p>
+                <p className='text-sm'>
+                  File Name: {identityDocResource.original_filename}
+                </p>
+                <p className='text-sm'>
+                  <a
+                    href={identityDocResource.secure_url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-blue-600 underline'
+                  >
+                    Download
+                  </a>
+                </p>
+              </div>
+            )}
+            {businessDocResource && (
+              <div className='mb-2'>
+                <p className='text-sm font-semibold'>Business Document:</p>
+                <p className='text-sm'>
+                  File Name: {businessDocResource.original_filename}
+                </p>
+                <p className='text-sm'>
+                  <a
+                    href={businessDocResource.secure_url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-blue-600 underline'
+                  >
+                    Download
+                  </a>
+                </p>
+              </div>
+            )}
+            {!identityDocResource && !businessDocResource ? (
+              <p className='text-sm text-gray-500'>No documents uploaded.</p>
+            ) : !identityDocResource ? (
+              <p className='text-sm text-red-500'>
+                No identity document uploaded.
+              </p>
+            ) : (
+              !businessDocResource && (
+                <p className='text-sm text-red-500'>
+                  No business document uploaded.
+                </p>
+              )
+            )}
           </div>
         </div>
-
-        <div className='bg-gray-100 p-4 rounded-md'>
-          <StoreFormHeading heading='Verification Docs - TBD' />
-          {/* <p>Upload: {getValues('verificationDocs')?.length} files uploaded</p> */}
-        </div>
-
-        {/* <div className='text-center'>
-                <button
-                  type='submit'
-                  className='bg-nezeza_green_600 text-white px-6 py-2 rounded-md hover:bg-nezeza_green_800'
-                >
-                  Submit
-                </button>
-              </div> */}
       </div>
     </>
   );

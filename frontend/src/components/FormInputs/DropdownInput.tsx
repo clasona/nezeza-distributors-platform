@@ -14,6 +14,7 @@ interface DropdownInputProps {
   disabled?: boolean;
   isLoading?: boolean;
   value?: string | number;
+  defaultValue?: string | number;
 }
 
 const DropdownInput = ({
@@ -28,6 +29,7 @@ const DropdownInput = ({
   isLoading = false,
   className = '',
   value,
+  defaultValue,
 }: DropdownInputProps) => {
   return (
     <div className={className}>
@@ -44,7 +46,8 @@ const DropdownInput = ({
           id={id}
           name={name}
           disabled={disabled}
-          defaultValue={value}
+          defaultValue={defaultValue}
+          value={value}
           className={`block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none ${
             errors[name]
               ? 'border-nezeza_red_600 text-nezeza_red_600'

@@ -1,18 +1,12 @@
+import { getSingleOrder } from '@/utils/order/getSingleOrder';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { OrderProps, stateProps } from '../../type';
-import { useSelector } from 'react-redux';
-import { getSingleOrder } from '@/utils/order/getSingleOrder';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getSellerTypeBaseurl = () => {
-  const { storeInfo } = useSelector((state: stateProps) => state.next);
-
-  if (!storeInfo) return '';
-
+export const getSellerTypeBaseurl = (storeType: string) => {
   const storeTypeMap: Record<string, string> = {
     manufacturing: 'manufacturer',
     wholesale: 'wholesaler',
@@ -20,14 +14,13 @@ export const getSellerTypeBaseurl = () => {
     admin: 'admin',
   };
 
-  return storeTypeMap[storeInfo.storeType] ?? '';
+  return storeTypeMap[storeType] ?? '';
 };
 
 export const getOrderStatus = async (orderId: string) => {
   const thisOrder = await getSingleOrder(orderId);
   return thisOrder?.fulfillmentStatus ?? null;
 };
-
 
 export const getOrderFulfillmentStatuses = () => [
   { value: 'pending', label: 'Pending' },

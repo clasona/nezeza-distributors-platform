@@ -1,37 +1,16 @@
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { OrderItemsProps, stateProps, StoreProps } from '../../../type';
+import { OrderItemsProps } from '../../../type';
+import axiosInstance from '../axiosInstance';
 
-interface updateCartProps {
-  cartItems: OrderItemsProps;
-  buyerStoreId: string; // Add buyerStoreId to the request body
-}
-export const updateCart = async (
-  cartItems: OrderItemsProps,
-  buyerStoreId: string
-) => {
-  // Add buyerStoreId
+export const updateCart = async (cartItems: OrderItemsProps, buyerStoreId: string) => {
   try {
-    const response = await axios.patch(
-      // Use PATCH for updates
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/cart`,
-      {
-        cartItems: cartItems,
-        buyerStoreId: buyerStoreId, // Send buyerStoreId in the request body
-      },
-      {
-        withCredentials: true,
-      }
-    );
-
-    if (response.status !== 200) {
-      console.error('Cart not updated. Status:', response.status);
-    } else {
-      console.log('Cart updated successfully...');
-    }
-    return response.data; // Return the updated cart data
+    const response = await axiosInstance.patch(`/cart`, {
+      cartItems: cartItems,
+      buyerStoreId: buyerStoreId, // Send buyerStoreId in the request body
+    });
+    return response;
   } catch (error) {
-    console.error('Error updating cart:', error);
-    return null; // Or throw the error if you want to handle it in the calling function
+    throw error; // Let the component handle the error
   }
 };
+
+

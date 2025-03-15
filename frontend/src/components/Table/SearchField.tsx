@@ -14,7 +14,7 @@ const SearchField = ({
   };
 
   return (
-    <div className='flex-grow '>
+    <div className='flex-grow'>
       <label htmlFor='table-search' className='sr-only'>
         Search
       </label>

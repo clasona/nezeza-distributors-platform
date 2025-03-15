@@ -47,82 +47,80 @@ const PrimaryContactInput = ({
   }, [userInfo, setValue]);
 
   return (
-    <>
-      <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6'>
-        <StoreFormHeading heading='Contact Info' />
-        <TextInput
-          label='First Name'
-          id='firstName'
-          name='firstName'
-          register={register}
-          errors={errors}
-          type='text'
-          // disabled
-        />
-        <TextInput
-          label='Last Name'
-          id='lastName'
-          name='lastName'
-          register={register}
-          errors={errors}
-          type='text'
-          // disabled
-        />
-        <TextInput
-          label='Email'
-          id='email'
-          name='email'
-          register={register}
-          errors={errors}
-          type='email'
-          // disabled
-        />
-        <TextInput
-          label='Phone'
-          id='phone'
-          name='phone'
-          register={register}
-          errors={errors}
-          type='tel'
-          // disabled
-        />
-        <DropdownInput
-          label='Country of Citizenship'
-          id='citizenshipCountry'
-          name='citizenshipCountry'
-          options={countryOptions}
-          register={register}
-          errors={errors}
-        />
-        <DropdownInput
-          label='Country of Birth'
-          id='birthCountry'
-          name='birthCountry'
-          options={countryOptions}
-          register={register}
-          errors={errors}
-        />
-        <TextInput
-          label='Date of Birth'
-          id='dob'
-          name='dob'
-          register={register}
-          errors={errors}
-          type='date'
-        />
-        <StoreFormHeading heading='Residence Address' />
-        <AddressInput
-          streetFieldName='residenceStreet'
-          cityFieldName='residenceCity'
-          stateFieldName='residenceState'
-          countryFieldName='residenceCountry'
-          zipCodeFieldName='residenceZipCode'
-          register={register}
-          errors={errors}
-          control={control}
-        />
-      </div>
-    </>
+    <div className='grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-x-6 px-4 sm:px-6 w-full'>
+      <StoreFormHeading heading='Contact Info' />
+      <TextInput
+        label='First Name'
+        id='firstName'
+        name='firstName'
+        register={register}
+        errors={errors}
+        type='text'
+        className='col-span-1'
+      />
+      <TextInput
+        label='Last Name'
+        id='lastName'
+        name='lastName'
+        register={register}
+        errors={errors}
+        type='text'
+        className='col-span-1'
+      />
+      <TextInput
+        label='Email'
+        id='email'
+        name='email'
+        register={register}
+        errors={errors}
+        type='email'
+        // disabled
+      />
+      <TextInput
+        label='Phone'
+        id='phone'
+        name='phone'
+        register={register}
+        errors={errors}
+        type='tel'
+        // disabled
+      />
+      <DropdownInput
+        label='Country of Citizenship'
+        id='citizenshipCountry'
+        name='citizenshipCountry'
+        options={countryOptions}
+        register={register}
+        errors={errors}
+      />
+      <DropdownInput
+        label='Country of Birth'
+        id='birthCountry'
+        name='birthCountry'
+        options={countryOptions}
+        register={register}
+        errors={errors}
+      />
+      <TextInput
+        label='Date of Birth'
+        id='dob'
+        name='dob'
+        register={register}
+        errors={errors}
+        type='date'
+      />
+      <StoreFormHeading heading='Residence Address' />
+      <AddressInput
+        streetFieldName='residenceStreet'
+        cityFieldName='residenceCity'
+        stateFieldName='residenceState'
+        countryFieldName='residenceCountry'
+        zipCodeFieldName='residenceZipCode'
+        register={register}
+        errors={errors}
+        control={control}
+      />
+    </div>
   );
 };
 

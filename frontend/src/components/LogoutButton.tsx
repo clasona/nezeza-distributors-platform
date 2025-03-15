@@ -1,10 +1,9 @@
-import { removeUser, removeStore, resetCart } from '@/redux/nextSlice';
-import { signOut } from 'next-auth/react';
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { LogOut } from 'lucide-react';
-import { useRouter } from 'next/router';
+import { removeStore, removeUser, resetCart } from '@/redux/nextSlice';
 import { updateCart } from '@/utils/cart/updateCart';
+import { LogOut } from 'lucide-react';
+import { signOut } from 'next-auth/react';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
 
 interface LogoutButtonProps {

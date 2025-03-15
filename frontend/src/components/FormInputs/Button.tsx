@@ -1,11 +1,11 @@
-import React from 'react';
-import { Plus } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 interface ButtonProps {
   isLoading?: boolean;
   buttonTitle: string;
+  buttonTitleClassName?: string;
   loadingButtonTitle?: string;
-  icon?: React.ElementType; // Optional icon prop
+  icon?: LucideIcon; // Optional icon prop
   className?: string;
   onClick?: () => void;
   disabled?: boolean; // Added disabled prop
@@ -14,6 +14,7 @@ interface ButtonProps {
 const Button = ({
   isLoading = false,
   buttonTitle,
+  buttonTitleClassName,
   loadingButtonTitle,
   icon: Icon,
   className = '',
@@ -54,12 +55,12 @@ const Button = ({
       ) : (
         <button
           type={type}
-          className={`flex items-center test-sm font-medium text-center rounded-lg  ${className}`}
+          className={`flex items-center test-sm font-medium text-center rounded-lg px-1 ${className}`}
           onClick={disabled ? undefined : onClick}
           disabled={disabled}
         >
-          {/* <Plus className='w-5 h-5 mr-2' /> */}
-          {Icon && <Icon className='w-5 h-5 mr-2' />} {buttonTitle}
+          {Icon && <Icon className='w-4 h-4 mr-1' />}{' '}
+          <span className={buttonTitleClassName}>{buttonTitle}</span>
         </button>
       )}
     </div>

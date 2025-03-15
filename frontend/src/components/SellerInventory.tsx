@@ -26,6 +26,7 @@ import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
 import { handleError } from '@/utils/errorUtils';
+import { RotateCcw } from 'lucide-react';
 
 // interface SellerProductProps {
 //   inventoryData: ProductProps[];
@@ -43,8 +44,10 @@ const SellerInventory = () => {
       const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
   const [successMessage, setSuccessMessage] = useState<string>('');
 
-  const [statusFilter, setStatusFilter] = useState('Status');
-  const [sortColumn, setSortColumn] = useState('');
+  const [statusFilter, setStatusFilter] = useState<{
+    value: string;
+    label: string;
+  } | null>({ value: 'All', label: 'All' });  const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -104,8 +107,10 @@ const SellerInventory = () => {
         .join(' ')
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-      // const statusMatch =
-      // statusFilter === 'Status' || inventory.fulfillmentStatus === statusFilter;
+    //  const statusMatch =
+    //    statusFilter === null ||
+    //    (statusFilter.value === 'All' && statusFilter.label === 'All') ||
+    //    order.fulfillmentStatus === statusFilter.value;
       // return searchMatch && statusMatch;
       return searchMatch;
     });
@@ -158,7 +163,7 @@ const SellerInventory = () => {
   };
 
   const clearFilters = () => {
-    // setStatusFilter('Status');
+    //  setStatusFilter({ value: 'All', label: 'All' });
     setStartDate('');
     setEndDate('');
     setFilteredInventory(inventoryData); // Reset to all inventory
@@ -280,7 +285,9 @@ const SellerInventory = () => {
         actions={
           <Button
             isLoading={isLoading}
+            icon={RotateCcw}
             buttonTitle='Refresh'
+            buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
             className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
             onClick={async () => {
@@ -303,31 +310,34 @@ const SellerInventory = () => {
           onClick={() => setIsBulkDeleteModalOpen(true)}
           isDisabled={selectedRows.length === 0}
         />
-        <SearchField
-          searchFieldPlaceholder='inventory products'
-          onSearchChange={handleSearchChange}
-        />
+
         {/* TODO: Add filter by quantity status */}
-       
+
         {/* Filter by dates */}
-        {showMoreFilters && (
-          <DateFilters
-            label='Filter by Date Range'
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={handleStartDateChange}
-            onEndDateChange={handleEndDateChange}
-          />
-        )}
-        <button
+        {/* {showMoreFilters && ( */}
+        <DateFilters
+          label='Filter by Date Range'
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+        />
+        {/* )} */}
+        {/* TODO: Currently disabled. Can be used if we have to more filters.
+         Filter by dates (always on large, conditional on small) */}
+        {/* <button
           onClick={toggleMoreFilters}
-          className='text-sm text-nezeza_dark_blue underline'
+          className='hidden sm:inline text-sm text-nezeza_dark_blue underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
-        </button>
+        </button> */}
         {/* Clear Filters Button */}
         <ClearFilters clearFiltersFunction={clearFilters} />
       </TableFilters>
+      <SearchField
+        searchFieldPlaceholder='inventory products'
+        onSearchChange={handleSearchChange}
+      />
       <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
         <table
           id='inventory-table'

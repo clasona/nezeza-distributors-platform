@@ -19,8 +19,8 @@ const UserPayments = () => {
   return (
     <div>
       <Heading title='Payments Overview' />
-      <div className='p-6 space-y-6'>
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
+      <div className='p-4 sm:p-6 space-y-4 sm:space-y-6'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
           <h4 className='text-2xl font-semibold text-nezeza_dark_blue mb-4'>
             Stripe Account
           </h4>
@@ -47,18 +47,18 @@ const UserPayments = () => {
           )}
         </div>
 
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
           <h4 className='text-2xl font-semibold text-nezeza_dark_blue mb-4'>
             Balance Overview
           </h4>
-          <div className='grid md:grid-cols-2 gap-6'>
-            <div className='p-6 bg-yellow-100 rounded-xl text-center shadow-md'>
+          <div className='grid md:grid-cols-2 gap-4 sm:gap-6'>
+            <div className='p-4 sm:p-6 bg-yellow-100 rounded-xl text-center shadow-md'>
               <span className='text-lg font-medium'>Pending Balance</span>
               <p className='text-xl font-bold text-yellow-600'>
                 ${pendingBalance}
               </p>
             </div>
-            <div className='p-6 bg-green-100 rounded-xl text-center shadow-md'>
+            <div className='p-4 sm:p-6 bg-green-100 rounded-xl text-center shadow-md'>
               <span className='text-lg font-medium'>Available Balance</span>
               <p className='text-xl font-bold text-green-600'>
                 ${availableBalance}
@@ -67,7 +67,7 @@ const UserPayments = () => {
           </div>
         </div>
 
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
           <h4 className='text-2xl font-semibold text-nezeza_dark_blue mb-4'>
             Recent Transactions
           </h4>
@@ -85,7 +85,7 @@ const UserPayments = () => {
           </ul>
         </div>
 
-        <div className='bg-white p-6 rounded-xl shadow-lg'>
+        <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
           <h4 className='text-2xl font-semibold text-nezeza_dark_blue mb-4'>
             Withdraw Funds
           </h4>
@@ -95,7 +95,7 @@ const UserPayments = () => {
               ${availableBalance}
             </span>
           </p>
-          <button className='bg-nezeza_green_600 text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-green-700'>
+          <button className='bg-nezeza_green_600 text-white px-4 sm:px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-green-700'>
             Withdraw Funds
           </button>
         </div>
