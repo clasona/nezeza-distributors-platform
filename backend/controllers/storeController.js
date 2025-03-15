@@ -42,7 +42,7 @@ const createStore = async (req, res, next) => {
     res.locals.store = store; // used when approving/declining store application
 
     // Check if a response has already been sent
-    if (!res.skipResponse) {
+    if (!req.skipResponse) {
       user.storeId = store._id;
       await user.save();
       res.status(StatusCodes.CREATED).json({ store });

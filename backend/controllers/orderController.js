@@ -75,7 +75,6 @@ const createOrder = async (req, res) => {
   //console.log(req.body);
   const { items: cartItems, tax, shippingFee, paymentMethod } = req.body;
 
-  // const buyerId = '674a2964f51a81ec936d060d';
   const buyerId = req.user.userId; // authenticated buyer's id
 
   // Fetch buyer details including their store
@@ -173,8 +172,6 @@ const createOrder = async (req, res) => {
 
   // Calculate total
   const totalAmount = totalTax + totalShipping + subtotal;
-
-  console.log('yeeeee', totalAmount)
 
   // getting client secret from payment API
   // const paymentIntent = await fakeStripeAPI({
@@ -436,6 +433,7 @@ const getSellerSingleOrder = async (req, res) => {
   Get all orders for the currently authenticated user (Buyer)
  */
 const getCurrentUserOrders = async (req, res) => {
+  console.log(req.user)
   const userId = req.user.userId; // Retrieve authenticated user
   const user = await User.findById(userId);
   if (!user) {

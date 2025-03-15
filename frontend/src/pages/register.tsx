@@ -44,9 +44,10 @@ const RegisterPage = () => {
       return;
     }
 
-    // Add storeType to the data object if isSeller is true
+    // Add storeType to the data object if isSeller is true and carry some info to prefill in store application
     if (isSeller && storeType) {
       data.storeType = storeType.value;
+      localStorage.setItem('selectedStoreType', storeType.value.toString());
     }
 
     if (!termsAccepted) {
@@ -56,8 +57,10 @@ const RegisterPage = () => {
     }
 
     try {
-      console.log(data);
-      await registerUser(data);
+      // For sellers, we create tehir account when store application is approved
+      if (!isSeller) {
+        await registerUser(data);
+      }
       localStorage.setItem('verificationEmail', data.email);
       localStorage.setItem('isSeller', isSeller.toString());
       router.push(`/verify-email`);
@@ -199,9 +202,9 @@ const RegisterPage = () => {
             </p>
           )}
           <SubmitButton
-            isLoading={isLoading}
+            // isLoading={isLoading}
             buttonTitle='Signup'
-            loadingButtonTitle='Processing...'
+            // loadingButtonTitle='Processing...'
             className='w-full h-10 '
           />
           <button

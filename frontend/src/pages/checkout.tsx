@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { OrderItemsProps, stateProps } from '../../type';
 import CheckoutForm from '../components/Payments/CheckoutForm';
+import { handleError } from '@/utils/errorUtils';
 
 // Ensure Stripe key is set before loading Stripe
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
@@ -36,19 +37,26 @@ const CheckoutPage = () => {
     if (!cartItemsData.length || paymentIntentFetched) return;
 
     try {
-      const data = await getClientSecret(cartItemsData); //created the order
-      setClientSecret(data.clientSecret);
-
-      // temporarily save it to redux for easy retrieval while confirming payment
-      //TODO: remove this  - no longer needed since we're handling in backend
-      dispatch(
-        addPayment({
-          paymentIntentId: data.paymentIntentId,
-        })
-      );
-      setPaymentIntentFetched(true); // Set the flag to true after fetching
-    } catch (error) {
-      console.error('Error fetching payment intent client secret:', error);
+      const response = await getClientSecret(cartItemsData);
+      if (response.status !== 201) {
+        console.error('Error fetching client secret.');
+        // setSuccessMessage(''); // Clear any previous error message
+        // setErrorMessage(response.data.msg || 'Client secret fetch failed.');
+      } else {
+        console.log('client secretttt', response.data.clientSecret);
+        setClientSecret(response.data.clientSecret);
+        // temporarily save it to redux for easy retrieval while confirming payment - not safe
+        //TODO: Remove this  - no longer needed since we're handling in backend
+        // dispatch(
+        //   addPayment({
+        //     paymentIntentId: response.data.paymentIntentId,
+        //   })
+        // );
+        setPaymentIntentFetched(true); // Set the flag to true after fetching
+      }
+    } catch (error: any) {
+      handleError(error);
+      //  setErrorMessage(error);
     } finally {
       setLoading(false);
     }

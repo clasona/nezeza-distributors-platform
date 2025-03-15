@@ -1,44 +1,18 @@
-import React from 'react';
-import axios from 'axios';
-
-import { OrderItemsProps, ProductProps } from '../../../type';
+import axiosInstance from '../axiosInstance';
 
 export const getClientSecret = async (orderItems: any) => {
-  // export const getClientSecret = async (orderItems: OrderItemsProps) => {
-  const tax = 10; // to be changed later
-  const shippingFee = 20; // to be changed later
-  const paymentMethod = 'credit_card';
-  const items = orderItems;
-  // const orderData = {
-  //   tax: taxCharged,
-  //   shippingFee: shippingFeeCharged,
-  //   items: orderItems,
-  // };
+   const tax = 10; // TODO: to be changed later
+   const shippingFee = 20; // TODO: to be changed later
+   const paymentMethod = 'credit_card';
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders`,
-      {
-        items: orderItems,
-        tax: tax,
-        shippingFee: shippingFee,
-        paymentMethod: paymentMethod,
-      },
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    if (response.status === 201) {
-      console.log('Client secret generated successfully...');
-      return response.data;
-    } else {
-      throw new Error('Error generating client secret');
-    }
+    const response = await axiosInstance.post('/orders', {
+      items: orderItems,
+      tax: tax,
+      shippingFee: shippingFee,
+      paymentMethod: paymentMethod,
+    });
+    return response;
   } catch (error) {
-    console.error('Error generating client secret:', error);
-    throw error; // Re-throw the error to allow the caller to handle it
+    throw error; // Let the component handle the error
   }
 };
