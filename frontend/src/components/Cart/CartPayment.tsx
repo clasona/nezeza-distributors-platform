@@ -43,7 +43,9 @@ const CartPayment = () => {
       const filteredCartItems = cartItemsData.filter(
         (item: OrderItemsProps) => item.product.quantity > 0
       );
+      console.log(filteredCartItems);
       dispatch(setCartItems(filteredCartItems));
+
       router.push('/checkout');
     } catch (error: any) {
       // setErrorMessage('Error redirecting to checkout. Please try again.');

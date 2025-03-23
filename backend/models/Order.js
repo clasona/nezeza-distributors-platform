@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
-const AddressSchema = require('./AddressSchema'); // Adjust the path as needed
+const Address = require('./Address');
+//const AddressSchema = require('./AddressSchema'); // Adjust the path as needed
 
 const SingleOrderItemSchema = mongoose.Schema({
   title: { type: String, required: true },
   image: { type: String, required: true },
   price: { type: Number, required: true },
   quantity: { type: Number, required: true },
+  taxRate: { type: Number, required: true, default: 0 }, // Seller-defined tax rate
+  taxAmount: { type: Number, required: true },
   product: {
     type: mongoose.Schema.ObjectId,
     ref: 'Product',
@@ -35,11 +38,11 @@ const OrderSchema = mongoose.Schema(
     }, // Sum of sub-order taxes
     totalShipping: {
       type: Number,
-      required: true,
+      //required: true,
     }, // Sum of sub-order shipping costs
     transactionFee: {
       type: Number,
-      required: true,
+      //required: true,
     },
     orderItems: [SingleOrderItemSchema],
     paymentStatus: {
@@ -87,7 +90,8 @@ const OrderSchema = mongoose.Schema(
       required: true,
     }, // Can be wholesaler or retailer or customer
     shippingAddress: {
-      type: AddressSchema,
+      type: mongoose.Schema.ObjectId,
+      ref: 'Address',
       required: true,
     },
     billingAddress: {

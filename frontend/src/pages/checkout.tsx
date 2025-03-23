@@ -37,7 +37,9 @@ const CheckoutPage = () => {
     if (!cartItemsData.length || paymentIntentFetched) return;
 
     try {
+      console.log('********', cartItemsData);
       const response = await getClientSecret(cartItemsData);
+
       if (response.status !== 201) {
         console.error('Error fetching client secret.');
         // setSuccessMessage(''); // Clear any previous error message

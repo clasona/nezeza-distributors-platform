@@ -56,14 +56,14 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
 
     // const confirmPayment = async () => {
     setIsLoading(true);
-    if (paymentInfo) {
+    if (clientSecret) {
       try {
         // Confirm the PaymentIntent using the details collected by the Payment Element
         const { error } = await stripe.confirmPayment({
           elements,
           clientSecret,
           confirmParams: {
-            return_url: 'http://localhost:3000/payment-success',
+            return_url: `${process.env.NEXT_PUBLIC_CLIENT_URL}/payment-success`,
           },
         });
 

@@ -1,5 +1,5 @@
 const sendEmail = require('./sendEmail');
-/* 
+/*
  * Send an email to verify a user's email address
  * @param {string} name - The user's name
  * @param {string} email - The user's email address
@@ -15,13 +15,13 @@ const sendVerificationEmail = async ({
 }) => {
   const verifyEmail = `${origin}/user/verify-email?token=${verificationToken}&email=${email}`;
 
-  const message = `<p>Please confirm your email by clicking on the following link : 
+  const message = `<p>Please click on the link to confirm your email address for your account on Nezeza Platform</p> : 
   <a href="${verifyEmail}">Verify Email</a> </p>`;
 
   return sendEmail({
     to: email,
-    subject: 'Email Confirmation',
-    html: `<h4> Hello, ${name}</h4>
+    subject: 'Please verify your email address for Nezeza Platform',
+    html: `<h4> Dear, ${name}</h4>
     ${message}
     `,
   });

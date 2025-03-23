@@ -1,10 +1,12 @@
 // models imports
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Store = require('../models/Store');
 const Order = require('../models/Order');
 const Notification = require('../models/Notification');
 const SubOrder = require('../models/SubOrder');
 const Product = require('../models/Product');
+const Address = require('../models/Address');
 const { createPaymentIntent } = require('./paymentController');
 
 // utils imports
@@ -34,34 +36,40 @@ const fakeStripeAPI = async ({ amount, currency }) => {
   Create a new order, group items by seller,
   and create sub-orders for each seller
  */
-const createSubOrders = async (fullOrder) => {
+const createSubOrders = async (fullOrder, session) => {
+  console.log(fullOrder);
   // Group products by seller and prepare sub-orders data
-  const subOrdersGrouped = groupProductsBySeller(fullOrder); // Grouped seller data
+  try {
+    const subOrdersGrouped = groupProductsBySeller(fullOrder); // Grouped seller data
 
-  const subOrderData = Object.keys(subOrdersGrouped).map((sellerId) => {
-    const subOrder = subOrdersGrouped[sellerId];
+    const subOrderData = Object.keys(subOrdersGrouped).map((sellerId) => {
+      const subOrder = subOrdersGrouped[sellerId];
 
-    // Calculate total amount including tax and shipping
-    const totalAmount =
-      subOrder.totalAmount + subOrder.totalTax + subOrder.totalShipping;
+      // Calculate total amount including tax and shipping
+      const totalAmount =
+        subOrder.totalAmount + subOrder.totalTax + subOrder.totalShipping;
 
-    // Add transaction fee (10% platform fee example)
-    const transactionFee = totalAmount * 0.1;
+      // Add transaction fee (10% platform fee example)
+      const transactionFee = subOrder.totalAmount * 0.1;
+      console.log(transactionFee);
+      return {
+        ...subOrder,
+        sellerId,
+        totalAmount,
+        transactionFee,
+        fullOrderId: fullOrder._id, // Add reference to the main order
+      };
+    });
 
-    return {
-      ...subOrder,
-      sellerId,
-      totalAmount,
-      transactionFee,
-      fullOrderId: fullOrder._id, // Add reference to the main order
-    };
-  });
+    // Insert all sub-orders in one go and extract their IDs
+    const subOrders = await SubOrder.insertMany(subOrderData);
+    const subOrderIds = subOrders.map((subOrder) => subOrder._id);
 
-  // Insert all sub-orders in one go and extract their IDs
-  const subOrders = await SubOrder.insertMany(subOrderData);
-  const subOrderIds = subOrders.map((subOrder) => subOrder._id);
-
-  return subOrderIds;
+    return subOrderIds;
+  } catch (error) {
+    console.error('Error creating sub-orders:', error);
+    throw error; // Ensure rollback is triggered in `createOrder`
+  }
 };
 
 /* 
@@ -73,157 +81,181 @@ const createSubOrders = async (fullOrder) => {
  */
 const createOrder = async (req, res) => {
   //console.log(req.body);
-  const { items: cartItems, tax, shippingFee, paymentMethod } = req.body;
+  const session = await mongoose.startSession(); // Start MongoDB session
+  session.startTransaction(); // Begin transaction
+  try {
+    console.log(req.body);
+    const { items: cartItems, shippingFee, paymentMethod } = req.body;
+    //console.log('items', cartItems);
+    const buyerId = req.user.userId; // authenticated buyer's id
 
-  const buyerId = req.user.userId; // authenticated buyer's id
+    // Fetch buyer details including their store
+    const buyer = await User.findById(buyerId).populate('storeId');
 
-  // Fetch buyer details including their store
-  const buyer = await User.findById(buyerId).populate('storeId');
+    if (!buyer) {
+      throw new CustomError.NotFoundError('The buyer does not exist.');
+    }
+    // if (!buyer || !buyer.storeId) {
+    //   throw new CustomError.NotFoundError('The buyer store does not exist.');
+    // }
+    const isIndividualCustomer = !buyer.storeId; // True if buyer has no storeId (i.e., is a customer)
 
-  if (!buyer) {
-    throw new CustomError.NotFoundError('The buyer does not exist.');
-  }
-  // if (!buyer || !buyer.storeId) {
-  //   throw new CustomError.NotFoundError('The buyer store does not exist.');
-  // }
-  const isIndividualCustomer = !buyer.storeId; // True if buyer has no storeId (i.e., is a customer)
-
-  let buyerStore = isIndividualCustomer ? buyer : buyer.storeId; // If a customer, use user object; otherwise, use storeId
-  // Check if cart items exist
-  if (!cartItems || cartItems.length < 1) {
-    throw new CustomError.BadRequestError('No cart items provided');
-  }
-
-  // Ensure tax and shipping fee are provided
-  if (!tax || !shippingFee) {
-    throw new CustomError.BadRequestError(
-      'Please provide tax and shipping fee'
-    );
-  }
-
-  // Get product IDs from cart and fetch all products at once
-  const productIds = cartItems.map((item) => item.product);
-  const dbProducts = await Product.find({ _id: { $in: productIds } });
-
-  // Initialize order details
-  let orderItems = [];
-  let subtotal = 0;
-  let totalTax = 0;
-  let totalShipping = 0;
-
-  // Prepare stock updates to be applied later
-  const stockUpdates = [];
-  // Loop over cart items and prepare order
-  for (const item of cartItems) {
-    const dbProduct = dbProducts.find(
-      (product) => product._id.toString() === item.product._id
-      // (product) => product._id.toString() === item.product._id
-    );
-    if (!dbProduct) {
-      throw new CustomError.NotFoundError(
-        `No product with id : ${item.product._id}`
-      );
+    let buyerStore = isIndividualCustomer ? buyer : buyer.storeId; // If a customer, use user object; otherwise, use storeId
+    // Check if cart items exist
+    if (!cartItems || cartItems.length < 1) {
+      throw new CustomError.BadRequestError('No cart items provided');
     }
 
-    const {
-      title,
-      price,
-      image,
-      _id,
-      quantity,
-      storeId: sellerStoreId,
-    } = dbProduct;
-
-    // Check stock availability
-    if (item.quantity > quantity) {
-      throw new CustomError.BadRequestError(
-        `Not enough stock for product: ${_id}, only ${stock} available`
-      );
+    // Ensure tax and shipping fee are provided
+    if (!shippingFee) {
+      throw new CustomError.BadRequestError('Please provide shipping fee');
     }
 
-    // Fetch seller's store
-    const sellerStore = await Store.findById(sellerStoreId);
-    // Validate buyer's store type can buy from this seller
-    checkWhoIsTheBuyer(buyerStore, sellerStore);
+    // Get product IDs from cart and fetch all products at once
+    const productIds = cartItems.map((item) => item.product);
+    const dbProducts = await Product.find({ _id: { $in: productIds } });
+    // .session(
+    //   session
+    // );
+    // Initialize order details
+    let orderItems = [];
+    let subtotal = 0;
+    let totalTax = 0;
+    let totalShipping = 0;
 
-    // Add the product as an order item
-    const singleOrderItem = {
-      quantity: item.quantity,
-      title,
-      price,
-      image,
-      product: _id,
-      sellerStoreId,
-    };
-    orderItems.push(singleOrderItem);
+    // Prepare stock updates to be applied later
+    const stockUpdates = [];
+    // Loop over cart items and prepare order
+    for (const item of cartItems) {
+      const dbProduct = dbProducts.find(
+        (product) => product._id.toString() === item.product
+      );
+      if (!dbProduct) {
+        throw new CustomError.NotFoundError(
+          `No product with id : ${item.product._id}`
+        );
+      }
 
-          console.log('yooo', item.quantity, price);
+      const {
+        title,
+        price,
+        image,
+        _id,
+        taxRate,
+        quantity,
+        storeId: sellerStoreId,
+      } = dbProduct;
 
-    // Calculate subtotal, tax, and shipping
-    subtotal += item.quantity * price;
-    totalTax += price * 0.1; // Example 10% tax
-    totalShipping += 10; // flat shipping
+      // Check stock availability
+      if (item.quantity > quantity) {
+        throw new CustomError.BadRequestError(
+          `Not enough stock for product: ${_id}, only ${quantity} available`
+        );
+      }
 
+      // Fetch seller's store
+      const sellerStore = await Store.findById(sellerStoreId);
+      //.session(session);
+      // Validate buyer's store type can buy from this seller
+      checkWhoIsTheBuyer(buyerStore, sellerStore);
+      // Calculate tax using seller-defined rate
+      const itemTax = (price * taxRate) / 100;
+      // Add the product as an order item
+      const singleOrderItem = {
+        quantity: item.quantity,
+        title,
+        price,
+        image,
+        product: _id,
+        taxRate, // Store tax rate for reference
+        sellerStoreId,
+        taxAmount: itemTax * item.quantity, // Total tax per item
+      };
+      orderItems.push(singleOrderItem);
 
+      // Calculate subtotal, tax, and shipping
+      subtotal += item.quantity * price;
+      totalTax += itemTax * item.quantity;
+      totalShipping += 0; // Flat shipping for now
 
-    // Prepare stock update
-    stockUpdates.push({ productId: _id, quantity: item.amount });
-  }
+      // Prepare stock update
+      stockUpdates.push({ productId: _id, quantity: item.quantity });
+    }
 
-  // Calculate total
-  const totalAmount = totalTax + totalShipping + subtotal;
-
-  // getting client secret from payment API
-  // const paymentIntent = await fakeStripeAPI({
-  //   amount: totalAmount,
-  //   currency: 'usd',
-  // });
-
-  // Create full order
-  const order = await Order.create({
-    orderItems,
-    totalAmount,
-    totalTax,
-    totalShipping,
-    paymentMethod,
-    transactionFee: totalAmount * 0.1, // Example platform fee
-    shippingAddress: {
+    // Calculate total
+    const totalAmount = totalTax + totalShipping + subtotal;
+    console.log('########', paymentMethod);
+    const address = await Address.create({
       street: '12345 Market St',
       city: 'San Francisco',
       state: 'CA',
       zipCode: '94103',
       country: 'USA',
-    }, // Mock data
-    billingAddress: '12345 Airport Blvd', // Mock data
-    buyerId,
-    buyerStoreId: buyerStore._id,
-    subOrders: [], // SubOrders will be created in the next step
-    // paymentStatus
-  });
+      phone: '8608084545',
+    });
+    // Create full order
+    const order = await Order.create([
+      {
+        orderItems,
+        totalAmount,
+        totalTax,
+        totalShipping,
+        paymentMethod,
+        shippingAddress: address, // Mock data
+        billingAddress: '12345 Airport Blvd', // Mock data
+        buyerId,
+        buyerStoreId: buyerStore._id,
+        subOrders: [], // SubOrders will be created in the next step
+        // paymentStatus
+      },
+    ]);
+    console.log(stockUpdates);
+    // Bulk update stock levels for products
+    if (stockUpdates.length > 0) {
+      const bulkOps = stockUpdates.map(({ productId, quantity }) => ({
+        updateOne: {
+          filter: { _id: productId },
+          update: { $inc: { stock: -quantity } },
+        },
+      }));
 
-  // Bulk update stock levels for products
-  await Promise.all(
-    stockUpdates.map(async ({ productId, quantity }) => {
-      await Product.findByIdAndUpdate(productId, {
-        $inc: { stock: -quantity },
-      });
-    })
-  );
+      await Product.bulkWrite(bulkOps, { session });
+    }
+    // await Promise.all(
+    //   stockUpdates.map(async ({ productId, quantity }) => {
+    //     await Product.findByIdAndUpdate(productId, {
+    //       $inc: { quantity: -quantity },
+    //     });
+    //   })
+    // );
 
-  // Create suborders
-  const fullOrder = await createSubOrders(order);
-  order.subOrders = fullOrder;
-  // await order.save();
+    // Create suborders
+    const fullOrder = await createSubOrders(order[0], session);
+    order[0].subOrders = fullOrder;
+    // await order[0].save({ session });
 
-  // getting client secret from payment API
-  const paymentIntent = await createPaymentIntent(order);
-  order.paymentIntentId = paymentIntent.id;
+    // getting client secret from payment API
+    const paymentIntent = await createPaymentIntent(order[0]);
+    order[0].paymentIntentId = paymentIntent.id;
 
-  // await order.save();
-  res.status(StatusCodes.CREATED).json({
-    paymentIntentId: paymentIntent.id,
-    clientSecret: paymentIntent.client_secret,
-  });
+    await order[0].save({ session });
+
+    //Commit transaction (permanently apply changes)
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(StatusCodes.CREATED).json({
+      paymentIntentId: paymentIntent.id,
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (error) {
+    await session.abortTransaction(); // Rollback if any error occurs
+    session.endSession();
+    console.error('Error creating order:', error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: error.message });
+  }
 };
 
 /* 
@@ -246,7 +278,7 @@ const getAllOrders = async (req, res) => {
     createdAt,
     buyerId,
     buyerStoreId,
-    limit = 10, // Default limit
+    limit = 100, // Default limit
     offset = 0, // Default offset
   } = req.query;
 
@@ -433,7 +465,7 @@ const getSellerSingleOrder = async (req, res) => {
   Get all orders for the currently authenticated user (Buyer)
  */
 const getCurrentUserOrders = async (req, res) => {
-  console.log(req.user)
+  console.log(req.user);
   const userId = req.user.userId; // Retrieve authenticated user
   const user = await User.findById(userId);
   if (!user) {

@@ -1,10 +1,19 @@
+const mongoose = require('mongoose');
 const stripeModel = require('../models/stripeModel');
 const User = require('../models/User');
 const Order = require('../models/Order');
+const SubOrder = require('../models/SubOrder');
+const Store = require('../models/Store');
 const SellerBalance = require('../models/sellerBalance');
+const Address = require('../models/Address');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 // utils imports
+const {
+  sendEmail,
+  sendBuyerNotificationEmail,
+  sendSellerNotificationEmail,
+} = require('../utils');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 
@@ -45,7 +54,7 @@ const webhookHandler = async (req, res) => {
         const paymentIntent = event.data.object;
         const paymentIntentId = paymentIntent.id;
         const orderId = paymentIntent.metadata.orderId;
-        
+
         // Handle successful payment intent
         if (!paymentIntentId) {
           console.error('No payment intent id provided to the stripe webhook.');
@@ -193,48 +202,114 @@ const updateSellerBalances = async (order) => {
   }
 };
 
-const confirmPayment = async (orderId, paymentIntentId) => {
-  const order = await Order.findById(orderId).populate('subOrders');
+const confirmPayment = async (req, res) => {
+  // console.log(req.body);
+  const { orderId, paymentIntentId } = req.body;
+  const session = await mongoose.startSession(); // Start MongoDB session
+  session.startTransaction(); // Begin transaction
+  try {
+    const order = await Order.findById(orderId)
+      .populate('subOrders')
+      .session(session);
 
-  if (!order) {
-    throw new CustomError.BadRequestError(
-      `No order found with id: ${orderId}.`
+    if (!order) {
+      throw new CustomError.BadRequestError(
+        `No order found with id: ${orderId}.`
+      );
+    }
+    console.log('order status updated');
+    order.paymentStatus = 'Paid';
+    order.paymentIntentId = paymentIntentId;
+    await order.save({ session });
+
+    const suborders = order.subOrders;
+
+    //console.log(suborders);
+    const buyer = await User.findById(order.buyerId);
+    const shippingAddress = await Address.findById(order.shippingAddress._id);
+
+    const buyerEmailDetails = {
+      email: buyer.email,
+      buyerName: buyer.firstName,
+      orderId: order._id,
+      orderItems: order.orderItems,
+      totalAmount: order.totalAmount,
+      shippingMethod: 'Standard Ground Shipping',
+      shippingAddress: shippingAddress,
+      estimatedDeliveryDate: 'March 22, 2025',
+    };
+
+    //const sendEmail = await sendBuyerNotificationEmail(buyerEmailDetails);
+    const sellerEmailDetails = {
+      buyerName: buyer.firstName,
+      orderItems: [],
+      shippingAddress,
+      shippingMethod: 'Standard Ground Shipping',
+      email: ['abotgeorge1@gmail.com'],
+    };
+    //TODO: Uncomment
+    //Distribute payment to each seller
+    for (let suborder of suborders) {
+      const sellerStore = await Store.findById(suborder.sellerStoreId);
+      const seller = await stripeModel.findOne({
+        sellerId: sellerStore._id,
+      });
+      // update suborders payment status
+      suborder.paymentStatus = 'Paid';
+      await suborder.save();
+
+      // Calculate and deduct application fee from seller's balance
+      const applicationFee = Math.round(suborder.totalAmount * 0.1 * 100);
+      const amountToTransfer =
+        Math.round(suborder.totalAmount * 100) - applicationFee;
+
+      // Update seller's balance
+      await SellerBalance.findOneAndUpdate(
+        { sellerId: seller.sellerId },
+        {
+          $inc: {
+            pendingBalance: amountToTransfer,
+            commissionDeducted: applicationFee,
+            totalSales: amountToTransfer,
+          },
+        }, // Add funds to pending balance
+        { upsert: true },
+        { session }
+      );
+      // Transfer funds to seller's account after commission deduction
+      // const transfer = await stripe.transfers.create({
+      //   amount: amountToTransfer,
+      //   currency: 'usd',
+      //   destination: seller.stripeAccountId,
+      //   transfer_group: orderId,
+      // });
+      // // Store the transferId for potential reversal
+      // suborder.transferId = transfer.id;
+      const store = await Store.findById(suborder.sellerStoreId);
+      sellerEmailDetails.orderId = suborder._id;
+      sellerEmailDetails.totalAmount = suborder.totalAmount;
+      sellerEmailDetails.email.push(store.email);
+      sellerEmailDetails.orderItems = suborder.products;
+
+      await suborder.save({ session });
+    }
+
+    const sendSellerEmail = await sendSellerNotificationEmail(
+      sellerEmailDetails
     );
-    return;
+    ///return order;
+    res.status(200).json({ message: 'Payment confirmed', order });
+    //return order;
+  } catch (error) {
+    await session.abortTransaction(); // Rollback if any error occurs
+    session.endSession();
+    console.error('Error creating order:', error);
+    res
+      .status(500)
+      .json({ msg: 'Order confirmation failed', error: error.message });
+    //return { message: error.message };
   }
-
-  order.paymentStatus = 'Paid';
-  order.paymentIntentId = paymentIntentId;
-  await order.save();
-
-  const suborders = order.subOrders;
-  console.log(suborders);
-
-  //TODO: Uncomment
-  //Distribute payment to each seller
-  for (let suborder of suborders) {
-    const seller = await stripeModel.findOne({
-      sellerId: suborder.sellerStoreId,
-    });
-    const amount = suborder.totalAmount * 100;
-
-    //const sellerEarnings = subOrder.amount; // Amount belonging to seller
-    await SellerBalance.findOneAndUpdate(
-      { sellerId: seller.sellerId },
-      { $inc: { pendingBalance: suborder.totalAmount } }, // Add funds to pending balance
-      { upsert: true }
-    );
-    await stripe.transfers.create({
-      amount,
-      currency: 'usd',
-      destination: seller.stripeAccountId,
-      transfer_group: orderId,
-    });
-  }
-
-  return order;
 };
-
 const sellerRequestPayOut = async (req, res) => {
   const { sellerId, amount } = req.body;
 
@@ -254,6 +329,127 @@ const sellerRequestPayOut = async (req, res) => {
   );
 
   res.json({ message: 'Payout request sent. Awaiting admin approval.' });
+};
+
+const getSellerRevenue = async (req, res) => {
+  const { sellerId } = req.params;
+  const sellerStore = await Store.findById(sellerId);
+  if (!sellerStore) {
+    throw new CustomError.BadRequestError('No store found for this seller');
+  }
+  console.log(req.user.userId);
+  console.log(sellerStore.ownerId);
+  if (sellerStore.ownerId.toString() !== req.user.userId) {
+    throw new CustomError.UnauthorizedError(
+      'Not  authorized to view the dashboard'
+    );
+  }
+  const sellerRevenue = await SellerBalance.findOne({ sellerId });
+
+  if (!sellerRevenue) {
+    throw new CustomError.BadRequestError('No revenue generated yet.');
+  }
+
+  res.json(sellerRevenue);
+};
+
+const processRefund = async (req, res) => {
+  const { orderId, productId, quantity } = req.body;
+
+  try {
+    // Fetch the order
+    const order = await Order.findById(orderId).populate('subOrders');
+
+    if (!order) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ msg: 'Order not found.' });
+    }
+    // Ensure order was paid before processing a refund
+    if (order.paymentStatus !== 'Paid') {
+      return res.status(400).json({ msg: 'Cannot refund an unpaid order' });
+    }
+    // Find the suborder containing this product
+    const subOrder = await SubOrder.findOne({
+      fullOrderId: orderId,
+      'products.productId': new ObjectId(productId),
+    });
+    console.log(subOrder);
+
+    if (!subOrder) {
+      throw new Error('SubOrder not found for the selected product');
+    }
+
+    // Locate the specific item in the orderItems array
+    const orderItemIndex = order.orderItems.findIndex(
+      (item) => item.product.toString() === productId
+    );
+    console.log(orderItemIndex);
+
+    if (orderItemIndex === -1) {
+      throw new CustomError.NotFoundError('Product not found in the suborder');
+    }
+
+    const orderItem = order.orderItems[orderItemIndex];
+    console.log(orderItem);
+    // Ensure requested refund quantity does not exceed purchased quantity
+    if (quantity > orderItem.quantity) {
+      throw new new CustomError.BadRequestError(
+        'Requested refund quantity exceeds purchased quantity'
+      )();
+    }
+
+    // Calculate refund amount (price, proportional tax, and shipping)
+    const itemPrice = orderItem.price * quantity;
+    const itemTax = (orderItem.price * quantity * orderItem.taxRate) / 100;
+    const itemShipping =
+      (subOrder.totalShipping / subOrder.totalAmount) * itemPrice;
+    const totalRefundAmount = itemPrice + itemTax + itemShipping;
+
+    // Process refund in Stripe
+    const refund = await stripe.refunds.create({
+      payment_intent: order.paymentIntentId,
+      amount: Math.round(totalRefundAmount * 100), // Convert to cents
+    });
+
+    // If seller was paid, reverse the transfer
+    if (subOrder.transferId) {
+      await stripe.transfers.createReversal(subOrder.transferId, {
+        amount: Math.round(
+          (itemPrice + itemTax + itemShipping - subOrder.transactionFee) * 100
+        ),
+      });
+    }
+
+    // Update the item in orderItems
+    if (orderItem.quantity === quantity) {
+      // If all items are refunded, remove the product from orderItems
+      order.orderItems.splice(orderItemIndex, 1);
+    } else {
+      // If partially refunded, update the remaining quantity
+      orderItem.quantity -= quantity;
+    }
+    // Deduct the refunded amount from suborder totals
+    subOrder.totalAmount -= totalRefundAmount;
+    subOrder.totalTax -= itemTax;
+    subOrder.totalShipping -= itemShipping;
+
+    // If all items in the suborder are refunded, update status
+    if (order.orderItems.length === 0) {
+      subOrder.paymentStatus = 'refunded';
+    }
+
+    await subOrder.save();
+
+    res.status(200).json({
+      message: 'Partial refund processed successfully',
+      refundId: refund.id,
+      refundedAmount: totalRefundAmount,
+    });
+  } catch (err) {
+    console.error(`❌ Refund Error: ${err.message}`);
+    res.status(500).json({ msg: 'Refund failed', error: err.message });
+  }
 };
 
 const createCustomerSession = async (req, res) => {
@@ -311,6 +507,15 @@ const createCustomerSession = async (req, res) => {
       .json({ message: 'Internal Server Error', error: error.message });
   }
 };
+const refundTest = async (req, res) => {
+  const paymentIntent = await stripe.paymentIntents.retrieve(
+    'pi_3R3MwuIxvdd0pNY40Igxxa1L'
+  );
+  console.log(paymentIntent.status);
+  res.json({ msg: paymentIntent });
+};
+
+//confirmPayment('67d894391232d717c78f476e', 'pi_3R3lE2Ixvdd0pNY40k7n6MnT');
 
 module.exports = {
   webhookHandler,
@@ -320,6 +525,9 @@ module.exports = {
   confirmPayment,
   sellerRequestPayOut,
   updateSellerBalances,
+  getSellerRevenue,
   sellerRequestPayOut,
+  processRefund,
   createCustomerSession,
+  refundTest,
 };

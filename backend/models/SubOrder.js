@@ -46,6 +46,7 @@ const SubOrderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     }, // Sub-order total
+    taxRate: { type: Number, required: true, default: 0 }, // Seller-defined tax rate
     totalTax: {
       type: Number,
       required: true,
@@ -53,7 +54,7 @@ const SubOrderSchema = new mongoose.Schema(
     // Tax specific to this sub-order
     totalShipping: {
       type: Number,
-      required: true,
+      ///required: true,
     }, // Shipping cost for this manufacturer’s products
 
     transactionFee: {
@@ -109,6 +110,14 @@ const SubOrderSchema = new mongoose.Schema(
       enum: ['Pending', 'Paid', 'Failed'],
       default: 'Pending',
     },
+    transferId: {
+      type: String, // Store Stripe transfer ID
+      default: null,
+    },
+    isPlatformShipping: { type: Boolean, default: false }, // True if platform handles shipping
+    platformShippingFee: { type: Number, default: 0 }, // Amount collected by the platform for shipping
+    sellerShippingFee: { type: Number, default: 0 }, // Shipping charged by the seller (if applicable)
+    shippingFeeRefundable: { type: Boolean, default: true }, // Determines if shipping is refundable
     shippingDetails: shippingSchema, // Embed the shipping sche
 
     fulfillmentStatus: {

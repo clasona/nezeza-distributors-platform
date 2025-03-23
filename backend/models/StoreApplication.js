@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const AddressSchema = require('./AddressSchema');
+//const AddressSchema = require('./AddressSchema');
 
 const PrimaryContactInfoSchema = new mongoose.Schema({
   firstName: {
@@ -32,7 +32,11 @@ const PrimaryContactInfoSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  residenceAddress: { type: AddressSchema, required: true },
+  residenceAddress: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Address',
+    required: true,
+  },
 });
 
 const StoreInfoSchema = new mongoose.Schema({
@@ -68,7 +72,11 @@ const StoreInfoSchema = new mongoose.Schema({
   //   type: Object, // Store the Cloudinary resource object
   //   required: true,
   // },
-  address: { type: AddressSchema, required: true },
+  address: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Address',
+    required: true,
+  },
   isActive: {
     type: Boolean,
     default: false,

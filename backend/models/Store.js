@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const AddressSchema = require('./AddressSchema'); 
+//const Address = require('./models/address');
 
 const storeSchema = new mongoose.Schema(
   {
@@ -37,7 +37,6 @@ const storeSchema = new mongoose.Schema(
       enum: ['manufacturing', 'wholesale', 'retail', 'admin', 'default'], // Type of the store
       required: true,
     },
-    address: { type: AddressSchema, required: true }, // Embed AddressSchema directly
 
     // address: {
     //   type: mongoose.Schema.ObjectId,

@@ -2,16 +2,18 @@ const groupProductsBySeller = (fullOrder) => {
   const subOrders = {};
 
   fullOrder.orderItems.forEach((item) => {
-    const {  
-      product: productId,  
-      price, 
+    const {
+      product: productId,
+      price,
       title,
       image,
-      quantity,  
+      taxRate,
+      taxAmount,
+      quantity,
       sellerStoreId,
     } = item;
 
-    // Initialize sub-order object 
+    // Initialize sub-order object
     if (!subOrders[sellerStoreId]) {
       subOrders[sellerStoreId] = {
         fullOrderId: fullOrder._id,
@@ -30,23 +32,27 @@ const groupProductsBySeller = (fullOrder) => {
     }
 
     // Add product details to sub-order products list
-    subOrders[sellerStoreId].products.push({ productId, quantity, price, title, image });
-    
+    subOrders[sellerStoreId].products.push({
+      productId,
+      quantity,
+      taxRate,
+      price,
+      title,
+      image,
+    });
+
     // Calculate and add to the total amount for the seller's sub-order
     subOrders[sellerStoreId].totalAmount += price * quantity;
 
     // Apply tax and shipping calculations
-    const taxRate = 0.1;  // Example 10% tax rate,
-    const shippingRate = 10;  // flat shipping rate per item
-    subOrders[sellerStoreId].totalTax += price * taxRate * quantity;
-    subOrders[sellerStoreId].totalShipping += shippingRate * quantity;  
+    const shippingRate = 0; // flat shipping rate per item
+    subOrders[sellerStoreId].totalTax += taxAmount;
+    subOrders[sellerStoreId].totalShipping += shippingRate * quantity;
   });
 
   return subOrders;
 };
 
-
-
 module.exports = {
-    groupProductsBySeller,
+  groupProductsBySeller,
 };

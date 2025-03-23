@@ -10,7 +10,8 @@ const sendVerificationEmail = require('./sendVerificationEmail');
 const sendResetPasswordEmail = require('./sendResetPasswordEmail');
 const sendNotification = require('./sendNotification');
 const createHash = require('./createHash');
-
+const sendBuyerNotificationEmail = require('./sendBuyerNotificationEmail');
+const sendSellerNotificationEmail = require('./sendSellerNotificationEmail');
 module.exports = {
   createJWT,
   isTokenValid,
@@ -24,6 +25,8 @@ module.exports = {
   sendEmail,
   sendVerificationEmail,
   sendResetPasswordEmail,
+  sendBuyerNotificationEmail,
+  sendSellerNotificationEmail,
   sendNotification,
   createHash,
 };

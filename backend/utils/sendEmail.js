@@ -1,17 +1,30 @@
+const sgMail = require('@sendgrid/mail');
 const nodemailer = require('nodemailer');
 const nodemailerConfig = require('./nodemailerConfig');
 
-const sendEmail = async ({ to, subject, html }) => {
-  let testAccount = await nodemailer.createTestAccount();
-   // will use SendGrid API for production for email sending
-  const transporter = nodemailer.createTransport(nodemailerConfig);
+sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 
-  return transporter.sendMail({
-    from: '"Clasona Dev" <example@gmail.com>', // add random email for sender address
-    to,
-    subject,
-    html,
-  });
+const sendEmail = async ({ to, subject, html }) => {
+  const message = {
+    to: to,
+    from: {
+      email: 'abotgeorge1@gmail.com', // replace with your own email
+      name: 'Nezeza Platform',
+    },
+    subject: subject,
+    html: html,
+  };
+
+  try {
+    const [response, body] = await sgMail.send(message);
+    return response;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    if (error.response) {
+      console.error('Error response body:', error.response.body);
+    }
+    throw error;
+  }
 };
 
 module.exports = sendEmail;

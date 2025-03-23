@@ -60,8 +60,6 @@ const register = async (req, res, next) => {
     // fine user roleNames from Role js
     let roles = await Role.find({ name: { $in: roleNames } });
 
-    console.log(roles);
-
     if (!roles || roles.length === 0) {
       return res
         .status(StatusCodes.OK)
@@ -82,9 +80,10 @@ const register = async (req, res, next) => {
     user.previousPasswords.push(user.password);
     await user.save();
     const origin = process.env.SERVER_URL; // server where the frontend is running
+
     // send verification email
     await sendVerificationEmail({
-      name: user.name,
+      name: user.firstName,
       email: user.email,
       verificationToken,
       origin,
@@ -104,7 +103,7 @@ const register = async (req, res, next) => {
         msg: 'Success! Please check your email to verify the account',
         verificationToken: user.verificationToken,
       });
-    } 
+    }
   } catch (error) {
     next(error);
   }
