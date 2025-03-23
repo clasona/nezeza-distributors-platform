@@ -34,6 +34,36 @@ const getSingleUser = async (req, res) => {
   return res.status(StatusCodes.OK).json({ user });
 };
 
+const getUserByEmail = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (!email) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: 'Email parameter is required.' });
+    }
+
+    const user = await User.findOne({ email: email })
+      .select('-password')
+      .populate('roles')
+      .populate('storeId');
+
+    if (!user) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ msg: `No user with email: ${email}` });
+    }
+
+    return res.status(StatusCodes.OK).json({ user });
+  } catch (error) {
+    console.error('Error fetching user by email:', error);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: 'Internal server error.' });
+  }
+};
+
 // Show current authenticated user details.
 const showCurrentUser = async (req, res) => {
   const user = await User.findById(req.user.userId)
@@ -116,6 +146,7 @@ const updateUserPassword = async (req, res) => {
 module.exports = {
   getSingleUser,
   showCurrentUser,
+  getUserByEmail,
   updateUser,
   updateUserPassword,
 };

@@ -29,7 +29,6 @@ export const getOrderFulfillmentStatuses = () => [
   { value: 'delivered', label: 'Delivered' },
   { value: 'returned', label: 'Returned' },
   { value: 'shipped', label: 'Shipped' },
-  { value: 'completed', label: 'Completed' },
   { value: 'partially_fulfilled', label: 'Partially Fulfilled' },
   { value: 'canceled_partially', label: 'Canceled Partially' },
   { value: 'archived', label: 'Archived' },

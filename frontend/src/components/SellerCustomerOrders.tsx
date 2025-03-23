@@ -312,7 +312,6 @@ const [statusFilter, setStatusFilter] = useState<{
             { value: 'Fulfilled', label: 'Fulfilled' },
             { value: 'Shipped', label: 'Shipped' },
             { value: 'Delivered', label: 'Delivered' },
-            { value: 'Completed', label: 'Completed' },
             { value: 'Canceled', label: 'Canceled' },
           ]}
           selectedOption={statusFilter}

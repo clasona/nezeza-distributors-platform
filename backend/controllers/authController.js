@@ -79,7 +79,7 @@ const register = async (req, res, next) => {
     // Add the current password to the previousPasswords array
     user.previousPasswords.push(user.password);
     await user.save();
-    const origin = process.env.SERVER_URL; // server where the frontend is running
+    const origin = process.env.CLIENT_URL;
 
     // send verification email
     await sendVerificationEmail({
@@ -177,22 +177,38 @@ const login = async (req, res) => {
  */
 const verifyEmail = async (req, res) => {
   const { verificationToken, email } = req.body;
-  const user = await User.findOne({ email });
+    console.log(verificationToken, email);
 
-  if (!user) {
-    throw new CustomError.UnauthenticatedError('Verification Failed');
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ success: false, msg: 'Verification Failed: User not found' });
+    }
+
+    if (user.verificationToken !== verificationToken) {
+      return res
+        .status(StatusCodes.UNAUTHORIZED)
+        .json({ success: false, msg: 'Verification Failed: Invalid token' });
+    }
+
+    (user.isVerified = true), (user.verified = Date.now());
+    user.verificationToken = '';
+
+    await user.save();
+
+    res.status(StatusCodes.OK).json({ success: true, msg: 'Email Verified' });
+  } catch (error) {
+    console.error('Verification error:', error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({
+        success: false,
+        msg: 'Verification Failed: Internal server error',
+      });
   }
-
-  if (user.verificationToken !== verificationToken) {
-    throw new CustomError.UnauthenticatedError('Verification Failed');
-  }
-
-  (user.isVerified = true), (user.verified = Date.now());
-  user.verificationToken = '';
-
-  await user.save();
-
-  res.status(StatusCodes.OK).json({ msg: 'Email Verified' });
 };
 
 /*

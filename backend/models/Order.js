@@ -47,7 +47,7 @@ const OrderSchema = mongoose.Schema(
     orderItems: [SingleOrderItemSchema],
     paymentStatus: {
       type: String,
-      enum: ['Pending', 'Paid', 'Completed', 'Failed', 'Refunded'],
+      enum: ['Pending', 'Paid', 'Failed', 'Refunded'],
       default: 'Pending',
     },
     fulfillmentStatus: {
@@ -60,7 +60,6 @@ const OrderSchema = mongoose.Schema(
         'Shipped',
         'Partially Delivered',
         'Delivered',
-        'Completed',
         'Partially Cancelled',
         'Cancelled',
         'Partially Returned',

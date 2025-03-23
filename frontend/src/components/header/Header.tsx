@@ -9,7 +9,7 @@ import {
 import defaultUserImage from '@/images/defaultUserImage.png';
 import { getSellerTypeBaseurl } from '@/lib/utils';
 import { addUser } from '@/redux/nextSlice';
-import { getUser } from '@/utils/user/getUser';
+import { getUserById } from '@/utils/user/getUserById';
 import {
   Bell,
   CircleDollarSign,
@@ -18,7 +18,7 @@ import {
   Heart,
   LayoutDashboard,
   ListOrdered,
-  ShoppingCart
+  ShoppingCart,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -37,24 +37,22 @@ const Header = () => {
   const { cartItemsData, favoriteData, userInfo, storeInfo } = useSelector(
     (state: stateProps) => state.next
   );
-  const [currentUserData, setCurrentUserData] = useState<any | null>(null);
+  let currentUserData: any;
   const [searchQuery, setSearchQuery] = useState('');
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!userInfo?._id) return; // Ensure userId exists before fetching
-      try {
-        const userData = await getUser(userInfo._id);
-        setCurrentUserData(userData);
-      } catch (error) {
-        console.error('Failed to fetch user data', error);
-      }
-    };
+  const fetchUserData = async () => {
+    if (!userInfo?._id) return; // Ensure userId exists before fetching
+    try {
+      const userData = await getUserById(userInfo._id);
+      currentUserData = userData;
+    } catch (error) {
+      console.error('Failed to fetch user data', error);
+    }
+  };
 
-    fetchUserData();
-  }, []);
+  fetchUserData();
 
   useEffect(() => {
     if (session) {
@@ -249,9 +247,7 @@ const Header = () => {
             className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
           >
             <CircleUserRound size={22} className='text-white' />
-            <p className='text-white font-bold text-center sm:text-xs'>
-              Login
-            </p>
+            <p className='text-white font-bold text-center sm:text-xs'>Login</p>
           </Link>
         )}
       </div>

@@ -3451,6 +3451,7 @@ __metadata:
     next: "npm:15.0.2"
     next-auth: "npm:^4.24.10"
     next-cloudinary: "npm:^6.16.0"
+    next-redux-wrapper: "npm:^8.1.0"
     next-themes: "npm:^0.4.3"
     postcss: "npm:^8"
     react: "npm:19.0.0-rc-02c0e824-20241028"
@@ -4744,6 +4745,17 @@ __metadata:
     next: ^12 || ^13 || ^14 || >=15.0.0-rc || ^15
     react: ^17 || ^18 || >=19.0.0-beta || ^19
   checksum: 10c0/9fa48324d0b88e9e7ad9330b7bda48a00ac38f859e8966caf073692e46ce7540a5dc3448f1f852ce4beb9eef85c157629ca05bc1bc3d619778120215a05174f1
+  languageName: node
+  linkType: hard
+
+"next-redux-wrapper@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "next-redux-wrapper@npm:8.1.0"
+  peerDependencies:
+    next: ">=9"
+    react: "*"
+    react-redux: "*"
+  checksum: 10c0/15e1dce4255b48bd92c9f0112c3d557cee2b3d149c246bac3a4ece15e6c83e843299f2fe2c10f10ee41abd7a4462cff6ac7f29377533dfbdb955f3bdad226d10
   languageName: node
   linkType: hard
 
