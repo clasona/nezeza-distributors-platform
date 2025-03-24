@@ -88,7 +88,7 @@ const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
   const handleConfirmArchive = (id: string) => {
     getOrderStatus(id).then((status) => {
       if (status) {
-        if (status === 'Completed') {
+        if (status === 'Delivered') {
           setErrorMessage('');
 
           setFilteredOrders((prevOrders) =>
@@ -106,7 +106,7 @@ const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
           }
         } else {
           setErrorMessage(
-            "Order status must be 'Completed' to perform this action."
+            "Order status must be 'Delivered' to perform this action."
           );
           setTimeout(() => setErrorMessage(''), 4000);
         }

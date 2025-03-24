@@ -1,38 +1,18 @@
-import React from 'react';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 
-import { OrderItemsProps, ProductProps } from '../../../type';
-
-export const createOrder = async (orderItems: OrderItemsProps) => {
-  // const tax = 0.1 * orderProductsData.amount;
-  const taxCharged = 10;
-  const shippingFeeCharged = 20;
-  const orderData = {
-    tax: taxCharged,
-    shippingFee: shippingFeeCharged,
-    paymentMethod: 'credit_card',
-    items: orderItems,
-  };
+export const createOrder = async (orderItems: any) => {
+   const tax = 10; // TODO: to be changed later
+   const shippingFee = 20; // TODO: to be changed later
+   const paymentMethod = 'credit_card';
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders`,
-      orderData,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    if (response.status === 201) {
-      console.log('Order created successfully:', response.data);
-      return response.data; // Return the response data on success
-    } else {
-      throw new Error('Error creating order'); // Throw an error for other status codes
-    }
+    const response = await axiosInstance.post('/orders', {
+      items: orderItems,
+      tax: tax,
+      shippingFee: shippingFee,
+      paymentMethod: paymentMethod,
+    });
+    return response; //returns client secret and payment intent
   } catch (error) {
-    console.error('Error creating order:', error);
-    throw error; // Re-throw the error to allow the caller to handle it
+    throw error; // Let the component handle the error
   }
 };

@@ -57,13 +57,15 @@ const RegisterPage = () => {
     }
 
     try {
-      // For sellers, we create tehir account when store application is approved
-      if (!isSeller) {
-        await registerUser(data);
-      }
       localStorage.setItem('verificationEmail', data.email);
       localStorage.setItem('isSeller', isSeller.toString());
-      router.push(`/verify-email`);
+      // For sellers, we create their account when store application is approved
+      if (!isSeller) {
+        await registerUser(data);
+        router.push(`/verify-email`);
+      } else {
+        router.push('/store-application');
+      }
     } catch (error: any) {
       console.error('Register error:', error);
       setErrorMessage(error);
@@ -176,7 +178,7 @@ const RegisterPage = () => {
               />
             )}
           </div>
-          <div className='flex items-center mt-4'>
+          <div className='flex items-center mt-4 mb-4'>
             <input
               type='checkbox'
               id='terms'

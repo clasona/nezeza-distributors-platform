@@ -7,13 +7,13 @@ import SubmitButton from '@/components/FormInputs/SubmitButton';
 import { updateUser } from '@/utils/user/updateUser';
 import SuccessMessageModal from '@/components/SuccessMessageModal';
 import ErrorMessageModal from '@/components/ErrorMessageModal';
-import { getUser } from '@/utils/user/getUser';
+import { getUserById } from '@/utils/user/getUserById';
 import CloudinaryImageUpload from '../FormInputs/CloudinaryImageUpload';
 import PageHeader from '../PageHeader';
 import { UserProps } from '../../../type';
 
 interface UserAccountProps {
-  userInfo:UserProps;
+  userInfo: UserProps;
 }
 const UserAccount = ({ userInfo }: UserAccountProps) => {
   const {
@@ -25,27 +25,25 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
 
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [currentUserData, setCurrentUserData] = useState<any | null>(null);
   const [userProfilePicture, setUserProfilePicture] = useState<any>(null);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (!userInfo?._id) return; // Ensure userId exists before fetching
-      try {
-        const userData = await getUser(userInfo._id);
-        setCurrentUserData(userData);
-        // Set form values
-        setValue('firstName', userData.firstName || '');
-        setValue('lastName', userData.lastName || '');
-        setValue('email', userData.email || '');
-        // setValue('address', userData.address || '');
-      } catch (error) {
-        console.error('Failed to fetch user data', error);
-      }
-    };
+  let currentUserData: any;
+  const fetchUserData = async () => {
+    if (!userInfo?._id) return; // Ensure userId exists before fetching
+    try {
+      const userData = await getUserById(userInfo._id);
+      currentUserData = userData;
+      // Set form values
+      setValue('firstName', userData.firstName || '');
+      setValue('lastName', userData.lastName || '');
+      setValue('email', userData.email || '');
+      // setValue('address', userData.address || '');
+    } catch (error) {
+      console.error('Failed to fetch user data', error);
+    }
+  };
 
-    fetchUserData();
-  }, []);
+  fetchUserData();
 
   const onSubmit = async (data: any) => {
     const updatedFields: any = {};
@@ -82,9 +80,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
 
   return (
     <div>
-      <PageHeader
-        heading='Update Account'
-      />
+      <PageHeader heading='Update Account' />
       <div className='mt-6'>
         <form
           onSubmit={handleSubmit(onSubmit)}

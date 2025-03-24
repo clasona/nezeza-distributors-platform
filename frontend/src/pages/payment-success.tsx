@@ -19,7 +19,6 @@ const SuccessPage = () => {
       </p>
       <Link
         href='/'
-        // onClick={() => dispatch(resetCart())}
         className='mt-4 px-6 py-3 bg-nezeza_dark_blue text-white text-lg font-medium rounded-md shadow-md hover:bg-nezeza_green_600 hover:shadow-lg transition duration-300'
       >
         Continue Shopping

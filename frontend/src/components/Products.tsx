@@ -212,7 +212,7 @@ const Products = () => {
             {product.quantity < 1 && (
               <div className='text-xs text-center'>
                 <span className='text-nezeza_red_600'>
-                 (notified when available.)
+                 (notified when available)
                 </span>
               </div>
             )}
