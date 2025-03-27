@@ -241,3 +241,26 @@ export interface NotificationProps {
   // type: string;
   createdAt: string;
 }
+
+export interface CustomTokenProps {
+  user: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    roles: { name: string }[];
+    storeId?: {
+      _id: string;
+      name: string;
+      storeType: string;
+      email: string;
+      description: string;
+      ownerId: string;
+      address: string;
+      isActive: boolean;
+      createdAt: string;
+      updatedAt: string;
+    };
+    image?: string;
+  };
+}

@@ -23,36 +23,42 @@ export const LogoutButton = ({
     (state: stateProps) => state.next
   );
 
-  const handleLogout = async () => {
+  const handleLogOutClick = async () => {
     setIsLoggingOut(true);
     setLogoutError('');
 
     try {
-      await signOut(); // Wait for signOut to complete
-      const cartItems = cartItemsData; // or get it from useSelector if you need to send the current cart
-      const buyerStoreId = userInfo._id; // get it from useSelector
-      await updateCart(cartItems, buyerStoreId);
+      await updateCart(cartItemsData, userInfo._id); // Ensure cart is updated first
+
+      // Clear Redux state
       dispatch(removeUser());
       dispatch(removeStore());
       dispatch(resetCart());
 
-      if (redirectTo) {
-        window.location.href = `/${redirectTo}`;
-      } else {
-        // router.replace('/');
-        window.location.href = '/';
-      }
+      // Wait for Redux state to update before redirecting
+      setTimeout(() => {
+        signOut({ callbackUrl: redirectTo || '/login' });
+      }, 100);
     } catch (error) {
-      console.error('Logout error:', error);
-      setLogoutError('An error occurred during logout. Please try again.');
-    } finally {
+      setLogoutError('Logout failed. Please try again.');
       setIsLoggingOut(false);
     }
   };
 
-  const handleLogOutClick = () => {
-    handleLogout();
-  };
+
+  // const handleLogOutClick = async () => {
+  //   // handleLogout();
+  //   setIsLoggingOut(true);
+  //   setLogoutError('');
+
+  //   const cartItems = cartItemsData; // or get it from useSelector if you need to send the current cart
+  //   const buyerStoreId = userInfo._id; // get it from useSelector
+  //   await updateCart(cartItems, buyerStoreId);
+  //   dispatch(removeUser());
+  //   dispatch(removeStore());
+  //   dispatch(resetCart());
+  //   await signOut({ callbackUrl: '/login' });
+  // };
 
   return (
     <div>

@@ -4,13 +4,13 @@ import { loginUser } from '@/utils/auth/loginUser';
 import { getCart } from '@/utils/cart/getCart';
 import { mergeCartItems } from '@/utils/cart/mergeCartItems';
 import { handleError } from '@/utils/errorUtils';
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { signIn, useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import { FaGoogle } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
 import { getSellerTypeBaseurl } from '@/lib/utils';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -22,17 +22,19 @@ const LoginPage = () => {
   );
   const router = useRouter();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
+  const { data: session } = useSession();
 
   // Redirect authenticated users away from login
-  useEffect(() => {
-    if (userInfo) {
-      if (storeInfo) {
-        router.replace(`/${getSellerTypeBaseurl(storeInfo.storeType)}`);
-      } else {
-        router.replace('/');
-      }
-    }
-  }, [userInfo, router]);
+  // useEffect(() => {
+  //   if (userInfo) {
+  //     if (storeInfo) {
+  //       router.replace(`/${getSellerTypeBaseurl(storeInfo.storeType)}`);
+  //     } else {
+  //       router.replace('/');
+  //     }
+  //   }
+  // }, [userInfo, router]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -43,16 +45,37 @@ const LoginPage = () => {
     }
   };
 
+  // Get callback URL from query params or default to '/dashboard'
+  let callbackUrl = '';
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await loginUser(email, password);
-      if (response.status !== 200) {
-        setSuccessMessage(''); // Clear any previous error message
-        setErrorMessage(response.data.msg || 'Login failed.');
-      } else {
-        const userData = response.data.user;
-        const storeData = response.data.user.storeId;
+      // const response = await loginUser(email, password);
+      // setIsLoading(true);
+      const res = await signIn('credentials', {
+        redirect: false,
+        email: email,
+        password: password,
+      });
+
+      // setIsLoading(false);
+
+      if (res?.error) {
+        // setErrorMessage('Invalid credentials');
+        // setIsLoading(false);
+        setErrorMessage('Invalid credentials');
+        return;
+      }
+      // Wait for session to update
+      const updatedSession = await fetch('/api/auth/session').then((res) =>
+        res.json()
+      );
+
+      if (updatedSession?.user) {
+        await loginUser(email, password); // For some reason without this, the backend cookies are not attached to logged in user
+        const userData = updatedSession?.user;
+        const storeData = updatedSession?.user.storeId;
         let storeId = 0;
 
         if (storeData) {
@@ -86,9 +109,6 @@ const LoginPage = () => {
           );
         }
 
-        setErrorMessage(''); // Clear any previous error message
-        setSuccessMessage('Login successful. Redirecting to home page...'); //for testing
-
         // Fetch and update cart after successful login
         try {
           const serverCartItems = await getCart(); // Get cart from server
@@ -101,12 +121,23 @@ const LoginPage = () => {
         } catch (error: any) {
           handleError(error);
         }
-        if (storeData) {
-          router.replace(`/${getSellerTypeBaseurl(storeData.storeType)}`);
+
+        setErrorMessage(''); // Clear any previous error message
+        setSuccessMessage('Login successful. Redirecting to home page...'); //for testing
+
+        // Redirect based on user store type
+        if (updatedSession.user.storeId.storeType === 'manufacturing') {
+          callbackUrl = searchParams.get('callbackUrl') || '/manufacturer';
+        } else if (updatedSession.user.storeId.storeType === 'wholesale') {
+          callbackUrl = searchParams.get('callbackUrl') || '/wholesaler';
+        } else if (updatedSession.user.storeId.storeType === 'retail') {
+          callbackUrl = searchParams.get('callbackUrl') || '/retailer';
         } else {
-          router.replace('/');
+          callbackUrl = searchParams.get('callbackUrl') || '/';
         }
+        router.push(callbackUrl); // Redirect user to their original page
       }
+     
     } catch (error: any) {
       handleError(error);
       setErrorMessage(error);

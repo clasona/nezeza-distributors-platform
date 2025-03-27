@@ -58,76 +58,105 @@
 // };
 
 // export default NextAuth(authOptions);
-
 import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import { JWT } from 'next-auth/jwt';
-import { getStore } from '@/utils/store/getStore';
+import Credentials from 'next-auth/providers/credentials';
+import { z } from 'zod';
+import bcrypt from 'bcryptjs';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
+import { loginUser } from '@/utils/auth/loginUser';
 
-export const authOptions = {
+const authOptions = {
+  pages: {
+    signIn: '/login',
+  },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: 'consent',
-          access_type: 'offline',
-          response_type: 'code',
+    Credentials({
+      credentials: {
+        email: {
+          label: 'Email',
+          type: 'email',
+          placeholder: 'Enter your email',
+        },
+        password: {
+          label: 'Password',
+          type: 'password',
+          placeholder: 'Enter your password',
         },
       },
-      async profile(profile) {
-        let role = 'user'; // Default role
+      async authorize(credentials) {
+        const parsedCredentials = z
+          .object({
+            email: z.string().email(),
+            password: z.string().min(6),
+          })
+          .safeParse(credentials);
 
-        try {
-          const user = await getUserByEmail(profile.email);
-          if (user && user.storeId) {
-            const storeData = await getStore(user.storeId);
-            if (!storeData) {
-              role = 'customer';
-            }
-            if (storeData && storeData.storeType) {
-              if (storeData.storeType === 'manufacturer') {
-                role = 'manufacturer';
-              } else if (storeData.storeType === 'wholesaler') {
-                role = 'wholesaler';
-              } else if (storeData.storeType === 'retailer') {
-                role = 'retailer';
-              }
-            } else {
-              console.error('Error fetching store data or storeType not found');
-            }
+        if (parsedCredentials.success) {
+          const { email, password } = parsedCredentials.data;
+          const response = await getUserByEmail(email);
+          // const response = await loginUser(
+          //   email,
+          //   password
+          // );
+
+          if (!response || !response.data.user) {
+            console.log('User not found');
+            return null;
           }
-        } catch (error) {
-          console.error('Error fetching user or store data:', error);
+
+          const user = response.data.user;
+
+          // Check if the user has a previousPasswords array and get the first one
+          if (user.previousPasswords && user.previousPasswords.length > 0) {
+            const storedHashedPassword = user.previousPasswords[0];
+            const passwordsMatch = await bcrypt.compare(
+              password,
+              storedHashedPassword
+            );
+
+            if (passwordsMatch) {
+              // Remove sensitive information before returning
+              const { previousPasswords, ...userWithoutPasswords } = user;
+              return userWithoutPasswords;
+            }
+          } else {
+            console.log('No previous passwords found for user');
+            return null;
+          }
         }
 
-        return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
-          role: role,
-        };
+        console.log('Invalid credentials');
+        return null;
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }: any) {
       if (user) {
-        token.role = user.role;
+        // Add any additional user info to the token
+        // token.firstName = user.firstName;
+        // token.email = user.email;
+        // token.userType = user.storeId.storeType;
+        token.user = user;
+        // console.log('tokkk', token)
       }
       return token;
     },
     async session({ session, token }: any) {
-      if (session?.user) {
-        session.user.role = token.role;
+      if (token) {
+        // session.user.name = token.firstName as string;
+        // session.user.email = token.email as string;
+        // session.user.userType = token.userType as string;
+        session.user = token.user;
+        // console.log('sesss', session);
       }
       return session;
     },
   },
 };
+
+// Export the NextAuth handler as GET and POST
+// const handler = NextAuth(authOptions);
+// export { handler as GET, handler as POST };
 
 export default NextAuth(authOptions);
