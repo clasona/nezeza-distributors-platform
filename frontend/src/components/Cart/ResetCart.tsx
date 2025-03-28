@@ -1,7 +1,7 @@
 import { clearCartOnServer, resetCart } from '@/redux/nextSlice';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import ConfirmResetCartModal from './Cart/ConfirmResetCartModal';
+import ConfirmResetCartModal from './ConfirmResetCartModal';
 
 const ResetCart = () => {
   const dispatch = useDispatch<any>();

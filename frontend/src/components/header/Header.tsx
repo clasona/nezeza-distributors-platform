@@ -34,7 +34,7 @@ import SearchField from '../Table/SearchField';
 
 const Header = () => {
   const { data: session } = useSession();
-  const { cartItemsData, favoriteData, userInfo, storeInfo } = useSelector(
+  const { cartItemsData, favoritesItemsData, userInfo, storeInfo } = useSelector(
     (state: stateProps) => state.next
   );
   let currentUserData: any;
@@ -58,7 +58,7 @@ const Header = () => {
     if (session) {
       dispatch(
         addUser({
-          name: session?.user?.name,
+          name: session?.user?.firstName,
           email: session?.user?.email,
           image: session?.user?.image,
         })
@@ -114,18 +114,29 @@ const Header = () => {
           />
         </div>
 
-        <div className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-1 sm:px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[60%] sm:h-[70%] relative flex-shrink'>
+        {/* <div className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-1 sm:px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[60%] sm:h-[70%] relative flex-shrink'>
           <Heart className='w-22 h-22' />
           <p className='text-white font-bold text-center sm:text-xs'>
             Favorites
           </p>
 
           <span className='absolute right-2 top-2 w-4 h-4 border border-nezeza_yellow flex items-center justify-center top-[-1px] text-xs font-semibold text-nezeza_yellow'>
-            {favoriteData ? favoriteData.length : 0}
+            {favoritesItemsData ? favoritesItemsData.length : 0}
           </span>
-        </div>
+        </div> */}
 
-        {/* cart */}
+        {/* favoritesItemsData */}
+        <Link
+          href={'/favorites'}
+          className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
+        >
+          <Heart className='w-22 h-22 text-white' />
+          <span className='absolute text-nezeza_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-nezeza_dark_blue border border-nezeza_yellow'>
+            {favoritesItemsData ? favoritesItemsData.length : 0}
+          </span>
+          <p className='text-white font-bold text-center sm:text-xs'>Favorites</p>
+        </Link>
+
         <Link
           href={'/cart'}
           className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'

@@ -1,69 +1,26 @@
-// // pages/api/auth/[...nextauth].ts
-// import NextAuth from 'next-auth';
-// import CredentialsProvider from 'next-auth/providers/credentials';
-// import { JWT } from 'next-auth/jwt';
-
-// export const authOptions = {
-//   providers: [
-//     CredentialsProvider({
-//       // Your credentials configuration
-//       name: 'Credentials',
-//       credentials: {
-//         email: { label: 'Email', type: 'email' },
-//         password: { label: 'Password', type: 'password' },
-//       },
-//       async authorize(credentials) {
-//         // Your authentication logic here
-//         // If authentication succeeds, return user object with role
-//         return {
-//           id: 'user-id',
-//           email: credentials?.email,
-//           name: 'User Name',
-//           role: 'manufacturer', // Include the role here
-//         };
-//       },
-//     }),
-//   ],
-//   callbacks: {
-//     // This callback is called whenever a JWT is created or updated
-//     async jwt({ token, user }: { token: JWT; user: any }) {
-//       // If user exists in this callback, it means we're signing in
-//       if (user) {
-//         // Add user data to the token
-//         token.role = user.role;
-//         token.id = user.id;
-//         // Add any other custom fields you need
-//       }
-//       return token;
-//     },
-//     // This callback is used whenever a session is checked
-//     async session({ session, token }: { session: any; token: JWT }) {
-//       // Add token info to the session
-//       session.user.role = token.role;
-//       session.user.id = token.id;
-//       // Add any other custom fields
-//       return session;
-//     },
-//   },
-//   pages: {
-//     signIn: '/login', // Custom sign in page
-//     error: '/auth/error', // Error page
-//   },
-//   // This is crucial - without it, the JWT won't be saved
-//   session: {
-//     strategy: 'jwt',
-//     maxAge: 30 * 24 * 60 * 60, // 30 days
-//   },
-//   secret: process.env.NEXTAUTH_SECRET, // Make sure this is set in your .env
-// };
-
-// export default NextAuth(authOptions);
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
-import { loginUser } from '@/utils/auth/loginUser';
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      _id: string;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      image?: string;
+      storeId?: {
+        _id: string;
+        name: string;
+        email: string;
+        storeType: string;
+      };
+    };
+  }
+}
 
 const authOptions = {
   pages: {
@@ -133,21 +90,24 @@ const authOptions = {
   callbacks: {
     async jwt({ token, user }: any) {
       if (user) {
-        // Add any additional user info to the token
-        // token.firstName = user.firstName;
-        // token.email = user.email;
-        // token.userType = user.storeId.storeType;
-        token.user = user;
-        // console.log('tokkk', token)
+        // token.user = user;
+        token.user = {
+          ...token.user,
+          _id: user._id,
+          storeId: user.storeId,
+        };
       }
       return token;
     },
     async session({ session, token }: any) {
       if (token) {
-        // session.user.name = token.firstName as string;
-        // session.user.email = token.email as string;
-        // session.user.userType = token.userType as string;
-        session.user = token.user;
+        // session.user = token.user;
+        session.user = {
+          ...session.user,
+          _id: token.user._id,
+          storeId: token.user.storeId,
+        };
+
         // console.log('sesss', session);
       }
       return session;

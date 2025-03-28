@@ -1,10 +1,11 @@
 import { clearCart } from '@/utils/cart/clearCart';
+import { clearFavorites } from '@/utils/favorites/clearFavorites';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { OrderItemsProps, PaymentProps, StoreProps } from '../../type';
 
 interface NextState {
   productData: OrderItemsProps[];
-  favoriteData: OrderItemsProps[];
+  favoritesItemsData: OrderItemsProps[];
   cartItemsData: OrderItemsProps[];
   allProducts: OrderItemsProps[];
   userInfo: null | string;
@@ -14,7 +15,7 @@ interface NextState {
 
 const initialState: NextState = {
   productData: [],
-  favoriteData: [],
+  favoritesItemsData: [],
   cartItemsData: [],
   allProducts: [],
   userInfo: null,
@@ -25,15 +26,28 @@ const initialState: NextState = {
 
 // Async thunk for clearing the cart on the server
 export const clearCartOnServer = createAsyncThunk('cart/clear', async () => {
-    try {
-        const response = await clearCart(); // Call the API function
-        return response; // You can return the response if needed
-    } catch (error) {
-        console.error("Error clearing cart on server:", error);
-        throw error; // Re-throw the error for handling in the rejected case
-    }
+  try {
+    const response = await clearCart(); // Call the API function
+    return response; // You can return the response if needed
+  } catch (error) {
+    console.error('Error clearing cart on server:', error);
+    throw error; // Re-throw the error for handling in the rejected case
+  }
 });
 
+// Async thunk for clearing the favorites on the server
+export const clearFavoritesOnServer = createAsyncThunk(
+  'favorites/clear',
+  async () => {
+    try {
+      const response = await clearFavorites(); // Call the API function
+      return response; // You can return the response if needed
+    } catch (error) {
+      console.error('Error clearing favorites on server:', error);
+      throw error; // Re-throw the error for handling in the rejected case
+    }
+  }
+);
 export const nextSlice = createSlice({
   name: 'next',
   initialState,
@@ -67,15 +81,33 @@ export const nextSlice = createSlice({
       // Add setCartItems reducer here
       state.cartItemsData = action.payload;
     },
-    addToFavorite: (state, action) => {
-      const existingProduct = state.favoriteData.find(
-        (item: OrderItemsProps) => item.product._id === action.payload.id
+
+    addToFavorites: (state, action) => {
+      const { product, quantity } = action.payload;
+      const existingProduct = state.favoritesItemsData.find(
+        (item: OrderItemsProps) => item.product._id === product._id // Use product._id
       );
+
       if (existingProduct) {
-        existingProduct.quantity += action.payload.quantity;
+        existingProduct.quantity += quantity;
       } else {
-        state.favoriteData.push(action.payload);
+        const newItem: OrderItemsProps = {
+          // _id: product._id, // Or generate a new ID if needed
+          title: product.title,
+          price: product.price,
+          quantity: quantity,
+          description: product.description,
+          category: product.category,
+          image: product.image,
+          product: product, // Store the entire product object
+          sellerStoreId: product.storeId,
+          addedToInventory: product.addedToInventory,
+        };
+        state.favoritesItemsData.push(newItem);
       }
+    },
+    setFavoritesItems: (state, action) => {
+      state.favoritesItemsData = action.payload;
     },
 
     //increase product qty in cart
@@ -99,7 +131,7 @@ export const nextSlice = createSlice({
     },
 
     //delete product from cart
-    deleteProduct: (state, action) => {
+    deleteCartProduct: (state, action) => {
       const idToRemove = action.payload;
 
       const newCartItems = state.cartItemsData.filter((item) => {
@@ -119,6 +151,27 @@ export const nextSlice = createSlice({
     // empty cart
     resetCart: (state) => {
       state.cartItemsData = [];
+    },
+
+    deleteFavoritesProduct: (state, action) => {
+      const idToRemove = action.payload;
+
+      const newFavorites = state.favoritesItemsData.filter((item) => {
+        // Create a NEW array
+        if (item.product && item.product._id) {
+          return item.product._id !== idToRemove;
+        } else {
+          console.warn('Item in favorites is missing product data:', item);
+          return true;
+        }
+      });
+
+      state.favoritesItemsData = newFavorites; // Assign the NEW array to the state
+      console.log('favorites Data after delete:', state.favoritesItemsData);
+    },
+
+    resetFavorites: (state) => {
+      state.favoritesItemsData = [];
     },
 
     // add a user info to cart for checkout
@@ -169,12 +222,15 @@ export const nextSlice = createSlice({
 
 export const {
   addToCart,
+  addToFavorites,
   setCartItems,
-  addToFavorite,
+  setFavoritesItems,
   increaseQuantity,
   decreaseQuantity,
-  deleteProduct,
+  deleteCartProduct,
+  deleteFavoritesProduct,
   resetCart,
+  resetFavorites,
   addUser,
   removeUser,
   addStore,

@@ -1,6 +1,6 @@
 import SuccessMessageModal from '@/components/SuccessMessageModal';
 import { Button } from '@/components/ui/button';
-import { addToCart, addToFavorite } from '@/redux/nextSlice';
+import { addToCart, addToFavorites } from '@/redux/nextSlice';
 import {
   AlertTriangle,
   CheckCircle,
@@ -16,9 +16,7 @@ import { ProductProps, stateProps } from '../../../type';
 import { getSingleProduct } from '../../utils/product/getSingleProduct';
 
 const ProductDetails = () => {
-    const { userInfo } = useSelector(
-      (state: stateProps) => state.next
-    );
+  const { userInfo } = useSelector((state: stateProps) => state.next);
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState<ProductProps | null>(null);
@@ -39,7 +37,7 @@ const ProductDetails = () => {
 
   // Add to Favorites
   const handleAddToFavorite = () => {
-    dispatch(addToFavorite({ product, quantity: 1 }));
+    dispatch(addToFavorites({ product, quantity: 1 }));
     setSuccessMessage('Added to Favorites!');
   };
 

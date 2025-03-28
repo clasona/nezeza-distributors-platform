@@ -9,7 +9,7 @@ const LogoutPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    signOut({ callbackUrl: '/login' }); // Redirect to the login page after logging out
+    signOut({ callbackUrl: '/' }); // Redirect to the login page after logging out
   }, []);
 
   return (

@@ -1,5 +1,10 @@
 import SubmitButton from '@/components/FormInputs/SubmitButton';
-import { addStore, addUser, setCartItems } from '@/redux/nextSlice';
+import {
+  addStore,
+  addUser,
+  setCartItems,
+  setFavoritesItems,
+} from '@/redux/nextSlice';
 import { loginUser } from '@/utils/auth/loginUser';
 import { getCart } from '@/utils/cart/getCart';
 import { mergeCartItems } from '@/utils/cart/mergeCartItems';
@@ -11,30 +16,39 @@ import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
 import { getSellerTypeBaseurl } from '@/lib/utils';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getFavorites } from '@/utils/favorites/getFavorites';
+import { mergeFavoritesItems } from '@/utils/favorites/mergeFavoritesItems';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const { cartItemsData, userInfo, storeInfo } = useSelector(
+  const { cartItemsData, favoritesItemsData } = useSelector(
     (state: stateProps) => state.next
   );
   const router = useRouter();
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect authenticated users away from login
-  // useEffect(() => {
-  //   if (userInfo) {
-  //     if (storeInfo) {
-  //       router.replace(`/${getSellerTypeBaseurl(storeInfo.storeType)}`);
-  //     } else {
-  //       router.replace('/');
-  //     }
-  //   }
-  // }, [userInfo, router]);
+  useEffect(() => {
+    if (session?.user) {
+      // Redirect based on user store type
+      if (session?.user?.storeId) {
+        if (session.user.storeId.storeType === 'manufacturing') {
+          router.replace('/manufacturer');
+        } else if (session.user.storeId.storeType === 'wholesale') {
+          router.replace('/wholesaler');
+        } else if (session.user.storeId.storeType === 'retail') {
+          router.replace('/retailer');
+        }
+      } else {
+        router.replace('/');
+      }
+    }
+  }, [session, router]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -52,14 +66,12 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       // const response = await loginUser(email, password);
-      // setIsLoading(true);
+      setIsLoading(true);
       const res = await signIn('credentials', {
         redirect: false,
         email: email,
         password: password,
       });
-
-      // setIsLoading(false);
 
       if (res?.error) {
         // setErrorMessage('Invalid credentials');
@@ -73,7 +85,7 @@ const LoginPage = () => {
       );
 
       if (updatedSession?.user) {
-        await loginUser(email, password); // For some reason without this, the backend cookies are not attached to logged in user
+        await loginUser(email, password); // For some reason, this doesn't add the backend cookies to user whe called from [...nextauth].ts
         const userData = updatedSession?.user;
         const storeData = updatedSession?.user.storeId;
         let storeId = 0;
@@ -118,6 +130,14 @@ const LoginPage = () => {
           ); // Merge the carts
 
           dispatch(setCartItems(mergedCartItems)); // Dispatch the setCartItems action
+
+          const serverFavoritesItems = await getFavorites(); // Get favorites from server
+          const mergedFavoritesItems = mergeFavoritesItems(
+            favoritesItemsData,
+            serverFavoritesItems
+          ); // Merge the favorites
+
+          dispatch(setFavoritesItems(mergedFavoritesItems));
         } catch (error: any) {
           handleError(error);
         }
@@ -126,21 +146,25 @@ const LoginPage = () => {
         setSuccessMessage('Login successful. Redirecting to home page...'); //for testing
 
         // Redirect based on user store type
-        if (updatedSession.user.storeId.storeType === 'manufacturing') {
-          callbackUrl = searchParams.get('callbackUrl') || '/manufacturer';
-        } else if (updatedSession.user.storeId.storeType === 'wholesale') {
-          callbackUrl = searchParams.get('callbackUrl') || '/wholesaler';
-        } else if (updatedSession.user.storeId.storeType === 'retail') {
-          callbackUrl = searchParams.get('callbackUrl') || '/retailer';
+        if (updatedSession.user.storeId) {
+          if (updatedSession.user.storeId.storeType === 'manufacturing') {
+            callbackUrl = searchParams.get('callbackUrl') || '/manufacturer';
+          } else if (updatedSession.user.storeId.storeType === 'wholesale') {
+            callbackUrl = searchParams.get('callbackUrl') || '/wholesaler';
+          } else if (updatedSession.user.storeId.storeType === 'retail') {
+            callbackUrl = searchParams.get('callbackUrl') || '/retailer';
+          }
         } else {
           callbackUrl = searchParams.get('callbackUrl') || '/';
         }
+        // setIsLoading(false);
         router.push(callbackUrl); // Redirect user to their original page
       }
-     
     } catch (error: any) {
       handleError(error);
       setErrorMessage(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -177,10 +201,10 @@ const LoginPage = () => {
             />
           </div>
           <SubmitButton
-            isLoading={false}
+            isLoading={isLoading}
             buttonTitle='Login'
-            loadingButtonTitle='Logging in ...'
             className='w-full h-10'
+            disabled={isLoading}
           />
 
           <button

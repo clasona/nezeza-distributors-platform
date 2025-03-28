@@ -1,10 +1,11 @@
-import { removeStore, removeUser, resetCart } from '@/redux/nextSlice';
+import { removeStore, removeUser, resetCart, resetFavorites } from '@/redux/nextSlice';
 import { updateCart } from '@/utils/cart/updateCart';
 import { LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
+import { updateFavorites } from '@/utils/favorites/updateFavorites';
 
 interface LogoutButtonProps {
   redirectTo?: string;
@@ -19,7 +20,7 @@ export const LogoutButton = ({
   const dispatch = useDispatch();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState(''); // State for error messages
-  const { userInfo, cartItemsData } = useSelector(
+  const { userInfo, cartItemsData, favoritesItemsData } = useSelector(
     (state: stateProps) => state.next
   );
 
@@ -29,36 +30,22 @@ export const LogoutButton = ({
 
     try {
       await updateCart(cartItemsData, userInfo._id); // Ensure cart is updated first
-
+      await updateFavorites(favoritesItemsData, userInfo._id);
       // Clear Redux state
       dispatch(removeUser());
       dispatch(removeStore());
       dispatch(resetCart());
+      dispatch(resetFavorites());
 
       // Wait for Redux state to update before redirecting
       setTimeout(() => {
-        signOut({ callbackUrl: redirectTo || '/login' });
+        signOut({ callbackUrl: redirectTo || '/' });
       }, 100);
     } catch (error) {
       setLogoutError('Logout failed. Please try again.');
       setIsLoggingOut(false);
     }
   };
-
-
-  // const handleLogOutClick = async () => {
-  //   // handleLogout();
-  //   setIsLoggingOut(true);
-  //   setLogoutError('');
-
-  //   const cartItems = cartItemsData; // or get it from useSelector if you need to send the current cart
-  //   const buyerStoreId = userInfo._id; // get it from useSelector
-  //   await updateCart(cartItems, buyerStoreId);
-  //   dispatch(removeUser());
-  //   dispatch(removeStore());
-  //   dispatch(resetCart());
-  //   await signOut({ callbackUrl: '/login' });
-  // };
 
   return (
     <div>
