@@ -5,20 +5,20 @@ import { LuMinus, LuPlus } from 'react-icons/lu';
 import { IoMdClose } from 'react-icons/io';
 import { useDispatch } from 'react-redux';
 import {
-  addToFavorites,
+  addToCart,
   decreaseQuantity,
-  deleteCartProduct,
+  deleteFavoritesProduct,
   increaseQuantity,
 } from '@/redux/nextSlice';
 import { OrderItemsProps } from '../../../type';
-import { Heart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import SuccessMessageModal from '../SuccessMessageModal';
 
-interface CartProductProps {
+interface FavoritesProductProps {
   item: OrderItemsProps;
 }
 
-const CartProduct = ({ item }: CartProductProps) => {
+const FavoritesProduct = ({ item }: FavoritesProductProps) => {
   const dispatch = useDispatch();
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -72,66 +72,29 @@ const CartProduct = ({ item }: CartProductProps) => {
             <p className='text-nezeza_red_600 font-bold'>Out of Stock</p>
           ) : (
             <div className='flex flex-col sm:flex-row items-center gap-2 sm:gap-6 mt-2'>
-              <div className='flex items-center justify-between border border-gray-300 px-3 py-1 rounded-full sm:w-28 w-full shadow-md shadow-gray-300'>
-                <span
-                  onClick={() =>
-                    dispatch(
-                      increaseQuantity({
-                        id: product._id,
-                        title: item.title,
-                        price: item.price,
-                        description: product.description,
-                        category: product.category,
-                        image: item.image,
-                        quantity: 1,
-                      })
-                    )
-                  }
-                  className='w-6 h-6 flex items-center justify-center rounded-full text-base bg-transparent hover:bg-gray-300 cursor-pointer decoration-purple-300'
-                >
-                  <LuPlus />
-                </span>
-                <span>{item.quantity}</span>
-                <span
-                  onClick={() =>
-                    dispatch(
-                      decreaseQuantity({
-                        id: product._id,
-                        title: item.title,
-                        price: item.price,
-                        description: product.description,
-                        category: product.category,
-                        image: item.image,
-                        quantity: 1,
-                      })
-                    )
-                  }
-                  className='w-6 h-6 flex items-center justify-center rounded-full text-base bg-transparent hover:bg-gray-300 cursor-pointer decoration-purple-300'
-                >
-                  <LuMinus />
-                </span>
-              </div>
               <button
                 onClick={() => {
                   dispatch(
-                    addToFavorites({
+                    addToCart({
                       product,
                       quantity: 1,
                     })
                   );
-                  setSuccessMessage('Moved to favorites successfully!');
-                  dispatch(deleteCartProduct(product._id));
+                    setSuccessMessage('Moved to cart successfully!');
+                    dispatch(deleteFavoritesProduct(product._id))
                 }}
                 className='flex items-center gap-2 h-6 sm:h-8 px-3 sm:px-4 text-xs sm:text-sm font-medium bg-nezeza_dark_blue text-white rounded-md 
                hover:bg-nezeza_green_600 transition duration-300'
-                aria-label='Move to Favorites'
+                aria-label='Move to Cart'
               >
-                <Heart className='h-4 w-4' />
-                Move to Favorites
+                <ShoppingCart className='h-4 w-4' />
+                Move to Cart
               </button>
               <div
-                onClick={() => dispatch(deleteCartProduct(product._id))}
-                className='flex items-center text-sm font-medium text-gray-400 hover:text-red-600 cursor-pointer duration-300'
+                onClick={() => dispatch(deleteFavoritesProduct(product._id))}
+                className='flex items-center gap-1 text-sm font-medium text-gray-400 
+               hover:text-red-600 cursor-pointer transition duration-300'
+                aria-label='Remove from favorites'
               >
                 <IoMdClose className='mt-[2px]' /> <p>remove</p>
               </div>
@@ -149,4 +112,4 @@ const CartProduct = ({ item }: CartProductProps) => {
   );
 };
 
-export default CartProduct;
+export default FavoritesProduct;

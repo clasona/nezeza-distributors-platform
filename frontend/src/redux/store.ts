@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-    import { createWrapper } from 'next-redux-wrapper';
+import { createWrapper } from 'next-redux-wrapper';
 
 import {
   FLUSH,
@@ -11,8 +11,28 @@ import {
   REGISTER,
   REHYDRATE,
 } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+// import storage from 'redux-persist/lib/storage';
 import nextReducer from './nextSlice';
+import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
+
+// redux-persist doesn’t work server-side so using this to
+// Ensure localStorage is only accessed in the browser
+const createNoopStorage = () => ({
+  getItem() {
+    return Promise.resolve(null);
+  },
+  setItem() {
+    return Promise.resolve();
+  },
+  removeItem() {
+    return Promise.resolve();
+  },
+});
+
+const storage =
+  typeof window !== 'undefined'
+    ? createWebStorage('local')
+    : createNoopStorage();
 
 const persistConfig = {
   key: 'root',

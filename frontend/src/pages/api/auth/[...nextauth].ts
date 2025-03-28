@@ -1,133 +1,122 @@
-// // pages/api/auth/[...nextauth].ts
-// import NextAuth from 'next-auth';
-// import CredentialsProvider from 'next-auth/providers/credentials';
-// import { JWT } from 'next-auth/jwt';
-
-// export const authOptions = {
-//   providers: [
-//     CredentialsProvider({
-//       // Your credentials configuration
-//       name: 'Credentials',
-//       credentials: {
-//         email: { label: 'Email', type: 'email' },
-//         password: { label: 'Password', type: 'password' },
-//       },
-//       async authorize(credentials) {
-//         // Your authentication logic here
-//         // If authentication succeeds, return user object with role
-//         return {
-//           id: 'user-id',
-//           email: credentials?.email,
-//           name: 'User Name',
-//           role: 'manufacturer', // Include the role here
-//         };
-//       },
-//     }),
-//   ],
-//   callbacks: {
-//     // This callback is called whenever a JWT is created or updated
-//     async jwt({ token, user }: { token: JWT; user: any }) {
-//       // If user exists in this callback, it means we're signing in
-//       if (user) {
-//         // Add user data to the token
-//         token.role = user.role;
-//         token.id = user.id;
-//         // Add any other custom fields you need
-//       }
-//       return token;
-//     },
-//     // This callback is used whenever a session is checked
-//     async session({ session, token }: { session: any; token: JWT }) {
-//       // Add token info to the session
-//       session.user.role = token.role;
-//       session.user.id = token.id;
-//       // Add any other custom fields
-//       return session;
-//     },
-//   },
-//   pages: {
-//     signIn: '/login', // Custom sign in page
-//     error: '/auth/error', // Error page
-//   },
-//   // This is crucial - without it, the JWT won't be saved
-//   session: {
-//     strategy: 'jwt',
-//     maxAge: 30 * 24 * 60 * 60, // 30 days
-//   },
-//   secret: process.env.NEXTAUTH_SECRET, // Make sure this is set in your .env
-// };
-
-// export default NextAuth(authOptions);
-
 import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import { JWT } from 'next-auth/jwt';
-import { getStore } from '@/utils/store/getStore';
+import Credentials from 'next-auth/providers/credentials';
+import { z } from 'zod';
+import bcrypt from 'bcryptjs';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
 
-export const authOptions = {
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      _id: string;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      image?: string;
+      storeId?: {
+        _id: string;
+        name: string;
+        email: string;
+        storeType: string;
+      };
+    };
+  }
+}
+
+const authOptions = {
+  pages: {
+    signIn: '/login',
+  },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: 'consent',
-          access_type: 'offline',
-          response_type: 'code',
+    Credentials({
+      credentials: {
+        email: {
+          label: 'Email',
+          type: 'email',
+          placeholder: 'Enter your email',
+        },
+        password: {
+          label: 'Password',
+          type: 'password',
+          placeholder: 'Enter your password',
         },
       },
-      async profile(profile) {
-        let role = 'user'; // Default role
+      async authorize(credentials) {
+        const parsedCredentials = z
+          .object({
+            email: z.string().email(),
+            password: z.string().min(6),
+          })
+          .safeParse(credentials);
 
-        try {
-          const user = await getUserByEmail(profile.email);
-          if (user && user.storeId) {
-            const storeData = await getStore(user.storeId);
-            if (!storeData) {
-              role = 'customer';
-            }
-            if (storeData && storeData.storeType) {
-              if (storeData.storeType === 'manufacturer') {
-                role = 'manufacturer';
-              } else if (storeData.storeType === 'wholesaler') {
-                role = 'wholesaler';
-              } else if (storeData.storeType === 'retailer') {
-                role = 'retailer';
-              }
-            } else {
-              console.error('Error fetching store data or storeType not found');
-            }
+        if (parsedCredentials.success) {
+          const { email, password } = parsedCredentials.data;
+          const response = await getUserByEmail(email);
+          // const response = await loginUser(
+          //   email,
+          //   password
+          // );
+
+          if (!response || !response.data.user) {
+            console.log('User not found');
+            return null;
           }
-        } catch (error) {
-          console.error('Error fetching user or store data:', error);
+
+          const user = response.data.user;
+
+          // Check if the user has a previousPasswords array and get the first one
+          if (user.previousPasswords && user.previousPasswords.length > 0) {
+            const storedHashedPassword = user.previousPasswords[0];
+            const passwordsMatch = await bcrypt.compare(
+              password,
+              storedHashedPassword
+            );
+
+            if (passwordsMatch) {
+              // Remove sensitive information before returning
+              const { previousPasswords, ...userWithoutPasswords } = user;
+              return userWithoutPasswords;
+            }
+          } else {
+            console.log('No previous passwords found for user');
+            return null;
+          }
         }
 
-        return {
-          id: profile.sub,
-          name: profile.name,
-          email: profile.email,
-          image: profile.picture,
-          role: role,
-        };
+        console.log('Invalid credentials');
+        return null;
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }: any) {
       if (user) {
-        token.role = user.role;
+        // token.user = user;
+        token.user = {
+          ...token.user,
+          _id: user._id,
+          storeId: user.storeId,
+        };
       }
       return token;
     },
     async session({ session, token }: any) {
-      if (session?.user) {
-        session.user.role = token.role;
+      if (token) {
+        // session.user = token.user;
+        session.user = {
+          ...session.user,
+          _id: token.user._id,
+          storeId: token.user.storeId,
+        };
+
+        // console.log('sesss', session);
       }
       return session;
     },
   },
 };
+
+// Export the NextAuth handler as GET and POST
+// const handler = NextAuth(authOptions);
+// export { handler as GET, handler as POST };
 
 export default NextAuth(authOptions);

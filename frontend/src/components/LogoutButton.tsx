@@ -1,10 +1,11 @@
-import { removeStore, removeUser, resetCart } from '@/redux/nextSlice';
+import { removeStore, removeUser, resetCart, resetFavorites } from '@/redux/nextSlice';
 import { updateCart } from '@/utils/cart/updateCart';
 import { LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
+import { updateFavorites } from '@/utils/favorites/updateFavorites';
 
 interface LogoutButtonProps {
   redirectTo?: string;
@@ -19,39 +20,31 @@ export const LogoutButton = ({
   const dispatch = useDispatch();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState(''); // State for error messages
-  const { userInfo, cartItemsData } = useSelector(
+  const { userInfo, cartItemsData, favoritesItemsData } = useSelector(
     (state: stateProps) => state.next
   );
 
-  const handleLogout = async () => {
+  const handleLogOutClick = async () => {
     setIsLoggingOut(true);
     setLogoutError('');
 
     try {
-      await signOut(); // Wait for signOut to complete
-      const cartItems = cartItemsData; // or get it from useSelector if you need to send the current cart
-      const buyerStoreId = userInfo._id; // get it from useSelector
-      await updateCart(cartItems, buyerStoreId);
+      await updateCart(cartItemsData, userInfo._id); // Ensure cart is updated first
+      await updateFavorites(favoritesItemsData, userInfo._id);
+      // Clear Redux state
       dispatch(removeUser());
       dispatch(removeStore());
       dispatch(resetCart());
+      dispatch(resetFavorites());
 
-      if (redirectTo) {
-        window.location.href = `/${redirectTo}`;
-      } else {
-        // router.replace('/');
-        window.location.href = '/';
-      }
+      // Wait for Redux state to update before redirecting
+      setTimeout(() => {
+        signOut({ callbackUrl: redirectTo || '/' });
+      }, 100);
     } catch (error) {
-      console.error('Logout error:', error);
-      setLogoutError('An error occurred during logout. Please try again.');
-    } finally {
+      setLogoutError('Logout failed. Please try again.');
       setIsLoggingOut(false);
     }
-  };
-
-  const handleLogOutClick = () => {
-    handleLogout();
   };
 
   return (

@@ -1,4 +1,4 @@
-import { addToCart, addToFavorite } from '@/redux/nextSlice';
+import { addToCart, addToFavorites } from '@/redux/nextSlice';
 import { Heart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -75,9 +75,9 @@ const Products = () => {
         >
           <div
             className='w-full aspect-w-1 aspect-h-1 relative'
-            onClick={() => {
-              router.push(`/product/${product._id}`);
-            }}
+            // onClick={() => {
+            //   router.push(`/product/${product._id}`);
+            // }}
           >
             <Image
               className='w-full h-full object-cover scale-90 hover:scale-100
@@ -126,7 +126,7 @@ const Products = () => {
               <span
                 onClick={() => {
                   dispatch(
-                    addToFavorite({
+                    addToFavorites({
                       product,
                       quantity: 1,
                     })
@@ -142,7 +142,12 @@ const Products = () => {
             </div>
           </div>
           <hr />
-          <div className='px-2 py-1 flex flex-col gap-1'>
+          <div
+            className='px-2 py-1 flex flex-col gap-1'
+            onClick={() => {
+              router.push(`/product/${product._id}`);
+            }}
+          >
             <div className='flex justify-between w-full'>
               <p className='text-xs text-nezeza_gray_600 tracking-wide'>
                 {product.category}
@@ -191,7 +196,7 @@ const Products = () => {
               onClick={() => {
                 product.quantity < 1
                   ? dispatch(
-                      addToFavorite({
+                      addToFavorites({
                         product,
                         quantity: 1,
                       })
@@ -212,7 +217,7 @@ const Products = () => {
             {product.quantity < 1 && (
               <div className='text-xs text-center'>
                 <span className='text-nezeza_red_600'>
-                 (notified when available)
+                  (notified when available)
                 </span>
               </div>
             )}

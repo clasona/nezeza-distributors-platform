@@ -1,4 +1,4 @@
-import { addToCart, addToFavorite } from '@/redux/nextSlice';
+import { addToCart, addToFavorites } from '@/redux/nextSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,15 +17,14 @@ const MoreProductDetailsModal = ({
   isOpen,
   onClose,
   product,
-//   onAddToCart,
+}: //   onAddToCart,
 //   onAddToFavorites,
 //   onBuyAgain,
-}: ProductMoreInfoModalProps) => {
+ProductMoreInfoModalProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1); // Quantity state
-  const images = product.images ?? []; 
-    const dispatch = useDispatch();
-
+  const images = product.images ?? [];
+  const dispatch = useDispatch();
 
   if (!isOpen) return null;
 
@@ -139,7 +138,7 @@ const MoreProductDetailsModal = ({
               <button
                 onClick={() => {
                   dispatch(
-                    addToFavorite({
+                    addToFavorites({
                       product,
                       quantity: 1,
                     })
