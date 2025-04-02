@@ -1,8 +1,10 @@
+import RootLayout from '@/components/RootLayout';
 
 const CustomerPayments = () => {
-
   return (
-    <p>Payments Page - Coming soon</p>
+    <RootLayout>
+      <p>Payments Page - Coming soon</p>
+    </RootLayout>
   );
 };
 

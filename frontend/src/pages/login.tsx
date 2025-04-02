@@ -85,7 +85,8 @@ const LoginPage = () => {
       );
 
       if (updatedSession?.user) {
-        await loginUser(email, password); // For some reason, this doesn't add the backend cookies to user whe called from [...nextauth].ts
+        // console.log('session data:', updatedSession)
+        await loginUser(email, password); // For some reason, without this, the backend cookies are not attached to the user (as supposed to by the auth in [...nextauth].ts)
         const userData = updatedSession?.user;
         const storeData = updatedSession?.user.storeId;
         let storeId = 0;
@@ -95,6 +96,7 @@ const LoginPage = () => {
         }
 
         // set logged in userInfo to redux for further retrieval
+        //TODO: Investigate why sometimes this only gets email and 'name' to redux when logging in?
         dispatch(
           addUser({
             _id: userData._id,

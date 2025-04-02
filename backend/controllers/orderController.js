@@ -128,8 +128,9 @@ const createOrder = async (req, res) => {
     // Loop over cart items and prepare order
     for (const item of cartItems) {
       const dbProduct = dbProducts.find(
-        (product) => product._id.toString() === item.product
+        (product) => product._id.toString() === item.product._id
       );
+      console.log(dbProduct)
       if (!dbProduct) {
         throw new CustomError.NotFoundError(
           `No product with id : ${item.product._id}`
@@ -184,7 +185,6 @@ const createOrder = async (req, res) => {
 
     // Calculate total
     const totalAmount = totalTax + totalShipping + subtotal;
-    console.log('########', paymentMethod);
     const address = await Address.create({
       street: '12345 Market St',
       city: 'San Francisco',

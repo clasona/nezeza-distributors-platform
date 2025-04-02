@@ -4,6 +4,8 @@ import { z } from 'zod';
 import bcrypt from 'bcryptjs';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
 
+// Declare the Session interface to define the shape of the session object.
+// TypeScript will use this interface implicitly for type checking.
 declare module 'next-auth' {
   interface Session {
     user: {
@@ -94,17 +96,21 @@ const authOptions = {
         token.user = {
           ...token.user,
           _id: user._id,
+          firstName: user.firstName,
+          lastName: user.lastName,
           storeId: user.storeId,
         };
       }
       return token;
     },
     async session({ session, token }: any) {
-      if (token) {
+      if (token && token.user) {
         // session.user = token.user;
         session.user = {
           ...session.user,
           _id: token.user._id,
+          firstName: token.user.firstName,
+          lastName: token.user.lastName,
           storeId: token.user.storeId,
         };
 
