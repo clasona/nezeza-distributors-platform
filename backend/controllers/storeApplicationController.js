@@ -119,9 +119,17 @@ const approveStoreApplication = async (req, res, next) => {
     };
 
     await register(userReq, res, next);
+
     const user = res.locals.user;
-    if (!user)
+    if (!user) {
       throw new CustomError.BadRequestError('User registration failed');
+    } else {
+      // TODO: Auto verify user
+      (user.isVerified = true), (user.verified = Date.now());
+      user.verificationToken = '';
+
+      await user.save();
+    }
 
     // Create a new request object to pass to createSrore
     const storeReq = {
@@ -137,6 +145,7 @@ const approveStoreApplication = async (req, res, next) => {
       skipResponse: true,
     };
     await createStore(storeReq, res, next);
+
     const store = res.locals.store;
 
     if (!store) throw new CustomError.BadRequestError('Store creation failed');
