@@ -155,6 +155,8 @@ const LoginPage = () => {
             callbackUrl = searchParams.get('callbackUrl') || '/wholesaler';
           } else if (updatedSession.user.storeId.storeType === 'retail') {
             callbackUrl = searchParams.get('callbackUrl') || '/retailer';
+          }else if (updatedSession.user.storeId.storeType === 'admin') {
+            callbackUrl = searchParams.get('callbackUrl') || '/admin';
           }
         } else {
           callbackUrl = searchParams.get('callbackUrl') || '/';
