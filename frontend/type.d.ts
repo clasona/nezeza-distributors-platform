@@ -15,7 +15,7 @@ export interface ProductProps {
   height: number;
   freeShipping: boolean;
   availability: boolean;
-  averageRating: number;
+  rating: number;
   numOfReviews: number;
   storeId: StoreProps;
   createdAt: string;
@@ -23,12 +23,22 @@ export interface ProductProps {
   reviews: ReviewProps[]; // Define a ReviewProps interface for better structure
 }
 
+//reviews
 export interface ReviewProps {
-  userId: string;
+  _id: string;
   rating: number;
   comment: string;
+  user: UserProps;
+  reviewableType: string;
+  reviewableId: string;
   createdAt: string;
+  updatedAt: string;
 }
+
+export type NewReviewProps = Omit<
+  ReviewProps,
+  '_id' | 'createdAt' | 'updatedAt' | 'user'
+>;
 
 // for the buyer
 export interface OrderItemsProps {
@@ -97,7 +107,7 @@ export interface InventoryProps {
   price: number;
   freeShipping: boolean;
   availability: boolean;
-  averageRating: number;
+  rating: number;
   numOfReviews: number;
   lastUpdated: string;
   createdAt: string;
@@ -182,7 +192,7 @@ export interface UserProps {
   verifiedAt: string;
   storeId: string;
   citizenshipCountry?: string;
-  birthCountry?: string;
+  // birthCountry?: string;
   dob?: string;
   residenceAddress?: AddressProps;
 }

@@ -171,7 +171,7 @@ const ProductDetails = () => {
               <Star
                 key={i}
                 className={`h-5 w-5 ${
-                  i < product.averageRating
+                  i < product.rating
                     ? 'text-yellow-500'
                     : 'text-gray-300'
                 }`}

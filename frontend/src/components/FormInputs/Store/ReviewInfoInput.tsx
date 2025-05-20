@@ -47,11 +47,11 @@ const ReviewInfoInput = ({
               fieldName='citizenshipCountry'
               getValues={getValues}
             />
-            <ReviewInputItem
+            {/* <ReviewInputItem
               label='Country of Birth'
               fieldName='birthCountry'
               getValues={getValues}
-            />
+            /> */}
             <ReviewInputItem
               label='Date of Birth'
               fieldName='dob'

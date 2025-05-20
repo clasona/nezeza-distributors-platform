@@ -1,263 +1,164 @@
-'use client';
+import React, { useEffect, useState } from 'react';
+import TextInput from './TextInput';
+import {
+  useForm,
+  useWatch,
+  UseFormRegister,
+  FieldValues,
+  FieldErrors,
+  Control,
+  useFormContext, // Import useFormContext
+} from 'react-hook-form';
+import DropdownInput from './DropdownInput';
+import countriesWeOperateIn from '@/pages/data/countriesWeOperateIn.json';
+import DropdownInputSearchable from './DropdownInputSearchable';
 
-import ErrorMessageModal from '@/components/ErrorMessageModal';
-import PrimaryContactInput from '@/components/FormInputs/Store/PrimaryContactInput';
-import ReviewInfoInput from '@/components/FormInputs/Store/ReviewInfoInput';
-import StoreInfoInput from '@/components/FormInputs/Store/StoreInfoInput';
-import VerificationDocsInput from '@/components/FormInputs/Store/VerificationDocsInput';
-import SuccessMessageModal from '@/components/SuccessMessageModal';
-import { handleError } from '@/utils/errorUtils';
-import { CircleArrowLeft, CircleArrowRight } from 'lucide-react';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { createStoreApplication } from '../utils/store/createStoreApplication';
+// ... (rest of your interfaces)
 
-interface StoreRegistrationFormProps {
-  onSubmitSuccess?: (data: any) => void;
+interface AddressInputProps {
+  streetFieldName?: string;
+  cityFieldName?: string;
+  stateFieldName?: string;
+  countryFieldName?: string;
+  zipCodeFieldName?: string;
+  errors: FieldErrors;
+  register: UseFormRegister<FieldValues>;
+  control: Control<FieldValues>;
 }
 
-const StoreRegistrationForm = ({
-  onSubmitSuccess,
-}: StoreRegistrationFormProps) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    getValues,
+const AddressInput = ({
+  streetFieldName = 'street',
+  cityFieldName = 'city',
+  stateFieldName = 'state',
+  countryFieldName = 'country',
+  zipCodeFieldName = 'zipCode',
+  register,
+  errors,
+  control,
+}: AddressInputProps) => {
+  const { setValue } = useFormContext(); // Use useFormContext here
+
+  const selectedCountry = useWatch({
     control,
-    setValue,
-    reset,
-    trigger,
-  } = useForm();
+    name: countryFieldName,
+  });
 
-  const [currentSection, setCurrentSection] = useState(0);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [identityDocResource, setIdentityDocResource] = useState<any>(null);
-  const [businessDocResource, setBusinessDocResource] = useState<any>(null);
+  const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [selectedCountryOption, setSelectedCountryOption] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
+  const [selectedStateOption, setSelectedStateOption] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
 
-  const sections = ['Primary Contact', 'Store Info', 'Docs', 'Review & Submit'];
+  const countryOptions: CountryOption[] = countriesWeOperateIn.map(
+    (country) => ({
+      value: country.name.toLowerCase(),
+      label: country.name,
+      statesPath: country.states,
+    })
+  );
 
-  const handleNext = async () => {
-    const isStepValid = await trigger(); // triggers validation for current fields
-    if (isStepValid && currentSection < sections.length - 1) {
-      setCurrentSection(currentSection + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentSection > 0) {
-      setCurrentSection(currentSection - 1);
-    }
-  };
-
-  const onSubmit = async (data: any) => {
-    if (!identityDocResource || !businessDocResource) {
-      alert('Please upload both identity document and business document.');
-      return;
-    }
-
-    const storeApplicationData = {
-      status: 'Pending',
-      primaryContactInfo: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
-        citizenshipCountry: data.citizenshipCountry,
-        birthCountry: data.birthCountry,
-        dob: data.dob,
-        residenceAddress: {
-          street: data.residenceStreet,
-          city: data.residenceCity,
-          state: data.residenceState,
-          zipCode: data.residenceZipCode,
-          country: data.residenceCountry,
-        },
-      },
-      storeInfo: {
-        storeType: data.storeType,
-        registrationNumber: data.storeRegistrationNumber,
-        name: data.storeName,
-        category: data.storeCategory,
-        description: data.storeDescription,
-        email: data.storeEmail,
-        phone: data.storePhone,
-        address: {
-          street: data.storeStreet,
-          city: data.storeCity,
-          state: data.storeState,
-          zipCode: data.storeZipCode,
-          country: data.storeCountry,
-        },
-      },
-      verificationDocs: {
-        businessDocument: businessDocResource.secure_url,
-        primaryContactIdentityDocument: identityDocResource.secure_url,
-      },
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+  useEffect(() => {
+    const loadStates = async () => {
+      // ... (rest of your loadStates logic)
     };
 
-    try {
-      const response = await createStoreApplication(storeApplicationData);
-      if (response.status !== 201) {
-        setSuccessMessage('');
-        setErrorMessage(response.data.msg || 'Store application failed.');
-      } else {
-        setErrorMessage('');
-        setSuccessMessage('Store application submitted successfully.');
-        reset();
-        setIdentityDocResource(null);
-        setBusinessDocResource(null);
-        setCurrentSection(0);
+    loadStates();
+  }, [selectedCountry]);
 
-        if (onSubmitSuccess) {
-          onSubmitSuccess(response.data);
-        }
-      }
-    } catch (error: any) {
-      handleError(error);
-      alert(error?.message || 'An unexpected error occurred.');
+  useEffect(() => {
+    if (selectedCountry) {
+      const foundCountry = countryOptions.find(
+        (option) => option.value === selectedCountry
+      );
+      setSelectedCountryOption(foundCountry || null);
+    } else {
+      setSelectedCountryOption(null);
     }
+  }, [selectedCountry, countryOptions]);
+
+  const handleCountryChange = (
+    option: { value: string; label: string } | null
+  ) => {
+    setSelectedCountryOption(option);
+    setValue(countryFieldName, option?.value || ''); // Use setValue from context
+    setValue(stateFieldName, '');
+    setSelectedStateOption(null);
+  };
+
+  const handleStateChange = (
+    option: { value: string; label: string } | null
+  ) => {
+    setSelectedStateOption(option);
+    setValue(stateFieldName, option?.value || ''); // Use setValue from context
   };
 
   return (
-    <div className='bg-nezeza_powder_blue sm:px-2 md:px-4'>
-      <form
-        className='relative rounded-lg p-4 sm:p-6 md:p-8'
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <h2 className='text-3xl text-nezeza_dark_blue font-bold text-center mb-4'>
-          Nezeza Store Application
-        </h2>
-        <p className='text-center mb-6 text-nezeza_gray_600'>
-          Please fill in information as it appears on your official ID and
-          registered business documents.
-        </p>
-
-        {/* Progress Bar */}
-        <div className='flex justify-between items-center mb-6'>
-          {sections.map((section, index) => (
-            <div
-              key={index}
-              className={`flex-1 text-center cursor-pointer ${
-                index <= currentSection
-                  ? 'text-nezeza_green_800'
-                  : 'text-gray-400'
-              }`}
-              onClick={() => setCurrentSection(index)}
-            >
-              <span className='font-semibold'>{section}</span>
-              {index < sections.length - 1 && <span className='mx-2'>→</span>}
-            </div>
-          ))}
-        </div>
-
-        {/* Form Sections */}
-        {currentSection === 0 && (
-          <PrimaryContactInput
-            register={register}
-            errors={errors}
-            setValue={setValue}
-            control={control}
-          />
-        )}
-        {currentSection === 1 && (
-          <StoreInfoInput
-            register={register}
-            setValue={setValue}
-            errors={errors}
-            control={control}
-          />
-        )}
-        {currentSection === 2 && (
-          <VerificationDocsInput
-            register={register}
-            errors={errors}
-            setIdentityDocResource={setIdentityDocResource}
-            setBusinessDocResource={setBusinessDocResource}
-          />
-        )}
-        {currentSection === 3 && (
-          <ReviewInfoInput
-            getValues={getValues}
-            identityDocResource={identityDocResource}
-            businessDocResource={businessDocResource}
-          />
-        )}
-
-        {/* Navigation Arrows */}
-        <button
-          type='button'
-          className={`absolute left-0 top-1/2 transform -translate-y-1/2 ${
-            currentSection > 0 ? 'text-nezeza_dark_blue' : 'text-gray-400'
-          }`}
-          onClick={handlePrevious}
-          disabled={currentSection === 0}
-          style={{ fontSize: '1.5rem' }}
-        >
-          <CircleArrowLeft />
-        </button>
-
-        <button
-          type='button'
-          className={`absolute right-0 top-1/2 transform -translate-y-1/2 ${
-            currentSection < sections.length - 1
-              ? 'text-nezeza_dark_blue'
-              : 'text-gray-400'
-          }`}
-          onClick={handleNext}
-          disabled={currentSection === sections.length - 1}
-          style={{ fontSize: '1.5rem' }}
-        >
-          <CircleArrowRight />
-        </button>
-
-        {/* Navigation Buttons */}
-        <div className='flex justify-end mt-4'>
-          {currentSection > 0 && (
-            <button
-              type='button'
-              className='px-4 py-1 bg-gray-200 text-gray-700 rounded-md mr-2'
-              onClick={handlePrevious}
-            >
-              Previous
-            </button>
-          )}
-          {currentSection < sections.length - 1 && (
-            <button
-              type='button'
-              className='bg-nezeza_dark_blue text-white px-4 py-1 rounded-md hover:bg-nezeza_yellow hover:text-black'
-              onClick={handleNext}
-            >
-              Next
-            </button>
-          )}
-          {currentSection === sections.length - 1 && (
-            <button
-              type='submit'
-              disabled={isSubmitting}
-              className={`${
-                isSubmitting
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-nezeza_green_600 hover:bg-nezeza_green_800'
-              } text-white px-4 py-1 rounded-md`}
-            >
-              {isSubmitting ? 'Submitting...' : 'SUBMIT'}
-            </button>
-          )}
-        </div>
-
-        {/* Success & Error Modals */}
-        {successMessage && (
-          <SuccessMessageModal successMessage={successMessage} />
-        )}
-        {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
-      </form>
-    </div>
+    <>
+      <TextInput
+        label='Street Address'
+        id={streetFieldName}
+        name={streetFieldName}
+        register={register}
+        errors={errors}
+        type='text'
+      />
+      <TextInput
+        label='City/District'
+        id={cityFieldName}
+        name={cityFieldName}
+        register={register}
+        errors={errors}
+        type='text'
+      />
+      <DropdownInputSearchable
+        label='Country'
+        id={countryFieldName}
+        name={countryFieldName}
+        options={countryOptions}
+        onChange={handleCountryChange}
+        value={selectedCountryOption}
+        className='w-full max-w-xs sm:max-w-md'
+        register={register}
+        errors={errors}
+      />
+      <DropdownInputSearchable
+        label='State/Province'
+        id={stateFieldName}
+        name={stateFieldName}
+        options={stateOptions}
+        onChange={handleStateChange}
+        value={selectedStateOption}
+        className='w-full max-w-xs sm:max-w-md'
+        disabled={
+          stateOptions.length === 0 || loadingStates || !selectedCountry
+        }
+        placeholder={
+          !selectedCountry
+            ? 'Select country first'
+            : loadingStates
+            ? 'Loading states...'
+            : stateOptions.length === 0
+            ? 'No states available'
+            : 'Select state'
+        }
+        register={register}
+        errors={errors}
+      />
+      <TextInput
+        label='Zip Code'
+        id={zipCodeFieldName}
+        name={zipCodeFieldName}
+        register={register}
+        errors={errors}
+        type='text'
+      />
+    </>
   );
 };
 
-StoreRegistrationForm.noLayout = true;
-export default StoreRegistrationForm;
+export default AddressInput;

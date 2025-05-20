@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Review = require('../models/Review');
 
 const ProductSchema = new mongoose.Schema(
   {
@@ -58,7 +59,7 @@ const ProductSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    averageRating: {
+    rating: {
       type: Number,
       default: 0,
     },
@@ -66,6 +67,12 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    reviews: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'Review',
+      },
+    ],
     storeId: {
       type: mongoose.Schema.ObjectId,
       ref: 'Store',
@@ -75,15 +82,45 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-ProductSchema.virtual('reviews', {
-  ref: 'Review',
-  localField: '_id',
-  foreignField: 'product',
-  justOne: false,
-});
+ProductSchema.statics.calculateAverageRating = async function (productId) {
+  try {
+    const pId =
+      typeof productId === 'string'
+        ? new mongoose.Types.ObjectId(productId)
+        : productId;
 
-ProductSchema.pre('remove', async function (next) {
-  await this.model('Review').deleteMany({ product: this._id });
-});
+    // Find all reviews for this product
+    const reviews = await Review.find({
+      reviewableId: pId,
+      reviewableType: 'Product',
+    });
+
+    // If there are no reviews, set rating to 0
+    if (!reviews || reviews.length === 0) {
+      await this.findByIdAndUpdate(pId, {
+        rating: 0,
+        numReviews: 0,
+      });
+      console.log('No product reviews found, setting rating to 0');
+      return;
+    }
+
+    // Calculate the average rating manually
+    let totalRating = 0;
+    reviews.forEach((review) => {
+      totalRating += review.rating;
+    });
+
+    const averageRating = totalRating / reviews.length;
+
+    // Update the product with the new rating
+    await this.findByIdAndUpdate(pId, {
+      rating: averageRating,
+      numReviews: reviews.length,
+    });
+  } catch (error) {
+    console.error('Error calculating product average rating:', error);
+  }
+};
 
 module.exports = mongoose.model('Product', ProductSchema);

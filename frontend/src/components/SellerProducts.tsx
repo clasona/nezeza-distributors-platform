@@ -81,7 +81,7 @@
 //     price: 0,
 //     freeShipping: false,
 //     availability: false,
-//     averageRating: 0,
+//     rating: 0,
 //     numOfReviews: 0,
 //     lastUpdated: '',
 //     createdAt: '',
