@@ -13,7 +13,7 @@ const sendVerificationEmail = async ({
   verificationToken,
   origin,
 }) => {
-  const verifyEmail = `${origin}/user/verify-email?token=${verificationToken}&email=${email}`;
+  const verifyEmail = `${origin}/verify-email/status?token=${verificationToken}&email=${email}`;
 
   const message = `<p>Please click on the link to confirm your email address for your account on Nezeza Platform</p> : 
   <a href="${verifyEmail}">Verify Email</a> </p>`;

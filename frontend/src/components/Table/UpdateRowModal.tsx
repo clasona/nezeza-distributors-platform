@@ -134,7 +134,6 @@ const [isConfirming, setIsConfirming] = useState(false); // Track confirmation s
                 <option value='Fulfilled'>Fulfilled</option>
                 <option value='Shipped'>Shipped</option>
                 <option value='Delivered'>Delivered</option>
-                <option value='Completed'>Completed</option>
                 <option value='Canceled'>Canceled</option>
               </select>
             </div>

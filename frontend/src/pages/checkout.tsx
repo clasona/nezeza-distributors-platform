@@ -1,7 +1,7 @@
 import FormattedPrice from '@/components/FormattedPrice';
 import Loading from '@/components/Loaders/Loading';
 import { addPayment } from '@/redux/nextSlice';
-import { getClientSecret } from '@/utils/order/getClientSecret';
+import { createOrder } from '@/utils/order/createOrder';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Link from 'next/link';
@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { OrderItemsProps, stateProps } from '../../type';
 import CheckoutForm from '../components/Payments/CheckoutForm';
 import { handleError } from '@/utils/errorUtils';
+import { useRouter } from 'next/router';
 
 // Ensure Stripe key is set before loading Stripe
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
@@ -22,8 +23,8 @@ const stripePromise = loadStripe(
 
 const CheckoutPage = () => {
   const { cartItemsData } = useSelector((state: stateProps) => state.next);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [paymentIntentFetched, setPaymentIntentFetched] = useState(false); // To help prevent fetching it twice as useEffect does automatically
+  // const [clientSecret, setClientSecret] = useState<string | null>(null);
+  // const [paymentIntentFetched, setPaymentIntentFetched] = useState(false); // To help prevent fetching it twice as useEffect does automatically
 
   const [customerSessionSecret, setCustomerSessionSecret] = useState<
     string | null
@@ -32,63 +33,45 @@ const CheckoutPage = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [totalAmount, setTotalAmount] = useState(0);
+  const router = useRouter();
+  let clientSecret = '';
+  if (router.query.clientSecret) {
+    clientSecret = router.query.clientSecret.toString();
+    // setLoading(false);
+  } else {
+    console.log(
+      'No client secret found in the parameters. Check CartPayment.tsx file.'
+    );
+  }
 
-  const fetchPaymentIntent = async () => {
-    if (!cartItemsData.length || paymentIntentFetched) return;
+  //This function is the one that calls create order from the backend
+  // const fetchPaymentIntent = async () => {
+  //   if (!cartItemsData.length || paymentIntentFetched) return;
 
-    try {
-      console.log('********', cartItemsData);
-      const response = await getClientSecret(cartItemsData);
-
-      if (response.status !== 201) {
-        console.error('Error fetching client secret.');
-        // setSuccessMessage(''); // Clear any previous error message
-        // setErrorMessage(response.data.msg || 'Client secret fetch failed.');
-      } else {
-        console.log('client secretttt', response.data.clientSecret);
-        setClientSecret(response.data.clientSecret);
-        // temporarily save it to redux for easy retrieval while confirming payment - not safe
-        //TODO: Remove this  - no longer needed since we're handling in backend
-        // dispatch(
-        //   addPayment({
-        //     paymentIntentId: response.data.paymentIntentId,
-        //   })
-        // );
-        setPaymentIntentFetched(true); // Set the flag to true after fetching
-      }
-    } catch (error: any) {
-      handleError(error);
-      //  setErrorMessage(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (cartItemsData.length > 0) {
-      fetchPaymentIntent();
-    }
-  }, [cartItemsData]);
-
-  // useEffect(() => {
-  // const fetchCustomerSessionSecret = async () => {
-  //   if (userInfo) {
-  //     try {
-  //       const customerSecret = await createCustomerSession();
-  //       console.log('yeeeee', customerSecret);
-  //       setCustomerSessionSecret(customerSecret);
-  //     } catch (error) {
-  //       console.error(
-  //         'Error fetching customer session client secret:',
-  //         error
-  //       );
+  //   try {
+  //     const response = await createOrder(cartItemsData);
+  //     if (response.status !== 201) {
+  //       console.error('Error fetching client secret.');
+  //       // setSuccessMessage(''); // Clear any previous error message
+  //       // setErrorMessage(response.data.msg || 'Client secret fetch failed.');
+  //     } else {
+  //       setClientSecret(response.data.clientSecret);
+  //       console.log('printing secret...', clientSecret)
+  //       setPaymentIntentFetched(true); // Set the flag to true after fetching
   //     }
+  //   } catch (error: any) {
+  //     handleError(error);
+  //     //  setErrorMessage(error);
+  //   } finally {
+  //     setLoading(false);
   //   }
   // };
-  // if (userInfo) {
-  //   fetchCustomerSessionSecret();
-  // }
-  // }, [userInfo]);
+
+  // useEffect(() => {
+  //   if (cartItemsData.length > 0) {
+  //     fetchPaymentIntent();
+  //   }
+  // }, [cartItemsData]);
 
   // Memoize options to prevent unnecessary re-renders
   const options = useMemo(
@@ -181,12 +164,10 @@ const CheckoutPage = () => {
         </div>
       </div>
       {/* Added flex for layout */}
-      <div className=' md:w-1/2 p-8 '>
+      <div className='md:w-1/2'>
         {' '}
         {/* Added width for form on larger screens */}
-        {loading ? (
-          <Loading message='Payment Details' />
-        ) : clientSecret ? (
+        {clientSecret ? (
           <Elements stripe={stripePromise} options={options}>
             <CheckoutForm clientSecret={clientSecret} />
           </Elements>

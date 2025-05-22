@@ -6,13 +6,13 @@ const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: [true, 'Please provide name'],
-    minlength: 3,
+    // minlength: 3,
     maxlength: 50,
   },
   lastName: {
     type: String,
     required: [true, 'Please provide name'],
-    minlength: 3,
+    // minlength: 3,
     maxlength: 50,
     default: '',
   },
@@ -85,10 +85,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     // required: [true, 'Please provide email'],
   },
-  countryOfBirth: {
-    type: String,
-    // required: [true, 'Please provide email'],
-  },
+  // countryOfBirth: {
+  //   type: String,
+  //   // required: [true, 'Please provide email'],
+  // },
   dateOfBirth: {
     type: String,
     // required: [true, 'Please provide email'],

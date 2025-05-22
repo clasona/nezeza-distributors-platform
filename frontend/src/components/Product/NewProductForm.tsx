@@ -1,27 +1,22 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import TextInput from '../FormInputs/TextInput';
-import TextAreaInput from '../FormInputs/TextAreaInput';
-import { useForm } from 'react-hook-form';
 import { generateSlug } from '@/lib/generateSlug';
-import ImageInput from '../FormInputs/ImageInput';
-import MultiImageInput from '../FormInputs/MultipleImageInput';
-import Button from '../FormInputs/Button';
-import { CldUploadWidget } from 'next-cloudinary';
-import CloudinaryImageUpload from '../FormInputs/CloudinaryImageUpload';
-import { Plus } from 'lucide-react';
-import axios from 'axios';
+import { updateOrderItem } from '@/utils/order/updateOrderItem';
+import { createProduct } from '@/utils/product/createProduct';
+import { getSingleProduct } from '@/utils/product/getSingleProduct';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { OrderItemsProps, ProductProps, stateProps } from '../../../type';
-import { createProduct } from '@/utils/product/createProduct';
-import DropdownInput from '../FormInputs/DropdownInput';
-import SubmitButton from '../FormInputs/SubmitButton';
-import SuccessMessageModal from '../SuccessMessageModal';
 import ErrorMessageModal from '../ErrorMessageModal';
-import { useRouter } from 'next/router';
-import { getSingleProduct } from '@/utils/product/getSingleProduct';
-import { updateOrderItem } from '@/utils/order/updateOrderItem';
+import CloudinaryImageUpload from '../FormInputs/CloudinaryImageUpload';
+import DropdownInput from '../FormInputs/DropdownInput';
+import MultiImageInput from '../FormInputs/MultipleImageInput';
+import SubmitButton from '../FormInputs/SubmitButton';
+import TextAreaInput from '../FormInputs/TextAreaInput';
+import TextInput from '../FormInputs/TextInput';
+import SuccessMessageModal from '../SuccessMessageModal';
 
 interface NewProductFormProps {
   onSubmitSuccess?: (data: any) => void; // Callback after successful submission

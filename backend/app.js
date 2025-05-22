@@ -33,6 +33,8 @@ const paymentRouter = require('./routes/paymentRoutes');
 const inventoryRouter = require('./routes/inventoryRoutes');
 const notificationRouter = require('./routes/notificationRoutes');
 const cartRouter = require('./routes/cartRoutes');
+const favoritesRouter = require('./routes/favoritesRoutes');
+
 
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
@@ -100,6 +102,8 @@ app.use('/api/v1/suborders', orderRouter);
 app.use('/api/v1/payment', paymentRouter);
 app.use('/api/v1/notifications', notificationRouter);
 app.use('/api/v1/cart', cartRouter);
+app.use('/api/v1/favorites', favoritesRouter);
+
 
 app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 

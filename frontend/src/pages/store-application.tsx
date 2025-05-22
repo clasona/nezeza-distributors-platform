@@ -11,6 +11,7 @@ import { CircleArrowLeft, CircleArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { createStoreApplication } from '../utils/store/createStoreApplication';
+import { useRouter } from 'next/navigation';
 
 interface StoreRegistrationFormProps {
   onSubmitSuccess?: (data: any) => void; // Callback after successful submission
@@ -22,11 +23,12 @@ const StoreRegistrationForm = ({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     getValues,
     control,
     setValue,
     reset,
+    trigger,
   } = useForm();
 
   const [currentSection, setCurrentSection] = useState(0);
@@ -34,11 +36,14 @@ const StoreRegistrationForm = ({
   const [errorMessage, setErrorMessage] = useState('');
   const [identityDocResource, setIdentityDocResource] = useState<any>(null);
   const [businessDocResource, setBusinessDocResource] = useState<any>(null);
+  const router = useRouter();
+
 
   const sections = ['Primary Contact', 'Store Info', 'Docs', 'Review & Submit'];
 
-  const handleNext = () => {
-    if (currentSection < sections.length - 1) {
+  const handleNext = async () => {
+    const isStepValid = await trigger(); // triggers validation for current fields
+    if (isStepValid && currentSection < sections.length - 1) {
       setCurrentSection(currentSection + 1);
     }
   };
@@ -50,87 +55,80 @@ const StoreRegistrationForm = ({
   };
 
   const onSubmit = async (data: any) => {
-    if (currentSection === sections.length - 1) {
-      console.log(
-        'Identity Doc Resource (Before Submit):',
-        identityDocResource
-      );
-      console.log(
-        'Business Doc Resource (Before Submit):',
-        businessDocResource
-      );
-      if (!identityDocResource || !businessDocResource) {
-        // setErrorMessage(
-        //   'Please upload both identity document and business document.'
-        // );
-        alert('Please upload both identity document and business document.');
-
-        return;
-      }
-      const storeApplicationData = {
-        status: 'Pending',
-        primaryContactInfo: {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          citizenshipCountry: data.citizenshipCountry,
-          birthCountry: data.birthCountry,
-          dob: data.dob,
-          residenceAddress: {
-            street: data.residenceStreet,
-            city: data.residenceCity,
-            state: data.residenceState,
-            zipCode: data.residenceZipCode,
-            country: data.residenceCountry,
-          },
+    if (!identityDocResource || !businessDocResource) {
+      alert('Please upload both identity document and business document.');
+      return;
+    }
+    const storeApplicationData = {
+      status: 'Pending',
+      primaryContactInfo: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        citizenshipCountry: data.citizenshipCountry,
+        // birthCountry: data.birthCountry,
+        dob: data.dob,
+        residenceAddress: {
+          street: data.residenceStreet,
+          city: data.residenceCity,
+          state: data.residenceState,
+          zipCode: data.residenceZipCode,
+          country: data.residenceCountry,
         },
-        storeInfo: {
-          storeType: data.storeType,
-          registrationNumber: data.storeRegistrationNumber,
-          name: data.storeName,
-          category: data.storeCategory,
-          description: data.storeDescription,
-          email: data.storeEmail,
-          phone: data.storePhone,
-          address: {
-            street: data.storeStreet,
-            city: data.storeCity,
-            state: data.storeState,
-            zipCode: data.storeZipCode,
-            country: data.storeCountry,
-          },
+      },
+      storeInfo: {
+        storeType: data.storeType,
+        registrationNumber: data.storeRegistrationNumber,
+        name: data.storeName,
+        category: data.storeCategory,
+        description: data.storeDescription,
+        email: data.storeEmail,
+        phone: data.storePhone,
+        address: {
+          street: data.storeStreet,
+          city: data.storeCity,
+          state: data.storeState,
+          zipCode: data.storeZipCode,
+          country: data.storeCountry,
         },
-        verificationDocs: {
-          businessDocument: businessDocResource.secure_url,
-          primaryContactIdentityDocument: identityDocResource.secure_url,
-        },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      },
+      verificationDocs: {
+        businessDocument: businessDocResource.secure_url,
+        primaryContactIdentityDocument: identityDocResource.secure_url,
+      },
+      // createdAt: new Date().toISOString(),
+      // updatedAt: new Date().toISOString(),
+    };
 
-      try {
-        const response = await createStoreApplication(storeApplicationData);
-        if (response.status !== 201) {
-          setSuccessMessage('');
-          setErrorMessage(response.data.msg || 'Store application failed.');
-        } else {
-          setErrorMessage('');
-          setSuccessMessage('Store application submitted successfully.');
+    try {
 
-          // TODO: Reset form inputs
-          // reset();
+      console.log(storeApplicationData.primaryContactInfo.residenceAddress);
+      const response = await createStoreApplication(storeApplicationData);
+      if (response.status !== 201) {
+        setSuccessMessage('');
+        setErrorMessage(response.data.msg || 'Store application failed.');
+      } else {
+        setErrorMessage('');
+        setSuccessMessage('Store application submitted successfully.');
 
-          if (onSubmitSuccess) {
-            onSubmitSuccess(response.data); // Call the callback with the response data
-          }
+        // TODO: Reset form inputs
+        // reset();
+        setIdentityDocResource(null);
+        setBusinessDocResource(null);
+        setCurrentSection(0);
+
+        if (onSubmitSuccess) {
+          onSubmitSuccess(response.data); // Call the callback with the response data
         }
-      } catch (error: any) {
-        handleError(error);
-        setErrorMessage(error);
+
+        router.push('/post-store-application-submission');
+
       }
-    } else {
-      handleNext();
+    } catch (error: any) {
+      handleError(error);
+      // setErrorMessage(error);
+      alert(error || 'An unexpected error occurred.');
     }
   };
 
@@ -166,7 +164,7 @@ const StoreRegistrationForm = ({
           ))}
         </div>
 
-        {/* Section Forms */}
+        {/* Form Sections*/}
         <div>
           {/* Primary Contact Info Section */}
           {currentSection === 0 && (
@@ -216,7 +214,7 @@ const StoreRegistrationForm = ({
           disabled={currentSection === 0}
           style={{ fontSize: '1.5rem' }}
         >
-          <CircleArrowLeft className='' />
+          <CircleArrowLeft />
         </button>
 
         <button
@@ -256,13 +254,14 @@ const StoreRegistrationForm = ({
           {currentSection === sections.length - 1 && (
             <button
               type='submit'
-              className='bg-nezeza_green_600 text-white px-4 py-1 rounded-md hover:bg-nezeza_green_800'
-              // onClick={() =>
-              //   (window.location.href = '/post-store-application-submission')
-              // }
-              // onClick={handleNext}
+              disabled={isSubmitting}
+              className={`${
+                isSubmitting
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-nezeza_green_600 hover:bg-nezeza_green_800'
+              } text-white px-4 py-1 rounded-md`}
             >
-              SUBMIT
+              {isSubmitting ? 'Submitting...' : 'SUBMIT'}
             </button>
           )}
         </div>

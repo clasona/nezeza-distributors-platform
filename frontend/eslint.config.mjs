@@ -1,19 +1,42 @@
-import unusedImports from "eslint-plugin-unused-imports";
+module.exports = {
+  plugins: ['unused-imports'],
+  extends: ['next', 'next/core-web-vitals'],
+  rules: {
+    'no-unused-vars': 'off',
+    'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-vars': [
+      'warn',
+      {
+        vars: 'all',
+        varsIgnorePattern: '^_',
+        args: 'after-used',
+        argsIgnorePattern: '^_',
+      },
+    ],
+  },
+};
 
-export default [{
-    plugins: {
-        "unused-imports": unusedImports,
-    },
+// import unusedImports from 'eslint-plugin-unused-imports';
 
-    rules: {
-        "no-unused-vars": "off",
-        "unused-imports/no-unused-imports": "error",
+// export default [
+//   {
+//     plugins: {
+//       'unused-imports': unusedImports,
+//     },
+//     extends: ['next', 'next/core-web-vitals'],
+//     rules: {
+//       'no-unused-vars': 'off',
+//       'unused-imports/no-unused-imports': 'error',
 
-        "unused-imports/no-unused-vars": ["warn", {
-            vars: "all",
-            varsIgnorePattern: "^_",
-            args: "after-used",
-            argsIgnorePattern: "^_",
-        }],
-    },
-}];
+//       'unused-imports/no-unused-vars': [
+//         'warn',
+//         {
+//           vars: 'all',
+//           varsIgnorePattern: '^_',
+//           args: 'after-used',
+//           argsIgnorePattern: '^_',
+//         },
+//       ],
+//     },
+//   },
+// ];

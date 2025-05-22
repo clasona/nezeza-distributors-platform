@@ -1,20 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import {
-  PaymentElement,
-  AddressElement,
-  useElements,
-  useStripe,
-} from '@stripe/react-stripe-js';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
-import { getClientSecret } from '@/utils/order/getClientSecret';
-import { useDispatch, useSelector } from 'react-redux';
-import { stateProps } from '../../../type';
-import { getOrderByPaymentIntentId } from '@/utils/order/getOrderByPaymentIntentId';
-import { confirmOrderPayment } from '@/utils/payment/confirmOrderPayment';
-import SuccessMessageModal from '../SuccessMessageModal';
-import ErrorMessageModal from '../ErrorMessageModal';
+import {
+  AddressElement,
+  PaymentElement,
+  useElements,
+  useStripe
+} from '@stripe/react-stripe-js';
 import { useRouter } from 'next/router';
-import { resetCart } from '@/redux/nextSlice';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import ErrorMessageModal from '../ErrorMessageModal';
+import SuccessMessageModal from '../SuccessMessageModal';
 
 interface CheckoutFormProps {
   clientSecret: string;
@@ -24,7 +19,6 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
   const elements = useElements();
   const router = useRouter();
   const dispatch = useDispatch();
-  const { paymentInfo } = useSelector((state: stateProps) => state.next);
   const [orderId, setOrderId] = useState('');
   const [isLoading, setIsLoading] = useState(false); // State for loading
   const [successMessage, setSuccessMessage] = useState<string>('');
@@ -32,10 +26,8 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
   const [cardComplete, setCardComplete] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
 
-  const [loading, setLoading] = useState(false);
-
   const handleError = (error: any) => {
-    setLoading(false);
+    setIsLoading(false);
     setErrorMessage(error.message);
   };
 
@@ -54,11 +46,10 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
     }
     //TODO: collect and add shipping address to the order
 
-    // const confirmPayment = async () => {
     setIsLoading(true);
     if (clientSecret) {
+      console.log('payment intent found, proceeding...');
       try {
-        // Confirm the PaymentIntent using the details collected by the Payment Element
         const { error } = await stripe.confirmPayment({
           elements,
           clientSecret,
@@ -68,39 +59,14 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
         });
 
         if (error) {
+          console.error('Error during payment confirmation.');
           handleError(error);
         } else {
-          // This triggers the webhook with event 'payment_intent.succeeded' which takes care of confirmPayment()
-          // Payment authorized, redirecting...
-          console.log('Payment authorized, redirecting...');
-          // try {
-          //   console.log('yvesssssss');
-          //   const order = await getOrderByPaymentIntentId(
-          //     paymentInfo.paymentIntentId
-          //   );
-
-          //   if (order && order._id) {
-          //     setOrderId(order._id);
-          //     await confirmOrderPayment(order._id, paymentInfo.paymentIntentId);
-          //     console.log('order payment confirmed successfully...');
-
-          //     //resetcart
-          //     // dispatch(resetCart())
-          //   } else {
-          //     setSuccessMessage('');
-          //     setErrorMessage(`No order with id: ${orderId}`);
-          //     setTimeout(() => setErrorMessage(''), 4000);
-          //     console.log('No order with id:', orderId);
-          //   }
-          // } catch (error) {
-          //   console.error('Error fetching order data:', error);
-          //   setErrorMessage(
-          //     'Error confirming order payment. Please try again.'
-          //   );
-          // }
+          // This automatically triggers the webhook with event 'payment_intent.succeeded' which takes care of
+          // creating the order and sending payment confirmation or failure email to the customer.
         }
       } catch (error) {
-        console.error('Error during payment:', error);
+        handleError(error);
         setErrorMessage('An error occurred during payment. Please try again.');
       } finally {
         setIsLoading(false);
@@ -109,10 +75,10 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
   };
 
   return (
-    <div className='flex justify-center items-center p-4'>
+    <div className='flex justify-center items-center p-2'>
       <form
         onSubmit={handleSubmit}
-        className='bg-white shadow-lg rounded-lg p-4 w-full max-w-md'
+        className='bg-white shadow-lg rounded-lg p-4 w-full max-w-md '
       >
         <h2 className='text-lg text-center font-bold mb-4 text-nezeza_dark_blue'>
           NEZEZA
@@ -121,7 +87,7 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
         {/* Shipping Address */}
         <div className='mb-4'>
           <h3 className='text-sm font-bold mb-2'>Shipping Address</h3>
-          {/* <AddressElement options={{ mode: 'shipping',  }} /> */}
+          <AddressElement options={{ mode: 'shipping',  }} />
         </div>
         {/* Payment Section */}
         <div className='mb-4'>
@@ -140,7 +106,6 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
             </div>
           )}
         </div>
-        {/* <button type='submit' disabled={!cardComplete}>testtt</button> */}
         <div className='text-center'>
           <SubmitButton
             isLoading={isLoading}

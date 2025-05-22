@@ -1,5 +1,5 @@
-import { addToCart, addToFavorite } from '@/redux/nextSlice';
-import { Heart } from 'lucide-react';
+import { addToCart, addToFavorites } from '@/redux/nextSlice';
+import { Heart, Star } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -75,26 +75,32 @@ const Products = () => {
         >
           <div
             className='w-full aspect-w-1 aspect-h-1 relative'
-            onClick={() => {
-              router.push(`/product/${product._id}`);
-            }}
+            // onClick={() => {
+            //   router.push(`/product/${product._id}`);
+            // }}
           >
-            <Image
-              className='w-full h-full object-cover scale-90 hover:scale-100
+            <div
+              onClick={() => {
+                router.push(`/product/${product._id}`);
+              }}
+            >
+              <Image
+                className='w-full h-full object-cover scale-90 hover:scale-100
                         transition-transform duration-300'
-              src={product.image}
-              alt='productImg'
-              width={300}
-              height={300}
-              layout='responsive'
-            />
-            {product.quantity < 1 && (
-              <div className='absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center'>
-                <p className='bg-white p-2 text-nezeza_red_600 text-lg font-semibold'>
-                  Out of Stock
-                </p>
-              </div>
-            )}
+                src={product.image}
+                alt='productImg'
+                width={300}
+                height={300}
+                layout='responsive'
+              />
+              {product.quantity < 1 && (
+                <div className='absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center'>
+                  <p className='bg-white p-2 text-nezeza_red_600 text-lg font-semibold'>
+                    Out of Stock
+                  </p>
+                </div>
+              )}
+            </div>
             <div
               className='w-10 sm:w-12 h-10 sm:h-12 absolute bottom-16 sm:bottom-20 right-0 border-[1px] 
                         border-gray-400 bg-white rounded-md flex flex-col translate-x-16 sm:translate-x-20 group-hover:translate-x-0
@@ -126,7 +132,7 @@ const Products = () => {
               <span
                 onClick={() => {
                   dispatch(
-                    addToFavorite({
+                    addToFavorites({
                       product,
                       quantity: 1,
                     })
@@ -143,42 +149,70 @@ const Products = () => {
           </div>
           <hr />
           <div className='px-2 py-1 flex flex-col gap-1'>
-            <div className='flex justify-between w-full'>
-              <p className='text-xs text-nezeza_gray_600 tracking-wide'>
-                {product.category}
-              </p>
-              {/* <p className='text-xs text-nezeza_gray_600 tracking-wide'>
-                {getStoreName(product.storeId._id)}
-              </p> */}
-            </div>
-            <p className='text-sm sm:text-base font-medium'>{product.title}</p>
-            <p className='flex items-center'>
-              <span className='text-nezeza_dark_blue font-bold'>
-                <FormattedPrice amount={product.price} />
-              </span>
-            </p>
-
-            <p
-              className='text-xs text-gray-600 text-justify'
+            <div
               onClick={() => {
                 router.push(`/product/${product._id}`);
               }}
             >
-              <span className='block sm:hidden'>
-                {product.description.length > 100
-                  ? expandedProductId === product._id
-                    ? product.description
-                    : `${product.description.substring(0, 20)}...`
-                  : product.description}
-              </span>
-              <span className='hidden sm:block'>
-                {product.description.length > 100
-                  ? expandedProductId === product._id
-                    ? product.description
-                    : `${product.description.substring(0, 50)}...`
-                  : product.description}
-              </span>
-            </p>
+              <div className='flex justify-between w-full'>
+                <p className='text-xs text-nezeza_gray_600 tracking-wide'>
+                  {product.category}
+                </p>
+                {/* <p className='text-xs text-nezeza_gray_600 tracking-wide'>
+                {getStoreName(product.storeId._id)}
+              </p> */}
+              </div>
+              <div className='flex flex-col sm:flex-row flex-wrap sm:justify-between'>
+                <p className='text-sm sm:text-base font-medium'>
+                  {product.title}
+                </p>
+                <div className='flex items-center gap-1 text-right w-full sm:w-auto'>
+                  {[...Array(5)].map((_, index) => (
+                    <Star
+                      key={index}
+                      size={20}
+                      className={`${
+                        index < Math.floor(product.rating)
+                          ? 'text-yellow-500 fill-yellow-500'
+                          : index < product.rating
+                          ? 'text-yellow-500 fill-yellow-500 opacity-50'
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  ))}
+                  <span className='text-sm sm:text-base ml-1 text-gray-800'>
+                    {product.rating.toFixed(1)}
+                  </span>
+                </div>
+              </div>
+              <p className='flex items-center'>
+                <span className='text-nezeza_dark_blue font-bold'>
+                  <FormattedPrice amount={product.price} />
+                </span>
+              </p>
+
+              <p
+                className='text-xs text-gray-600 text-justify'
+                onClick={() => {
+                  router.push(`/product/${product._id}`);
+                }}
+              >
+                <span className='block sm:hidden'>
+                  {product.description.length > 100
+                    ? expandedProductId === product._id
+                      ? product.description
+                      : `${product.description.substring(0, 20)}...`
+                    : product.description}
+                </span>
+                <span className='hidden sm:block'>
+                  {product.description.length > 100
+                    ? expandedProductId === product._id
+                      ? product.description
+                      : `${product.description.substring(0, 50)}...`
+                    : product.description}
+                </span>
+              </p>
+            </div>
             {product.description.length > 100 && (
               <button
                 onClick={() => toggleProductDescription(product._id)}
@@ -191,7 +225,7 @@ const Products = () => {
               onClick={() => {
                 product.quantity < 1
                   ? dispatch(
-                      addToFavorite({
+                      addToFavorites({
                         product,
                         quantity: 1,
                       })
@@ -212,7 +246,7 @@ const Products = () => {
             {product.quantity < 1 && (
               <div className='text-xs text-center'>
                 <span className='text-nezeza_red_600'>
-                 (notified when available.)
+                  (notified when available)
                 </span>
               </div>
             )}

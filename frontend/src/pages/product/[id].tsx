@@ -1,6 +1,6 @@
 import SuccessMessageModal from '@/components/SuccessMessageModal';
 import { Button } from '@/components/ui/button';
-import { addToCart, addToFavorite } from '@/redux/nextSlice';
+import { addToCart, addToFavorites } from '@/redux/nextSlice';
 import {
   AlertTriangle,
   CheckCircle,
@@ -14,16 +14,17 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ProductProps, stateProps } from '../../../type';
 import { getSingleProduct } from '../../utils/product/getSingleProduct';
+import ReviewsModal from '@/components/Reviews/ReviewsModal';
 
 const ProductDetails = () => {
-    const { userInfo } = useSelector(
-      (state: stateProps) => state.next
-    );
+  const { userInfo } = useSelector((state: stateProps) => state.next);
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState<ProductProps | null>(null);
   const [successMessage, setSuccessMessage] = useState('');
   const dispatch = useDispatch();
+  const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
+
 
   useEffect(() => {
     if (id) {
@@ -39,7 +40,7 @@ const ProductDetails = () => {
 
   // Add to Favorites
   const handleAddToFavorite = () => {
-    dispatch(addToFavorite({ product, quantity: 1 }));
+    dispatch(addToFavorites({ product, quantity: 1 }));
     setSuccessMessage('Added to Favorites!');
   };
 
@@ -48,6 +49,14 @@ const ProductDetails = () => {
     // handleAddToCart();
     router.push('/checkout');
   };
+
+   const handleOpenReviewModal = () => {
+     setIsReviewsModalOpen(true);
+   };
+
+   const handleCloseReviewModal = () => {
+     setIsReviewsModalOpen(false);
+   };
 
   if (!product) return <p className='text-center text-lg'>Loading...</p>;
 
@@ -128,7 +137,7 @@ const ProductDetails = () => {
           <div className='mt-6 flex flex-wrap gap-4 w-full justify-center sm:justify-start'>
             <Button
               onClick={handleAddToCart}
-              className='bg-nezeza_dark_blue text-white flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-blue-800 transition w-full sm:w-auto'
+              className='bg-nezeza_dark_blue text-white flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-nezeza_green_600 transition w-full sm:w-auto'
             >
               <ShoppingCart className='mr-2' /> Add to Cart
             </Button>
@@ -138,22 +147,16 @@ const ProductDetails = () => {
             >
               <Heart className='mr-2 text-red-500' /> Add to Favorites
             </Button>
-            {/* <Button
-              onClick={handleBuyNow}
-              className='bg-nezeza_green_600 text-white flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-nezeza_green_800 transition w-full sm:w-auto'
-            >
-              Buy Now
-            </Button> */}
 
-            <div className='flex flex-col items-center text-center justify-center'>
-              <button
+            <div className='w-full sm:w-auto'>
+              <Button
                 onClick={handleBuyNow}
-                className={`w-full p-2 text-sm font-semibold bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 ${
+                className={`flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 ${
                   !userInfo ? 'pointer-events-none bg-nezeza_gray_600' : ''
                 }`}
               >
                 Buy Now
-              </button>
+              </Button>
 
               {!userInfo && (
                 <p className='text-xs mt-1 text-nezeza_red_600 font-semibold animate-bounce'>
@@ -164,25 +167,47 @@ const ProductDetails = () => {
           </div>
 
           {/* Additional Info */}
-          <div className='mt-6 text-gray-500 text-sm'>
+          {/* <div className='mt-6 text-gray-500 text-sm'>
             <p>Added on: {new Date(product.createdAt).toLocaleDateString()}</p>
-          </div>
+          </div> */}
           {/* Ratings */}
-          <div className='flex items-center mt-4'>
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`h-5 w-5 ${
-                  i < product.averageRating
-                    ? 'text-yellow-500'
-                    : 'text-gray-300'
-                }`}
-              />
-            ))}
-            <span className='ml-2 text-gray-600'>
-              ({product.numOfReviews} reviews)
-            </span>
+          <div className='mt-4 p-3 bg-gray-50 rounded-lg shadow-sm flex items-center text-center justify-center flex-wrap gap-4'>
+            <div className='flex items-center gap-1'>
+              {[...Array(5)].map((_, index) => (
+                <Star
+                  key={index}
+                  size={20}
+                  className={`${
+                    index < Math.floor(product.rating)
+                      ? 'text-yellow-500 fill-yellow-500'
+                      : index < product.rating
+                      ? 'text-yellow-500 fill-yellow-500 opacity-50'
+                      : 'text-gray-300'
+                  }`}
+                />
+              ))}
+              <span className='text-base font-semibold ml-1 text-gray-800'>
+                {product.rating.toFixed(1)}
+              </span>
+            </div>
+            {/* See Reviews Link */}
+            <button
+              onClick={handleOpenReviewModal}
+              className='bg-transparent text-nezeza_dark_blue hover:underline p-0 h-auto text-base' // Make it look like a link
+            >
+              Reviews ({product.numOfReviews || 0})
+            </button>
           </div>
+
+          {/* Review Modal */}
+          {isReviewsModalOpen && (
+            <ReviewsModal
+              isOpen={isReviewsModalOpen}
+              onClose={handleCloseReviewModal}
+              product={product}
+              // neighborhoods={products}
+            />
+          )}
         </div>
         {successMessage && (
           <SuccessMessageModal successMessage={successMessage} />

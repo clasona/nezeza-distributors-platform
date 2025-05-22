@@ -15,7 +15,7 @@ export interface ProductProps {
   height: number;
   freeShipping: boolean;
   availability: boolean;
-  averageRating: number;
+  rating: number;
   numOfReviews: number;
   storeId: StoreProps;
   createdAt: string;
@@ -23,12 +23,22 @@ export interface ProductProps {
   reviews: ReviewProps[]; // Define a ReviewProps interface for better structure
 }
 
+//reviews
 export interface ReviewProps {
-  userId: string;
+  _id: string;
   rating: number;
   comment: string;
+  user: UserProps;
+  reviewableType: string;
+  reviewableId: string;
   createdAt: string;
+  updatedAt: string;
 }
+
+export type NewReviewProps = Omit<
+  ReviewProps,
+  '_id' | 'createdAt' | 'updatedAt' | 'user'
+>;
 
 // for the buyer
 export interface OrderItemsProps {
@@ -97,7 +107,7 @@ export interface InventoryProps {
   price: number;
   freeShipping: boolean;
   availability: boolean;
-  averageRating: number;
+  rating: number;
   numOfReviews: number;
   lastUpdated: string;
   createdAt: string;
@@ -133,7 +143,20 @@ export interface StoreProps {
 }
 
 // When creating a new store, omit these since MongoDB will generate them
-export type NewStoreProps = Omit<StoreProps, '_id' | 'ownerId' | 'createdAt' | 'updatedAt'>;
+export type NewStoreProps = Omit<
+  StoreProps,
+  '_id' | 'ownerId' | 'createdAt' | 'updatedAt'
+>;
+
+// Interface for creating a new store application (no _id)
+export interface CreateStoreApplicationProps {
+  status: string;
+  primaryContactInfo: Partial<UserProps>;
+  storeInfo: NewStoreProps;
+  verificationDocs: VerificationDocsProps;
+  // createdAt: string;
+  // updatedAt: string;
+}
 
 // export interface StoreApplicationProps {
 //   _id: string;
@@ -145,20 +168,13 @@ export type NewStoreProps = Omit<StoreProps, '_id' | 'ownerId' | 'createdAt' | '
 //   updatedAt: string;
 // }
 
-// Interface for creating a new store application (no _id)
-export interface CreateStoreApplicationProps {
-  status: string;
-  primaryContactInfo: Partial<UserProps>;
-  storeInfo: NewStoreProps;
-  verificationDocs: VerificationDocsProps;
+// Interface for displaying or working with existing store applications (_id required)
+export interface StoreApplicationProps extends CreateStoreApplicationProps {
+  _id: string;
   createdAt: string;
   updatedAt: string;
 }
 
-// Interface for displaying or working with existing store applications (_id required)
-export interface StoreApplicationProps extends CreateStoreApplicationProps {
-  _id: string;
-}
 export interface VerificationDocsProps {
   primaryContactIdentityDocument: any;
   businessDocument: any;
@@ -176,7 +192,7 @@ export interface UserProps {
   verifiedAt: string;
   storeId: string;
   citizenshipCountry?: string;
-  birthCountry?: string;
+  // birthCountry?: string;
   dob?: string;
   residenceAddress?: AddressProps;
 }
@@ -199,6 +215,7 @@ export interface AddressProps {
   zipCode: string;
   country: string;
 }
+
 export interface PrimaryContactProps {
   firstName: string;
   lastName: string;
@@ -240,4 +257,27 @@ export interface NotificationProps {
   receipientId: Userprops;
   // type: string;
   createdAt: string;
+}
+
+export interface CustomTokenProps {
+  user: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    roles: { name: string }[];
+    storeId?: {
+      _id: string;
+      name: string;
+      storeType: string;
+      email: string;
+      description: string;
+      ownerId: string;
+      address: string;
+      isActive: boolean;
+      createdAt: string;
+      updatedAt: string;
+    };
+    image?: string;
+  };
 }

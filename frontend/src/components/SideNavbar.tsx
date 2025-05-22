@@ -133,10 +133,6 @@ const SideNavbar = ({
       )
   );
 
-  const handleLogoutClick = () => {
-    router.push('/logout'); // Replace '/logout' with your target route
-  };
-
   return (
     <div
       className={`${

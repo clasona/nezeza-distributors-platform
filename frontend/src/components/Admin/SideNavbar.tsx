@@ -32,8 +32,8 @@ const SideNavbar = ({
  
   const sidebarLinks = [
     {
-      title: 'Dashboard ',
-      href: `${basePath}/dashboard`,
+      title: 'Dashboard',
+      href: `${basePath}`,
       icon: LayoutDashboard,
     },
     {
@@ -90,14 +90,16 @@ const SideNavbar = ({
       className={`${
         // TODO: add some styling for the sidebar side scroll at some point?
         showSidebar
-          ? 'sm:block bg-nezeza_dark_blue space-y-6 w-64 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
-          : ' sm:block bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll' // add hidden to hide it
-      }`}
+          ? 'bg-nezeza_dark_blue space-y-6 w-60 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+          : 'bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+      } hidden sm:block`}
     >
-      <Link className=' px-6 py-2 ' href='#'>
-        <Image className='w-36 ' src={logo} alt='logoImg ' />
-      </Link>
-      <div className='flex flex-col space-y-2 mt-14'>
+      <div className=' px-6 py-2'>
+        <Link href='#'>
+          <Image className='w-36 ' src={logo} alt='logoImg ' />
+        </Link>
+      </div>
+      <div className='flex flex-col space-y-2'>
         {sidebarLinks.map((item) => (
           <Link
             // onClick={() => setShowSidebar(true)} // make false: collapses side bar when item clicked, might remove
@@ -117,7 +119,7 @@ const SideNavbar = ({
         ))}
 
         <div className='flex px-6 py-8'>
-          <LogoutButton className='py-2' redirectTo='login' />
+          <LogoutButton className='py-2'/>
         </div>
       </div>
     </div>

@@ -1,13 +1,12 @@
-
 import axiosInstance from '../axiosInstance';
 
-export const getUser = async (userId: string) => {
+export const getCurrentUser = async () => {
   try {
-    const response = await axiosInstance.get(`/users/${userId}`);
+    const response = await axiosInstance.get('/users/me');
     const userData = response.data.user;
 
     if (response.status !== 200) {
-      console.log('user data not fetched.');
+      console.log('current user data not fetched.');
       return null;
     } else {
       return userData;
@@ -16,4 +15,3 @@ export const getUser = async (userId: string) => {
     throw error;
   }
 };
-

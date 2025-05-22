@@ -32,10 +32,18 @@ const PrimaryContactInfoSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  // residenceAddress: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: 'Address',
+  //   required: true,
+  // },
+  // In PrimaryContactInfoSchema
   residenceAddress: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'Address',
-    required: true,
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zipCode: { type: String, required: true },
+    country: { type: String, required: true },
   },
 });
 
@@ -72,11 +80,20 @@ const StoreInfoSchema = new mongoose.Schema({
   //   type: Object, // Store the Cloudinary resource object
   //   required: true,
   // },
+  // address: {
+  //   type: mongoose.Schema.ObjectId,
+  //   ref: 'Address',
+  //   required: true,
+  // },
+  // In PrimaryContactInfoSchema
   address: {
-    type: mongoose.Schema.ObjectId,
-    ref: 'Address',
-    required: true,
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zipCode: { type: String, required: true },
+    country: { type: String, required: true },
   },
+
   isActive: {
     type: Boolean,
     default: false,

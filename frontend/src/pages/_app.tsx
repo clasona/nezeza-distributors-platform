@@ -22,7 +22,7 @@ export default function App({
     <div>
       <Provider store={store}>
         {/* for persisting redux store state data when refreshed */}
-        <PersistGate loading={null} persistor={persistor}>
+        <PersistGate loading={<p>Loading...</p>} persistor={persistor}>
           <SessionProvider session={session}>
             <div className='bg-gray-300'>
               {/* <RootLayout>

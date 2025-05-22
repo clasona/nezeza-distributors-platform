@@ -19,8 +19,8 @@ const Orders = () => {
   const [archivedOrders, setArchivedOrders] = useState<OrderProps[]>([]); // State for archived orders
   const [filteredOrders, setFilteredOrders] = useState<OrderProps[]>([]);
   const [filter, setFilter] = useState('All Orders'); // Current filter
-const [orderStatsObj, setOrderStatsObj] = useState<any[]>([]); // Or a more specific type if you know it
-const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
+  const [orderStatsObj, setOrderStatsObj] = useState<any[]>([]); // Or a more specific type if you know it
+  const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [currentRowData, setCurrentRowData] = useState<OrderProps | null>(null);
@@ -77,10 +77,6 @@ const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
     }
   };
 
-  if (orders.length === 0 && archivedOrders.length === 0) {
-    return <div>Loading...</div>;
-  }
-
   const handleArchiveClick = (rowData: OrderProps) => {
     setCurrentRowData(rowData); // Set the selected row data
     setIsArchiveModalOpen(true); // Open the modal
@@ -88,7 +84,7 @@ const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
   const handleConfirmArchive = (id: string) => {
     getOrderStatus(id).then((status) => {
       if (status) {
-        if (status === 'Completed') {
+        if (status === 'Delivered') {
           setErrorMessage('');
 
           setFilteredOrders((prevOrders) =>
@@ -106,7 +102,7 @@ const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
           }
         } else {
           setErrorMessage(
-            "Order status must be 'Completed' to perform this action."
+            "Order status must be 'Delivered' to perform this action."
           );
           setTimeout(() => setErrorMessage(''), 4000);
         }
@@ -114,6 +110,9 @@ const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
     });
   };
 
+  // if (orders.length === 0 && archivedOrders.length === 0) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <RootLayout>
@@ -133,6 +132,16 @@ const [allOrderStatsObj, setAllOrderStatsObj] = useState<any[]>([]);
           }
         />
         {/* Order Status Counts */}
+        {allOrderStatsObj.length === 0 && (
+          <div className='flex flex-wrap justify-between gap-4 px-4 py-1 bg-gray-100 rounded-md'>
+            <div className='cursor-pointer px-4 py-0.5 rounded-md bg-white text-gray-700 hover:bg-gray-200 transition duration-300'>
+              <span>All Orders: 0</span>
+            </div>
+            <div className='cursor-pointer px-4 py-0.5 rounded-md bg-white text-gray-700 hover:bg-gray-200 transition duration-300'>
+              <span>Archived: 0</span>
+            </div>
+          </div>
+        )}
         <div className='flex flex-wrap justify-between gap-4 px-4 py-1 bg-gray-100 rounded-md'>
           {allOrderStatsObj.map((stat) => (
             <div

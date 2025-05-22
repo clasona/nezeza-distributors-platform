@@ -40,13 +40,6 @@ export const calculateOrderStats = (
       className: 'bg-teal-600',
     },
     {
-      status: 'Completed',
-      count: existingOrders.filter(
-        (order) => order.fulfillmentStatus === 'Completed'
-      ).length,
-      className: 'bg-nezeza_green_600 ',
-    },
-    {
       status: 'Archived',
       count: existingOrders.filter(
         (order) => order.fulfillmentStatus === 'Archived'

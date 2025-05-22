@@ -7,13 +7,20 @@ const Store = require('../models/Store');
 const SellerBalance = require('../models/sellerBalance');
 const Address = require('../models/Address');
 const path = require('path');
+const createOrderUtil = require('../utils/order/createOrderUtil');
 const { v4: uuidv4 } = require('uuid');
 // utils imports
+const getOrderDetails = require('../utils/order/getOrderDetails');
 const {
   sendEmail,
   sendBuyerNotificationEmail,
   sendSellerNotificationEmail,
 } = require('../utils');
+const {
+  sendBuyerPaymentConfirmationEmail,
+  sendBuyerPaymentFailureEmail,
+  sendBuyerPaymentRefundEmail,
+} = require('../utils/buyerPaymentEmailUtils');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 
@@ -26,6 +33,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // at https://dashboard.stripe.com/webhooks
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const webhookHandler = async (req, res) => {
+  console.log('Entering Webhook ...');
   let event;
   // If endpoint secret provided, verify event signature and construct event from stripe
   if (endpointSecret) {
@@ -38,12 +46,12 @@ const webhookHandler = async (req, res) => {
         endpointSecret
       );
     } catch (err) {
-      console.log(`⚠️  Webhook signature verification failed.`, err.message);
+      console.log(`⚠️ Webhook signature verification failed.`, err.message);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
   } else {
     console.log(
-      `⚠️  No webhook endpoint secret provided, event signature won't be verified.`
+      `⚠️ No webhook endpoint secret provided, event signature won't be verified.`
     );
     event = req.body;
   }
@@ -51,27 +59,44 @@ const webhookHandler = async (req, res) => {
   try {
     switch (event.type) {
       case 'payment_intent.succeeded':
+        console.log('PaymentIntent was successful!.....');
         const paymentIntent = event.data.object;
         const paymentIntentId = paymentIntent.id;
-        const orderId = paymentIntent.metadata.orderId;
+        const orderItems = paymentIntent.metadata.orderItems;
+        const buyerId = paymentIntent.metadata.buyerId;
+        const customerEmail = paymentIntent.metadata.customerEmail;
+        const customerFirstName = paymentIntent.metadata.customerFirstName;
+        const totalAmount = paymentIntent.metadata.totalAmount;
 
         // Handle successful payment intent
+
         if (!paymentIntentId) {
           console.error('No payment intent id provided to the stripe webhook.');
           throw new CustomError.BadRequestError(
             'No payment intent id provided to the stripe webhook'
           );
-        } else if (!orderId) {
-          console.error('No order ID provided to the stripe webhook.');
+        } else if (!orderItems || orderItems.length < 1) {
+          console.error('No order items provided to the stripe webhook.');
           throw new CustomError.BadRequestError(
-            'No order ID provided to the stripe webhook'
+            'No order items provided to the stripe webhook'
           );
         } else {
-          console.log('Invoking confirm payment function...');
-          await confirmPayment(orderId, paymentIntentId); //contains all the functionality for updating order, payments, etc
+          console.log('Creating the order....');
+          const orderId = await createOrderUtil(
+            orderItems,
+            0, //TODO: Add shipping fee
+            'credit_card', //TODO: Add payment method
+            buyerId
+          );
+          console.log('Order created successfully.');
+          // await confirmPayment(orderId, paymentIntentId); //contains all the functionality for updating order, payments, etc
 
-          //TODO: send email to buyer, using webhook?
-
+          console.log('Sending confirmation email to buyer...');
+          await sendBuyerPaymentConfirmationEmail({
+            name: customerFirstName,
+            email: customerEmail,
+            orderId: orderId,
+          });
           // await updateSellerBalances(order); // Call the update balances function
         }
         break;
@@ -91,6 +116,7 @@ const webhookHandler = async (req, res) => {
         } catch (error) {
           console.error('Error updating order status on failure:', error);
         }
+        break;
       case 'payment_method.attached':
         const paymentMethod = event.data.object;
         // Handle successful payment method attachment
@@ -138,8 +164,8 @@ create_stripe_connect_account = async (req, res) => {
     // Generate Stripe onboarding link
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccount.id,
-      refresh_url: 'http://localhost:3000/wholesaler', //if it fails
-      return_url: 'http://localhost:3000/wholesaler', //after successfull account creation
+      refresh_url: `${process.env.CLIENT_URL}/wholesaler`, //if it fails
+      return_url: `${process.env.CLIENT_URL}/wholesaler`, //after successfull account creation
       type: 'account_onboarding',
     });
 
@@ -175,26 +201,66 @@ active_stripe_connect_account = async (req, res) => {
 };
 // End Method
 // Create Payment Intent
-const createPaymentIntent = async (order) => {
-  if (order && order.totalAmount) {
-    if (order.totalAmount) {
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: order.totalAmount * 100, // In cents
-        currency: 'usd',
-        payment_method_types: ['card'],
-        transfer_group: order._id.toString(), // Group all transfers
-        metadata: { orderId: order._id.toString() },
-      });
+const createPaymentIntent = async (req, res) => {
+  const { orderItems } = req.body;
+  let totalAmount = 0;
 
-      //console.log(paymentIntent);
-      return paymentIntent;
-    } else {
-      throw new CustomError.BadRequestError(
-        "Order 'totalAmount' is required to create paymentIntent."
-      );
+  const metadata = {
+    customerEmail: '',
+    customerFirstName: 'Customer',
+  };
+
+  if (!orderItems || orderItems.length < 1) {
+    throw new CustomError.BadRequestError('No order items provided');
+  }
+
+  metadata.orderItems = JSON.stringify(
+    orderItems.map((item) => ({
+      productId: item.product._id || item.product,
+      title: item.title,
+      quantity: item.quantity,
+      price: item.price,
+    }))
+  );
+  //calculate total amount
+  for (const item of orderItems) {
+    const price = item.price;
+    const quantity = item.quantity;
+    const taxAmount = item.taxAmount || 0; // Default to 0 if not provided
+    // const shippingAmount = product.shippingAmount || 0; // Default to 0 if not provided
+    const totalItemAmount = price * quantity + taxAmount; // + shippingAmount;
+    totalAmount += totalItemAmount;
+  }
+
+  metadata.totalAmount = totalAmount;
+
+  if (req.user && req.user.userId) {
+    const user = await User.findById(req.user.userId);
+    if (user) {
+      metadata.customerFirstName = user.firstName || 'Customer';
+      metadata.customerEmail = user.email;
+      metadata.buyerId = user._id.toString();
     }
   }
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalAmount * 100, // In cents
+      currency: 'usd',
+      payment_method_types: ['card'],
+      metadata: metadata,
+    });
+    console.log('Payment intent created successfully.');
+    res
+      .status(StatusCodes.OK)
+      .json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error('Error creating Payment Intent:', error);
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: 'Failed to initiate payment', error: error.message });
+  }
 };
+
 const updateSellerBalances = async (order) => {
   for (const subOrder of order.subOrders) {
     const sellerId = subOrder.sellerId;
@@ -209,6 +275,7 @@ const updateSellerBalances = async (order) => {
 
 const confirmPayment = async (req, res) => {
   // console.log(req.body);
+  console.log('Enterting confirm payment...');
   const { orderId, paymentIntentId } = req.body;
   const session = await mongoose.startSession(); // Start MongoDB session
   session.startTransaction(); // Begin transaction
@@ -230,28 +297,28 @@ const confirmPayment = async (req, res) => {
     const suborders = order.subOrders;
 
     //console.log(suborders);
-    const buyer = await User.findById(order.buyerId);
-    const shippingAddress = await Address.findById(order.shippingAddress._id);
+    // const buyer = await User.findById(order.buyerId);
+    // const shippingAddress = await Address.findById(order.shippingAddress._id);
 
-    const buyerEmailDetails = {
-      email: buyer.email,
-      buyerName: buyer.firstName,
-      orderId: order._id,
-      orderItems: order.orderItems,
-      totalAmount: order.totalAmount,
-      shippingMethod: 'Standard Ground Shipping',
-      shippingAddress: shippingAddress,
-      estimatedDeliveryDate: 'March 22, 2025',
-    };
+    // const buyerEmailDetails = {
+    //   email: buyer.email,
+    //   buyerName: buyer.firstName,
+    //   orderId: order._id,
+    //   orderItems: order.orderItems,
+    //   totalAmount: order.totalAmount,
+    //   shippingMethod: 'Standard Ground Shipping',
+    //   shippingAddress: shippingAddress,
+    //   estimatedDeliveryDate: 'March 22, 2025',
+    // };
 
-    //const sendEmail = await sendBuyerNotificationEmail(buyerEmailDetails);
-    const sellerEmailDetails = {
-      buyerName: buyer.firstName,
-      orderItems: [],
-      shippingAddress,
-      shippingMethod: 'Standard Ground Shipping',
-      email: ['abotgeorge1@gmail.com'],
-    };
+    // //const sendEmail = await sendBuyerNotificationEmail(buyerEmailDetails);
+    // const sellerEmailDetails = {
+    //   buyerName: buyer.firstName,
+    //   orderItems: [],
+    //   shippingAddress,
+    //   shippingMethod: 'Standard Ground Shipping',
+    //   email: ['abotgeorge1@gmail.com'],
+    // };
     //TODO: Uncomment
     //Distribute payment to each seller
     for (let suborder of suborders) {
@@ -291,17 +358,27 @@ const confirmPayment = async (req, res) => {
       // // Store the transferId for potential reversal
       // suborder.transferId = transfer.id;
       const store = await Store.findById(suborder.sellerStoreId);
-      sellerEmailDetails.orderId = suborder._id;
-      sellerEmailDetails.totalAmount = suborder.totalAmount;
-      sellerEmailDetails.email.push(store.email);
-      sellerEmailDetails.orderItems = suborder.products;
+      // sellerEmailDetails.orderId = suborder._id;
+      // sellerEmailDetails.totalAmount = suborder.totalAmount;
+      // sellerEmailDetails.email.push(store.email);
+      // sellerEmailDetails.orderItems = suborder.products;
 
       await suborder.save({ session });
     }
+    const orderInfo = getOrderDetails(orderId);
 
-    const sendSellerEmail = await sendSellerNotificationEmail(
-      sellerEmailDetails
-    );
+    console.log('Sending email to buyer...');
+
+    await sendBuyerPaymentConfirmationEmail({
+      name: orderInfo.buyerFirstName,
+      email: orderInfo.buyerEmail,
+      orderId: orderInfo._id,
+    });
+
+    // TODO: Send email to the seller
+    // const sendSellerEmail = await sendSellerNotificationEmail(
+    //   sellerEmailDetails
+    // );
     ///return order;
     res.status(200).json({ message: 'Payment confirmed', order });
     //return order;
@@ -586,8 +663,20 @@ const cancelSubscription = async (req, res) => {
 };
 
 const refundTest = async (req, res) => {
-  console.log(req.body.paymentMethodId);
-  res.json({ msg: 'test' });
+  await createOrderUtil({
+    cartItems: [
+      {
+        product: '67c399a2ebe0870201a6d4af',
+        title: 'Test Product',
+        quantity: 2,
+        price: 100,
+      },
+    ],
+    shippingFee: 0,
+    paymentMethod: 'credit_card',
+    buyerId: '6799927a2bc90813c9b7ebfb',
+  });
+  console.log('Refund test finalized');
 };
 
 //confirmPayment('67d894391232d717c78f476e', 'pi_3R3lE2Ixvdd0pNY40k7n6MnT');

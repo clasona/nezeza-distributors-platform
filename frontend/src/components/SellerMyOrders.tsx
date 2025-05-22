@@ -259,9 +259,8 @@ const SellerMyOrders = () => {
   const handleConfirmArchive = (id: string) => {
     getOrderStatus(id).then((status) => {
       if (status) {
-        if (status === 'Completed') {
+        if (status === 'Delivered') {
           setErrorMessage('');
-
           setFilteredOrders((prevOrders) =>
             prevOrders.filter((order) => order._id !== id)
           );
@@ -277,7 +276,7 @@ const SellerMyOrders = () => {
           }
         } else {
           setErrorMessage(
-            "Order status must be 'Completed' to perform this action."
+            "Order status must be 'Delivered' to perform this action."
           );
           setTimeout(() => setErrorMessage(''), 4000);
         }
@@ -373,7 +372,6 @@ const SellerMyOrders = () => {
             { value: 'Fulfilled', label: 'Fulfilled' },
             { value: 'Shipped', label: 'Shipped' },
             { value: 'Delivered', label: 'Delivered' },
-            { value: 'Completed', label: 'Completed' },
             { value: 'Canceled', label: 'Canceled' },
           ]}
           selectedOption={statusFilter}
@@ -531,7 +529,7 @@ const SellerMyOrders = () => {
                                 onClick={async () => {
                                   getOrderStatus(order._id).then((status) => {
                                     if (status) {
-                                      if (status === 'Completed') {
+                                      if (status === 'Delivered') {
                                         setErrorMessage('');
                                         setSelectedItemToUpdate(item);
                                         setIsConfirmUpdateProductModalOpen(
@@ -539,7 +537,7 @@ const SellerMyOrders = () => {
                                         );
                                       } else {
                                         setErrorMessage(
-                                          "Order status must be 'Completed' to perform this action."
+                                          "Order status must be 'Delivered' to perform this action."
                                         );
                                         setTimeout(
                                           () => setErrorMessage(''),
@@ -571,13 +569,13 @@ const SellerMyOrders = () => {
                                 onClick={() => {
                                   getOrderStatus(order._id).then((status) => {
                                     if (status) {
-                                      if (status === 'Completed') {
+                                      if (status === 'Delivered') {
                                         setErrorMessage('');
                                         setSelectedItemToCreate(item);
                                         setIsConfirmNewProductModalOpen(true);
                                       } else {
                                         setErrorMessage(
-                                          "Order status must be 'Completed' to perform this action."
+                                          "Order status must be 'Delivered' to perform this action."
                                         );
                                         setTimeout(
                                           () => setErrorMessage(''),

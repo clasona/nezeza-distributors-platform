@@ -1,39 +1,18 @@
 import CartPayment from '@/components/Cart/CartPayment';
 import CartProduct from '@/components/Cart/CartProduct';
-import ResetCart from '@/components/ResetCart';
+import ResetCart from '@/components/Cart/ResetCart';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { OrderItemsProps, stateProps } from '../../type';
 
 const cartPage = () => {
   const { cartItemsData } = useSelector((state: stateProps) => state.next);
-  //  const dispatch = useDispatch();
-  //  const [loading, setLoading] = useState(true);
 
-  //  useEffect(() => {
-  //    const fetchUpdatedCart = async () => {
-  //      try {
-  //        const res = await getCart();
-
-  //        dispatch(setCartItems(res)); // Update Redux state with latest cart
-  //      } catch (error) {
-  //        console.error('Error fetching updated cart:', error);
-  //      } finally {
-  //        setLoading(false);
-  //      }
-  //    };
-
-  //    fetchUpdatedCart();
-  //  }, [dispatch]);
-
-  //  if (loading) {
-  //    return <p className='text-center py-10'>Loading cart...</p>;
-  //  }
   return (
-    <div className='max-w-screen-2xl mx-auto px-6 grid grid-cols-5 gap-10 py-4'>
+    <div className='mx-auto px-4 sm:px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 sm:gap-10 py-2 sm:py-4'>
       {cartItemsData.length > 0 ? (
         <>
-          <div className='bg-white col-span-4 p-4 rounded-lg'>
+          <div className='bg-white col-span-2 sm:col-span-4 p-4 rounded-lg'>
             <div
               className='flex items-center justify-between border-b-[1px]
                         border-b-gray-400 pb-1'
@@ -54,31 +33,26 @@ const cartPage = () => {
                   <CartProduct item={item} />
                 </div>
               ))}
-              <div className='mt-4'>
+              <div className='mt-4 text-center sm:text-left'>
                 <ResetCart />
               </div>
             </div>
           </div>
 
-          <div
-            className='bg-white h-64 col-span-1 rounded-lg flex
-                    items-center justify-center'
-          >
+          <div className='bg-white p-2 sm:p-4 rounded-lg flex flex-col justify-center col-span-2 sm:col-span-1'>
             <CartPayment />
           </div>
         </>
       ) : (
-        <div className='w-full col-span-5 flex flex-col items-center justify -center py-5 rounded-lg shadow-lg'>
-          <h1 className='text-lg font-medium'>Your Cart is Empty</h1>
-          {/* Redirect to this user's home page */}
-          <Link href='/'>
-            <button
-              className='w-52 h-10 bg-nezeza_dark_blue text-white rounded-text-sm
+        <div className='w-full col-span-2 sm:col-span-5 flex flex-col items-center justify-center py-5 rounded-lg shadow-lg'>
+          <h1 className='text-lg font-medium mb-4'>Your Cart is Empty</h1>
+          <button
+            className='w-52 h-10 bg-nezeza_dark_blue text-white rounded-text-sm
                     font-semibold hover:bg-nezeza_green_600 hover:text-white'
-            >
-              Go to Shopping
-            </button>
-          </Link>
+            onClick={() => (window.location.href = '/')}
+          >
+            Go to Shopping
+          </button>
         </div>
       )}
     </div>

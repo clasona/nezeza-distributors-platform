@@ -1,74 +1,210 @@
-const webhookHandler = async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
+const mongoose = require('mongoose');
+const CustomError = require('../../errors');
+const Product = require('../../models/Product');
+const User = require('../../models/User');
+const Store = require('../../models/Store');
+const Order = require('../../models/Order');
+const Address = require('../../models/Address');
+const checkWhoIsTheBuyer = require('../checkWhoIsTheBuyer');
+const SubOrder = require('../../models/SubOrder');
+const {
+  groupProductsBySeller,
+} = require('../../helpers/groupProductsBySeller');
+
+const createSubOrders = async (fullOrder, session) => {
+  try {
+    const subOrdersGrouped = groupProductsBySeller(fullOrder);
+    const subOrderData = Object.keys(subOrdersGrouped).map((sellerId) => {
+      const subOrder = subOrdersGrouped[sellerId];
+      const totalAmount =
+        subOrder.totalAmount + subOrder.totalTax + subOrder.totalShipping;
+      const transactionFee = subOrder.totalAmount * 0.1;
+      return {
+        ...subOrder,
+        sellerId,
+        totalAmount,
+        transactionFee,
+        fullOrderId: fullOrder._id,
+      };
+    });
+    const subOrders = await SubOrder.insertMany(subOrderData);
+    const subOrderIds = subOrders.map((subOrder) => subOrder._id);
+    return subOrderIds;
+  } catch (error) {
+    console.error('Error creating sub-orders:', error);
+    throw error;
+  }
+};
+
+// Refactored function to take parameters directly
+const createOrderUtil = async (
+  cartItems,
+  shippingFee,
+  paymentMethod,
+  buyerId
+) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
-    event = stripe.webhooks.constructEvent(
-      req.body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET
+    const buyer = await User.findById(buyerId)
+      .populate('storeId')
+      .session(session);
+
+    if (!buyer) {
+      throw new CustomError.NotFoundError('The buyer does not exist.');
+    }
+
+    const isIndividualCustomer = !buyer.storeId;
+    let buyerStore = isIndividualCustomer ? buyer : buyer.storeId;
+
+    if (!cartItems || cartItems.length < 1) {
+      throw new CustomError.BadRequestError('No cart items provided');
+    }
+
+    if (!shippingFee && shippingFee !== 0) {
+      throw new CustomError.BadRequestError('Please provide shipping fee');
+    }
+
+    // parse cartItems if it's a string (from payment intent metadata)
+    if (typeof cartItems === 'string') {
+      cartItems = JSON.parse(cartItems);
+    }
+
+    const productIds = cartItems.map(
+      (item) =>
+        item.productId ||
+        (item.product && (item.product._id || item.product)) ||
+        item.product
     );
-  } catch (err) {
-    console.log('Webhook signature verification failed.', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
 
-  if (event.type === 'payment_intent.succeeded') {
-    const paymentIntent = event.data.object;
-    const paymentIntentId = paymentIntent.id;
-    const orderId = paymentIntent.metadata.orderId; // Get order ID from metadata
+    const dbProducts = await Product.find({ _id: { $in: productIds } }).session(
+      session
+    );
 
-    try {
-      const order = await Order.findById(orderId).populate('subOrders');
+    let orderItems = [];
+    let subtotal = 0;
+    let totalTax = 0;
+    let totalShipping = 0;
+    const stockUpdates = [];
 
-      if (!order) {
-        console.error(
-          `Order ${orderId} not found for payment intent ${paymentIntentId}`
+    for (const item of cartItems) {
+      const itemProductId =
+        item.productId ||
+        (item.product && (item.product._id || item.product)) ||
+        item.product;
+
+      const dbProduct = dbProducts.find(
+        (product) => product._id.toString() === itemProductId.toString()
+      );
+
+      if (!dbProduct) {
+        throw new CustomError.NotFoundError(
+          `No product with id : ${itemProductId}`
         );
-        return res.status(404).json({ error: 'Order not found' }); // Return error to stripe
       }
 
-      order.paymentStatus = 'Paid';
-      order.paymentIntentId = paymentIntentId;
-      await order.save();
+      const {
+        title,
+        price,
+        image,
+        _id,
+        taxRate,
+        quantity,
+        storeId: sellerStoreId,
+      } = dbProduct;
 
-      await updateSellerBalances(order); // Call the update balances function
-
-      // Distribute payment to each seller (as before)
-      for (let suborder of order.subOrders) {
-        const seller = await stripeModel.findOne({
-          sellerId: suborder.sellerStoreId,
-        });
-        const amount = suborder.totalAmount * 100;
-
-        await stripe.transfers.create({
-          amount,
-          currency: 'usd',
-          destination: seller.stripeAccountId,
-          transfer_group: orderId, // Use the same transfer group
-        });
+      if (item.quantity > quantity) {
+        throw new CustomError.BadRequestError(
+          `Not enough stock for product: ${_id}, only ${quantity} available`
+        );
       }
-      console.log(`Payment confirmed & payouts sent for order ${orderId}`);
-    } catch (error) {
-      console.error('Error processing payment intent:', error);
-      return res.status(500).json({ error: 'Payment processing failed' }); // Return error to stripe
+
+      const sellerStore = await Store.findById(sellerStoreId).session(session);
+
+      checkWhoIsTheBuyer(buyerStore, sellerStore);
+
+      const itemTax = (price * taxRate) / 100;
+
+      const singleOrderItem = {
+        quantity: item.quantity,
+        title,
+        price,
+        image,
+        product: _id,
+        taxRate,
+        sellerStoreId,
+        taxAmount: itemTax * item.quantity,
+      };
+      orderItems.push(singleOrderItem);
+
+      subtotal += item.quantity * price;
+      totalTax += itemTax * item.quantity;
+      totalShipping += 0;
+
+      stockUpdates.push({ productId: _id, quantity: item.quantity });
     }
-  } else if (event.type === 'payment_intent.failed') {
-    const paymentIntent = event.data.object;
-    const paymentIntentId = paymentIntent.id;
-    const orderId = paymentIntent.metadata.orderId;
 
-    try {
-      const order = await Order.findById(orderId);
-      if (order) {
-        order.paymentStatus = 'Failed'; // Update order status
-        await order.save();
-        console.log(`Payment failed for order ${orderId}.`);
-      }
-    } catch (error) {
-      console.error('Error updating order status on failure:', error);
+    const totalAmount = totalTax + totalShipping + subtotal;
+
+    // Placeholder address creation
+    const address = await Address.create(
+      [
+        {
+          street: '12345 Market St',
+          city: 'San Francisco',
+          state: 'CA',
+          zipCode: '94103',
+          country: 'USA',
+          phone: '8608084545',
+        },
+      ],
+      { session }
+    );
+
+    const [order] = await Order.create(
+      [
+        {
+          orderItems,
+          totalAmount,
+          totalTax,
+          totalShipping,
+          paymentMethod,
+          shippingAddress: address[0]._id,
+          billingAddress: address[0]._id,
+          buyerId,
+          buyerStoreId: buyerStore._id,
+          subOrders: [],
+        },
+      ],
+      { session }
+    );
+
+    if (stockUpdates.length > 0) {
+      const bulkOps = stockUpdates.map(({ productId, quantity }) => ({
+        updateOne: {
+          filter: { _id: productId },
+          update: { $inc: { stock: -quantity } },
+        },
+      }));
+      await Product.bulkWrite(bulkOps, { session });
     }
+
+    const updatedSubOrders = await createSubOrders(order, session);
+    order.subOrders = updatedSubOrders;
+
+    await order.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return order._id;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error('Error in createOrder utility:', error);
+    throw error;
   }
-
-  res.json({ received: true }); // Important: Acknowledge the webhook event
 };
+
+module.exports = createOrderUtil;
