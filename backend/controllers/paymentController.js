@@ -109,9 +109,10 @@ const webhookHandler = async (req, res) => {
 create_stripe_connect_account = async (req, res) => {
   try {
     const { email } = req.body;
-    console.log(email);
+
     const seller = await User.findOne({ email: email });
-    //Create Stripe Express account
+    const sellerStore = await Store.findById(seller.storeId);
+
     const stripeAccount = await stripe.accounts.create({
       type: 'express',
       email,
@@ -121,13 +122,18 @@ create_stripe_connect_account = async (req, res) => {
         transfers: { requested: true },
       },
     });
+    // Create a Stripe Customer for platform subscription billing
+    const customer = await stripe.customers.create({
+      email: email,
+      name: sellerStore.name,
+    });
     //Create seller in database
-    const id = '676b2cdfee63a00d05af0588';
     const stripeInfo = await stripeModel.create({
-      sellerId: id,
+      sellerId: sellerStore._id,
       code: uuidv4(), // Generate unique code for stripe account
       email,
       stripeAccountId: stripeAccount.id,
+      stripeCustomerId: customer.id,
     });
     // Generate Stripe onboarding link
     const accountLink = await stripe.accountLinks.create({
@@ -138,7 +144,6 @@ create_stripe_connect_account = async (req, res) => {
     });
 
     res.status(200).json({ url: accountLink.url });
-    //res.status(200).json({ message: 'Your account' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -507,12 +512,82 @@ const createCustomerSession = async (req, res) => {
       .json({ message: 'Internal Server Error', error: error.message });
   }
 };
+
+// controllers/subscriptionController.js
+
+//const User = require('../models/User');
+///const asyncHandler = require('express-async-handler');
+
+const createSubscription = async (req, res) => {
+  const { sellerId, paymentMethodId } = req.body;
+
+  // Fetch seller from database
+  const seller = await stripeModel.findOne({ sellerId: sellerId });
+  console.log(seller.stripeCustomerId);
+  if (!seller || !seller.stripeCustomerId) {
+    throw new Error('Seller not found or not connected to Stripe');
+  }
+
+  const existingSubscriptions = await stripe.subscriptions.list({
+    customer: seller.stripeCustomerId,
+    status: 'active', // Only fetch active subscriptions
+  });
+
+  if (existingSubscriptions.data.length > 0) {
+    return res.status(400).json({
+      message: 'Customer already has an active subscription.',
+    });
+  }
+
+  try {
+    // Attach the payment method to the customer
+    await stripe.paymentMethods.attach(paymentMethodId, {
+      customer: seller.stripeCustomerId,
+    });
+    // Set default payment method on the customer
+    await stripe.customers.update(seller.stripeCustomerId, {
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+    // Create a subscription
+    const subscription = await stripe.subscriptions.create({
+      customer: seller.stripeCustomerId,
+      trial_period_days: 60, // trial period
+      items: [{ price: 'price_1ROrRfIxvdd0pNY4DoSTBU5s' }], // Monthly plan price ID
+      expand: ['latest_invoice.payment_intent'],
+    });
+    // Save the subscription ID in the database
+    seller.subscriptionId = subscription.id;
+    await seller.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Subscription created successfully',
+      subscription,
+    });
+  } catch (error) {
+    console.error('Error creating subscription:', error.message);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const cancelSubscription = async (req, res) => {
+  const { subscriptionId } = req.body;
+
+  try {
+    await stripe.subscriptions.cancel(subscriptionId);
+    res
+      .status(200)
+      .json({ success: true, message: 'Subscription canceled successfully' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 const refundTest = async (req, res) => {
-  const paymentIntent = await stripe.paymentIntents.retrieve(
-    'pi_3R3MwuIxvdd0pNY40Igxxa1L'
-  );
-  console.log(paymentIntent.status);
-  res.json({ msg: paymentIntent });
+  console.log(req.body.paymentMethodId);
+  res.json({ msg: 'test' });
 };
 
 //confirmPayment('67d894391232d717c78f476e', 'pi_3R3lE2Ixvdd0pNY40k7n6MnT');
@@ -529,5 +604,7 @@ module.exports = {
   sellerRequestPayOut,
   processRefund,
   createCustomerSession,
+  createSubscription,
+  cancelSubscription,
   refundTest,
 };

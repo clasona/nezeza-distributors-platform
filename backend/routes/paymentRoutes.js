@@ -13,12 +13,16 @@ const {
   sellerRequestPayOut,
   getSellerRevenue,
   createCustomerSession,
+  createSubscription,
+  cancelSubscription,
 } = require('../controllers/paymentController');
 
 router.post('/create-stripe-connect-account', create_stripe_connect_account);
+router.post('/seller-subscription', createSubscription);
+router.post('/cancel-subscription', cancelSubscription);
 router.post('/confirm-payment', confirmPayment);
 router.post('/refund', processRefund);
-router.get('/refun', refundTest);
+router.post('/refun', refundTest);
 router.post('/request-payout', sellerRequestPayOut);
 router.get('/seller-revenue/:sellerId', authenticateUser, getSellerRevenue);
 router

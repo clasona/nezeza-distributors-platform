@@ -14,6 +14,13 @@ const stripeSchema = new Schema(
       type: String,
       //required: true,
     },
+    stripeCustomerId: {
+      type: String,
+      require: true,
+    },
+    subscriptionId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

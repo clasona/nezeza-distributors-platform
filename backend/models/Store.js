@@ -31,7 +31,7 @@ const storeSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
-    storeType: {
+    businessType: {
       type: String,
       //TODOS: change 'platform' to 'platform' or 'e-commerce' when e-commerce platform is fully implemented
       enum: ['manufacturing', 'wholesale', 'retail', 'admin', 'default'], // Type of the store
