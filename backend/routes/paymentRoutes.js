@@ -39,4 +39,10 @@ router.post(
   webhookHandler
 );
 
+router
+  .route('/create-payment-intent')
+  .post(authenticateUser, createPaymentIntent);
+
+router.route('/refund').post(processRefund).get(refundTest);
+
 module.exports = router;
