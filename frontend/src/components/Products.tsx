@@ -1,5 +1,5 @@
 import { addToCart, addToFavorites } from '@/redux/nextSlice';
-import { Heart } from 'lucide-react';
+import { Heart, Star } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -162,9 +162,29 @@ const Products = () => {
                 {getStoreName(product.storeId._id)}
               </p> */}
               </div>
-              <p className='text-sm sm:text-base font-medium'>
-                {product.title}
-              </p>
+              <div className='flex flex-col sm:flex-row flex-wrap sm:justify-between'>
+                <p className='text-sm sm:text-base font-medium'>
+                  {product.title}
+                </p>
+                <div className='flex items-center gap-1 text-right w-full sm:w-auto'>
+                  {[...Array(5)].map((_, index) => (
+                    <Star
+                      key={index}
+                      size={20}
+                      className={`${
+                        index < Math.floor(product.rating)
+                          ? 'text-yellow-500 fill-yellow-500'
+                          : index < product.rating
+                          ? 'text-yellow-500 fill-yellow-500 opacity-50'
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  ))}
+                  <span className='text-sm sm:text-base ml-1 text-gray-800'>
+                    {product.rating.toFixed(1)}
+                  </span>
+                </div>
+              </div>
               <p className='flex items-center'>
                 <span className='text-nezeza_dark_blue font-bold'>
                   <FormattedPrice amount={product.price} />

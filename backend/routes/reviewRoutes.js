@@ -1,21 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateUser } = require('../middleware/authentication');
 
 const {
-  createReview,
+  authenticateUser,
+  authorizePermissions,
+} = require('../middleware/authentication');
+
+const {
   getAllReviews,
-  getSingleReview,
+  getReviewById,
+  createReview,
   updateReview,
   deleteReview,
+  getReviewsByEntityTypeAndId,
 } = require('../controllers/reviewController');
 
-router.route('/').post(authenticateUser, createReview).get(getAllReviews);
-
+router.route('/').get(getAllReviews).post(
+  authenticateUser,
+  // authorizePermissions('create_review'),
+  createReview
+);
 router
   .route('/:id')
-  .get(getSingleReview)
-  .patch(authenticateUser, updateReview)
-  .delete(authenticateUser, deleteReview);
+  .get(getReviewById)
+  .patch(
+    authenticateUser,
+    // authorizePermissions('update_review'),
+    updateReview
+  )
+  .delete(
+    authenticateUser,
+    // authorizePermissions('delete_review'),
+    deleteReview
+  );
+
+// Get reviews for an Apartment or Car or Neighborhood
+router.route('/:type/:id').get(getReviewsByEntityTypeAndId);
 
 module.exports = router;

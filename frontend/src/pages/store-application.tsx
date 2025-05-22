@@ -67,7 +67,7 @@ const StoreRegistrationForm = ({
         email: data.email,
         phone: data.phone,
         citizenshipCountry: data.citizenshipCountry,
-        birthCountry: data.birthCountry,
+        // birthCountry: data.birthCountry,
         dob: data.dob,
         residenceAddress: {
           street: data.residenceStreet,

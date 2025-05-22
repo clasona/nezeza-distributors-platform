@@ -13,12 +13,13 @@ const {
   sellerRequestPayOut,
   getSellerRevenue,
   createCustomerSession,
+  createPaymentIntent,
 } = require('../controllers/paymentController');
 
 router.post('/create-stripe-connect-account', create_stripe_connect_account);
 router.post('/confirm-payment', confirmPayment);
 router.post('/refund', processRefund);
-router.get('/refun', refundTest);
+router.get('/refund', refundTest);
 router.post('/request-payout', sellerRequestPayOut);
 router.get('/seller-revenue/:sellerId', authenticateUser, getSellerRevenue);
 router
@@ -33,5 +34,12 @@ router.post(
   express.raw({ type: 'application/json' }), // Important: Raw body parsing
   webhookHandler
 );
+
+router
+  .route('/create-payment-intent')
+  .post(authenticateUser, createPaymentIntent);
+
+  router.route('/refund').post(processRefund).get(refundTest);
+
 
 module.exports = router;

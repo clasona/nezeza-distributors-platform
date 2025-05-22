@@ -93,14 +93,14 @@ const PrimaryContactInput = ({
         register={register}
         errors={errors}
       />
-      <DropdownInput
+      {/* <DropdownInput
         label='Country of Birth'
         id='birthCountry'
         name='birthCountry'
         options={countryOptions}
         register={register}
         errors={errors}
-      />
+      /> */}
       <TextInput
         label='Date of Birth'
         id='dob'
@@ -119,6 +119,7 @@ const PrimaryContactInput = ({
         register={register}
         errors={errors}
         control={control}
+        setValue={setValue}
       />
     </div>
   );

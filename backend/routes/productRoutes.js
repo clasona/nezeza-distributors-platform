@@ -62,6 +62,6 @@ router
 //     .get(authenticateUser, authorizePermissions('view_product'), getProduct);
 
 // Get reviews for a single product by its ID
-router.route('/:id/reviews').get(getSingleProductReviews);
+// router.route('/:id/reviews').get(getSingleProductReviews);
 
 module.exports = router;

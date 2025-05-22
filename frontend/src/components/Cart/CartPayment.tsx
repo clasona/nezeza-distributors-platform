@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { OrderItemsProps, StoreProduct, stateProps } from '../../../type';
 import ErrorMessageModal from '../ErrorMessageModal';
 import FormattedPrice from '../FormattedPrice';
-import { createOrder } from '@/utils/order/createOrder';
+import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
 
 const CartPayment = () => {
   const { cartItemsData, userInfo } = useSelector(
@@ -32,13 +32,13 @@ const CartPayment = () => {
     if (!cartItemsData.length) return;
 
     try {
-      const response = await createOrder(cartItemsData);
-      if (response.status !== 201) {
+      const response = await createPaymentIntent(cartItemsData);
+      if (response.status !== 200) {
         console.error('Error fetching client secret.');
         // setSuccessMessage(''); // Clear any previous error message
         // setErrorMessage(response.data.msg || 'Client secret fetch failed.');
       } else {
-        clientSecret = response.data.clientSecret;
+        clientSecret = response?.data?.clientSecret;
         // setPaymentIntentFetched(true); // Set the flag to true after fetching
       }
     } catch (error: any) {

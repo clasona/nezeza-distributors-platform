@@ -134,6 +134,7 @@ const StoreInfoInput = ({
           register={register}
           errors={errors}
           control={control}
+          setValue={setValue}
         />
       </div>
     </>
