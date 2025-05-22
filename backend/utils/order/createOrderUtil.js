@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
-const CustomError = require('../../errors'); // Assuming your CustomError path
-const Product = require('../../models/Product'); // Assuming your Product model path
-const User = require('../../models/User'); // Assuming your User model path
-const Store = require('../../models/Store'); // Assuming your Store model path
-const Order = require('../../models/Order'); // Assuming your Order model path
-const Address = require('../../models/Address'); // Assuming your Address model path
-const { StatusCodes } = require('http-status-codes'); // For status codes
+const CustomError = require('../../errors'); 
+const Product = require('../../models/Product'); 
+const User = require('../../models/User'); 
+const Store = require('../../models/Store'); 
+const Order = require('../../models/Order'); 
+const Address = require('../../models/Address'); 
+const { StatusCodes } = require('http-status-codes');
 
 // Assuming these helper functions are also defined elsewhere
-const checkWhoIsTheBuyer = require('../checkWhoIsTheBuyer'); // Adjust path
+const checkWhoIsTheBuyer = require('../checkWhoIsTheBuyer'); 
 const createPaymentIntentUtil = require('../payment/createPaymentIntentUtil');
 const SubOrder = require('../../models/SubOrder'); 
 const { groupProductsBySeller } = require('../../helpers/groupProductsBySeller');

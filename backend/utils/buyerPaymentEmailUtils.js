@@ -121,7 +121,7 @@ const sendBuyerPaymentRefundEmail = async ({
 
   return sendEmail({
     to: email,
-    subject: 'Refund Confirmation',
+    subject: 'Nezeza Refund Confirmation',
     html: `<h4>Dear ${name},</h4>${message}`,
   });
 };

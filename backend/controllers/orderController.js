@@ -8,6 +8,7 @@ const SubOrder = require('../models/SubOrder');
 const Product = require('../models/Product');
 const Address = require('../models/Address');
 const { createOrderUtil } = require('../utils/order/createOrderUtil');
+const processRefundUtil  = require('../utils/payment/refunds');
 
 // utils imports
 const { StatusCodes } = require('http-status-codes');
@@ -877,6 +878,108 @@ const updateRevenueOnOrderPlaced = async (order) => {
     await sellerRevenue.save();
   }
 };
+
+/**
+ * Return a single product from an order and process its refund.
+ */
+const cancelSingleOrderProduct = async (req, res) => {
+  const { id: orderId, itemId: productId } = req.params;
+  const userId = req.user.userId;
+  const { quantity } = req.body;
+
+  // Find the order
+  const order = await Order.findById(orderId);
+  
+  if (!order)
+    throw new CustomError.NotFoundError(`No order with id: ${orderId}`);
+
+  const user = await User.findById(userId);
+  if (!user)
+    throw new CustomError.UnauthorizedError(`No user with id: ${userId}`);
+
+  // Authorization logic for individual vs seller buyers
+  const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
+  if (isIndividualCustomer) {
+    // Individual customer: must match order.buyerId
+    if (String(order.buyerId) !== String(userId)) {
+      throw new CustomError.UnauthorizedError(
+        'Not authorized to update this order'
+      );
+    }
+  } else {
+    // Seller: must match order.buyerStoreId
+    if (String(order.buyerStoreId) !== String(user.storeId)) {
+      throw new CustomError.UnauthorizedError(
+        'Not authorized to update this order'
+      );
+    }
+  }
+
+  // Find the specific orderItem inside orderItems[]
+  const orderItemIndex = order.orderItems.findIndex(
+    (item) => String(item.product._id) === String(productId)
+  );
+
+  if (orderItemIndex === -1) {
+    throw new CustomError.NotFoundError(`No order item with id: ${productId}`);
+  }
+
+  // Handle: item already cancelled
+  if (order.orderItems[orderItemIndex].status === 'Cancelled') {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      msg: 'This order item has already been cancelled.',
+      orderItemId: order.orderItems[orderItemIndex]._id,
+      orderId: orderId,
+    });
+  }
+
+  // --- For paid orders, do refund first ---
+  let refundResult = null;
+  if (order.paymentStatus === 'Paid') {
+    try {
+      refundResult = await processRefundUtil(orderId, productId, quantity);
+    } catch (err) {
+      console.error('Return/refund error:', err);
+      if (err instanceof CustomError) {
+        return res.status(err.statusCode || 400).json({ msg: err.message });
+      } else {
+        return res
+          .status(500)
+          .json({ msg: 'Refund failed', error: err.message });
+      }
+    }
+  }
+
+  // Mark the item as cancelled
+  order.orderItems[orderItemIndex].status = 'Cancelled';
+  //TODO: In the future, allow just reducing the item quantity and update item status accordingly
+
+  // Update fulfillmentStatus
+  const allCancelled = order.orderItems.every(
+    (item) => item.status === 'Cancelled'
+  );
+  order.fulfillmentStatus = allCancelled ? 'Cancelled' : 'Partially Cancelled';
+
+  
+  await order.save();
+
+  console.log('Order item cancelled:', order.orderItems[orderItemIndex]._id);
+
+  res.status(StatusCodes.OK).json({
+    msg: 'Order item cancelled successfully',
+    fulfillmentStatus: order.fulfillmentStatus,
+    orderItem: order.orderItems[orderItemIndex],
+    refund: refundResult,
+    orderId: orderId,
+  });
+};
+
+
+
+
+// TODO: Implement cancelFullOrder
+// const cancelFullOrder = async (req, res) => { }
+  
 module.exports = {
   getAllOrders,
   getSingleOrder,
@@ -893,4 +996,5 @@ module.exports = {
   updateToDelivered,
   updateToCancelled,
   updateShippingInfo,
+  cancelSingleOrderProduct,
 };

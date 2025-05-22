@@ -13,16 +13,14 @@ const cancelSingleOrderProduct = async (req, res) => {
     throw new CustomError.UnauthorizedError(`No user with id: ${userId}`);
 
   // Authorization logic for individual vs seller buyers
-  const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
+  const isIndividualCustomer = !user.storeId;
   if (isIndividualCustomer) {
-    // Individual customer: must match order.buyerId
     if (String(order.buyerId) !== String(userId)) {
       throw new CustomError.UnauthorizedError(
         'Not authorized to update this order'
       );
     }
   } else {
-    // Seller: must match order.buyerStoreId
     if (String(order.buyerStoreId) !== String(user.storeId)) {
       throw new CustomError.UnauthorizedError(
         'Not authorized to update this order'
@@ -32,9 +30,8 @@ const cancelSingleOrderProduct = async (req, res) => {
 
   // Find the specific orderItem inside orderItems[]
   const orderItemIndex = order.orderItems.findIndex(
-    (item) => String(item.product._id) === String(productId)
+    (item) => String(item.product._id || item.product) === String(productId)
   );
-
   if (orderItemIndex === -1) {
     throw new CustomError.NotFoundError(`No order item with id: ${productId}`);
   }
@@ -44,7 +41,7 @@ const cancelSingleOrderProduct = async (req, res) => {
     return res.status(StatusCodes.BAD_REQUEST).json({
       msg: 'This order item has already been cancelled.',
       orderItem: order.orderItems[orderItemIndex],
-      orderId: orderId,
+      order,
     });
   }
 
@@ -65,9 +62,8 @@ const cancelSingleOrderProduct = async (req, res) => {
     }
   }
 
-  // Mark the item as cancelled
+  // Now mark the item as cancelled (for both paid and unpaid orders)
   order.orderItems[orderItemIndex].status = 'Cancelled';
-  //TODO: In the future, allow just reducing the item quantity and update item status accordingly
 
   // Update fulfillmentStatus
   const allCancelled = order.orderItems.every(
@@ -82,6 +78,6 @@ const cancelSingleOrderProduct = async (req, res) => {
     fulfillmentStatus: order.fulfillmentStatus,
     orderItem: order.orderItems[orderItemIndex],
     refund: refundResult,
-    orderId: orderId,
+    order,
   });
 };

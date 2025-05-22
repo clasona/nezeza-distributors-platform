@@ -89,6 +89,11 @@ const webhookHandler = async (req, res) => {
             buyerId
           );
           console.log('Order created successfully.');
+          const order = await Order.findById(orderId);
+          order.paymentStatus = 'Paid';
+          order.paymentIntentId = paymentIntentId;
+          await order.save();
+          console.log('Order updated successfully .');
           // await confirmPayment(orderId, paymentIntentId); //contains all the functionality for updating order, payments, etc
 
           console.log('Sending confirmation email to buyer...');
