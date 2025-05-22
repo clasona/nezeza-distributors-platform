@@ -34,25 +34,26 @@ import SearchField from '../Table/SearchField';
 
 const Header = () => {
   const { data: session } = useSession();
-  const { cartItemsData, favoritesItemsData, userInfo, storeInfo } = useSelector(
-    (state: stateProps) => state.next
-  );
-  let currentUserData: any;
+  const { cartItemsData, favoritesItemsData, userInfo, storeInfo } =
+    useSelector((state: stateProps) => state.next);
+  const [currentUserData, setCurrentUserData] = useState(null); 
   const [searchQuery, setSearchQuery] = useState('');
 
   const dispatch = useDispatch();
 
-  const fetchUserData = async () => {
-    if (!userInfo?._id) return; // Ensure userId exists before fetching
-    try {
-      const userData = await getUserById(userInfo._id);
-      currentUserData = userData;
-    } catch (error) {
-      console.error('Failed to fetch user data', error);
-    }
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userInfo?._id) return;
+      try {
+        const userData = await getUserById(userInfo._id);
+        setCurrentUserData(userData);
+      } catch (error) {
+        console.error('Failed to fetch user data', error);
+      }
+    };
 
-  fetchUserData();
+    fetchUserData();
+  }, [userInfo?._id]);
 
   useEffect(() => {
     if (session) {
@@ -134,7 +135,9 @@ const Header = () => {
           <span className='absolute text-nezeza_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-nezeza_dark_blue border border-nezeza_yellow'>
             {favoritesItemsData ? favoritesItemsData.length : 0}
           </span>
-          <p className='text-white font-bold text-center sm:text-xs'>Favorites</p>
+          <p className='text-white font-bold text-center sm:text-xs'>
+            Favorites
+          </p>
         </Link>
 
         <Link

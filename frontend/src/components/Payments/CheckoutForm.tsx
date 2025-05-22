@@ -62,7 +62,8 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
           console.error('Error during payment confirmation.');
           handleError(error);
         } else {
-          // This automatically triggers the webhook with event 'payment_intent.succeeded' which takes care of confirmPayment()
+          // This automatically triggers the webhook with event 'payment_intent.succeeded' which takes care of
+          // creating the order and sending payment confirmation or failure email to the customer.
         }
       } catch (error) {
         handleError(error);

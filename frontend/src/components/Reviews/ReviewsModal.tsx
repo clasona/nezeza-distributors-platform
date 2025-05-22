@@ -1,6 +1,5 @@
 // components/ReviewsModal.tsx
 
-import { handleError } from '@/lib/errorUtils';
 import {
   createReview,
   deleteReview,
@@ -12,17 +11,18 @@ import { ChevronLeft, ChevronRight, Star, X } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ProductProps, ReviewProps } from '../../../type';
+import { handleError } from '@/utils/errorUtils';
 
 interface ReviewsModalProps {
   product: ProductProps;
-  products: ProductProps[];
+  // products: ProductProps[];
   isOpen: boolean;
   onClose: () => void;
 }
 
 const ReviewsModal: React.FC<ReviewsModalProps> = ({
   product,
-  products,
+  // products,
   isOpen,
   onClose,
 }) => {
@@ -283,9 +283,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
           )}
 
           {!loadingReviews && reviews?.length === 0 && (
-            <p className='text-gray-500'>
-              No reviews yet for this product.
-            </p>
+            <p className='text-gray-500'>No reviews yet for this product.</p>
           )}
 
           {!loadingReviews &&
@@ -337,7 +335,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
                     <div className='flex gap-2'>
                       <button
                         onClick={() => handleSaveEdit(review._id)}
-                        className={`bg-vizpac-blue text-white py-2 px-4 rounded-lg hover:bg-vizpac-dark-blue cursor-pointer ${
+                        className={`bg-nezeza_green_600 text-white py-2 px-4 rounded-lg hover:bg-nezeza_green_800 cursor-pointer ${
                           isUpdatingReview
                             ? 'opacity-50 cursor-not-allowed'
                             : ''
@@ -377,7 +375,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
                         <div className='flex gap-2'>
                           <button
                             onClick={() => handleEditReview(review)}
-                            className='text-vizpac-orange-500 hover:underline text-sm cursor-pointer'
+                            className='text-nezeza_dark_blue hover:underline text-sm cursor-pointer'
                           >
                             Edit
                           </button>
@@ -447,7 +445,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
             </div>
             <button
               onClick={handleCreateReview}
-              className={`bg-vizpac-green-500 text-white py-2 px-4 rounded-lg hover:bg-vizpac-green-700 cursor-pointer ${
+              className={`bg-nezeza_green_600 text-white py-2 px-4 rounded-lg hover:bg-nezeza_green_800 cursor-pointer ${
                 isSubmittingReview ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               disabled={isSubmittingReview}
@@ -465,7 +463,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
           >
             Close
           </button>
-          {/* <button className='bg-vizpac-green-500 text-white py-2 px-4 rounded-lg hover:bg-vizpac-green-700'>
+          {/* <button className='bg-nezeza_green_600 text-white py-2 px-4 rounded-lg hover:bg-nezeza_green_800'>
             Select
           </button> */}
         </div>

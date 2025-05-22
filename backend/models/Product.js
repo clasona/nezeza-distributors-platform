@@ -99,7 +99,7 @@ ProductSchema.statics.calculateAverageRating = async function (productId) {
     if (!reviews || reviews.length === 0) {
       await this.findByIdAndUpdate(pId, {
         rating: 0,
-        numReviews: 0,
+        numOfReviews: 0,
       });
       console.log('No product reviews found, setting rating to 0');
       return;
@@ -116,7 +116,7 @@ ProductSchema.statics.calculateAverageRating = async function (productId) {
     // Update the product with the new rating
     await this.findByIdAndUpdate(pId, {
       rating: averageRating,
-      numReviews: reviews.length,
+      numOfReviews: reviews.length,
     });
   } catch (error) {
     console.error('Error calculating product average rating:', error);

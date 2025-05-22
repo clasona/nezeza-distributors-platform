@@ -12,7 +12,7 @@ const ReviewSchema = mongoose.Schema(
       required: true,
     },
     reviewableId: { type: mongoose.Schema.Types.ObjectId, required: true },
-  },
+  }, 
   { timestamps: true }
 );
 

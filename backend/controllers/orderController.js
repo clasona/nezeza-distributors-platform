@@ -7,7 +7,7 @@ const Notification = require('../models/Notification');
 const SubOrder = require('../models/SubOrder');
 const Product = require('../models/Product');
 const Address = require('../models/Address');
-const { createPaymentIntent } = require('./paymentController');
+const { createOrderUtil } = require('../utils/order/createOrderUtil');
 
 // utils imports
 const { StatusCodes } = require('http-status-codes');
@@ -32,45 +32,7 @@ const fakeStripeAPI = async ({ amount, currency }) => {
   return { client_secret, amount };
 };
 
-/* 
-  Create a new order, group items by seller,
-  and create sub-orders for each seller
- */
-const createSubOrders = async (fullOrder, session) => {
-  console.log(fullOrder);
-  // Group products by seller and prepare sub-orders data
-  try {
-    const subOrdersGrouped = groupProductsBySeller(fullOrder); // Grouped seller data
 
-    const subOrderData = Object.keys(subOrdersGrouped).map((sellerId) => {
-      const subOrder = subOrdersGrouped[sellerId];
-
-      // Calculate total amount including tax and shipping
-      const totalAmount =
-        subOrder.totalAmount + subOrder.totalTax + subOrder.totalShipping;
-
-      // Add transaction fee (10% platform fee example)
-      const transactionFee = subOrder.totalAmount * 0.1;
-      console.log(transactionFee);
-      return {
-        ...subOrder,
-        sellerId,
-        totalAmount,
-        transactionFee,
-        fullOrderId: fullOrder._id, // Add reference to the main order
-      };
-    });
-
-    // Insert all sub-orders in one go and extract their IDs
-    const subOrders = await SubOrder.insertMany(subOrderData);
-    const subOrderIds = subOrders.map((subOrder) => subOrder._id);
-
-    return subOrderIds;
-  } catch (error) {
-    console.error('Error creating sub-orders:', error);
-    throw error; // Ensure rollback is triggered in `createOrder`
-  }
-};
 
 /* 
    Create a new order and group items by seller,
@@ -80,181 +42,29 @@ const createSubOrders = async (fullOrder, session) => {
    TODOs: integrate with actual payment processing (like Stripe)
  */
 const createOrder = async (req, res) => {
-  //console.log(req.body);
-  const session = await mongoose.startSession(); // Start MongoDB session
-  session.startTransaction(); // Begin transaction
   try {
-    console.log(req.body);
     const { items: cartItems, shippingFee, paymentMethod } = req.body;
-    //console.log('items', cartItems);
     const buyerId = req.user.userId; // authenticated buyer's id
 
-    // Fetch buyer details including their store
-    const buyer = await User.findById(buyerId).populate('storeId');
-
-    if (!buyer) {
-      throw new CustomError.NotFoundError('The buyer does not exist.');
-    }
-    // if (!buyer || !buyer.storeId) {
-    //   throw new CustomError.NotFoundError('The buyer store does not exist.');
-    // }
-    const isIndividualCustomer = !buyer.storeId; // True if buyer has no storeId (i.e., is a customer)
-
-    let buyerStore = isIndividualCustomer ? buyer : buyer.storeId; // If a customer, use user object; otherwise, use storeId
-    // Check if cart items exist
-    if (!cartItems || cartItems.length < 1) {
-      throw new CustomError.BadRequestError('No cart items provided');
-    }
-
-    // Ensure tax and shipping fee are provided
-    if (!shippingFee) {
-      throw new CustomError.BadRequestError('Please provide shipping fee');
-    }
-
-    // Get product IDs from cart and fetch all products at once
-    const productIds = cartItems.map((item) => item.product);
-    const dbProducts = await Product.find({ _id: { $in: productIds } });
-    // .session(
-    //   session
-    // );
-    // Initialize order details
-    let orderItems = [];
-    let subtotal = 0;
-    let totalTax = 0;
-    let totalShipping = 0;
-
-    // Prepare stock updates to be applied later
-    const stockUpdates = [];
-    // Loop over cart items and prepare order
-    for (const item of cartItems) {
-      const dbProduct = dbProducts.find(
-        (product) => product._id.toString() === item.product._id
-      );
-      console.log(dbProduct)
-      if (!dbProduct) {
-        throw new CustomError.NotFoundError(
-          `No product with id : ${item.product._id}`
-        );
-      }
-
-      const {
-        title,
-        price,
-        image,
-        _id,
-        taxRate,
-        quantity,
-        storeId: sellerStoreId,
-      } = dbProduct;
-
-      // Check stock availability
-      if (item.quantity > quantity) {
-        throw new CustomError.BadRequestError(
-          `Not enough stock for product: ${_id}, only ${quantity} available`
-        );
-      }
-
-      // Fetch seller's store
-      const sellerStore = await Store.findById(sellerStoreId);
-      //.session(session);
-      // Validate buyer's store type can buy from this seller
-      checkWhoIsTheBuyer(buyerStore, sellerStore);
-      // Calculate tax using seller-defined rate
-      const itemTax = (price * taxRate) / 100;
-      // Add the product as an order item
-      const singleOrderItem = {
-        quantity: item.quantity,
-        title,
-        price,
-        image,
-        product: _id,
-        taxRate, // Store tax rate for reference
-        sellerStoreId,
-        taxAmount: itemTax * item.quantity, // Total tax per item
-      };
-      orderItems.push(singleOrderItem);
-
-      // Calculate subtotal, tax, and shipping
-      subtotal += item.quantity * price;
-      totalTax += itemTax * item.quantity;
-      totalShipping += 0; // Flat shipping for now
-
-      // Prepare stock update
-      stockUpdates.push({ productId: _id, quantity: item.quantity });
-    }
-
-    // Calculate total
-    const totalAmount = totalTax + totalShipping + subtotal;
-    const address = await Address.create({
-      street: '12345 Market St',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94103',
-      country: 'USA',
-      phone: '8608084545',
+    // Call the reusable utility
+    const result = await createOrderUtil({
+      cartItems,
+      shippingFee,
+      paymentMethod,
+      buyerId,
+      // You might pass shipping/billing addresses here if they are dynamic
     });
-    // Create full order
-    const order = await Order.create([
-      {
-        orderItems,
-        totalAmount,
-        totalTax,
-        totalShipping,
-        paymentMethod,
-        shippingAddress: address, // Mock data
-        billingAddress: '12345 Airport Blvd', // Mock data
-        buyerId,
-        buyerStoreId: buyerStore._id,
-        subOrders: [], // SubOrders will be created in the next step
-        // paymentStatus
-      },
-    ]);
-    console.log(stockUpdates);
-    // Bulk update stock levels for products
-    if (stockUpdates.length > 0) {
-      const bulkOps = stockUpdates.map(({ productId, quantity }) => ({
-        updateOne: {
-          filter: { _id: productId },
-          update: { $inc: { stock: -quantity } },
-        },
-      }));
 
-      await Product.bulkWrite(bulkOps, { session });
-    }
-    // await Promise.all(
-    //   stockUpdates.map(async ({ productId, quantity }) => {
-    //     await Product.findByIdAndUpdate(productId, {
-    //       $inc: { quantity: -quantity },
-    //     });
-    //   })
-    // );
-
-    // Create suborders
-    const fullOrder = await createSubOrders(order[0], session);
-    order[0].subOrders = fullOrder;
-    // await order[0].save({ session });
-
-    // getting client secret from payment API
-    const paymentIntent = await createPaymentIntent(order[0]);
-    order[0].paymentIntentId = paymentIntent.id;
-
-    await order[0].save({ session });
-
-    //Commit transaction (permanently apply changes)
-    await session.commitTransaction();
-    session.endSession();
-
-    res.status(StatusCodes.CREATED).json({
-      paymentIntentId: paymentIntent.id,
-      clientSecret: paymentIntent.client_secret,
-    });
+    res.status(StatusCodes.CREATED).json(result);
   } catch (error) {
-    await session.abortTransaction(); // Rollback if any error occurs
-    session.endSession();
-    console.error('Error creating order:', error);
+    console.error('Error in createOrderController:', error);
+    if (error.name === 'CustomError') {
+      // Assuming your CustomError has a 'name' property
+      return res.status(error.statusCode).json({ msg: error.message });
+    }
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: error.message });
+      .json({ msg: 'Something went wrong, please try again' });
   }
 };
 
@@ -316,7 +126,7 @@ const getAllOrders = async (req, res) => {
 
   if (buyerStoreId) queryObject.buyerStoreId = buyerStoreId;
 
-  console.log(queryObject);
+  // console.log(queryObject);
   // Execute the query with pagination
   const orders = await SubOrder.find(queryObject)
     .populate('sellerStoreId')
@@ -445,7 +255,7 @@ const getSellerSingleOrder = async (req, res) => {
     throw new CustomError.UnauthorizedError('Not authorized to view order');
   }
   const order = await SubOrder.findOne({ _id: orderId });
-  console.log(order);
+  // console.log(order);
   if (!order) {
     throw new CustomError.NotFoundError(`No order with id : ${orderId}`);
   }
@@ -465,7 +275,7 @@ const getSellerSingleOrder = async (req, res) => {
   Get all orders for the currently authenticated user (Buyer)
  */
 const getCurrentUserOrders = async (req, res) => {
-  console.log(req.user);
+  // console.log(req.user);
   const userId = req.user.userId; // Retrieve authenticated user
   const user = await User.findById(userId);
   if (!user) {
@@ -699,7 +509,7 @@ const updateToFulfilled = async (req, res) => {
       'Suborder not found or you are not authorized to update it'
     );
   }
-  console.log(subOrder.fulfillmentStatus);
+  // console.log(subOrder.fulfillmentStatus);
 
   // Check current status and ensure valid transition
   if (subOrder.fulfillmentStatus !== 'Pending') {
