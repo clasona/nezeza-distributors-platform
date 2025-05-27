@@ -11,16 +11,23 @@ const createOrderUtil = require('../utils/order/createOrderUtil');
 const { v4: uuidv4 } = require('uuid');
 // utils imports
 const getOrderDetails = require('../utils/order/getOrderDetails');
-const {
-  sendEmail,
-  sendBuyerNotificationEmail,
-  sendSellerNotificationEmail,
-} = require('../utils');
+// const {
+//   sendEmail,
+//   sendBuyerNotificationEmail,
+//   sendSellerNotificationEmail,
+// } = require('../utils');
+
 const {
   sendBuyerPaymentConfirmationEmail,
   sendBuyerPaymentFailureEmail,
   sendBuyerPaymentRefundEmail,
-} = require('../utils/buyerPaymentEmailUtils');
+  sendBuyerFullOrderRefundEmail,
+} = require('../utils/email/buyerPaymentEmailUtils');
+const {
+  sendSellerNewOrderNotificationEmail,
+  sendSellerItemCancellationNotificationEmail,
+  sendSellerFullOrderCancellationEmail,
+} = require('../utils/email/sellerOrderEmailUtils');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 
@@ -89,7 +96,7 @@ const webhookHandler = async (req, res) => {
             buyerId
           );
           console.log('Order created successfully.');
-          const order = await Order.findById(orderId);
+          const order = await Order.findById(orderId).populate('subOrders');
           order.paymentStatus = 'Paid';
           order.paymentIntentId = paymentIntentId;
           await order.save();
@@ -102,6 +109,22 @@ const webhookHandler = async (req, res) => {
             email: customerEmail,
             orderId: orderId,
           });
+
+          // Send email to sellers
+          console.log('Sending email to sellers...');
+          const subOrders = order.subOrders;
+          for (const subOrder of subOrders) {
+            await sendSellerNewOrderNotificationEmail({
+              sellerStoreId: subOrder.sellerStoreId,
+              orderId: orderId,
+              sellerOrderItems: subOrder.products,
+              sellerSubtotal: subOrder.totalAmount,
+              sellerTax: subOrder.totalTax,
+              sellerShipping: subOrder.totalShipping,
+            });
+          }
+            
+
           // await updateSellerBalances(order); // Call the update balances function
         }
         break;
@@ -668,22 +691,55 @@ const cancelSubscription = async (req, res) => {
 };
 
 const refundTest = async (req, res) => {
-  await createOrderUtil({
-    cartItems: [
-      {
-        product: '67c399a2ebe0870201a6d4af',
-        title: 'Test Product',
-        quantity: 2,
-        price: 100,
-      },
-    ],
-    shippingFee: 0,
-    paymentMethod: 'credit_card',
-    buyerId: '6799927a2bc90813c9b7ebfb',
-  });
-  console.log('Refund test finalized');
-};
+  // Assuming '6834ce585ec6141fbfab64b5' is your orderId
+  const order = await Order.findById('6834ce585ec6141fbfab64b5')
+    .populate('subOrders') // Populate subOrders if needed elsewhere, though not directly for this email
+    .populate('buyerId'); // Populate buyerId if you need buyer's first name in the email
 
+  if (!order) {
+    return res.status(404).json({ message: 'Order not found for test.' });
+  }
+
+  // Sample refundDetails for '67c14b13117b34d0131fc8f2' (your sellerStoreId)
+  // These should correspond to actual items from 'order.orderItems' that belong to this seller.
+  // Replace product IDs and amounts with values from your test order.
+  const sampleRefundDetails = [
+    {
+      orderItemId: '6834ce585ec6141fbfab64b6', // Replace with an actual _id of an orderItem from this seller
+      refundedAmount: 25.99, // Example: The refunded amount for this specific item
+      refundedQuantity: 1, // Example: The quantity of this item that was refunded
+      // You don't need to pass title, price, taxRate here, as the email utility
+      // will fetch the original orderItem using orderItemId from the main order.
+    },
+    {
+      orderItemId: '6834ce585ec6141fbfab64b7', // Another orderItem from the same seller, if applicable
+      refundedAmount: 15.0,
+      refundedQuantity: 2,
+    },
+    // Add more items here if the seller had more products in the cancelled order
+  ];
+
+  try {
+    await sendBuyerFullOrderRefundEmail({
+      name: order.buyerId.firstName,
+      email: order.buyerId.email,
+      refundAmount: 30,
+      refundDate: new Date(),
+      orderId: order._id,
+    });
+    await sendSellerFullOrderCancellationEmail({
+      sellerStoreId: '67c14b13117b34d0131fc8f2',
+      orderId: order._id,
+      refundDetails: sampleRefundDetails,
+      buyerName: order.buyerId ? order.buyerId.firstName : 'Yves', // Use actual buyer name if populated
+    });
+
+    return res.status(200).json({ message: 'Refund email sent successfully' });
+  } catch (error) {
+    console.error('Failed to send seller refund email during test:', error);
+    return res.status(500).json({ message: 'Failed to send refund email.' });
+  }
+};
 //confirmPayment('67d894391232d717c78f476e', 'pi_3R3lE2Ixvdd0pNY40k7n6MnT');
 
 module.exports = {

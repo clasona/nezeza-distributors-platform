@@ -13,6 +13,8 @@ import { calculateOrderStats } from '@/utils/orderUtils';
 import router from 'next/router';
 import { useEffect, useState } from 'react';
 import { OrderProps } from '../../../type';
+import CancelFullOrderModal from '@/components/Order/CancelFullOrderModal'; 
+import { cancelFullOrder } from '@/utils/order/cancelFullOrder';
 
 const Orders = () => {
   const [orders, setOrders] = useState<OrderProps[]>([]); // All orders
@@ -27,6 +29,51 @@ const Orders = () => {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false); // State for loading
+  const [isFullCancelModalOpen, setIsFullCancelModalOpen] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState<OrderProps | null>(null); // To store the order being cancelled
+
+const handleOpenFullCancelModal = (order: OrderProps) => {
+  setOrderToCancel(order); // Set the order to be cancelled
+  setIsFullCancelModalOpen(true);
+};
+
+  const handleCloseFullCancelModal = () => {
+    setIsFullCancelModalOpen(false);
+    setOrderToCancel(null); // Clear the order data
+    setErrorMessage(''); // Clear errors on close
+    setSuccessMessage(''); // Clear success on close
+  
+  };
+
+  const handleFullOrderCancelSubmit = async (reason: string) => {
+    if (!orderToCancel) return; // Should not happen if modal is opened correctly
+
+    setIsLoading(true); // Indicate loading for the API call
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      // Make your API call to cancel the full order
+      const response = await cancelFullOrder(orderToCancel._id, reason);
+
+      setSuccessMessage(response.msg || 'Order cancelled successfully!');
+
+      // Refresh order data after successful cancellation
+      await fetchData();
+      handleCloseFullCancelModal(); // Close modal on success
+
+      // Optionally, you might want to redirect or update the UI more dynamically
+      // For example, if you're using a state management library (like Redux, React Query),
+      // you'd invalidate/refetch relevant data.
+    } catch (err: any) {
+      console.error('Error cancelling full order:', err);
+      setErrorMessage(
+        err || 'An unexpected error occurred during cancellation.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   //setting my orders data
   const fetchData = async () => {
@@ -192,12 +239,6 @@ const Orders = () => {
                     View Invoice
                   </button> */}
                   <button
-                    className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-nezeza_red_600 hover:text-white transition duration-300'
-                    // onClick={() => handleDeleteClick(order)}
-                  >
-                    Delete
-                  </button>
-                  <button
                     className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-nezeza_gray_600 hover:text-white transition duration-300'
                     onClick={() => handleArchiveClick(order)}
                   >
@@ -205,18 +246,18 @@ const Orders = () => {
                   </button>
                   <button
                     className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-red-400 hover:text-white transition duration-300'
-                    // onClick={() => handleCencel(item._id)} // Replace with your "return" logic
+                    onClick={() => handleOpenFullCancelModal(order)}
                   >
-                    Cancel
+                    Cancel Order
                   </button>
                   <button
-                    className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-yellow-500 hover:text-white transition duration-300'
-                    // onClick={() => handleReturn(item._id)} // Replace with your "return" logic
+                    className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-red-400 hover:text-white transition duration-300'
+                    onClick={() => router.push(`/customer/order/${order._id}`)}
                   >
-                    Return Items
+                    Cancel Items
                   </button>
                   <button
-                    className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-nezeza_dark_blue hover:text-white transition duration-300'
+                    className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-yellow-400 hover:text-white transition duration-300'
                     onClick={() => router.push(`/customer/order/${order._id}`)}
                   >
                     More Info
@@ -235,6 +276,18 @@ const Orders = () => {
             onArchive={() => handleConfirmArchive(currentRowData._id)}
           />
         )}
+        {/* Render cancel full order modal */}
+        {isFullCancelModalOpen &&
+          orderToCancel && ( // Only render if modal is open and orderToCancel is set
+            <CancelFullOrderModal
+              open={isFullCancelModalOpen}
+              onClose={handleCloseFullCancelModal}
+              onSubmit={handleFullOrderCancelSubmit}
+              orderId={orderToCancel._id}
+              currentFulfillmentStatus={orderToCancel.fulfillmentStatus}
+              // You can pass a custom reasonsList if needed
+            />
+          )}
         {/* Success Message */}
         {successMessage && (
           <SuccessMessageModal successMessage={successMessage} />

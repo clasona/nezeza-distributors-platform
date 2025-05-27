@@ -1,7 +1,7 @@
 import { clearCart } from '@/utils/cart/clearCart';
 import { clearFavorites } from '@/utils/favorites/clearFavorites';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { OrderItemsProps, PaymentProps, StoreProps } from '../../type';
+import { OrderItemsProps, PaymentProps, ProductProps, StoreProps } from '../../type';
 
 interface NextState {
   productData: OrderItemsProps[];
@@ -11,6 +11,11 @@ interface NextState {
   userInfo: null | string;
   storeInfo: null | StoreProps;
   paymentInfo: null | PaymentProps;
+  buyNowProduct: {
+    product: ProductProps;
+    quantity: number;
+    isBuyNow?: boolean;
+  } | null;
 }
 
 const initialState: NextState = {
@@ -21,6 +26,7 @@ const initialState: NextState = {
   userInfo: null,
   storeInfo: null,
   paymentInfo: null,
+  buyNowProduct: null,
   // orderData:[]
 };
 
@@ -108,6 +114,16 @@ export const nextSlice = createSlice({
     },
     setFavoritesItems: (state, action) => {
       state.favoritesItemsData = action.payload;
+    },
+
+    // New Reducer for Buy Now product
+    setBuyNowProduct: (state, action) => {
+      const { product, quantity } = action.payload;
+      state.buyNowProduct = { product, quantity, isBuyNow: true }; 
+    },
+    // New Reducer to clear Buy Now product after purchase
+    clearBuyNowProduct: (state) => {
+      state.buyNowProduct = null;
     },
 
     //increase product qty in cart
@@ -225,6 +241,8 @@ export const {
   addToFavorites,
   setCartItems,
   setFavoritesItems,
+  setBuyNowProduct,
+  clearBuyNowProduct,
   increaseQuantity,
   decreaseQuantity,
   deleteCartProduct,

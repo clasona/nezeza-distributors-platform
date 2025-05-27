@@ -29,6 +29,7 @@ export default withUt({
       },
       colors: {
         nezeza_dark_blue: '#3182ce', //0074d9
+        nezeza_dark_blue_2: '#2456a3',
         nezeza_light_blue: '#e2f3fd',
         nezeza_powder_blue: '#A7C7E7', //87CEEB
         nezeza_light: '#232F3E',

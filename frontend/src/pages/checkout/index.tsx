@@ -1,16 +1,13 @@
 import FormattedPrice from '@/components/FormattedPrice';
 import Loading from '@/components/Loaders/Loading';
-import { addPayment } from '@/redux/nextSlice';
-import { createOrder } from '@/utils/order/createOrder';
+import CheckoutForm from '@/components/Payments/CheckoutForm';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { OrderItemsProps, stateProps } from '../../type';
-import CheckoutForm from '../components/Payments/CheckoutForm';
-import { handleError } from '@/utils/errorUtils';
-import { useRouter } from 'next/router';
+import { OrderItemsProps, stateProps } from '../../../type';
 
 // Ensure Stripe key is set before loading Stripe
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
@@ -23,12 +20,7 @@ const stripePromise = loadStripe(
 
 const CheckoutPage = () => {
   const { cartItemsData } = useSelector((state: stateProps) => state.next);
-  // const [clientSecret, setClientSecret] = useState<string | null>(null);
-  // const [paymentIntentFetched, setPaymentIntentFetched] = useState(false); // To help prevent fetching it twice as useEffect does automatically
 
-  const [customerSessionSecret, setCustomerSessionSecret] = useState<
-    string | null
-  >(null);
   const { userInfo } = useSelector((state: stateProps) => state.next);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
@@ -43,35 +35,6 @@ const CheckoutPage = () => {
       'No client secret found in the parameters. Check CartPayment.tsx file.'
     );
   }
-
-  //This function is the one that calls create order from the backend
-  // const fetchPaymentIntent = async () => {
-  //   if (!cartItemsData.length || paymentIntentFetched) return;
-
-  //   try {
-  //     const response = await createOrder(cartItemsData);
-  //     if (response.status !== 201) {
-  //       console.error('Error fetching client secret.');
-  //       // setSuccessMessage(''); // Clear any previous error message
-  //       // setErrorMessage(response.data.msg || 'Client secret fetch failed.');
-  //     } else {
-  //       setClientSecret(response.data.clientSecret);
-  //       console.log('printing secret...', clientSecret)
-  //       setPaymentIntentFetched(true); // Set the flag to true after fetching
-  //     }
-  //   } catch (error: any) {
-  //     handleError(error);
-  //     //  setErrorMessage(error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (cartItemsData.length > 0) {
-  //     fetchPaymentIntent();
-  //   }
-  // }, [cartItemsData]);
 
   // Memoize options to prevent unnecessary re-renders
   const options = useMemo(
@@ -116,6 +79,7 @@ const CheckoutPage = () => {
         </Link>
       </div>
     );
+
   return (
     <div className='bg-nezeza_powder_blue min-h-screen p-8 flex flex-col md:flex-row'>
       {' '}

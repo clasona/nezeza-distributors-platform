@@ -1,3 +1,5 @@
+//Used by sellers when buying
+
 import React, { useEffect, useState } from 'react';
 import { OrderProps } from '../../../type';
 import { calculateOrderItemsSubtotal } from '@/utils/order/calculateOrderItemsSubtotal';
@@ -24,9 +26,9 @@ const MoreOrderDetailsModal = <T,>({
   if (!isOpen) return null;
 
   const [orderData, setOrderData] = useState<T>(rowData);
+  console.log('MoreOrderDetailsModal orderData', orderData);
 
   useEffect(() => {
-    console.log('Received rowData:', rowData);
     if (isOpen) {
       setOrderData(rowData);
     }
@@ -36,7 +38,7 @@ const MoreOrderDetailsModal = <T,>({
     'fulfillmentStatus' in data;
 
   if (isOrderProps(orderData)) {
-    console.log('smehgm', orderData.orderItems);
+    console.log('order items', orderData.orderItems);
   }
 
   return (
@@ -159,7 +161,7 @@ const MoreOrderDetailsModal = <T,>({
               {/* Order Items */}
               <div className='w-full grid grid-cols-1 xl:grid-cols-2 gap-6'>
                 {orderData.orderItems.map((item) => (
-                  <OrderItemDetails key={item._id} item={item} />
+                  <OrderItemDetails key={item._id} item={item} orderId={orderData._id} />
                 ))}
               </div>
             </div>

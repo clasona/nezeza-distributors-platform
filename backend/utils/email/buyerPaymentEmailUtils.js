@@ -1,8 +1,8 @@
-const sendEmail = require('./sendEmail');
+const sendEmail = require('../sendEmail');
 const moment = require('moment');
 // const getOrderDetails = require('./order/getOrderDetails');
-const { formatOrderItems, formatShippingAddress } = require('./formatUtils');
-const Order = require('../models/Order');
+const { formatOrderItems, formatShippingAddress } = require('../formatUtils');
+const Order = require('../../models/Order');
 
 // Payment confirmation email
 const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
@@ -29,8 +29,7 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
     <p><strong>Subtotal:</strong> $${(
       order.totalAmount -
       order.totalTax -
-      order.totalShipping -
-      order.transactionFee
+      order.totalShipping
     ).toFixed(2)}</p>
     <p><strong>Tax:</strong> $${order.totalTax.toFixed(2)}</p>
     <p><strong>Shipping:</strong> $${order.totalShipping.toFixed(2)}</p>
@@ -90,10 +89,20 @@ const sendBuyerPaymentRefundEmail = async ({
   name,
   email,
   refundAmount,
+  refundQuantity,
   refundDate,
   orderId,
+  orderItemId,
 }) => {
   const order = await Order.findById(orderId);
+  const orderItem = order.orderItems.find(
+    (item) => item._id.toString() === orderItemId
+  );
+
+  //Update with the refunded quantity
+  if (orderItem) {
+    orderItem.quantity = refundQuantity;
+  }
 
   let orderSummary = '';
   if (order) {
@@ -102,7 +111,7 @@ const sendBuyerPaymentRefundEmail = async ({
         'MMMM D, YYYY'
       )}</p>
       <p><strong>Items:</strong></p>
-      ${formatOrderItems(order.orderItems)}
+      ${formatOrderItems([orderItem])}
     `;
   }
 
@@ -122,6 +131,46 @@ const sendBuyerPaymentRefundEmail = async ({
   return sendEmail({
     to: email,
     subject: 'Nezeza Refund Confirmation',
+    html: `<h4>Dear ${name},</h4>${message}`,
+  });
+};
+
+const sendBuyerFullOrderRefundEmail = async ({
+  name,
+  email,
+  refundAmount, // This is the total refund amount for the entire order
+  refundDate,
+  orderId,
+}) => {
+  const order = await Order.findById(orderId);
+
+  // If order not found, log and return (or throw)
+  if (!order) {
+    console.error(`Order not found for full refund email. OrderID: ${orderId}`);
+    return;
+  }
+
+  const formattedRefundDate = refundDate
+    ? moment(refundDate).format('MMMM D, YYYY')
+    : 'shortly';
+
+  const message = `
+    <p>This email confirms that your entire order (Order ID: <strong>${orderId}</strong>) has been cancelled, and a refund of <strong>$${refundAmount.toFixed(
+    2
+  )}</strong> has been processed on <strong>${formattedRefundDate}</strong>.</p>
+    <p><strong>Order Details:</strong></p>
+    <p><strong>Order Date:</strong> ${moment(order.createdAt).format(
+      'MMMM D, YYYY'
+    )}</p>
+    <p><strong>All Items in this Order:</strong></p>
+    ${formatOrderItems(order.orderItems)}
+    <p>The total refunded amount should appear in your account within a few business days. Please allow for bank processing time.</p>
+    <p>If you have any questions regarding this refund, please contact our support team.</p>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject: `Nezeza Full Order Cancellation & Refund - Order #${orderId}`, // Clear subject
     html: `<h4>Dear ${name},</h4>${message}`,
   });
 };
@@ -171,5 +220,6 @@ module.exports = {
   sendBuyerPaymentConfirmationEmail,
   sendBuyerPaymentFailureEmail,
   sendBuyerPaymentRefundEmail,
+  sendBuyerFullOrderRefundEmail,
   sendBuyerPaymentReminderEmail,
 };

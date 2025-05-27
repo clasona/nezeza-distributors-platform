@@ -45,8 +45,13 @@ const ProductDetails = () => {
   };
 
   // Buy Now (Redirect to Checkout)
-  const handleBuyNow = () => {
-    // handleAddToCart();
+  const handleBuyNow = async (product: ProductProps) => {
+    await dispatch(
+      addToCart({
+        product,
+        quantity: 1,
+      })
+    );
     router.push('/checkout');
   };
 
@@ -150,7 +155,7 @@ const ProductDetails = () => {
 
             <div className='w-full sm:w-auto'>
               <Button
-                onClick={handleBuyNow}
+                onClick={() => handleBuyNow(product)}
                 className={`flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 ${
                   !userInfo ? 'pointer-events-none bg-nezeza_gray_600' : ''
                 }`}
@@ -205,7 +210,6 @@ const ProductDetails = () => {
               isOpen={isReviewsModalOpen}
               onClose={handleCloseReviewModal}
               product={product}
-              // neighborhoods={products}
             />
           )}
         </div>
