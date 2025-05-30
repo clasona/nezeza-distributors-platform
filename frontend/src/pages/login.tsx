@@ -10,14 +10,14 @@ import { getCart } from '@/utils/cart/getCart';
 import { mergeCartItems } from '@/utils/cart/mergeCartItems';
 import { handleError } from '@/utils/errorUtils';
 import { signIn, useSession } from 'next-auth/react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FaGoogle } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
-import { getSellerTypeBaseurl } from '@/lib/utils';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getFavorites } from '@/utils/favorites/getFavorites';
 import { mergeFavoritesItems } from '@/utils/favorites/mergeFavoritesItems';
+import { hasActiveStripeConnectAccount as checkActiveStripeAccountApi } from '@/utils/stripe/hasStripeConnectAccount';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -30,43 +30,79 @@ const LoginPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const [isLoading, setIsLoading] = useState(false);
+  // Memoization ref for Stripe check
+  const hasCheckedStripeRef = useRef<{ [userId: string]: boolean }>({});
 
   useEffect(() => {
-    if (session?.user) {
-      // Redirect based on user store type
-      if (session?.user?.storeId) {
-        if (session.user.storeId.storeType === 'manufacturing') {
-          router.replace('/manufacturer');
-        } else if (session.user.storeId.storeType === 'wholesale') {
-          router.replace('/wholesaler');
-        } else if (session.user.storeId.storeType === 'retail') {
-          router.replace('/retailer');
-        }
-      } else {
-        router.replace('/');
-      }
+    // Only proceed if session is loaded and user exists
+    if (sessionStatus === 'authenticated' && session?.user) {
+      handlePostLoginRedirect();
     }
-  }, [session, router]);
+  }, [session, sessionStatus, router]); // Add sessionStatus to dependencies
+
+  const handlePostLoginRedirect = async () => {
+    const user = session?.user;
+
+    if (user?.storeId) {
+      // User is a seller
+      setIsLoading(true); // Show loading while checking Stripe status
+      try {
+        // Memoization: only check if we haven't checked for this user
+        if (!hasCheckedStripeRef.current[user._id]) {
+          const response = await checkActiveStripeAccountApi(user._id);
+          hasCheckedStripeRef.current[user._id] = true; // Mark as checked
+
+          if (response && response.hasStripeAccount && response.isActive) {
+            // Seller has an active Stripe account, redirect to their dashboard
+            let callbackUrl = '/'; // Default fallback
+            if (user.storeId.storeType === 'manufacturing') {
+              callbackUrl = '/manufacturer';
+            } else if (user.storeId.storeType === 'wholesale') {
+              callbackUrl = '/wholesaler';
+            } else if (user.storeId.storeType === 'retail') {
+              callbackUrl = '/retailer';
+            } else if (user.storeId.storeType === 'admin') {
+              callbackUrl = '/admin';
+            }
+            router.replace(callbackUrl);
+          } else {
+            // Seller has no active Stripe account, force redirect to setup page
+            router.replace('/sellers-shared/setup-stripe');
+          }
+        }
+        // If already checked, do nothing or redirect to dashboard as needed
+      } catch (error) {
+        console.error('Error checking Stripe account during login:', error);
+        setErrorMessage(
+          'Failed to check Stripe account status. Please try again.'
+        );
+        router.replace('/'); // Fallback to homepage or an error page
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // User is a customer, redirect to homepage
+      router.replace('/');
+    }
+  };
 
   const handleGoogleLogin = async () => {
     try {
-      // signin with google and redirect to homepage
+      // signIn with google and redirect to homepage. The useEffect will then handle further redirects.
       await signIn('google', { callbackUrl: '/' });
     } catch (error) {
       console.error('Error during Google login:', error);
     }
   };
 
-  // Get callback URL from query params or default to '/dashboard'
-  let callbackUrl = '';
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage(''); // Clear previous errors
+
     try {
-      // const response = await loginUser(email, password);
-      setIsLoading(true);
       const res = await signIn('credentials', {
         redirect: false,
         email: email,
@@ -74,43 +110,32 @@ const LoginPage = () => {
       });
 
       if (res?.error) {
-        // setErrorMessage('Invalid credentials');
-        // setIsLoading(false);
         setErrorMessage('Invalid credentials');
+        setIsLoading(false);
         return;
       }
-      // Wait for session to update
+
+      // Re-fetch session to get the latest user data including storeId
       const updatedSession = await fetch('/api/auth/session').then((res) =>
         res.json()
       );
 
       if (updatedSession?.user) {
-        // console.log('session data:', updatedSession)
-        await loginUser(email, password); // For some reason, without this, the backend cookies are not attached to the user (as supposed to by the auth in [...nextauth].ts)
+        await loginUser(email, password);
+
         const userData = updatedSession?.user;
-        const storeData = updatedSession?.user.storeId;
-        let storeId = 0;
+        const storeData = userData.storeId;
 
-        if (storeData) {
-          storeId = storeData;
-        }
-
-        // set logged in userInfo to redux for further retrieval
-        //TODO: Investigate why sometimes this only gets email and 'name' to redux when logging in?
         dispatch(
           addUser({
             _id: userData._id,
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
-            storeId: storeId,
-            // image: loginData.user.image,
-            //ADD MORE AS NEEDED
+            storeId: storeData || null,
           })
         );
 
-        // for sellers. set logged in storeInfo to redux for further retrieval
-        //TODO: can be null for customers for now
         if (storeData) {
           dispatch(
             addStore({
@@ -118,55 +143,37 @@ const LoginPage = () => {
               name: storeData.name,
               email: storeData.email,
               storeType: storeData.storeType,
-              // ADD MORE AS NEEDED
             })
           );
         }
 
-        // Fetch and update cart after successful login
         try {
-          const serverCartItems = await getCart(); // Get cart from server
+          const serverCartItems = await getCart();
           const mergedCartItems = mergeCartItems(
             cartItemsData,
             serverCartItems
-          ); // Merge the carts
+          );
+          dispatch(setCartItems(mergedCartItems));
 
-          dispatch(setCartItems(mergedCartItems)); // Dispatch the setCartItems action
-
-          const serverFavoritesItems = await getFavorites(); // Get favorites from server
+          const serverFavoritesItems = await getFavorites();
           const mergedFavoritesItems = mergeFavoritesItems(
             favoritesItemsData,
             serverFavoritesItems
-          ); // Merge the favorites
-
+          );
           dispatch(setFavoritesItems(mergedFavoritesItems));
         } catch (error: any) {
           handleError(error);
         }
 
-        setErrorMessage(''); // Clear any previous error message
-        setSuccessMessage('Login successful. Redirecting to home page...'); //for testing
+        setSuccessMessage('Login successful. Redirecting...');
 
-        // Redirect based on user store type
-        if (updatedSession.user.storeId) {
-          if (updatedSession.user.storeId.storeType === 'manufacturing') {
-            callbackUrl = searchParams.get('callbackUrl') || '/manufacturer';
-          } else if (updatedSession.user.storeId.storeType === 'wholesale') {
-            callbackUrl = searchParams.get('callbackUrl') || '/wholesaler';
-          } else if (updatedSession.user.storeId.storeType === 'retail') {
-            callbackUrl = searchParams.get('callbackUrl') || '/retailer';
-          }else if (updatedSession.user.storeId.storeType === 'admin') {
-            callbackUrl = searchParams.get('callbackUrl') || '/admin';
-          }
-        } else {
-          callbackUrl = searchParams.get('callbackUrl') || '/';
-        }
-        // setIsLoading(false);
-        router.push(callbackUrl); // Redirect user to their original page
+        // The useEffect will now trigger `handlePostLoginRedirect` with the updated session
       }
     } catch (error: any) {
       handleError(error);
-      setErrorMessage(error);
+      setErrorMessage(
+        error.message || 'An unexpected error occurred during login.'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -236,15 +243,11 @@ const LoginPage = () => {
             </a>
           </p>
         </form>
-        {/* {successMessage && (
-          <SuccessMessageModal successMessage={successMessage} />
-        )} */}
-        {/* {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />} */}
       </div>
     </div>
   );
 };
 
-LoginPage.noLayout = true; // this will prevent Next.js from wrapping the component in a layout
+LoginPage.noLayout = true;
 
 export default LoginPage;

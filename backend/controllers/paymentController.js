@@ -123,7 +123,6 @@ const webhookHandler = async (req, res) => {
               sellerShipping: subOrder.totalShipping,
             });
           }
-            
 
           // await updateSellerBalances(order); // Call the update balances function
         }
@@ -159,52 +158,269 @@ const webhookHandler = async (req, res) => {
     res.status(500).json({ error: 'Webhook handling failed' });
   }
 };
+const createStripeConnectAccount = async (req, res) => {
+  const { email } = req.body;
 
-create_stripe_connect_account = async (req, res) => {
+  // 1. Input Validation
+  if (!email) {
+    throw new CustomError.BadRequestError(
+      'Please provide an email to create a Stripe account.'
+    );
+  }
+
   try {
-    const { email } = req.body;
+    // Find the seller (user) by email
+    const seller = await User.findOne({ email });
+    if (!seller) {
+      throw new CustomError.NotFoundError(
+        `Seller with email ${email} not found.`
+      );
+    }
 
-    const seller = await User.findOne({ email: email });
-    const sellerStore = await Store.findById(seller.storeId);
+    // Check if seller already has a Stripe account to ensure idempotency
+    // This prevents creating multiple Stripe accounts for the same seller
+    if (seller.stripeAccountId) {
+      // Option 1: Just return the existing onboarding link if they haven't completed it
+      // This requires storing and retrieving the last generated accountLink or checking Stripe directly.
+      // For simplicity, we'll just indicate it exists and potentially redirect to existing onboarding.
+      // Option 2: Attempt to retrieve the existing account link or create a new one for onboarding
+      const existingAccount = await stripe.accounts.retrieve(
+        seller.stripeAccountId
+      );
+      if (!existingAccount.details_submitted) {
+        // If details are not submitted, means onboarding is incomplete, generate a new link
+        let sellerStoreType =
+          (await Store.findOne({ ownerId: seller._id }))?.storeType ||
+          'default';
+        switch (sellerStoreType) {
+          case 'retail':
+            sellerStoreType = 'retailer';
+            break;
+          case 'wholesale':
+            sellerStoreType = 'wholesaler';
+            break;
+          case 'manufacturing':
+            sellerStoreType = 'manufacturer';
+            break;
+          default:
+            sellerStoreType = 'default';
+            break;
+        }
 
+        const accountLink = await stripe.accountLinks.create({
+          account: seller.stripeAccountId,
+          refresh_url: `${process.env.CLIENT_URL}/${sellerStoreType}`,
+          return_url: `${process.env.CLIENT_URL}/${sellerStoreType}`,
+          type: 'account_onboarding',
+        });
+        return res.status(StatusCodes.OK).json({
+          url: accountLink.url,
+          message:
+            'Stripe account already exists, redirecting to complete onboarding.',
+        });
+      } else {
+        // Account already exists and details are submitted (onboarding complete)
+        return res.status(StatusCodes.OK).json({
+          url: `${process.env.CLIENT_URL}/${sellerStoreType}`, // Redirect to seller's dashboard
+          message: 'Stripe account already exists and is onboarded.',
+          hasStripeAccount: true,
+          isActive: true, // Assuming submitted details means active for this check
+        });
+      }
+    }
+
+    // Find the associated store
+    const store = await Store.findOne({ ownerId: seller._id });
+    if (!store) {
+      throw new CustomError.NotFoundError(
+        `Store not found for seller with email ${email}.`
+      );
+    }
+
+    // Create Stripe Express account
     const stripeAccount = await stripe.accounts.create({
       type: 'express',
       email,
-      country: 'US',
+      country: 'US', // TODO: change this when onboarding sellers from other countries
       capabilities: {
         card_payments: { requested: true },
         transfers: { requested: true },
       },
+      business_type: store.businessType, // Or 'company' if applicable, ensure you collect this from user
+      // business_profile: {
+      //   mcc: '5734', // Merchant Category Code - e.g., '5734' for computer software stores
+      //   url: store.website || 'https://yourdefaultwebsite.com', // Replace with actual store website
+      // },
+      // default_currency: 'usd', // Explicitly set if needed
     });
-    // Create a Stripe Customer for platform subscription billing
-    const customer = await stripe.customers.create({
-      email: email,
-      name: sellerStore.name,
-    });
-    //Create seller in database
+
+    // Save Stripe account ID to the User model
+    seller.stripeAccountId = stripeAccount.id;
+    await seller.save();
+
+    // Create an entry in your stripeModel to record this
+    // Note: The `code` field here is being used for a UUID.
+    // If you intend for this to store the OAuth authorization code,
+    // that typically comes *after* the user is redirected back from Stripe.
+    // For this specific setup (initiating onboarding), UUID is fine as an internal tracking ID.
+
+    console.log('Stripe account created successfully:', stripeAccount.id);
     const stripeInfo = await stripeModel.create({
-      sellerId: sellerStore._id,
-      code: uuidv4(), // Generate unique code for stripe account
-      email,
+      sellerId: seller._id,
+      sellerEmail: email, // Store email for traceability
+      storeId: store._id,
+      code: uuidv4(), // Generate unique code for internal tracking
       stripeAccountId: stripeAccount.id,
-      stripeCustomerId: customer.id,
+      // You might also store `object: 'account_link'` or a status here.
     });
+    console.log('Stripe info saved to database:', stripeInfo);
+
+    let sellerStoreType = store.storeType;
+    switch (sellerStoreType) {
+      case 'retail':
+        sellerStoreType = 'retailer';
+        break;
+      case 'wholesale':
+        sellerStoreType = 'wholesaler';
+        break;
+      case 'manufacturing':
+        sellerStoreType = 'manufacturer';
+        break;
+      default:
+        sellerStoreType = 'seller'; // Fallback type, 'default' might conflict if that's a route
+        break;
+    }
+
     // Generate Stripe onboarding link
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccount.id,
-      refresh_url: `${process.env.CLIENT_URL}/wholesaler`, //if it fails
-      return_url: `${process.env.CLIENT_URL}/wholesaler`, //after successfull account creation
+      refresh_url: `${process.env.CLIENT_URL}/${sellerStoreType}/stripe-onboarding-refresh`, // A dedicated refresh endpoint/page
+      return_url: `${process.env.CLIENT_URL}/${sellerStoreType}/stripe-onboarding-success`, // A dedicated success endpoint/page
       type: 'account_onboarding',
+      collect: 'eventually_due', // Recommended for Express accounts to collect all necessary info eventually
     });
 
-    res.status(200).json({ url: accountLink.url });
+    res.status(StatusCodes.OK).json({ url: accountLink.url });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error creating Stripe Connect account:', error); // Log the detailed error for debugging
+
+    // Handle specific Stripe API errors
+    if (error.type === 'StripeCardError') {
+      return res.status(StatusCodes.BAD_REQUEST).json({ msg: error.message });
+    } else if (error.type === 'StripeInvalidRequestError') {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        msg: error.param
+          ? `Invalid parameter: ${error.param} - ${error.message}`
+          : error.message,
+      });
+    } else if (error.type === 'StripeAPIError') {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        msg: `Stripe API error: ${error.message}`,
+      });
+    } else if (
+      error instanceof CustomError.BadRequestError ||
+      error instanceof CustomError.NotFoundError
+    ) {
+      // Re-throw custom errors which already have appropriate status codes
+      throw error;
+    }
+    // Generic error fallback
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      msg: 'An unexpected error occurred while creating your Stripe account.',
+    });
   }
 };
-// End Method
 
-active_stripe_connect_account = async (req, res) => {
+const getStripeConnectAccount = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id);
+  if (!id) {
+    throw new CustomError.BadRequestError(
+      'Please provide a user ID in the URL path to retrieve Stripe account information.'
+    );
+  }
+  try {
+    const stripeInfo = await stripeModel.findOne({ sellerId: user._id });
+    if (!stripeInfo) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        msg: `No Stripe account found for user with ID '${id}'.`,
+      });
+    }
+    res.status(StatusCodes.OK).json(stripeInfo);
+  } catch (error) {
+    console.error('Error retrieving Stripe account:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      msg: 'Internal Server Error while retrieving Stripe account information.',
+    });
+  }
+};
+
+const hasActiveStripeAccount = async (req, res) => {
+  // Destructure id and email directly from req.params
+  const { id, email } = req.params;
+
+  if (!id && !email) {
+    throw new CustomError.BadRequestError(
+      'Please provide either a user ID or email in the URL path to check for Stripe account.'
+    );
+  }
+
+  let user = null;
+
+  // Find the user based on ID or email from parameters
+  if (id) {
+    user = await User.findById(id);
+    if (!user) {
+      throw new CustomError.NotFoundError(`User with ID '${id}' not found.`);
+    }
+  } else if (email) {
+    // This block will run if 'id' is falsy and 'email' is truthy
+    user = await User.findOne({ email: email });
+    if (!user) {
+      throw new CustomError.NotFoundError(
+        `User with email '${email}' not found.`
+      );
+    }
+  }
+
+  try {
+    let hasStripeAccount = false;
+    let isActive = false;
+
+    if (user.stripeAccountId) {
+      hasStripeAccount = true;
+
+      // Check your stripeModel for the 'code' associated with this user
+      // Assuming 'sellerId' in stripeModel links to user._id
+      const stripeInfo = await stripeModel.findOne({ sellerId: user._id });
+
+      // An account is considered 'active' if it has a Stripe account ID
+      // AND a corresponding entry in your stripeModel with a 'code'
+      // (which typically indicates a completed OAuth flow).
+      if (stripeInfo && stripeInfo.code) {
+        isActive = true;
+      }
+    }
+
+    // Return the status
+    res.status(StatusCodes.OK).json({
+      hasStripeAccount: hasStripeAccount,
+      isActive: isActive,
+      msg: isActive
+        ? 'User has a linked and active Stripe account.'
+        : hasStripeAccount
+        ? 'User has a linked Stripe account, but it may not be fully active (e.g., activation code not found).'
+        : 'User does not have a Stripe account linked.',
+    });
+  } catch (error) {
+    console.error('Error in hasActiveStripeAccount:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      msg: 'Internal Server Error while checking Stripe account status.',
+    });
+  }
+};
+
+const activeStripeConnectAccount = async (req, res) => {
   const { activeCode } = req.params;
   const { id } = req;
 
@@ -215,16 +431,12 @@ active_stripe_connect_account = async (req, res) => {
       await sellerModel.findByIdAndUpdate(id, {
         payment: 'active',
       });
-      res.status(StatusCodes.OK).json({ message: 'payment Active' });
+      res.status(StatusCodes.OK).json({ msg: 'payment Active' });
     } else {
-      res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ message: 'payment Active Fails' });
+      res.status(StatusCodes.NOT_FOUND).json({ msg: 'payment Active Fails' });
     }
   } catch (error) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ message: 'Internal Server Error' });
+    res.status(StatusCodes.BAD_REQUEST).json({ msg: 'Internal Server Error' });
   }
 };
 // End Method
@@ -408,7 +620,7 @@ const confirmPayment = async (req, res) => {
     //   sellerEmailDetails
     // );
     ///return order;
-    res.status(200).json({ message: 'Payment confirmed', order });
+    res.status(200).json({ msg: 'Payment confirmed', order });
     //return order;
   } catch (error) {
     await session.abortTransaction(); // Rollback if any error occurs
@@ -417,7 +629,7 @@ const confirmPayment = async (req, res) => {
     res
       .status(500)
       .json({ msg: 'Order confirmation failed', error: error.message });
-    //return { message: error.message };
+    //return { msg: error.message };
   }
 };
 const sellerRequestPayOut = async (req, res) => {
@@ -429,7 +641,7 @@ const sellerRequestPayOut = async (req, res) => {
   if (!balance || balance.availableBalance < amount) {
     return res
       .status(400)
-      .json({ message: 'Insufficient balance for withdrawal.' });
+      .json({ msg: 'Insufficient balance for withdrawal.' });
   }
 
   // Create payout request (for admin to approve later)
@@ -438,7 +650,7 @@ const sellerRequestPayOut = async (req, res) => {
     { $inc: { availableBalance: -amount }, $inc: { pendingBalance: amount } }
   );
 
-  res.json({ message: 'Payout request sent. Awaiting admin approval.' });
+  res.json({ msg: 'Payout request sent. Awaiting admin approval.' });
 };
 
 const getSellerRevenue = async (req, res) => {
@@ -567,7 +779,7 @@ const createCustomerSession = async (req, res) => {
     // const { customerId } = req.body;
 
     // if (!customerId) {
-    //   return res.status(400).json({ message: 'Customer ID is required' });
+    //   return res.status(400).json({ msg: 'Customer ID is required' });
     // }
 
     const userId = req.user.userId;
@@ -614,7 +826,7 @@ const createCustomerSession = async (req, res) => {
     console.error('Error creating customer session:', error);
     res
       .status(500)
-      .json({ message: 'Internal Server Error', error: error.message });
+      .json({ msg: 'Internal Server Error', error: error.message });
   }
 };
 
@@ -691,64 +903,34 @@ const cancelSubscription = async (req, res) => {
 };
 
 const refundTest = async (req, res) => {
-  // Assuming '6834ce585ec6141fbfab64b5' is your orderId
-  const order = await Order.findById('6834ce585ec6141fbfab64b5')
-    .populate('subOrders') // Populate subOrders if needed elsewhere, though not directly for this email
-    .populate('buyerId'); // Populate buyerId if you need buyer's first name in the email
+  //sample data
 
-  if (!order) {
-    return res.status(404).json({ message: 'Order not found for test.' });
-  }
-
-  // Sample refundDetails for '67c14b13117b34d0131fc8f2' (your sellerStoreId)
-  // These should correspond to actual items from 'order.orderItems' that belong to this seller.
-  // Replace product IDs and amounts with values from your test order.
-  const sampleRefundDetails = [
-    {
-      orderItemId: '6834ce585ec6141fbfab64b6', // Replace with an actual _id of an orderItem from this seller
-      refundedAmount: 25.99, // Example: The refunded amount for this specific item
-      refundedQuantity: 1, // Example: The quantity of this item that was refunded
-      // You don't need to pass title, price, taxRate here, as the email utility
-      // will fetch the original orderItem using orderItemId from the main order.
-    },
-    {
-      orderItemId: '6834ce585ec6141fbfab64b7', // Another orderItem from the same seller, if applicable
-      refundedAmount: 15.0,
-      refundedQuantity: 2,
-    },
-    // Add more items here if the seller had more products in the cancelled order
-  ];
-
-  try {
-    await sendBuyerFullOrderRefundEmail({
-      name: order.buyerId.firstName,
-      email: order.buyerId.email,
-      refundAmount: 30,
-      refundDate: new Date(),
-      orderId: order._id,
+    try {
+    const stripeInfo = await stripeModel.create({
+      sellerId: seller._id,
+      sellerEmail: email, // Store email for traceability
+      storeId: store._id,
+      code: uuidv4(), // Generate unique code for internal tracking
+      stripeAccountId: stripeAccount.id,
+      // You might also store `object: 'account_link'` or a status here.
     });
-    await sendSellerFullOrderCancellationEmail({
-      sellerStoreId: '67c14b13117b34d0131fc8f2',
-      orderId: order._id,
-      refundDetails: sampleRefundDetails,
-      buyerName: order.buyerId ? order.buyerId.firstName : 'Yves', // Use actual buyer name if populated
-    });
+    console.log('Stripe info saved to database:', stripeInfo);
 
-    return res.status(200).json({ message: 'Refund email sent successfully' });
+    return res.status(200).json({ msg: 'Success.' });
   } catch (error) {
-    console.error('Failed to send seller refund email during test:', error);
-    return res.status(500).json({ message: 'Failed to send refund email.' });
+    console.error('Failed ', error);
+    return res.status(500).json({ msg: 'Failed to retrieve.' });
   }
 };
 //confirmPayment('67d894391232d717c78f476e', 'pi_3R3lE2Ixvdd0pNY40k7n6MnT');
 
 module.exports = {
   webhookHandler,
-  create_stripe_connect_account,
-  active_stripe_connect_account,
+  createStripeConnectAccount,
+  getStripeConnectAccount,
+  hasActiveStripeAccount,
   createPaymentIntent,
   confirmPayment,
-  sellerRequestPayOut,
   updateSellerBalances,
   getSellerRevenue,
   sellerRequestPayOut,

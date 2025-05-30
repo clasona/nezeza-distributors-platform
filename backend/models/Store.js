@@ -37,6 +37,11 @@ const storeSchema = new mongoose.Schema(
       enum: ['manufacturing', 'wholesale', 'retail', 'admin', 'default'], // Type of the store
       required: true,
     },
+    businessType: {
+      type: String,
+      enum: ['individual', 'company'], 
+      // required: true,
+    },
 
     // address: {
     //   type: mongoose.Schema.ObjectId,
