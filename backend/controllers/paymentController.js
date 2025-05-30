@@ -294,8 +294,8 @@ const createStripeConnectAccount = async (req, res) => {
     // Generate Stripe onboarding link
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccount.id,
-      refresh_url: `${process.env.CLIENT_URL}/${sellerStoreType}/stripe-onboarding-refresh`, // A dedicated refresh endpoint/page
-      return_url: `${process.env.CLIENT_URL}/${sellerStoreType}/stripe-onboarding-success`, // A dedicated success endpoint/page
+      refresh_url: `${process.env.CLIENT_URL}/sellers/stripe/onboarding-refresh`, // A dedicated refresh endpoint/page
+      return_url: `${process.env.CLIENT_URL}/sellers/stripe/onboarding-success`, // A dedicated success endpoint/page
       type: 'account_onboarding',
       collect: 'eventually_due', // Recommended for Express accounts to collect all necessary info eventually
     });

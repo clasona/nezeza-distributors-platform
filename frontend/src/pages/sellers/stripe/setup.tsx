@@ -1,16 +1,13 @@
-// pages/sellers-shared/setup-stripe.tsx
-import RootLayout from '@/components/RootLayout';
+import ErrorMessageModal from '@/components/ErrorMessageModal';
 import Button from '@/components/FormInputs/Button';
-import PageHeader from '@/components/PageHeader';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router'; // Use next/router for pages directory
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import SuccessMessageModal from '@/components/SuccessMessageModal';
 import { createStripeConnectAccount as createStripeAccountApi } from '@/utils/stripe/createStripeConnectAccount';
 import { hasActiveStripeConnectAccount as checkActiveStripeAccountApi } from '@/utils/stripe/hasStripeConnectAccount';
-import ErrorMessageModal from '@/components/ErrorMessageModal';
-import SuccessMessageModal from '@/components/SuccessMessageModal';
-import { stateProps } from '../../../type';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { stateProps } from '../../../../type';
 
 const StripeSetupPage = () => {
   const { data: session, status: sessionStatus } = useSession();

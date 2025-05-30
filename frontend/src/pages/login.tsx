@@ -69,7 +69,7 @@ const LoginPage = () => {
             router.replace(callbackUrl);
           } else {
             // Seller has no active Stripe account, force redirect to setup page
-            router.replace('/sellers-shared/setup-stripe');
+            router.replace('/sellers/stripe/setup');
           }
         }
         // If already checked, do nothing or redirect to dashboard as needed

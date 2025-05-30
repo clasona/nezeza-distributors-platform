@@ -16,7 +16,7 @@ const StripeOnboardingRefresh = () => {
           It looks like your Stripe onboarding was interrupted or cancelled.
         </p>
         <button
-          onClick={() => router.replace(`/sellers-shared/setup-stripe`)}
+          onClick={() => router.replace(`/sellers/stripe/setup`)}
           className='px-4 py-2 rounded bg-nezeza_dark_blue text-white hover:bg-nezeza_dark_blue2'
         >
           Return to Setup

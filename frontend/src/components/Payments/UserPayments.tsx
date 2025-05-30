@@ -52,7 +52,7 @@ const UserPayments = () => {
             <p className='text-lg'>
               You haven’t set up your Stripe account yet.{' '}
               <Link
-                href='/setup-stripe'
+                href='/stripe/setup'
                 className='text-nezeza_green_600 font-semibold underline'
               >
                 Set up now
