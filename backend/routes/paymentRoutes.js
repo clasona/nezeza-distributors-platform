@@ -20,7 +20,13 @@ const {
   createPaymentIntent,
 } = require('../controllers/paymentController');
 
-router.post('/create-stripe-connect-account', create_stripe_connect_account);
+router.post('/create-stripe-connect-account', createStripeConnectAccount);
+router.get('/get-stripe-connect-account/:id', getStripeConnectAccount);
+router.get(
+  '/has-active-stripe-account/:id',
+  hasActiveStripeAccount
+);
+router.get('/has-active-stripe-account/by-email/:email', hasActiveStripeAccount);
 router.post('/seller-subscription', createSubscription);
 router.post('/cancel-subscription', cancelSubscription);
 router.post('/confirm-payment', confirmPayment);
