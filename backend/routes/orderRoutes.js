@@ -21,9 +21,13 @@ const {
   updateToDelivered,
   updateToCancelled,
   updateShippingInfo,
+  cancelSingleOrderProduct,
+  cancelFullOrder,
 } = require('../controllers/orderController');
 
-router.route('/').post(authenticateUser, authorizePermissions('create_order'), createOrder);
+router
+  .route('/')
+  .post(authenticateUser, authorizePermissions('create_order'), createOrder);
 
 router
   .route('/selling')
@@ -128,4 +132,21 @@ router
     authorizePermissions('update_order'),
     updateOrderItem
   );
+
+router
+  .route('/:id/:itemId/cancel')
+  .post(
+    authenticateUser,
+    authorizePermissions('update_order'),
+    cancelSingleOrderProduct
+);
+  
+router
+  .route('/:id/cancel')
+  .post(
+    authenticateUser,
+    authorizePermissions('update_order'),
+    cancelFullOrder
+);
+  
 module.exports = router;

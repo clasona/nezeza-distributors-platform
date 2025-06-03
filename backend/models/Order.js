@@ -23,6 +23,15 @@ const SingleOrderItemSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  status: {
+    type: String,
+    enum: ['Active', 'Cancelled', 'Returned', 'Partially Cancelled', 'Partially Returned'],
+    default: 'Active',
+  },
+  cancelledQuantity: {
+    type: Number,
+    default: 0,
+  }, // Tracks how many of this item have been cancelled
 });
 
 const OrderSchema = mongoose.Schema(
@@ -119,6 +128,9 @@ const OrderSchema = mongoose.Schema(
       type: String,
       enum: ['Pending', 'Completed'],
       default: 'Pending',
+    },
+    refundId: {
+      type: String,
     },
   },
   { timestamps: true }

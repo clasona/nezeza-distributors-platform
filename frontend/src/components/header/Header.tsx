@@ -25,7 +25,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { stateProps } from '../../../type';
+import { stateProps, UserProps } from '../../../type';
 import logo from '../../images/logo.jpg';
 import { LogoutButton } from '../LogoutButton';
 import SearchField from '../Table/SearchField';
@@ -36,7 +36,7 @@ const Header = () => {
   const { data: session } = useSession();
   const { cartItemsData, favoritesItemsData, userInfo, storeInfo } =
     useSelector((state: stateProps) => state.next);
-  const [currentUserData, setCurrentUserData] = useState(null); 
+  const [currentUserData, setCurrentUserData] = useState<UserProps | null>(null); 
   const [searchQuery, setSearchQuery] = useState('');
 
   const dispatch = useDispatch();

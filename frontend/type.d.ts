@@ -54,6 +54,8 @@ export interface OrderItemsProps {
   product: ProductProps;
   sellerStoreId: StoreProps;
   addedToInventory: boolean;
+  status: 'Active' | 'Cancelled' | 'Returned' | 'Partially Cancelled' | 'Partially Returned';
+  cancelledQuantity: number;
 }
 
 // for buyers

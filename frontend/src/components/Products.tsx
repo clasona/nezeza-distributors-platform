@@ -1,11 +1,15 @@
-import { addToCart, addToFavorites } from '@/redux/nextSlice';
-import { Heart, Star } from 'lucide-react';
+import {
+  addToCart,
+  addToFavorites,
+  setBuyNowProduct,
+  setCartItems,
+} from '@/redux/nextSlice';
+import { Heart, Star, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { HiShoppingCart } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
-import { ProductProps, stateProps } from '../../type';
+import { OrderItemsProps, ProductProps, stateProps } from '../../type';
 import ErrorMessageModal from './ErrorMessageModal';
 import FormattedPrice from './FormattedPrice';
 import SuccessMessageModal from './SuccessMessageModal';
@@ -15,6 +19,10 @@ import {
   getRetailersProducts,
   getWholesalersProducts,
 } from '@/utils/product/getProductsBySeller';
+import Button from './FormInputs/Button';
+import ReviewsModal from './Reviews/ReviewsModal';
+import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
+import BuyQuantityModal from './Product/BuyQuantityModal';
 
 const Products = () => {
   const [products, setProducts] = useState<ProductProps[]>([]);
@@ -22,11 +30,29 @@ const Products = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const { storeInfo } = useSelector((state: stateProps) => state.next);
   const [isLoading, setIsLoading] = useState(false);
-
+  const { cartItemsData, userInfo } = useSelector(
+    (state: stateProps) => state.next
+  );
   const dispatch = useDispatch();
   const router = useRouter();
 
   const [expandedProductId, setExpandedProductId] = useState<string | null>(
+    null
+  );
+  const [openReviewProductId, setOpenReviewProductId] = useState<string | null>(
+    null
+  );
+  const [isQuantityModalOpen, setIsQuantityModalOpen] = useState(false);
+  const [selectedProductForBuyNow, setSelectedProductForBuyNow] =
+    useState<ProductProps | null>(null);
+  // New loading states for individual actions
+  const [addingToCartProductId, setAddingToCartProductId] = useState<
+    string | null
+  >(null);
+  const [addingToFavoritesProductId, setAddingToFavoritesProductId] = useState<
+    string | null
+  >(null);
+  const [buyingNowProductId, setBuyingNowProductId] = useState<string | null>(
     null
   );
 
@@ -58,11 +84,134 @@ const Products = () => {
     fetchData();
   }, []);
 
-  if (!products) {
+  const handleOpenReviewModal = (productId: string) => {
+    setOpenReviewProductId(productId);
+  };
+
+  const handleCloseReviewModal = () => {
+    setOpenReviewProductId(null);
+  };
+
+  const handleAddToCart = async (product: ProductProps) => {
+    setAddingToCartProductId(product._id);
+    try {
+      await dispatch(
+        addToCart({
+          product,
+          quantity: 1,
+        })
+      );
+      setSuccessMessage('Added successfully!');
+    } catch (error: any) {
+      handleError(error);
+      setErrorMessage(error);
+    } finally {
+      setAddingToCartProductId(null);
+    }
+  };
+
+  // Modified Add to Favorites handler
+  const handleAddToFavorite = async (product: ProductProps) => {
+    setAddingToFavoritesProductId(product._id);
+    try {
+      await dispatch(
+        addToFavorites({
+          product,
+          quantity: 1,
+        })
+      );
+      setSuccessMessage('Added successfully!');
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setAddingToFavoritesProductId(null);
+    }
+  };
+
+  const handleOpenQuantityModal = (product: ProductProps) => {
+    if (!userInfo) {
+      setErrorMessage('Please login to buy now!');
+      return;
+    }
+    setSelectedProductForBuyNow(product);
+    setIsQuantityModalOpen(true);
+  };
+
+  // Buy Now (Redirect to Checkout)
+  const handleConfirmBuyNow = async (quantity: number) => {
+    if (!selectedProductForBuyNow) return; // Should not happen
+
+    setBuyingNowProductId(selectedProductForBuyNow._id);
+
+    try {
+      const singleOrderItem: OrderItemsProps = {
+        title: selectedProductForBuyNow.title,
+        price: selectedProductForBuyNow.price,
+        quantity: quantity,
+        description: selectedProductForBuyNow.description,
+        category: selectedProductForBuyNow.category,
+        image: selectedProductForBuyNow.image,
+        product: selectedProductForBuyNow, // Pass the whole product object
+        sellerStoreId: selectedProductForBuyNow.storeId, // Assuming storeId is on ProductProps
+        addedToInventory: false, 
+        status: 'Active', 
+        cancelledQuantity: 0,
+        // Add any other properties that OrderItemsProps expects if missing
+      };
+
+      const itemsForPaymentIntent: any = [singleOrderItem];
+      const response = await createPaymentIntent(itemsForPaymentIntent);
+      const clientSecret = response?.data?.clientSecret;
+
+      dispatch(
+        setBuyNowProduct({
+          product: selectedProductForBuyNow,
+          quantity,
+          isBuyNow: true,
+        })
+      );
+
+      // Proceed to checkout if clientSecret is available
+      if (clientSecret) {
+        router.push(
+          {
+            pathname: '/checkout/buy-now',
+            query: { clientSecret },
+          },
+          '/checkout/buy-now'
+        );
+      } else {
+        setErrorMessage('No client secret found.');
+      }
+    } catch (error: any) {
+      handleError(error);
+      setErrorMessage(
+        error?.message || 'Error during Buy Now process. Please try again.'
+      );
+      setTimeout(() => setErrorMessage(''), 4000);
+    } finally {
+      setBuyingNowProductId(null); // Reset loading state
+      setSelectedProductForBuyNow(null); // Clear selected product
+      setIsQuantityModalOpen(false); // Close the modal    }
+    }
+  };
+
+  const handleCloseQuantityModal = () => {
+    setIsQuantityModalOpen(false);
+    setSelectedProductForBuyNow(null); // Clear selected product on close
+  };
+
+  if (!products.length && !isLoading) {
     return (
       <div className='w-full text-center text-bold'>
         No products available at the moment.
       </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className='w-full text-center text-bold'>Loading products...</div>
     );
   }
 
@@ -107,53 +256,47 @@ const Products = () => {
                         transition-transform duration-300'
             >
               {!(product.quantity < 1) && (
-                <span
-                  onClick={() => {
-                    dispatch(
-                      addToCart({
-                        product,
-                        quantity: 1,
-                      })
-                    );
-                    setSuccessMessage('Added successfully!');
-                  }}
-                  className={`w-full h-full border-b-[1px] border-b-gray-400 flex items-center justify-center 
+                <Button
+                  onClick={() => handleAddToCart(product)} // Use modified handler
+                  isLoading={addingToCartProductId === product._id} // Pass isLoading state
+                  buttonTitle=''
+                  loadingButtonTitle='' // Use default spinner if not specified
+                  icon={ShoppingCart}
+                  className={`w-full h-full border-b-[1px] border-b-gray-400 flex items-center justify-center
                             text-lg sm:text-xl bg-transparent hover:bg-nezeza_green_600 hover:text-white cursor-pointer duration-300
                             ${
                               product.quantity < 1
                                 ? 'cursor-not-allowed opacity-50'
                                 : ''
                             }`}
-                >
-                  <HiShoppingCart />
-                </span>
+                  disabled={
+                    product.quantity < 1 ||
+                    addingToCartProductId === product._id ||
+                    addingToFavoritesProductId === product._id ||
+                    buyingNowProductId === product._id
+                  }
+                />
               )}
 
-              <span
-                onClick={() => {
-                  dispatch(
-                    addToFavorites({
-                      product,
-                      quantity: 1,
-                    })
-                  );
-                  setSuccessMessage('Added successfully!');
-                }}
+              <Button
+                onClick={() => handleAddToFavorite(product)} // Use modified handler
+                isLoading={addingToFavoritesProductId === product._id} // Pass isLoading state
+                buttonTitle=''
+                loadingButtonTitle=''
+                icon={Heart} // Pass icon as prop
                 className='w-full h-full flex items-center justify-center text-lg sm:text-xl
-                             bg-transparent hover:bg-nezeza_green_600 hover:text-white cursor-pointer duration-300
-                            '
-              >
-                <Heart />
-              </span>
+                           bg-transparent hover:bg-nezeza_green_600 hover:text-white cursor-pointer duration-300'
+                disabled={
+                  addingToCartProductId === product._id ||
+                  addingToFavoritesProductId === product._id ||
+                  buyingNowProductId === product._id
+                }
+              />
             </div>
           </div>
           <hr />
           <div className='px-2 py-1 flex flex-col gap-1'>
-            <div
-              onClick={() => {
-                router.push(`/product/${product._id}`);
-              }}
-            >
+            <div>
               <div className='flex justify-between w-full'>
                 <p className='text-xs text-nezeza_gray_600 tracking-wide'>
                   {product.category}
@@ -180,38 +323,50 @@ const Products = () => {
                       }`}
                     />
                   ))}
-                  <span className='text-sm sm:text-base ml-1 text-gray-800'>
+                  {/* <span className='text-sm sm:text-base ml-1 text-gray-800'>
                     {product.rating.toFixed(1)}
-                  </span>
+                  </span> */}
+                  <button
+                    onClick={() => handleOpenReviewModal(product._id)}
+                    className='bg-transparent text-nezeza_dark_blue hover:underline p-0 h-auto text-base'
+                  >
+                    ({product.numOfReviews || 0})
+                  </button>
                 </div>
               </div>
-              <p className='flex items-center'>
-                <span className='text-nezeza_dark_blue font-bold'>
-                  <FormattedPrice amount={product.price} />
-                </span>
-              </p>
-
-              <p
-                className='text-xs text-gray-600 text-justify'
+              <div
                 onClick={() => {
                   router.push(`/product/${product._id}`);
                 }}
               >
-                <span className='block sm:hidden'>
-                  {product.description.length > 100
-                    ? expandedProductId === product._id
-                      ? product.description
-                      : `${product.description.substring(0, 20)}...`
-                    : product.description}
-                </span>
-                <span className='hidden sm:block'>
-                  {product.description.length > 100
-                    ? expandedProductId === product._id
-                      ? product.description
-                      : `${product.description.substring(0, 50)}...`
-                    : product.description}
-                </span>
-              </p>
+                <p className='flex items-center'>
+                  <span className='text-nezeza_dark_blue font-bold'>
+                    <FormattedPrice amount={product.price} />
+                  </span>
+                </p>
+
+                <p
+                  className='text-xs text-gray-600 text-justify'
+                  onClick={() => {
+                    router.push(`/product/${product._id}`);
+                  }}
+                >
+                  <span className='block sm:hidden'>
+                    {product.description.length > 100
+                      ? expandedProductId === product._id
+                        ? product.description
+                        : `${product.description.substring(0, 20)}...`
+                      : product.description}
+                  </span>
+                  <span className='hidden sm:block'>
+                    {product.description.length > 100
+                      ? expandedProductId === product._id
+                        ? product.description
+                        : `${product.description.substring(0, 50)}...`
+                      : product.description}
+                  </span>
+                </p>
+              </div>
             </div>
             {product.description.length > 100 && (
               <button
@@ -221,28 +376,49 @@ const Products = () => {
                 {expandedProductId === product._id ? 'Show Less' : 'Read More'}
               </button>
             )}
-            <button
+            <Button
               onClick={() => {
                 product.quantity < 1
-                  ? dispatch(
-                      addToFavorites({
-                        product,
-                        quantity: 1,
-                      })
-                    )
-                  : dispatch(
-                      addToCart({
-                        product,
-                        quantity: 1,
-                      })
-                    );
-                setSuccessMessage('Added successfully!');
+                  ? handleAddToFavorite(product) // Use handleAddToFavorite
+                  : handleAddToCart(product); // Use handleAddToCart
               }}
-              className='h-8 sm:h-10 text-xs sm:text-sm font-medium bg-nezeza_dark_blue text-white rounded-md hover:bg-nezeza_green_600 
-                             duration-300 mt-2'
-            >
-              {product.quantity < 1 ? 'Add to Favorites' : 'Add to Cart'}
-            </button>
+              isLoading={
+                (product.quantity < 1 &&
+                  addingToFavoritesProductId === product._id) || // Favorites loading
+                (product.quantity >= 1 && addingToCartProductId === product._id) // Cart loading
+              }
+              buttonTitle={
+                product.quantity < 1 ? 'Add to Favorites' : 'Add to Cart'
+              }
+              loadingButtonTitle={
+                product.quantity < 1
+                  ? 'Adding to Favorites...'
+                  : 'Adding to Cart...'
+              }
+              className='flex items-center justify-center h-8 sm:h-10 text-sm sm:text-base font-medium bg-nezeza_dark_blue text-white rounded-md hover:bg-nezeza_dark_blue_2
+                         duration-300 mt-2 w-full'
+              disabled={
+                addingToCartProductId === product._id ||
+                addingToFavoritesProductId === product._id ||
+                buyingNowProductId === product._id
+              }
+            />
+            {/* Show Buy Now only if in stock */}
+            {product.quantity > 0 && (
+              <Button
+                onClick={() => handleOpenQuantityModal(product)} // Open the quantity modal
+                isLoading={buyingNowProductId === product._id} // Pass isLoading state
+                buttonTitle='Buy Now'
+                loadingButtonTitle='Processing...'
+                className='flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 mt-2 w-full'
+                disabled={
+                  // !userInfo ||
+                  addingToCartProductId === product._id ||
+                  addingToFavoritesProductId === product._id ||
+                  buyingNowProductId === product._id
+                }
+              />
+            )}
             {product.quantity < 1 && (
               <div className='text-xs text-center'>
                 <span className='text-nezeza_red_600'>
@@ -251,8 +427,26 @@ const Products = () => {
               </div>
             )}
           </div>
+          {/* Review Modal */}
+          {openReviewProductId === product._id && (
+            <ReviewsModal
+              isOpen={true}
+              onClose={handleCloseReviewModal}
+              product={product}
+            />
+          )}
         </div>
       ))}
+      {/* Quantity Modal */}
+      {isQuantityModalOpen && selectedProductForBuyNow && (
+        <BuyQuantityModal
+          isOpen={isQuantityModalOpen}
+          onClose={handleCloseQuantityModal}
+          product={selectedProductForBuyNow}
+          onConfirm={handleConfirmBuyNow}
+          maxQuantity={selectedProductForBuyNow.quantity} // Pass available stock
+        />
+      )}
       {successMessage && (
         <SuccessMessageModal successMessage={successMessage} />
       )}

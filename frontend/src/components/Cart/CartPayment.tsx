@@ -56,7 +56,7 @@ const CartPayment = () => {
       const filteredCartItems = cartItemsData.filter(
         (item: OrderItemsProps) => item.product.quantity > 0
       );
-      console.log(filteredCartItems);
+      // console.log(filteredCartItems);
       dispatch(setCartItems(filteredCartItems));
       if (clientSecret) {
         router.push(

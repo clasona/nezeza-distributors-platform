@@ -83,7 +83,7 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
         <h2 className='text-lg text-center font-bold mb-4 text-nezeza_dark_blue'>
           NEZEZA
         </h2>
-        <h2 className='text-lg font-semibold mb-4 text-gray-700'>Checkout</h2>
+        {/* <h2 className='text-lg font-semibold mb-4 text-gray-700'>Checkout</h2> */}
         {/* Shipping Address */}
         <div className='mb-4'>
           <h3 className='text-sm font-bold mb-2'>Shipping Address</h3>

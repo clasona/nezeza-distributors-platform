@@ -1,20 +1,34 @@
 import Heading from '@/components/Heading';
+import { hasActiveStripeConnectAccount } from '@/utils/stripe/hasStripeConnectAccount';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { stateProps } from '../../../type';
 
 const UserPayments = () => {
-  const [stripeAccount, setStripeAccount] = useState(null);
+  const [hasStripeActiveAccount, setHasStripeActiveAccount] = useState(false);
   const [pendingBalance, setPendingBalance] = useState(2000);
   const [availableBalance, setAvailableBalance] = useState(1000);
   const [transactions, setTransactions] = useState([
     { id: 1, type: 'Payment Received', amount: 500, date: 'Feb 5, 2025' },
     { id: 2, type: 'Withdrawal', amount: 300, date: 'Feb 3, 2025' },
   ]);
+  const { userInfo, storeInfo } = useSelector(
+    (state: stateProps) => state.next
+  );
 
-  //   useEffect(() => {
-  //     // Fetch stripe account details from backend
-  //     setStripeAccount({ id: 'acct_123456', status: 'active' });
-  //   }, []);
+  const checkHasActiveStripeAccount = async () => {
+    const response = await hasActiveStripeConnectAccount(userInfo._id);
+    if (response && response.hasStripeAccount && response.isActive) {
+      setHasStripeActiveAccount(true);
+    } else {
+      setHasStripeActiveAccount(false);
+    }
+  };
+
+  useEffect(() => {
+    checkHasActiveStripeAccount();
+  }, [userInfo._id]);
 
   return (
     <div>
@@ -24,7 +38,7 @@ const UserPayments = () => {
           <h4 className='text-2xl font-semibold text-nezeza_dark_blue mb-4'>
             Stripe Account
           </h4>
-          {stripeAccount ? (
+          {hasStripeActiveAccount ? (
             <p className='text-lg'>
               Your Stripe account is connected.{' '}
               <Link
@@ -38,7 +52,7 @@ const UserPayments = () => {
             <p className='text-lg'>
               You haven’t set up your Stripe account yet.{' '}
               <Link
-                href='/setup-stripe'
+                href='/stripe/setup'
                 className='text-nezeza_green_600 font-semibold underline'
               >
                 Set up now

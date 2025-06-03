@@ -13,6 +13,7 @@ export async function middleware(req: NextRequest) {
     '/wholesaler',
     '/retailer',
     '/admin',
+    '/checkout',
   ];
  const storeTypeRoutes: Record<string, string[]> = {
    manufacturing: ['/manufacturer'],
@@ -59,5 +60,6 @@ export const config = {
     '/wholesaler/:path*',
     '/retailer/:path*',
     '/admin/:path*',
+    '/checkout/:path*',
   ],
 };

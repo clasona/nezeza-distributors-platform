@@ -6,7 +6,9 @@ const {
 } = require('../middleware/authentication');
 const {
   webhookHandler,
-  create_stripe_connect_account,
+  createStripeConnectAccount,
+  getStripeConnectAccount,
+  hasActiveStripeAccount,
   confirmPayment,
   processRefund,
   refundTest,

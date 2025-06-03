@@ -1,11 +1,24 @@
-import { resetCart } from '@/redux/nextSlice';
+import { clearBuyNowProduct, resetCart } from '@/redux/nextSlice';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { stateProps } from '../../type';
 
 const SuccessPage = () => {
   const dispatch = useDispatch();
+ const { buyNowProduct } = useSelector((state: stateProps) => state.next); // Access buyNowProduct from state
 
-  dispatch(resetCart()); // Clear the cart
+ useEffect(() => {
+   if (buyNowProduct?.isBuyNow) {
+     // If it was a "Buy Now" purchase, only clear the buyNowProduct state
+     dispatch(clearBuyNowProduct());
+     // console.log('Buy Now purchase: Only buyNowProduct cleared.');
+   } else {
+     // For regular cart checkout, clear the entire cart
+     dispatch(resetCart());
+     // console.log('Regular cart purchase: Cart cleared.');
+   }
+ }, [dispatch, buyNowProduct]); 
 
   return (
     <div className='flex flex-col flex-grow gap-2 items-center justify-center py-20 w-full'>
