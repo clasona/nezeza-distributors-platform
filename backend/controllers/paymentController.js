@@ -273,7 +273,6 @@ const createStripeConnectAccount = async (req, res) => {
       stripeAccountId: stripeAccount.id,
       // You might also store `object: 'account_link'` or a status here.
     });
-    console.log('Stripe info saved to database:', stripeInfo);
 
     let sellerStoreType = store.storeType;
     switch (sellerStoreType) {
@@ -914,7 +913,6 @@ const refundTest = async (req, res) => {
       stripeAccountId: stripeAccount.id,
       // You might also store `object: 'account_link'` or a status here.
     });
-    console.log('Stripe info saved to database:', stripeInfo);
 
     return res.status(200).json({ msg: 'Success.' });
   } catch (error) {
