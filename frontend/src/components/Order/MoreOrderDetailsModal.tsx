@@ -146,7 +146,7 @@ const MoreOrderDetailsModal = <T,>({
                   </h4>
                   <p>
                     {/* {orderData.shippingAddress},<br /> */}
-                    {orderData.shippingAddress?.street},<br />
+                    {orderData.shippingAddress?.street1},<br />
                     {orderData.shippingAddress?.city},{' '}
                     {orderData.shippingAddress?.state}{' '}
                     {orderData.shippingAddress?.zip},<br />

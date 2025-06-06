@@ -171,6 +171,8 @@ const RegisterPage = () => {
 
             {isSeller && (
               <DropdownInputSearchable
+                id='storeType'
+                name='storeType'
                 label='Select store type'
                 options={storeTypeOptions}
                 onChange={handleStoreTypeChange}

@@ -1,7 +1,6 @@
-import { calculateOrderItemsSubtotal } from '@/utils/order/calculateOrderItemsSubtotal';
+import formatDate from '@/utils/formatDate';
 import { OrderProps } from '../../../type';
 import FormattedStatus from '../Table/FormattedStatus';
-import formatDate from '@/utils/formatDate';
 import OrderTotals from './OrderTotals';
 
 interface OrderDetailsProps {
@@ -34,7 +33,7 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
       <div className='mt-4'>
         <h4 className='text-md font-semibold mb-2'>Shipping Address</h4>
         <p className='text-sm'>
-          {/* {order.shippingAddress.street}, {order.shippingAddress.city},{' '}
+          {/* {order.shippingAddress.street1}, {order.shippingAddress.city},{' '}
           {order.shippingAddress.state} {order.shippingAddress.zip},{' '}
           {order.shippingAddress.country} */}
         </p>
