@@ -60,11 +60,16 @@ const CheckoutAddressPage = () => {
         userInfo?.email ||
         '',
     });
-    if (shippingAddress.country) {
-      setSelectedCountryOption({value: shippingAddress.country, label: shippingAddress.country});
-      // setValue('country', shippingAddress.country);
-    } else if (userInfo?.address?.country) {
-      setSelectedCountryOption({value:userInfo.address.country, label: userInfo.address.country});
+    if (shippingAddress && shippingAddress.country) {
+      setSelectedCountryOption({
+        value: shippingAddress.country,
+        label: shippingAddress.country,
+      });
+    } else if (userInfo?.address && userInfo.address.country) {
+      setSelectedCountryOption({
+        value: userInfo.address.country,
+        label: userInfo.address.country,
+      });
     }
   }, [shippingAddress, userInfo, reset]);
 
