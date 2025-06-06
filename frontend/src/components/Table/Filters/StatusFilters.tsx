@@ -26,6 +26,9 @@ const StatusFilters: React.FC<StatusFiltersProps> = ({
   return (
     <div className='flex flex-grow'>
       <DropdownInputSearchable
+        label={label}
+        id='status-filter'
+        name='status-filter'
         options={options}
         onChange={handleChange}
         value={selectedOption}

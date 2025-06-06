@@ -1603,10 +1603,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stripe/stripe-js@npm:^5.6.0":
-  version: 5.7.0
-  resolution: "@stripe/stripe-js@npm:5.7.0"
-  checksum: 10c0/524ab25bb1662e811eea1e75434ea93793aa87f1016ec143e2cdb5e8d10f6e96c1f4305dd903aa4f9f0bb1868c2ecdf89fbd0b22cabe42b1cc93297ca48e20c9
+"@stripe/stripe-js@npm:^5.10.0":
+  version: 5.10.0
+  resolution: "@stripe/stripe-js@npm:5.10.0"
+  checksum: 10c0/0309007baaf939931de0e18ec8230bdfa41b1644cd5f65d72168ef0a05ea4d14da9a95ff628c94f9f1e222577296369b7490534803ce1ce18d08a557ae562644
   languageName: node
   linkType: hard
 
@@ -3437,7 +3437,7 @@ __metadata:
     "@radix-ui/react-tooltip": "npm:^1.1.4"
     "@reduxjs/toolkit": "npm:^2.3.0"
     "@stripe/react-stripe-js": "npm:^3.1.1"
-    "@stripe/stripe-js": "npm:^5.6.0"
+    "@stripe/stripe-js": "npm:^5.10.0"
     "@tailwindcss/forms": "npm:^0.5.9"
     "@types/node": "npm:^20"
     "@types/react": "npm:19.1.6"

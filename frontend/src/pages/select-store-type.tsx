@@ -33,6 +33,8 @@ const SelectStoreType = () => {
       </p>
 
       <DropdownInputSearchable
+        id='store-type-select'
+        name='store-type-select'
         label='Select store type'
         options={storeTypeOptions}
         onChange={handleStoreTypeChange}

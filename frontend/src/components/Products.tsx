@@ -1,28 +1,27 @@
 import {
   addToCart,
   addToFavorites,
-  setBuyNowProduct,
-  setCartItems,
+  setBuyNowProduct
 } from '@/redux/nextSlice';
-import { Heart, Star, ShoppingCart } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { OrderItemsProps, ProductProps, stateProps } from '../../type';
-import ErrorMessageModal from './ErrorMessageModal';
-import FormattedPrice from './FormattedPrice';
-import SuccessMessageModal from './SuccessMessageModal';
 import { handleError } from '@/utils/errorUtils';
+import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
 import {
   getManufacturersProducts,
   getRetailersProducts,
   getWholesalersProducts,
 } from '@/utils/product/getProductsBySeller';
+import { Heart, ShoppingCart, Star } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AddressProps, OrderItemsProps, ProductProps, stateProps } from '../../type';
+import ErrorMessageModal from './ErrorMessageModal';
+import FormattedPrice from './FormattedPrice';
 import Button from './FormInputs/Button';
-import ReviewsModal from './Reviews/ReviewsModal';
-import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
 import BuyQuantityModal from './Product/BuyQuantityModal';
+import ReviewsModal from './Reviews/ReviewsModal';
+import SuccessMessageModal from './SuccessMessageModal';
 
 const Products = () => {
   const [products, setProducts] = useState<ProductProps[]>([]);
@@ -153,7 +152,7 @@ const Products = () => {
         image: selectedProductForBuyNow.image,
         product: selectedProductForBuyNow,
         sellerStoreId: selectedProductForBuyNow.storeId,
-        sellerStoreAddress: selectedProductForBuyNow.storeId.address,
+        sellerStoreAddress: selectedProductForBuyNow.storeId.address as AddressProps,
         addedToInventory: false, 
         status: 'Active', 
         cancelledQuantity: 0,

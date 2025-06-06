@@ -93,7 +93,7 @@ const OrderDetailsWithImages = ({ order }: OrderDetailsWithImagesProps) => {
       <div className='mt-2'>
         <h4 className='text-sm font-semibold '>Shipping Address</h4>
         <p className='text-sm'>
-          {order.shippingAddress.street}, {order.shippingAddress.city},{' '}
+          {order.shippingAddress.street1}, {order.shippingAddress.city},{' '}
           {order.shippingAddress.state} {order.shippingAddress.zip},{' '}
           {order.shippingAddress.country}
         </p>

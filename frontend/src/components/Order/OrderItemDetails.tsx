@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { OrderItemsProps, ProductProps } from '../../../type';
-import { useRouter } from 'next/router';
-import { getSingleProduct } from '@/utils/product/getSingleProduct';
-import CancelItemModal from './CancelItemModal';
 import { cancelSingleOrderProduct } from '@/utils/order/cancelSingleOrderProduct';
+import { getSingleProduct } from '@/utils/product/getSingleProduct';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { OrderItemsProps, ProductProps } from '../../../type';
+import CancelItemModal from './CancelItemModal';
 
 interface OrderItemDetailsProps {
   item: OrderItemsProps;
@@ -101,9 +101,9 @@ export const OrderItemDetails = ({
             </button>
             <button
               className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-nezeza_green_600 hover:text-white transition duration-300'
-              onClick={() => handleOpenQuantityModal(product)}
+              // onClick={() => handleOpenQuantityModal(product)}
             >
-              Buy Again
+              TODO: Buy Again
             </button>
           </div>
           {cancelError && (
