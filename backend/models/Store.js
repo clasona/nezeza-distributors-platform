@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-//const Address = require('./models/address');
+const addressSchema = require('./Address'); 
 
 const storeSchema = new mongoose.Schema(
   {
@@ -43,11 +43,7 @@ const storeSchema = new mongoose.Schema(
       // required: true,
     },
 
-    // address: {
-    //   type: mongoose.Schema.ObjectId,
-    //   ref: 'Address',
-    //   required: true, // Store's primary address
-    // },
+    address: addressSchema,
     members: [
       {
         type: mongoose.Schema.ObjectId,

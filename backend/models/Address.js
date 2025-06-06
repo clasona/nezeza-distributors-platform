@@ -1,30 +1,40 @@
 const mongoose = require('mongoose');
 
-const AddressSchema = new mongoose.Schema({
-  street: {
+const addressSchema = new mongoose.Schema({
+  fullName: {
     type: String,
-    required: true,
+  },
+  street1: {
+    type: String,
+    // required: true,
+  },
+  street2: {
+    type: String,
   },
   city: {
     type: String,
-    required: true,
+    // required: true,
   },
   state: {
     type: String,
     required: true,
   },
-  zipCode: {
+  zip: {
     type: String,
-    required: true,
+    // required: true,
   },
   country: {
     type: String,
-    required: true,
+    // required: true,
   },
-  // phone: {
-  //   type: String,
-  //   required: false,
-  // },
+  phone: {
+    type: String,
+  },
+  email: {
+    type: String,
+    // required: true,
+    match: [/.+\@.+\..+/, 'Please fill a valid email address'],
+  },
 });
 
-module.exports = mongoose.model('Address', AddressSchema);
+module.exports = addressSchema;

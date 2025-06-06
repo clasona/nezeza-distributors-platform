@@ -1,4 +1,4 @@
-import { setCartItems } from '@/redux/nextSlice';
+import { setCartItems, setShippingAddress } from '@/redux/nextSlice';
 import { handleError } from '@/utils/errorUtils';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { OrderItemsProps, StoreProduct, stateProps } from '../../../type';
 import ErrorMessageModal from '../ErrorMessageModal';
 import FormattedPrice from '../FormattedPrice';
-import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
+// import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
 
 const CartPayment = () => {
   const { cartItemsData, userInfo } = useSelector(
@@ -17,7 +17,7 @@ const CartPayment = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>('');
-  let clientSecret = '';
+  // let clientSecret = '';
 
   useEffect(() => {
     let amount = 0;
@@ -28,55 +28,102 @@ const CartPayment = () => {
     setTotalAmount(amount);
   }, [cartItemsData]);
 
-  const handleCreateOrder = async () => {
-    if (!cartItemsData.length) return;
-
+  const handleCheckout = () => {
     try {
-      const response = await createPaymentIntent(cartItemsData);
-      if (response.status !== 200) {
-        console.error('Error fetching client secret.');
-        // setSuccessMessage(''); // Clear any previous error message
-        // setErrorMessage(response.data.msg || 'Client secret fetch failed.');
-      } else {
-        clientSecret = response?.data?.clientSecret;
-        // setPaymentIntentFetched(true); // Set the flag to true after fetching
-      }
-    } catch (error: any) {
-      handleError(error);
-      //  setErrorMessage(error);
-    }
-  };
-
-  const handleCheckout = async () => {
-    await handleCreateOrder(); //returns client secret
-    try {
-      //  const serverCartItems = await getCart(); // Get cart from server
-      // const mergedCartItems = mergeCartItems(cartItemsData, serverCartItems);
-
       const filteredCartItems = cartItemsData.filter(
         (item: OrderItemsProps) => item.product.quantity > 0
       );
-      // console.log(filteredCartItems);
       dispatch(setCartItems(filteredCartItems));
-      if (clientSecret) {
-        router.push(
-          {
-            pathname: '/checkout',
-            query: { clientSecret: clientSecret },
-          },
-          '/checkout'
-        );
+
+      // Check if user has an address
+      const userHasAddress =
+        userInfo &&
+        (userInfo.address ||
+          (userInfo.addresses && userInfo.addresses.length > 0));
+
+      if (!userInfo) {
+        // Not logged in
+        return;
+      }
+
+      if (userHasAddress) {
+        dispatch(setShippingAddress(userInfo.address));
+        router.push('/checkout/review');
       } else {
-        console.log('No client secret found.');
+        router.push('/checkout/shipping-address');
       }
     } catch (error: any) {
-      // setErrorMessage('Error redirecting to checkout. Please try again.');
-      // setTimeout(() => setErrorMessage(''), 4000);
       handleError(error);
       setErrorMessage(error);
       setTimeout(() => setErrorMessage(''), 4000);
     }
   };
+
+  // const handleCreateOrder = async () => {
+  //   if (!cartItemsData.length) return;
+
+  //   try {
+  //     const response = await createPaymentIntent(cartItemsData);
+  //     if (response.status !== 200) {
+  //       console.error('Error fetching client secret.');
+  //       // setSuccessMessage(''); // Clear any previous error message
+  //       // setErrorMessage(response.data.msg || 'Client secret fetch failed.');
+  //     } else {
+  //       clientSecret = response?.data?.clientSecret;
+  //       // setPaymentIntentFetched(true); // Set the flag to true after fetching
+  //     }
+  //   } catch (error: any) {
+  //     handleError(error);
+  //     //  setErrorMessage(error);
+  //   }
+  // };
+
+  // const handleCheckout = async () => {
+  //   await handleCreateOrder(); //returns client secret
+  //   try {
+  //     //  const serverCartItems = await getCart(); // Get cart from server
+  //     // const mergedCartItems = mergeCartItems(cartItemsData, serverCartItems);
+
+  //     const filteredCartItems = cartItemsData.filter(
+  //       (item: OrderItemsProps) => item.product.quantity > 0
+  //     );
+  //     // console.log(filteredCartItems);
+  //     dispatch(setCartItems(filteredCartItems));
+  //     // Check if user has an address
+  //     const userHasAddress =
+  //       userInfo &&
+  //       (userInfo.address || // for single address
+  //         (userInfo.addresses && userInfo.addresses.length > 0)); // for multiple addresses
+
+  //     if (!userInfo) {
+  //       // Not logged in
+  //       return;
+  //     }
+
+  //     if (userHasAddress) {
+  //       router.push('/checkout/review');
+  //     } else {
+  //       router.push('/checkout/shipping-address');
+  //     }
+  //     // if (clientSecret) {
+      //   router.push(
+      //     {
+      //       pathname: '/checkout',
+      //       query: { clientSecret: clientSecret },
+      //     },
+      //     '/checkout'
+      //   );
+      // } else {
+      //   console.log('No client secret found.');
+      // }
+  //   } catch (error: any) {
+  //     // setErrorMessage('Error redirecting to checkout. Please try again.');
+  //     // setTimeout(() => setErrorMessage(''), 4000);
+  //     handleError(error);
+  //     setErrorMessage(error);
+  //     setTimeout(() => setErrorMessage(''), 4000);
+  //   }
+  // };
 
   return (
     <div className='flex flex-col gap-4 p-2 sm:p-4'>
@@ -105,7 +152,7 @@ const CartPayment = () => {
             !userInfo ? 'pointer-events-none bg-nezeza_gray_600' : ''
           }`}
         >
-          Proceed to Checkout
+          Proceed to Review & Checkout
         </button>
 
         {!userInfo && (

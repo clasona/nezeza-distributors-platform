@@ -32,7 +32,7 @@ interface AddressInputProps {
   cityFieldName?: string;
   stateFieldName?: string;
   countryFieldName?: string;
-  zipCodeFieldName?: string;
+  zipFieldName?: string;
   errors: FieldErrors;
   defaultValue?: string;
   register: UseFormRegister<FieldValues>;
@@ -44,11 +44,11 @@ const AddressInput = ({
   cityFieldName = 'city',
   stateFieldName = 'state',
   countryFieldName = 'country',
-  zipCodeFieldName = 'zipCode',
+  zipFieldName = 'zip',
   register,
   errors,
   control,
-  setValue
+  setValue,
 }: AddressInputProps) => {
   const selectedCountry = useWatch({
     control,
@@ -130,6 +130,7 @@ const AddressInput = ({
       setSelectedCountryOption(null);
     }
   }, [selectedCountry, countryOptions]);
+  
   const handleCountryChange = (
     option: { value: string; label: string } | null
   ) => {
@@ -173,7 +174,7 @@ const AddressInput = ({
         register={register}
         errors={errors}
         value={selectedCountryOption}
-        className='w-full max-w-xs sm:max-w-md text-center'
+        // className='w-full max-w-xs sm:max-w-md text-center'
       />
       <DropdownInputSearchable
         label='State/Province'
@@ -184,7 +185,7 @@ const AddressInput = ({
         errors={errors}
         onChange={handleStateChange}
         value={selectedStateOption}
-        className='w-full max-w-xs sm:max-w-md text-center'
+        // className='w-full max-w-xs sm:max-w-md text-center'
         disabled={
           stateOptions.length === 0 || loadingStates || !selectedCountry
         }
@@ -222,8 +223,8 @@ const AddressInput = ({
 
       <TextInput
         label='Zip Code'
-        id={zipCodeFieldName}
-        name={zipCodeFieldName}
+        id={zipFieldName}
+        name={zipFieldName}
         register={register}
         errors={errors}
         type='text'

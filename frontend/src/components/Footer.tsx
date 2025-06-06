@@ -17,9 +17,9 @@ const Footer = () => {
           href='https://www.clasona.com/'
           target='_blank'
         >
-          Clasona Ltd{' '}
+          Clasona Ltd.
         </a>
-       .
+       
       </p>
     </div>
   );

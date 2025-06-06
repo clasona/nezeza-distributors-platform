@@ -149,7 +149,7 @@ const MoreOrderDetailsModal = <T,>({
                     {orderData.shippingAddress?.street},<br />
                     {orderData.shippingAddress?.city},{' '}
                     {orderData.shippingAddress?.state}{' '}
-                    {orderData.shippingAddress?.zipCode},<br />
+                    {orderData.shippingAddress?.zip},<br />
                     {orderData.shippingAddress?.country}
                   </p>
                 </div>
@@ -161,7 +161,11 @@ const MoreOrderDetailsModal = <T,>({
               {/* Order Items */}
               <div className='w-full grid grid-cols-1 xl:grid-cols-2 gap-6'>
                 {orderData.orderItems.map((item) => (
-                  <OrderItemDetails key={item._id} item={item} orderId={orderData._id} />
+                  <OrderItemDetails
+                    key={item._id}
+                    item={item}
+                    orderId={orderData._id}
+                  />
                 ))}
               </div>
             </div>

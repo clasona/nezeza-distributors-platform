@@ -57,18 +57,18 @@ const DropdownInputSearchable = ({
       ...provided,
       minWidth: `${minWidthPx}px`,
       borderColor: state.isFocused
-        ? '#38a169'
+        ? '#3182ce'
         : errors?.[name]
         ? '#e53e3e' // Highlight border for error
         : 'transparent',
       borderWidth: '1px',
       boxShadow: state.isFocused
-        ? `0 0 0 1px #38a169`
+        ? `0 0 0 1px #3182ce`
         : errors?.[name]
         ? `0 0 0 1px #e53e3e` // Highlight shadow for error
         : 'none',
       '&:hover': {
-        borderColor: '#38a169',
+        borderColor: '#3182ce',
       },
     }),
     menu: (provided) => ({
@@ -96,6 +96,7 @@ const DropdownInputSearchable = ({
         name={name} // Pass name to the Select component
         ref={register ? register(name)?.ref : null} // Register the ref
         onBlur={register ? register(name)?.onBlur : undefined} // Handle blur
+        className='border border-gray-300 rounded-md shadow-sm focus:border-nezeza_green_600 focus:ring-nezeza_green_600 focus:ring-1 text-sm font-inter'
       />
       {errors?.[name] && (
         <p className='mt-1 text-sm text-red-500'>{label} is required</p>

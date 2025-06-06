@@ -1,19 +1,19 @@
 const mongoose = require('mongoose');
-const CustomError = require('../../errors'); 
-const Product = require('../../models/Product'); 
-const User = require('../../models/User'); 
-const Store = require('../../models/Store'); 
-const Order = require('../../models/Order'); 
-const Address = require('../../models/Address'); 
+const CustomError = require('../../errors');
+const Product = require('../../models/Product');
+const User = require('../../models/User');
+const Store = require('../../models/Store');
+const Order = require('../../models/Order');
+const Address = require('../../models/Address');
 const { StatusCodes } = require('http-status-codes');
 
 // Assuming these helper functions are also defined elsewhere
-const checkWhoIsTheBuyer = require('../checkWhoIsTheBuyer'); 
+const checkWhoIsTheBuyer = require('../checkWhoIsTheBuyer');
 const createPaymentIntentUtil = require('../payment/createPaymentIntentUtil');
-const SubOrder = require('../../models/SubOrder'); 
-const { groupProductsBySeller } = require('../../helpers/groupProductsBySeller');
-
-
+const SubOrder = require('../../models/SubOrder');
+const {
+  groupProductsBySeller,
+} = require('../../helpers/groupProductsBySeller');
 
 /* 
   Create a new order, group items by seller,
@@ -61,7 +61,7 @@ const createSubOrders = async (fullOrder, session) => {
  * @param {number} orderData.shippingFee - The shipping fee for the order.
  * @param {string} orderData.paymentMethod - The payment method used.
  * @param {string} orderData.buyerId - The ID of the authenticated buyer.
-* @returns {Promise<{orderId: string}>} - The order ID.
+ * @returns {Promise<{orderId: string}>} - The order ID.
  */
 const createOrderUtil = async (
   cartItems,
@@ -114,7 +114,6 @@ const createOrderUtil = async (
     const stockUpdates = [];
 
     for (const item of cartItems) {
-
       // Determine the product ID for comparison
       const itemProductId =
         item.productId ||
@@ -185,7 +184,7 @@ const createOrderUtil = async (
           street: '12345 Market St',
           city: 'San Francisco',
           state: 'CA',
-          zipCode: '94103',
+          zip: '94103',
           country: 'USA',
           phone: '8608084545',
         },

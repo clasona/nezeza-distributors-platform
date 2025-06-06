@@ -45,11 +45,19 @@ const ProductSchema = new mongoose.Schema(
     },
     weight: {
       type: Number,
-      default: 5,
+      required: true,
     },
     height: {
       type: Number,
-      default: 5,
+      required: true,
+    },
+    width: {
+      type: Number,
+      required: true,
+    },
+    length: {
+      type: Number,
+      required: true,
     },
     freeShipping: {
       type: Boolean,

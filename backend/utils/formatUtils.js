@@ -1,5 +1,5 @@
 // Format order items as an HTML list
-const formatOrderItems = (items) =>{
+const formatOrderItems = (items) => {
   if (!items || !items.length) return '<p>No items in this order.</p>';
   return (
     `<ul style="padding-left:16px;">` +
@@ -18,7 +18,7 @@ const formatOrderItems = (items) =>{
       .join('') +
     `</ul>`
   );
-}
+};
 
 // Format shipping address as HTML
 const formatShippingAddress = (address) => {
@@ -27,13 +27,13 @@ const formatShippingAddress = (address) => {
     <p>
       ${address.fullName ? address.fullName + '<br/>' : ''}
       ${address.street}<br/>
-      ${address.city}, ${address.state} ${address.zipCode}<br/>
+      ${address.city}, ${address.state} ${address.zip}<br/>
       ${address.country}
     </p>
   `;
-}
+};
 
-module.exports = { 
-    formatOrderItems,
-    formatShippingAddress,
- }
+module.exports = {
+  formatOrderItems,
+  formatShippingAddress,
+};

@@ -1,7 +1,7 @@
 import { clearCart } from '@/utils/cart/clearCart';
 import { clearFavorites } from '@/utils/favorites/clearFavorites';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { OrderItemsProps, PaymentProps, ProductProps, StoreProps } from '../../type';
+import { AddressProps, OrderItemsProps, PaymentProps, ProductProps, StoreProps } from '../../type';
 
 interface NextState {
   productData: OrderItemsProps[];
@@ -16,6 +16,7 @@ interface NextState {
     quantity: number;
     isBuyNow?: boolean;
   } | null;
+  shippingAddress: AddressProps | null;
 }
 
 const initialState: NextState = {
@@ -27,7 +28,7 @@ const initialState: NextState = {
   storeInfo: null,
   paymentInfo: null,
   buyNowProduct: null,
-  // orderData:[]
+  shippingAddress: null,
 };
 
 // Async thunk for clearing the cart on the server
@@ -78,7 +79,10 @@ export const nextSlice = createSlice({
           image: product.image,
           product: product, // Store the entire product object
           sellerStoreId: product.storeId,
+          sellerStoreAddress: product.storeId.address,
           addedToInventory: product.addedToInventory,
+          status: 'Active',
+          cancelledQuantity: 0,
         };
         state.cartItemsData.push(newItem);
       }
@@ -107,7 +111,10 @@ export const nextSlice = createSlice({
           image: product.image,
           product: product, // Store the entire product object
           sellerStoreId: product.storeId,
+          sellerStoreAddress: product.storeId.address,
           addedToInventory: product.addedToInventory,
+          status: 'Active',
+          cancelledQuantity: 0,
         };
         state.favoritesItemsData.push(newItem);
       }
@@ -119,7 +126,7 @@ export const nextSlice = createSlice({
     // New Reducer for Buy Now product
     setBuyNowProduct: (state, action) => {
       const { product, quantity } = action.payload;
-      state.buyNowProduct = { product, quantity, isBuyNow: true }; 
+      state.buyNowProduct = { product, quantity, isBuyNow: true };
     },
     // New Reducer to clear Buy Now product after purchase
     clearBuyNowProduct: (state) => {
@@ -210,12 +217,12 @@ export const nextSlice = createSlice({
       state.storeInfo = null;
     },
 
-    // add a store info to cart for checkout
+    // add a payment info to cart for checkout
     addPayment: (state, action) => {
       state.paymentInfo = action.payload;
     },
 
-    // remove store info from cart
+    // remove payment info from cart
     removePayment: (state) => {
       state.paymentInfo = null;
     },
@@ -223,6 +230,13 @@ export const nextSlice = createSlice({
     // set all products data to cart
     setAllProducts: (state, action) => {
       state.allProducts = action.payload;
+    },
+
+    setShippingAddress: (state, action) => {
+      state.shippingAddress = action.payload;
+    },
+    clearShippingAddress: (state) => {
+      state.shippingAddress = null;
     },
   },
   extraReducers: (builder) => {
@@ -256,5 +270,7 @@ export const {
   addPayment,
   removePayment,
   setAllProducts,
+  setShippingAddress,
+  clearShippingAddress,
 } = nextSlice.actions;
 export default nextSlice.reducer;

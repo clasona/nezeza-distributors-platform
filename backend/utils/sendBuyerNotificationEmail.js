@@ -32,7 +32,7 @@ const sendBuyerNotificationEmail = async ({
       <p>${shippingAddress.street}</p>
       <p>${shippingAddress.apt ? `Apt #${shippingAddress.apt}` : ''}</p>
       <p>${shippingAddress.city}, ${shippingAddress.state} ${
-      shippingAddress.zipCode
+      shippingAddress.zip
     }</p>
       <p><strong>🕒 Estimated Delivery:</strong> ${estimatedDeliveryDate}</p>
 

@@ -2,6 +2,7 @@ import { clearCartOnServer, resetCart } from '@/redux/nextSlice';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ConfirmResetCartModal from './ConfirmResetCartModal';
+import Link from 'next/link';
 
 const ResetCart = () => {
   const dispatch = useDispatch<any>();
@@ -24,6 +25,7 @@ const ResetCart = () => {
     //   dispatch(resetCart());
     // }
   };
+  
   return (
     <div>
       <button
@@ -32,6 +34,12 @@ const ResetCart = () => {
       >
         Reset cart
       </button>
+      <Link
+        href='/'
+        className='ml-4 font-semibold text-nezeza_dark_blue rounded-lg hover:underline'
+      >
+        Continue shopping
+      </Link>
       {/* Reset Cart Modal */}
       {isConfirmCartResetModalOpen && (
         <ConfirmResetCartModal
