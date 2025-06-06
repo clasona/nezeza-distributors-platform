@@ -65,6 +65,7 @@ const createSubOrders = async (fullOrder, session) => {
  */
 const createOrderUtil = async (
   cartItems,
+  shippingAddress,
   shippingFee,
   paymentMethod,
   buyerId
@@ -175,22 +176,12 @@ const createOrderUtil = async (
 
     const totalAmount = totalTax + totalShipping + subtotal;
 
-    // IMPORTANT: For production, shippingAddress and billingAddress should come from the request
-    // or from the buyer's saved addresses, not hardcoded.
-    // This is just a placeholder to make the utility runnable.
-    const address = await Address.create(
-      [
-        {
-          street: '12345 Market St',
-          city: 'San Francisco',
-          state: 'CA',
-          zip: '94103',
-          country: 'USA',
-          phone: '8608084545',
-        },
-      ],
-      { session }
-    );
+    if (typeof shippingAddress === 'string') {
+      shippingAddress = JSON.parse(shippingAddress);
+    }
+    // if (typeof billingAddress === 'string') {
+    //   billingAddress = JSON.parse(billingAddress);
+    // }
 
     const [order] = await Order.create(
       [
@@ -200,8 +191,8 @@ const createOrderUtil = async (
           totalTax,
           totalShipping,
           paymentMethod,
-          shippingAddress: address[0]._id, // Use the ID of the created address
-          billingAddress: address[0]._id, // TODO: get from paymentIntent? Use the ID of the created address (or a separate one)
+          shippingAddress: shippingAddress, // Use the ID of the created address
+          billingAddress: shippingAddress, // TODO: get from paymentIntent? Use the ID of the created address (or a separate one)
           buyerId,
           buyerStoreId: buyerStore._id,
           subOrders: [],

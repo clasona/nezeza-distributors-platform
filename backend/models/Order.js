@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const Address = require('./Address');
-const addressSchema = require('./Address'); 
+const addressSchema = require('./Address');
 
 const SingleOrderItemSchema = mongoose.Schema({
   title: { type: String, required: true },
@@ -98,15 +97,8 @@ const OrderSchema = mongoose.Schema(
       ref: 'User',
       required: true,
     }, // Can be wholesaler or retailer or customer
-    shippingAddress: {
-      type: mongoose.Schema.ObjectId,
-      ref: 'Address',
-      required: true,
-    },
-    billingAddress: {
-      type: String,
-      required: true,
-    },
+    shippingAddress: addressSchema, 
+    billingAddress: addressSchema, 
     subOrders: [
       {
         type: mongoose.Schema.ObjectId,
