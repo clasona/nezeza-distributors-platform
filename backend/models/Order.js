@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Address = require('./Address');
-//const AddressSchema = require('./AddressSchema'); // Adjust the path as needed
+const addressSchema = require('./Address'); 
 
 const SingleOrderItemSchema = mongoose.Schema({
   title: { type: String, required: true },
@@ -18,7 +18,8 @@ const SingleOrderItemSchema = mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Store',
     required: true,
-  }, // Can be wholesaler or retailer or manufacturer
+  }, 
+  sellerStoreAddress: addressSchema,
   addedToInventory: {
     type: Boolean,
     default: false,

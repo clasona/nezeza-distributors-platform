@@ -85,10 +85,10 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
         </h2>
         {/* <h2 className='text-lg font-semibold mb-4 text-gray-700'>Checkout</h2> */}
         {/* Shipping Address */}
-        <div className='mb-4'>
+        {/* <div className='mb-4'>
           <h3 className='text-sm font-bold mb-2'>Shipping Address</h3>
           <AddressElement options={{ mode: 'shipping',  }} />
-        </div>
+        </div> */}
         {/* Payment Section */}
         <div className='mb-4'>
           <h3 className='text-sm font-bold mb-2'>Payment Details</h3>

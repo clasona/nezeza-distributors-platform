@@ -32,7 +32,7 @@ const sendSellerNotificationEmail = ({
        <p>${shippingAddress.street}</p>
       <p>${shippingAddress.apt ? `Apt #${shippingAddress.apt}` : ''}</p>
       <p>${shippingAddress.city}, ${shippingAddress.state} ${
-      shippingAddress.zipCode
+      shippingAddress.zip
     }</p>
 
       <p>Please log in to your seller dashboard to confirm and fulfill the order:</p>

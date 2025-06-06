@@ -38,7 +38,6 @@ const StoreRegistrationForm = ({
   const [businessDocResource, setBusinessDocResource] = useState<any>(null);
   const router = useRouter();
 
-
   const sections = ['Primary Contact', 'Store Info', 'Docs', 'Review & Submit'];
 
   const handleNext = async () => {
@@ -69,12 +68,13 @@ const StoreRegistrationForm = ({
         citizenshipCountry: data.citizenshipCountry,
         // birthCountry: data.birthCountry,
         dob: data.dob,
-        residenceAddress: {
-          street: data.residenceStreet,
+        address: {
+          street1: data.residenceStreet,
           city: data.residenceCity,
           state: data.residenceState,
-          zipCode: data.residenceZipCode,
+          zip: data.residenceZipCode,
           country: data.residenceCountry,
+          phone: data.phone
         },
       },
       storeInfo: {
@@ -86,11 +86,12 @@ const StoreRegistrationForm = ({
         email: data.storeEmail,
         phone: data.storePhone,
         address: {
-          street: data.storeStreet,
+          street1: data.storeStreet,
           city: data.storeCity,
           state: data.storeState,
-          zipCode: data.storeZipCode,
+          zip: data.storeZipCode,
           country: data.storeCountry,
+          phone: data.storePhone
         },
       },
       verificationDocs: {
@@ -102,8 +103,7 @@ const StoreRegistrationForm = ({
     };
 
     try {
-
-      console.log(storeApplicationData.primaryContactInfo.residenceAddress);
+      console.log(storeApplicationData.primaryContactInfo.address);
       const response = await createStoreApplication(storeApplicationData);
       if (response.status !== 201) {
         setSuccessMessage('');
@@ -123,7 +123,6 @@ const StoreRegistrationForm = ({
         }
 
         router.push('/post-store-application-submission');
-
       }
     } catch (error: any) {
       handleError(error);

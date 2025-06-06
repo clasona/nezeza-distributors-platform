@@ -29,6 +29,7 @@ import { stateProps, UserProps } from '../../../type';
 import logo from '../../images/logo.jpg';
 import { LogoutButton } from '../LogoutButton';
 import SearchField from '../Table/SearchField';
+import { getUserByEmail } from '@/utils/user/getUserByEmail';
 
 // import { SessionProvider } from "next-auth/react";
 
@@ -36,14 +37,17 @@ const Header = () => {
   const { data: session } = useSession();
   const { cartItemsData, favoritesItemsData, userInfo, storeInfo } =
     useSelector((state: stateProps) => state.next);
-  const [currentUserData, setCurrentUserData] = useState<UserProps | null>(null); 
+  const [currentUserData, setCurrentUserData] = useState<UserProps | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState('');
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchUserData = async () => {
-      if (!userInfo?._id) return;
+      const userId = userInfo?._id;
+      if (!userId || userInfo?._id === userId) return; // already have this user
       try {
         const userData = await getUserById(userInfo._id);
         setCurrentUserData(userData);
@@ -56,16 +60,30 @@ const Header = () => {
   }, [userInfo?._id]);
 
   useEffect(() => {
-    if (session) {
-      dispatch(
-        addUser({
-          name: session?.user?.firstName,
-          email: session?.user?.email,
-          image: session?.user?.image,
-        })
-      );
-    }
-  }, [session]);
+    const fetchUserByEmail = async () => {
+      const email = session?.user?.email as string;
+      if (!email || userInfo?.email === email) return; // already have this user
+      try {
+        const response = await getUserByEmail(email);
+        if (response && response.data.user) {
+          const userData = response.data.user;
+          dispatch(
+            addUser({
+              _id: userData._id,
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              email: userData.email,
+              address: userData.address || null,
+              storeId: userData.storeId || null,
+            })
+          );
+        }
+      } catch (error) {
+        console.error('Failed to fetch user by email', error);
+      }
+    };
+    fetchUserByEmail();
+  }, [session, dispatch]);
 
   // useEffect(() => {
   //   const flteredBySearching = myOrders.filter((order) => {

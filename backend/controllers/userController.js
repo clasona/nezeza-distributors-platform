@@ -84,25 +84,53 @@ const showCurrentUser = async (req, res) => {
  *  @param res - Express response object  - updated user object with updated details 
  */
 const updateUser = async (req, res) => {
-  const { email, firstName, lastName, roles, image } = req.body;
+  const { userId } = req.params;
+  const { email } = req.params;
 
-  const user = await User.findOne({ _id: req.user.userId });
+  // Accept either userId param or email in the body/query
+  let user;
+  if (userId) {
+    user = await User.findById(userId);
+  } else if (email) {
+    user = await User.findOne({ email });
+  } else {
+    throw new CustomError.BadRequestError('User id or email is required');
+  }
+
   if (!user) {
-    throw new CustomError.NotFoundError('No current user found');
+    throw new CustomError.NotFoundError('User not found');
   }
 
-  if (req.user.userId.toString() !== req.params.userId.toString()) {
-    throw new CustomError.UnauthorizedError('Sorry, update not allowed.');
+  // Only allow user to update themselves unless admin
+  if (req.user.userId !== user.id && !req.user.roles?.includes('admin')) {
+    throw new CustomError.UnauthorizedError(
+      'Not authorized to update this user.'
+    );
   }
-  if (email) user.email = email;
-  if (firstName) user.firstName = firstName;
-  if (lastName) user.lastName = lastName;
-  if (roles) user.roles = roles;
-  if (image) user.image = image;
+
+  // Update only the fields provided in req.body
+  Object.keys(req.body).forEach((key) => {
+    // Prevent updating protected fields like _id, password, etc.
+    if (
+      [
+        '_id',
+        'password',
+        'isVerified',
+        'verifiedAt',
+        'storeId',
+        'createdAt',
+        'updatedAt',
+      ].includes(key)
+    ) {
+      return;
+    }
+    user[key] = req.body[key];
+  });
 
   await user.save();
 
-  if (email) {
+  // If email changed, refresh session cookie
+  if (req.body.email) {
     const tokenUser = createTokenUser(user);
     attachCookiesToResponse({ res, user: tokenUser });
   }

@@ -132,6 +132,7 @@ const LoginPage = () => {
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
+            address: userData.address || null,
             storeId: storeData || null,
           })
         );

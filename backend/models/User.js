@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const addressSchema = require('./Address'); // Assuming you have an Address schema
 
 const UserSchema = new mongoose.Schema({
   firstName: {
@@ -71,6 +72,8 @@ const UserSchema = new mongoose.Schema({
     type: String,
     // required: true,
   },
+
+  address: addressSchema, // Embedded Address schema for user address
 
   // Optional: required for store register primary contact
   phone: {

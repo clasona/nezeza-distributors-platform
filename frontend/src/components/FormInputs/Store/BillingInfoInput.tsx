@@ -90,7 +90,7 @@
 //           cityFieldName='billingCity'
 //           stateFieldName='billingState'
 //           countryFieldName='billingCountry'
-//           zipCodeFieldName='billingZipCode'
+//           zipFieldName='billingZipCode'
 //           register={register}
 //           errors={errors}
 //           control={control}

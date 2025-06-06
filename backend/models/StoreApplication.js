@@ -42,7 +42,7 @@ const PrimaryContactInfoSchema = new mongoose.Schema({
     street: { type: String, required: true },
     city: { type: String, required: true },
     state: { type: String, required: true },
-    zipCode: { type: String, required: true },
+    zip: { type: String, required: true },
     country: { type: String, required: true },
   },
 });
@@ -90,7 +90,7 @@ const StoreInfoSchema = new mongoose.Schema({
     street: { type: String, required: true },
     city: { type: String, required: true },
     state: { type: String, required: true },
-    zipCode: { type: String, required: true },
+    zip: { type: String, required: true },
     country: { type: String, required: true },
   },
 

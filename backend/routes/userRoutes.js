@@ -18,6 +18,8 @@ const {
 
 router.route('/me').get(authenticateUser, showCurrentUser);
 router.route('/:userId').patch(authenticateUser, updateUser);
+// router.route('/update-by-email').patch(authenticateUser, updateUser);
+router.route('/by/:email').patch(authenticateUser, updateUser);
 router.route('/:userId/password').patch(authenticateUser, updateUserPassword);
 
 router.route('/:userId').get(authenticateUser, getSingleUser);

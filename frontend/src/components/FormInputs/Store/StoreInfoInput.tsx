@@ -37,7 +37,6 @@ const StoreInfoInput = ({
     setValue('storeType', selectedStoreType, { shouldValidate: true });
   }, [setValue]);
 
-
   const storeTypeOptions = [
     { value: '', label: 'Select type' },
     { value: 'manufacturing', label: 'Manufacturing' },
@@ -55,7 +54,7 @@ const StoreInfoInput = ({
     { value: 'other', label: 'Other' },
     // ... more categories
   ];
-  
+
   return (
     <>
       <div className='grid grid-cols-1 sm:grid-cols-2 gap-y-4 sm:gap-x-6 px-4 sm:px-6 w-full'>
@@ -130,7 +129,7 @@ const StoreInfoInput = ({
           cityFieldName='storeCity'
           stateFieldName='storeState'
           countryFieldName='storeCountry'
-          zipCodeFieldName='storeZipCode'
+          zipFieldName='storeZipCode'
           register={register}
           errors={errors}
           control={control}

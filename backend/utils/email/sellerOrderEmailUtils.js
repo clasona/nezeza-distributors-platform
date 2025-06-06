@@ -84,7 +84,7 @@ const sendSellerNewOrderNotificationEmail = async ({
       order.shippingAddress.apt ? `Apt #${order.shippingAddress.apt}` : ''
     }</p>
     <p>${order.shippingAddress.city}, ${order.shippingAddress.state} ${
-    order.shippingAddress.zipCode
+    order.shippingAddress.zip
   }</p>
 
     <p>Please log in to your seller dashboard to confirm and fulfill the order:</p>

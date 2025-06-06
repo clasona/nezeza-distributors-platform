@@ -151,8 +151,9 @@ const Products = () => {
         description: selectedProductForBuyNow.description,
         category: selectedProductForBuyNow.category,
         image: selectedProductForBuyNow.image,
-        product: selectedProductForBuyNow, // Pass the whole product object
-        sellerStoreId: selectedProductForBuyNow.storeId, // Assuming storeId is on ProductProps
+        product: selectedProductForBuyNow,
+        sellerStoreId: selectedProductForBuyNow.storeId,
+        sellerStoreAddress: selectedProductForBuyNow.storeId.address,
         addedToInventory: false, 
         status: 'Active', 
         cancelledQuantity: 0,

@@ -13,6 +13,8 @@ export interface ProductProps {
   featured: boolean;
   weight: number;
   height: number;
+  width: number;
+  length: number;
   freeShipping: boolean;
   availability: boolean;
   rating: number;
@@ -53,8 +55,14 @@ export interface OrderItemsProps {
   image: string;
   product: ProductProps;
   sellerStoreId: StoreProps;
+  sellerStoreAddress: AddressProps;
   addedToInventory: boolean;
-  status: 'Active' | 'Cancelled' | 'Returned' | 'Partially Cancelled' | 'Partially Returned';
+  status:
+    | 'Active'
+    | 'Cancelled'
+    | 'Returned'
+    | 'Partially Cancelled'
+    | 'Partially Returned';
   cancelledQuantity: number;
 }
 
@@ -196,7 +204,7 @@ export interface UserProps {
   citizenshipCountry?: string;
   // birthCountry?: string;
   dob?: string;
-  residenceAddress?: AddressProps;
+  address?: AddressProps;
 }
 
 export interface stateProps {
@@ -211,11 +219,15 @@ export interface stateProps {
 
 export interface AddressProps {
   _id?: number;
-  street: string;
+  fullName?: string;
+  street1: string;
+  street2?: string; 
   city: string;
   state: string;
-  zipCode: string;
+  zip: string;
   country: string;
+  phone: string;
+  email?: string; // Optional if email is not required
 }
 
 export interface PrimaryContactProps {
