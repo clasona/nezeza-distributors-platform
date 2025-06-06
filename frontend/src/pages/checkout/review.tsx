@@ -33,6 +33,7 @@ const CheckoutReviewPage = () => {
           cartItemsData,
           shippingAddress,
         );
+        console.log('Shipping data:', data);
         // Assume data.shippingGroups from backend structure
         setShippingGroups(data.shippingGroups || []);
         // Pre-select first delivery option per group
@@ -97,7 +98,7 @@ const CheckoutReviewPage = () => {
     setError(null);
     try {
       // Create Payment Intent
-      const response = await createPaymentIntent(cartItemsData);
+      const response = await createPaymentIntent(cartItemsData, shippingAddress);
       if (response.status !== 200 || !response.data?.clientSecret) {
         setError('Could not create payment intent. Please try again.');
         setIsProceeding(false);
@@ -144,7 +145,7 @@ const CheckoutReviewPage = () => {
     </div>
   );
 
-  if (isLoading) {
+  if (isLoading || shippingGroups.length === 0 || shippingGroups[0].deliveryOptions.length === 0) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
         <Loading message='delivery options...' />

@@ -13,11 +13,12 @@ import { signIn, useSession } from 'next-auth/react';
 import React, { useEffect, useState, useRef } from 'react';
 import { FaGoogle } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { stateProps } from '../../type';
+import { stateProps, StoreProps } from '../../type';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getFavorites } from '@/utils/favorites/getFavorites';
 import { mergeFavoritesItems } from '@/utils/favorites/mergeFavoritesItems';
 import { hasActiveStripeConnectAccount as checkActiveStripeAccountApi } from '@/utils/stripe/hasStripeConnectAccount';
+import { getUserByEmail } from '@/utils/user/getUserByEmail';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -34,7 +35,7 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   // Memoization ref for Stripe check
   const hasCheckedStripeRef = useRef<{ [userId: string]: boolean }>({});
-
+const [storeData, setStoreData] = useState<StoreProps | null>(null);
   useEffect(() => {
     // Only proceed if session is loaded and user exists
     if (sessionStatus === 'authenticated' && session?.user) {
@@ -123,19 +124,22 @@ const LoginPage = () => {
       if (updatedSession?.user) {
         await loginUser(email, password);
 
-        const userData = updatedSession?.user;
-        const storeData = userData.storeId;
-
-        dispatch(
-          addUser({
-            _id: userData._id,
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            email: userData.email,
-            address: userData.address || null,
-            storeId: storeData || null,
-          })
-        );
+        const userEmail = updatedSession?.user?.email;
+        const response = await getUserByEmail(userEmail);        
+        if (response && response.data.user) {
+          const userData = response.data.user;
+          setStoreData(userData.storeId || null);
+          dispatch(
+            addUser({
+              _id: userData._id,
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              email: userData.email,
+              address: userData.address || null,
+              storeId: storeData || null,
+            })
+          );
+        }
 
         if (storeData) {
           dispatch(

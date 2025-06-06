@@ -160,7 +160,22 @@ const Products = () => {
       };
 
       const itemsForPaymentIntent: any = [singleOrderItem];
-      const response = await createPaymentIntent(itemsForPaymentIntent);
+
+      //TODO: Use actual shipping address from redux or userInfo.address, and redirect to address page if not present
+      const testShippingAddress: AddressProps = {
+        fullName: userInfo.firstName || '',
+        street1: userInfo.address?.street1 || '',
+        city: userInfo.address?.city || '',
+        state: userInfo.address?.state || '',
+        zip: userInfo.address?.zip || '',
+        country: userInfo.address?.country || '',
+        phone: userInfo.address?.phone || '',
+        email: userInfo.email || '',
+      };
+      const response = await createPaymentIntent(
+        itemsForPaymentIntent,
+        testShippingAddress
+      );
       const clientSecret = response?.data?.clientSecret;
 
       dispatch(

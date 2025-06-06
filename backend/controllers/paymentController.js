@@ -70,6 +70,7 @@ const webhookHandler = async (req, res) => {
         const paymentIntent = event.data.object;
         const paymentIntentId = paymentIntent.id;
         const orderItems = paymentIntent.metadata.orderItems;
+        const shippingAddress = paymentIntent.metadata.shippingAddress
         const buyerId = paymentIntent.metadata.buyerId;
         const customerEmail = paymentIntent.metadata.customerEmail;
         const customerFirstName = paymentIntent.metadata.customerFirstName;
@@ -91,6 +92,7 @@ const webhookHandler = async (req, res) => {
           console.log('Creating the order....');
           const orderId = await createOrderUtil(
             orderItems,
+            shippingAddress,
             0, //TODO: Add shipping fee
             'credit_card', //TODO: Add payment method
             buyerId
@@ -441,7 +443,7 @@ const activeStripeConnectAccount = async (req, res) => {
 // End Method
 // Create Payment Intent
 const createPaymentIntent = async (req, res) => {
-  const { orderItems } = req.body;
+  const { orderItems, shippingAddress } = req.body;
   let totalAmount = 0;
 
   const metadata = {
@@ -461,6 +463,8 @@ const createPaymentIntent = async (req, res) => {
       price: item.price,
     }))
   );
+
+  metadata.shippingAddress = JSON.stringify(shippingAddress);
   //calculate total amount
   for (const item of orderItems) {
     const price = item.price;
