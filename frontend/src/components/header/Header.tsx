@@ -49,7 +49,7 @@ const Header = () => {
       const userId = userInfo?._id;
       if (!userId || userInfo?._id === userId) return; // already have this user
       try {
-        const userData = await getUserById(userInfo._id);
+        const userData = await getUserById(userInfo?._id);
         setCurrentUserData(userData);
       } catch (error) {
         console.error('Failed to fetch user data', error);

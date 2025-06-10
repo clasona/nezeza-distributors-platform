@@ -29,8 +29,8 @@ export const LogoutButton = ({
     setLogoutError('');
 
     try {
-      await updateCart(cartItemsData, userInfo._id); // Ensure cart is updated first
-      await updateFavorites(favoritesItemsData, userInfo._id);
+      await updateCart(cartItemsData, userInfo?._id); // Ensure cart is updated first
+      await updateFavorites(favoritesItemsData, userInfo?._id);
       // Clear Redux state
       dispatch(removeUser());
       dispatch(removeStore());

@@ -39,6 +39,7 @@ const SideNavbar = ({
   const { storeInfo } = useSelector((state: stateProps) => state.next);
   const router = useRouter();
   const storeType = storeInfo?.storeType;
+  console.log('storeType', storeType);
 
   const sidebarLinks = [
     {

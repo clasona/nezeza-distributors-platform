@@ -35,7 +35,7 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   // Memoization ref for Stripe check
   const hasCheckedStripeRef = useRef<{ [userId: string]: boolean }>({});
-const [storeData, setStoreData] = useState<StoreProps | null>(null);
+  const [storeData, setStoreData] = useState<StoreProps | null>(null);
   useEffect(() => {
     // Only proceed if session is loaded and user exists
     if (sessionStatus === 'authenticated' && session?.user) {
@@ -125,10 +125,12 @@ const [storeData, setStoreData] = useState<StoreProps | null>(null);
         await loginUser(email, password);
 
         const userEmail = updatedSession?.user?.email;
-        const response = await getUserByEmail(userEmail);        
+        const response = await getUserByEmail(userEmail);
         if (response && response.data.user) {
           const userData = response.data.user;
-          setStoreData(userData.storeId || null);
+          console.log('User data:', userData);
+          setStoreData(userData.storeId);
+          console.log('Store data:', userData.storeId);
           dispatch(
             addUser({
               _id: userData._id,
@@ -136,20 +138,20 @@ const [storeData, setStoreData] = useState<StoreProps | null>(null);
               lastName: userData.lastName,
               email: userData.email,
               address: userData.address || null,
-              storeId: storeData || null,
+              storeId: userData.storeId || null,
             })
           );
-        }
 
-        if (storeData) {
-          dispatch(
-            addStore({
-              _id: storeData._id,
-              name: storeData.name,
-              email: storeData.email,
-              storeType: storeData.storeType,
-            })
-          );
+          if (userData.storeId) {
+            dispatch(
+              addStore({
+                _id: userData.storeId._id,
+                name: userData.storeId.name,
+                email: userData.storeId.email,
+                storeType: userData.storeId.storeType,
+              })
+            );
+          }
         }
 
         try {

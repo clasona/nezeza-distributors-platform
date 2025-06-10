@@ -22,7 +22,7 @@ const SellerDashboard = () => {
   const [hasStripeActiveAccount, setHasStripeActiveAccount] = useState(false);
 
   const checkHasActiveStripeAccount = async () => {
-    const response = await hasActiveStripeConnectAccount(userInfo._id);
+    const response = await hasActiveStripeConnectAccount(userInfo?._id);
     if (response && response.hasStripeAccount && response.isActive) {
       setHasStripeActiveAccount(true);
     } else {
@@ -32,7 +32,7 @@ const SellerDashboard = () => {
 
   useEffect(() => {
     checkHasActiveStripeAccount();
-  }, [userInfo._id]);
+  }, [userInfo?._id]);
 
   useEffect(() => {
     const fetchData = async () => {
