@@ -18,7 +18,7 @@ const StripeSetupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [redirecting, setRedirecting] = useState(false); // New state for post-setup redirection
+  const [redirecting, setRedirecting] = useState(false);
 
   // Redirect if not logged in or not a seller, or if Stripe is already active
   useEffect(() => {

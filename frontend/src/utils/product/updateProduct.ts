@@ -5,7 +5,7 @@ import { ProductProps } from '../../../type';
 
 export const updateProduct = async (
   productId: string | number,
-  updatedProductData: ProductProps
+  updatedProductData: Partial<ProductProps>
 ) => {
   try {
     const response = await axios.patch(

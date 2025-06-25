@@ -376,7 +376,7 @@ const SellerInventory = () => {
                       {
                         content: (
                           <Image
-                            src={product.image}
+                            src={product.images[0]}
                             alt={product.title}
                             width={50} // Adjust the width as needed
                             height={50} // Adjust the height as needed
