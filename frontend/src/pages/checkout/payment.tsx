@@ -9,6 +9,10 @@ import { useSelector } from 'react-redux';
 import { stateProps } from '../../../type'; // Ensure type.ts path is correct
 import Link from 'next/link';
 
+///dummy key adding
+const NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY= 'pk_test_1234567890abcdef'
+
+
 // Ensure Stripe key is set before loading Stripe
 if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
   throw new Error('Stripe publishable key is missing!');
