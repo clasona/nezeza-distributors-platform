@@ -35,7 +35,8 @@ const notificationRouter = require('./routes/notificationRoutes');
 const cartRouter = require('./routes/cartRoutes');
 const favoritesRouter = require('./routes/favoritesRoutes');
 const shippingRouter = require('./routes/shippingRoutes');
-
+const supportRouter = require('./routes/supportRoutes');
+const adminSupportRouter = require('./routes/admin/adminSupportRoutes');
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
@@ -104,7 +105,8 @@ app.use('/api/v1/notifications', notificationRouter);
 app.use('/api/v1/cart', cartRouter);
 app.use('/api/v1/favorites', favoritesRouter);
 app.use('/api/v1/shipping', shippingRouter);
-
+app.use('/api/v1/support', supportRouter);
+app.use('/api/v1/admin/support', adminSupportRouter);
 app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 
 app.use(notFoundMiddleware);

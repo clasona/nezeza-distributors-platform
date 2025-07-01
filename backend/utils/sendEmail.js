@@ -3,13 +3,14 @@ const nodemailer = require('nodemailer');
 const nodemailerConfig = require('./nodemailerConfig');
 
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
-
+// for production
 const sendEmail = async ({ to, subject, html }) => {
+  console.log(to);
   const message = {
     to: to,
     from: {
       email: 'abotgeorge1@gmail.com', // replace with your own email
-      name: 'Nezeza Platform',
+      name: 'Soko Platform',
     },
     subject: subject,
     html: html,
@@ -26,6 +27,18 @@ const sendEmail = async ({ to, subject, html }) => {
     }
     throw error;
   }
+};
+// for testing
+const sendEmailEthereal = async ({ to, subject, html }) => {
+  let testAccount = await nodemailer.createTestAccount();
+  const transporter = nodemailer.createTransport(nodemailerConfig);
+  console.log(to);
+  return transporter.sendMail({
+    from: '"Soko Platform" <admin@gmail.com>', // sender address
+    to,
+    subject,
+    html,
+  });
 };
 
 module.exports = sendEmail;

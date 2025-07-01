@@ -40,6 +40,12 @@ const initRoles = async () => {
         'view_current_order',
         'delete_order',
         'update_order',
+        // support permissions
+        'create_support_ticket',
+        'view_own_tickets',
+        'respond_to_own_tickets',
+        'rate_support_experience',
+        'escalate_urgent_issues',
       ],
     },
     {
@@ -61,6 +67,12 @@ const initRoles = async () => {
         'update_inventory',
         'delete_inventory',
         'view_inventory',
+        'create_support_ticket',
+        // support permissions
+        'view_own_tickets',
+        'respond_to_own_tickets',
+        'rate_support_experience',
+        'escalate_urgent_issues',
       ],
     },
     {
@@ -79,6 +91,12 @@ const initRoles = async () => {
         'update_inventory',
         'delete_inventory',
         'view_inventory',
+        // support permissions
+        'create_support_ticket',
+        'view_own_tickets',
+        'respond_to_own_tickets',
+        'rate_support_experience',
+        'escalate_urgent_issues',
       ],
     },
     {
@@ -95,7 +113,12 @@ const initRoles = async () => {
 
         'cancel_order',
         'create_order',
-        'update_order', // Add any additional permissions required for customers.  E.g., 'view_customer_orders', 'place_order'
+        'update_order',
+        // support perms
+        'create_support_ticket',
+        'view_own_tickets',
+        'respond_to_own_tickets',
+        'rate_support_experience', // Add any additional permissions required for customers.  E.g., 'view_customer_orders', 'place_order'
       ],
     },
     {
@@ -174,7 +197,17 @@ const initRoles = async () => {
         'view_store_privacy_policy',
         'view_store_refund_policy',
         'view_store_shipping_policy',
-
+        // support roles
+        'access_support_tickets',
+        'view_ticket_details',
+        'reply_to_ticket',
+        'update_ticket_status',
+        'assign_support_tickets',
+        'close_ticket',
+        'escalate_ticket',
+        'view_support_dashboard',
+        'bulk_update_tickets',
+        'manage_support_team',
         // Add any additional permissions required for administrators.  E.g., 'view_admin_orders', 'create_admin'
       ],
     },
