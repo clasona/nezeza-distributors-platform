@@ -5,7 +5,6 @@ import { updateOrderItem } from '@/utils/order/updateOrderItem';
 import { useRouter } from 'next/router';
 import ErrorMessageModal from '../ErrorMessageModal';
 
-
 interface ConfirmNewProductModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -59,7 +58,7 @@ const ConfirmNewProductModal = ({
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
-      <div className='bg-nezeza_light_blue p-6 rounded-lg shadow-lg w-96'>
+      <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-96'>
         <h3 className='text-lg font-semibold mb-4'>Confirm Create Product</h3>
         {/* {isOrderProps(rowData) && ( */}
         <p className='mb-4'>
@@ -72,14 +71,14 @@ const ConfirmNewProductModal = ({
             onClick={handleConfirm}
             disabled={isConfirming}
             className={
-              'px-4 py-2 text-white bg-nezeza_green_600 hover:bg-nezeza_green_800 rounded-md'
+              'px-4 py-2 text-white bg-vesoko_green_600 hover:bg-vesoko_green_800 rounded-md'
             }
           >
             Confirm
           </button>
           <button
             onClick={onClose}
-            className='px-4 py-2 text-nezeza_gray_600 bg-gray-300 rounded-md hover:text-white hover:bg-gray-400'
+            className='px-4 py-2 text-vesoko_gray_600 bg-gray-300 rounded-md hover:text-white hover:bg-gray-400'
           >
             Cancel
           </button>

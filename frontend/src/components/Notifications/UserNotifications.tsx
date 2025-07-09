@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Bell, Trash2, Eye, XCircle, Filter, Search, RotateCcw } from 'lucide-react';
+import {
+  Bell,
+  Trash2,
+  Eye,
+  XCircle,
+  Filter,
+  Search,
+  RotateCcw,
+} from 'lucide-react';
 import SearchField from '@/components/Table/SearchField';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
@@ -187,7 +195,7 @@ const UserNotifications = () => {
             buttonTitle='Refresh'
             buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
-            className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
+            className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
             onClick={async () => {
               await fetchData();
             }}
@@ -205,13 +213,13 @@ const UserNotifications = () => {
         </button>
         {/* <button
           onClick={toggleSortPriority}
-          className='bg-nezeza_dark_blue text-white px-3 py-1 rounded-md hover:bg-blue-700'
+          className='bg-vesoko_dark_blue text-white px-3 py-1 rounded-md hover:bg-blue-700'
         >
           Sort by Priority
         </button> */}
         <button
           onClick={toggleSortPriority}
-          className='text-xs sm:text-base text-nezeza_dark_blue outline hover:text-white hover:bg-nezeza_dark_blue sm:px-3 py-1 rounded-md'
+          className='text-xs sm:text-base text-vesoko_dark_blue outline hover:text-white hover:bg-vesoko_dark_blue sm:px-3 py-1 rounded-md'
         >
           Sort by priority{' '}
           {sortPriority === 'asc'
@@ -260,7 +268,7 @@ const UserNotifications = () => {
          Filter by dates (always on large, conditional on small) */}
         {/* <button
           onClick={toggleMoreFilters}
-          className='hidden sm:inline text-sm text-nezeza_dark_blue underline'
+          className='hidden sm:inline text-sm text-vesoko_dark_blue underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
         </button> */}
@@ -300,7 +308,7 @@ const UserNotifications = () => {
                     className={
                       notification.read
                         ? 'text-gray-400'
-                        : 'text-nezeza_dark_blue'
+                        : 'text-vesoko_dark_blue'
                     }
                   />
                   <div>
@@ -329,7 +337,7 @@ const UserNotifications = () => {
                     className={`text-sm px-3 py-1 rounded-lg ${
                       notification.read
                         ? 'text-gray-500 bg-gray-200 hover:text-gray-700 hover:bg-gray-300'
-                        : 'text-white bg-nezeza_green_600 hover:bg-nezeza_green_800'
+                        : 'text-white bg-vesoko_green_600 hover:bg-vesoko_green_800'
                     }`}
                     onClick={() => updateNotificationStatus(notification)}
                   >
@@ -364,7 +372,7 @@ const UserNotifications = () => {
         <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
           {' '}
           {/* Add z-index */}
-          <div className='bg-nezeza_light_blue p-6 rounded-lg shadow-md w-96 max-h-[90vh] overflow-y-auto'>
+          <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-md w-96 max-h-[90vh] overflow-y-auto'>
             {' '}
             {/* Add max-h and overflow */}
             <h2 className='text-lg font-semibold mb-2'>

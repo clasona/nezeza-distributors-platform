@@ -38,7 +38,7 @@ const DropdownInput = ({
         className='block text-sm font-medium leading-6 text-gray-700'
       >
         {label}
-        {isRequired && <span className='text-nezeza_red_600'> *</span>}
+        {isRequired && <span className='text-vesoko_red_600'> *</span>}
       </label>
       <div>
         <select
@@ -50,11 +50,11 @@ const DropdownInput = ({
           value={value}
           className={`block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none ${
             errors[name]
-              ? 'border-nezeza_red_600 text-nezeza_red_600'
-              : 'focus:border-nezeza_green_600'
+              ? 'border-vesoko_red_600 text-vesoko_red_600'
+              : 'focus:border-vesoko_green_600'
           } ${
             disabled
-              ? 'bg-gray-200 text-nezeza_gray_600 cursor-not-allowed'
+              ? 'bg-gray-200 text-vesoko_gray_600 cursor-not-allowed'
               : ''
           }`}
         >
@@ -70,7 +70,7 @@ const DropdownInput = ({
           ))}
         </select>
         {errors[name] && (
-          <span className='text-sm text-nezeza_red_600'>
+          <span className='text-sm text-vesoko_red_600'>
             {label} is required
           </span>
         )}

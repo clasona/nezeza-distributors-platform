@@ -24,11 +24,11 @@ const SelectStoreType = () => {
   ];
 
   return (
-    <div className='w-screen h-screen flex flex-col bg-nezeza_powder_blue gap-2 items-center justify-center py-20 px-4 sm:px-6'>
-      <h1 className='text-2xl text-center font-bold text-nezeza_gray_800'>
-        Welcome to Nezeza Platform
+    <div className='w-screen h-screen flex flex-col bg-vesoko_powder_blue gap-2 items-center justify-center py-20 px-4 sm:px-6'>
+      <h1 className='text-2xl text-center font-bold text-vesoko_gray_800'>
+        Welcome to VeSoko Platform
       </h1>
-      <p className='text-md text-nezeza_gray_600 mb-8'>
+      <p className='text-md text-vesoko_gray_600 mb-8'>
         Let's get started with your store application!
       </p>
 
@@ -46,7 +46,7 @@ const SelectStoreType = () => {
         <Button
           buttonTitle='Continue'
           loadingButtonTitle='Continuing...'
-          className='space-x-3 mt-4 px-6 py-2 text-white bg-nezeza_dark_blue hover:bg-nezeza_green_800'
+          className='space-x-3 mt-4 px-6 py-2 text-white bg-vesoko_dark_blue hover:bg-vesoko_green_800'
           onClick={() => (window.location.href = '/store-application')}
         />
       </div>

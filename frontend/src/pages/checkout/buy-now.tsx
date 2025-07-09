@@ -19,9 +19,7 @@ const stripePromise = loadStripe(
 );
 
 const CheckoutBuyNowPage = () => {
-  const { buyNowProduct } = useSelector(
-    (state: stateProps) => state.next
-  );
+  const { buyNowProduct } = useSelector((state: stateProps) => state.next);
 
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
@@ -75,13 +73,13 @@ const CheckoutBuyNowPage = () => {
   if (!buyNowProduct) {
     // This will be shown briefly before redirecting by useEffect
     return (
-      <div className='bg-nezeza_powder_blue flex flex-col gap-2 justify-center items-center h-screen'>
+      <div className='bg-vesoko_powder_blue flex flex-col gap-2 justify-center items-center h-screen'>
         <p className=' text-center text-lg font-semibold'>
           No product selected for direct purchase.
         </p>
         <Link
           href='/'
-          className='px-6 py-3 bg-nezeza_dark_blue text-white text-lg font-medium rounded-md shadow-md hover:bg-nezeza_green_600 hover:shadow-lg transition duration-300'
+          className='px-6 py-3 bg-vesoko_dark_blue text-white text-lg font-medium rounded-md shadow-md hover:bg-vesoko_green_600 hover:shadow-lg transition duration-300'
         >
           Continue Shopping
         </Link>
@@ -92,15 +90,15 @@ const CheckoutBuyNowPage = () => {
   // Display loading while order is being created or client secret is fetched
   if (!clientSecret) {
     return (
-      <div className='bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
+      <div className='bg-vesoko_powder_blue min-h-screen flex items-center justify-center'>
         <Loading message='your order details...' />
       </div>
     );
   }
 
   return (
-    <div className='bg-nezeza_powder_blue min-h-screen p-8 flex flex-col md:flex-row'>
-      <div className='md:w-1/2 p-8 bg-nezeza_light_blue shadow-lg rounded-lg '>
+    <div className='bg-vesoko_powder_blue min-h-screen p-8 flex flex-col md:flex-row'>
+      <div className='md:w-1/2 p-8 bg-vesoko_light_blue shadow-lg rounded-lg '>
         <h2 className='text-2xl font-bold mb-4'>Order Summary</h2>
         <div className='space-y-2'>
           <p>

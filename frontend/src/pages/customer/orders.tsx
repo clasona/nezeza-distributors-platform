@@ -13,7 +13,7 @@ import { calculateOrderStats } from '@/utils/orderUtils';
 import router from 'next/router';
 import { useEffect, useState } from 'react';
 import { OrderProps } from '../../../type';
-import CancelFullOrderModal from '@/components/Order/CancelFullOrderModal'; 
+import CancelFullOrderModal from '@/components/Order/CancelFullOrderModal';
 import { cancelFullOrder } from '@/utils/order/cancelFullOrder';
 
 const Orders = () => {
@@ -32,17 +32,16 @@ const Orders = () => {
   const [isFullCancelModalOpen, setIsFullCancelModalOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<OrderProps | null>(null); // To store the order being cancelled
 
-const handleOpenFullCancelModal = (order: OrderProps) => {
-  setOrderToCancel(order); // Set the order to be cancelled
-  setIsFullCancelModalOpen(true);
-};
+  const handleOpenFullCancelModal = (order: OrderProps) => {
+    setOrderToCancel(order); // Set the order to be cancelled
+    setIsFullCancelModalOpen(true);
+  };
 
   const handleCloseFullCancelModal = () => {
     setIsFullCancelModalOpen(false);
     setOrderToCancel(null); // Clear the order data
     setErrorMessage(''); // Clear errors on close
     setSuccessMessage(''); // Clear success on close
-  
   };
 
   const handleFullOrderCancelSubmit = async (reason: string) => {
@@ -171,7 +170,7 @@ const handleOpenFullCancelModal = (order: OrderProps) => {
               isLoading={isLoading}
               buttonTitle='Refresh'
               loadingButtonTitle='Refreshing...'
-              className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
+              className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
               onClick={async () => {
                 await fetchData();
               }}
@@ -195,7 +194,7 @@ const handleOpenFullCancelModal = (order: OrderProps) => {
               key={stat.status}
               className={`cursor-pointer px-4 py-0.5 rounded-md ${
                 filter === stat.status
-                  ? 'bg-nezeza_dark_blue text-white'
+                  ? 'bg-vesoko_dark_blue text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-200'
               } transition duration-300`}
               onClick={() => handleFilter(stat.status)}
@@ -233,13 +232,13 @@ const handleOpenFullCancelModal = (order: OrderProps) => {
                 {/* Action Buttons */}
                 <div className='flex gap-2'>
                   {/* <button
-                    className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-nezeza_dark_blue hover:text-white transition duration-300'
+                    className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-vesoko_dark_blue hover:text-white transition duration-300'
                     onClick={() => handleViewInvoice(order._id)} // Replace with your "buy again" logic
                   >
                     View Invoice
                   </button> */}
                   <button
-                    className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-nezeza_gray_600 hover:text-white transition duration-300'
+                    className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-vesoko_gray_600 hover:text-white transition duration-300'
                     onClick={() => handleArchiveClick(order)}
                   >
                     Archive

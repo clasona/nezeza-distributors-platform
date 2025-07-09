@@ -6,8 +6,8 @@ const StripeOnboardingRefresh = () => {
   const { sellerStoreType } = router.query;
 
   return (
-    <div className='w-full bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue rounded-lg text-center items-center justify-center p-4'>
+    <div className='w-full bg-vesoko_powder_blue min-h-screen flex items-center justify-center'>
+      <div className='bg-vesoko_light_blue rounded-lg text-center items-center justify-center p-4'>
         {' '}
         <h1 className='text-2xl font-semibold mb-4'>
           Stripe Onboarding Interrupted
@@ -17,7 +17,7 @@ const StripeOnboardingRefresh = () => {
         </p>
         <button
           onClick={() => router.replace(`/sellers/stripe/setup`)}
-          className='px-4 py-2 rounded bg-nezeza_dark_blue text-white hover:bg-nezeza_dark_blue2'
+          className='px-4 py-2 rounded bg-vesoko_dark_blue text-white hover:bg-vesoko_dark_blue2'
         >
           Return to Setup
         </button>

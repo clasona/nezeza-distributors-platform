@@ -102,14 +102,14 @@ const RegisterPage = () => {
   ];
 
   return (
-    <div className='w-full bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue rounded-lg p-4'>
+    <div className='w-full bg-vesoko_powder_blue min-h-screen flex items-center justify-center'>
+      <div className='bg-vesoko_light_blue rounded-lg p-4'>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className='w-full max-w-md bg-white p-6 rounded-lg shadow-lg'
         >
-          <h2 className='text-2xl font-bold text-center text-nezeza_dark_blue mb-4'>
-            Create a Nezeza Account
+          <h2 className='text-2xl font-bold text-center text-vesoko_dark_blue mb-4'>
+            Create a VeSoko Account
           </h2>
           {/* Form Fields */}
           <div className='space-y-2'>
@@ -164,7 +164,7 @@ const RegisterPage = () => {
                 type='checkbox'
                 checked={isSeller}
                 onChange={handleSellerChange}
-                className='mr-2 peer accent-nezeza_dark_blue'
+                className='mr-2 peer accent-vesoko_dark_blue'
               />
               Registering as a seller?
             </label>
@@ -188,20 +188,20 @@ const RegisterPage = () => {
               checked={termsAccepted}
               onChange={(e) => setTermsAccepted(e.target.checked)}
             />
-            <label htmlFor='terms' className='text-xs text-nezeza_gray_600'>
+            <label htmlFor='terms' className='text-xs text-vesoko_gray_600'>
               I accept the{' '}
               <a
                 href='/terms' //TODO: Implement this page
                 target='_blank'
                 rel='noopener noreferrer'
-                className='text-nezeza_dark_blue hover:text-nezeza_dark_blue underline transition-colors duration-250'
+                className='text-vesoko_dark_blue hover:text-vesoko_dark_blue underline transition-colors duration-250'
               >
                 terms and conditions
               </a>
             </label>
           </div>
           {errorMessage && (
-            <p className='mt-4 text-center text-nezeza_red_600'>
+            <p className='mt-4 text-center text-vesoko_red_600'>
               {errorMessage}
             </p>
           )}
@@ -209,22 +209,26 @@ const RegisterPage = () => {
             // isLoading={isLoading}
             buttonTitle='Signup'
             // loadingButtonTitle='Processing...'
-            className='w-full h-10 '
+            className='w-full h-10'
           />
           <button
             type='button'
             onClick={handleGoogleSignup}
-            className='w-full h-10 flex mt-2 items-center justify-center gap-2 py-2 rounded-md font-medium bg-nezeza_red_600 text-white hover:bg-nezeza_red_700 transition duration-300'
+            className={`w-full h-10 flex mt-2 items-center justify-center gap-2 py-2 rounded-md font-medium bg-vesoko_red_600 text-white hover:bg-vesoko_red_700 transition duration-300 ${
+              isSeller ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            disabled={isSeller}
+            tabIndex={isSeller ? -1 : 0}
           >
             <FaGoogle className='w-5 h-5' />
             Signup with Google
           </button>
           {/* </div> */}
-          <p className='text-center mt-4 text-nezeza_gray_600'>
+          <p className='text-center mt-4 text-vesoko_gray_600'>
             Already have an account?{' '}
             <a
               href='/login'
-              className='text-nezeza_dark_blue hover:text-nezeza_dark_blue underline transition-colors duration-250'
+              className='text-vesoko_dark_blue hover:text-vesoko_dark_blue underline transition-colors duration-250'
             >
               Sign in
             </a>

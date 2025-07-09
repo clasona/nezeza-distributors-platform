@@ -7,9 +7,8 @@ import sliderImg_3 from '../images/slider/slide3.jpg';
 import sliderImg_4 from '../images/slider/slide4.jpg';
 import { stateProps } from '../../type';
 import Link from 'next/link';
-import { SquareArrowOutUpRight } from 'lucide-react';
 
-interface BannerProps{
+interface BannerProps {
   onBuyClick: () => void;
 }
 const Banner = ({ onBuyClick }: BannerProps) => {
@@ -26,7 +25,7 @@ const Banner = ({ onBuyClick }: BannerProps) => {
             className='w-full h-full object-cover'
           >
             <source
-              src='/videos/nezeza_banner_videos_combined.mp4'
+              src='/videos/vesoko_banner_videos_combined.mp4'
               type='video/mp4'
             />
             Your browser does not support the video tag.
@@ -35,12 +34,12 @@ const Banner = ({ onBuyClick }: BannerProps) => {
           <div className='absolute inset-0 flex flex-col items-center justify-center text-white text-center z-10'>
             <p className='text-2xl font-semibold mb-4'>
               {' '}
-              Discover amazing products or sell your own on the Nezeza platform.
+              Discover amazing products or sell your own on the VeSoko platform.
             </p>
             <div className='flex w-full max-w-xs gap-4 justify-center'>
               {' '}
               <button
-                className='flex items-center justify-center bg-nezeza_dark_blue hover:bg-blue-800 hover:underline text-white font-bold py-2 px-4 rounded-md w-1/2'
+                className='flex items-center justify-center bg-vesoko_dark_blue hover:bg-blue-800 hover:underline text-white font-bold py-2 px-4 rounded-md w-1/2'
                 onClick={onBuyClick}
               >
                 Buy
@@ -48,7 +47,7 @@ const Banner = ({ onBuyClick }: BannerProps) => {
               <span className='text-white self-center'>or</span>{' '}
               <Link
                 href='/seller-onboarding'
-                className='flex items-center justify-center bg-nezeza_green_600 hover:bg-nezeza_green_800 hover:underline  text-white font-bold py-2 px-4 rounded-md w-1/2 '
+                className='flex items-center justify-center bg-vesoko_green_600 hover:bg-vesoko_green_800 hover:underline  text-white font-bold py-2 px-4 rounded-md w-1/2 '
               >
                 Sell
               </Link>

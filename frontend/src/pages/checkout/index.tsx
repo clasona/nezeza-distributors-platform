@@ -118,13 +118,13 @@ const CheckoutPage = () => {
 
   if (!cartItemsData.length)
     return (
-      <div className='bg-nezeza_powder_blue flex flex-col gap-2 justify-center items-center h-screen'>
+      <div className='bg-vesoko_powder_blue flex flex-col gap-2 justify-center items-center h-screen'>
         <p className=' text-center text-lg font-semibold'>
           No items in the cart.
         </p>
         <Link
           href='/'
-          className='px-6 py-3 bg-nezeza_dark_blue text-white text-lg font-medium rounded-md shadow-md hover:bg-nezeza_green_600 hover:shadow-lg transition duration-300'
+          className='px-6 py-3 bg-vesoko_dark_blue text-white text-lg font-medium rounded-md shadow-md hover:bg-vesoko_green_600 hover:shadow-lg transition duration-300'
         >
           Continue Shopping
         </Link>
@@ -132,11 +132,11 @@ const CheckoutPage = () => {
     );
 
   return (
-    <div className='bg-nezeza_powder_blue min-h-screen p-4 md:p-8 flex flex-col md:flex-row gap-8'>
-      <div className='md:w-1/2 p-6 bg-nezeza_light_blue shadow-lg rounded-lg order-2 md:order-1'>
+    <div className='bg-vesoko_powder_blue min-h-screen p-4 md:p-8 flex flex-col md:flex-row gap-8'>
+      <div className='md:w-1/2 p-6 bg-vesoko_light_blue shadow-lg rounded-lg order-2 md:order-1'>
         {' '}
         {/* Added width and background for summary */}
-        <h2 className='text-2xl font-bold mb-4 text-nezeza_dark_blue'>
+        <h2 className='text-2xl font-bold mb-4 text-vesoko_dark_blue'>
           Order Summary
         </h2>
         <div className='space-y-2 text-gray-700'>
@@ -163,7 +163,7 @@ const CheckoutPage = () => {
           </p>
         </div>
         <div className='border-t border-gray-300 pt-4 mt-4'>
-          <p className='text-xl font-bold flex justify-between text-nezeza_dark_blue'>
+          <p className='text-xl font-bold flex justify-between text-vesoko_dark_blue'>
             Total:{' '}
             <span>
               <FormattedPrice amount={totalAmount} />
@@ -172,7 +172,7 @@ const CheckoutPage = () => {
         </div>
         {/* Display each item in the summary */}
         <div className='space-y-4 mt-6 border-t pt-4 border-gray-200'>
-          <h3 className='text-xl font-semibold mb-3 text-nezeza_dark_blue'>
+          <h3 className='text-xl font-semibold mb-3 text-vesoko_dark_blue'>
             Your Cart Items
           </h3>{' '}
           {cartItemsData.map((item: OrderItemsProps) => (
@@ -204,7 +204,7 @@ const CheckoutPage = () => {
       <div className='md:w-1/2 flex flex-col gap-8 order-1 md:order-2'>
         {/* Shipping Options */}
         <div className='p-6 bg-white shadow-lg rounded-lg'>
-          <h2 className='text-2xl font-bold mb-4 text-nezeza_dark_blue'>
+          <h2 className='text-2xl font-bold mb-4 text-vesoko_dark_blue'>
             Shipping Options
           </h2>
           <div className='space-y-4'>
@@ -213,7 +213,7 @@ const CheckoutPage = () => {
                 key={option.id}
                 className={`flex items-center justify-between p-4 border rounded-md cursor-pointer transition-all duration-200 ${
                   selectedShipping.id === option.id
-                    ? 'border-nezeza_green_600 ring-2 ring-nezeza_green_600 bg-green-50'
+                    ? 'border-vesoko_green_600 ring-2 ring-vesoko_green_600 bg-green-50'
                     : 'border-gray-200 hover:border-gray-300 bg-gray-50'
                 }`}
               >
@@ -224,7 +224,7 @@ const CheckoutPage = () => {
                     value={option.id}
                     checked={selectedShipping.id === option.id}
                     onChange={handleShippingChange}
-                    className='form-radio h-5 w-5 text-nezeza_green_600 cursor-pointer focus:ring-nezeza_green_600'
+                    className='form-radio h-5 w-5 text-vesoko_green_600 cursor-pointer focus:ring-vesoko_green_600'
                   />
                   <div className='ml-4'>
                     <p className='font-semibold text-lg text-gray-800'>
@@ -246,7 +246,7 @@ const CheckoutPage = () => {
 
         {/* Payment Form */}
         <div className='p-6 bg-white shadow-lg rounded-lg'>
-          <h2 className='text-2xl font-bold mb-4 text-nezeza_dark_blue'>
+          <h2 className='text-2xl font-bold mb-4 text-vesoko_dark_blue'>
             Payment Details
           </h2>
           {clientSecret ? (

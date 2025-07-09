@@ -3456,7 +3456,7 @@ __metadata:
     lucide-react: "npm:^0.464.0"
     mongoose: "npm:^8.9.3"
     next: "npm:15.3.3"
-    next-auth: "npm:^4.24.10"
+    next-auth: "npm:^4.24.11"
     next-cloudinary: "npm:^6.16.0"
     next-redux-wrapper: "npm:^8.1.0"
     next-themes: "npm:^0.4.3"
@@ -4713,7 +4713,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-auth@npm:^4.24.10":
+"next-auth@npm:^4.24.11":
   version: 4.24.11
   resolution: "next-auth@npm:4.24.11"
   dependencies:

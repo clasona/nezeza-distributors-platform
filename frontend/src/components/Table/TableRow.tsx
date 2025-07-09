@@ -56,7 +56,7 @@ const TableRow = <T,>({
         <tr className='bg-gray-200 dark:bg-gray-700'>
           <td
             colSpan={rowValues.length + 1}
-            className='p-4 border-l-4 border-nezeza_dark_blue'
+            className='p-4 border-l-4 border-vesoko_dark_blue'
           >
             {renderCollapsibleContent
               ? renderCollapsibleContent(rowData)

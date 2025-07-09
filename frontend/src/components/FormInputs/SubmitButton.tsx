@@ -22,7 +22,7 @@ const SubmitButton = ({
           type='submit'
           disabled={disabled}
           className={`${className} items-center px-5 py-2.5 mt-4 sm:mt-6 test-sm font-medium text-center 
-                  text-white bg-nezeza_green_600 hover:bg-green-800 rounded-lg fpcus:ring-4 focus:ring-green-200 focus:outline-none
+                  text-white bg-vesoko_green_600 hover:bg-green-800 rounded-lg fpcus:ring-4 focus:ring-green-200 focus:outline-none
                   mr-2`}
         >
           <svg
@@ -50,7 +50,7 @@ const SubmitButton = ({
           type='submit'
           disabled={disabled}
           className={`${className} flex items-center justify-center px-5 py-2.5 sm:mt-6 test-sm font-medium text-center 
-                  text-white bg-nezeza_green_600 rounded-lg fpcus:ring-4 focus:ring-green-200`}
+                  text-white bg-vesoko_green_600 rounded-lg fpcus:ring-4 focus:ring-green-200`}
         >
           {buttonTitle}
         </button>

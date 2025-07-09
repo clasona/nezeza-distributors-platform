@@ -187,7 +187,7 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className='w-full max-w-4xl p-4 bg-nezeza_light_blue border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 mx-auto my-2'
+      className='w-full max-w-4xl p-4 bg-vesoko_light_blue border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 mx-auto my-2'
     >
       <TextInput
         label='Product ID'
@@ -254,7 +254,7 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
         {/* Images */}
         <div className='col-span-2 mt-3 flex flex-wrap gap-2'>
           <label className='block font-medium mb-1'>
-            Product Images <span className='text-nezeza_red_600'> *</span>
+            Product Images <span className='text-vesoko_red_600'> *</span>
           </label>
           {imageUrls.map((url, i) => (
             <div key={i} className='relative'>
@@ -288,7 +288,7 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
         {/* Colors */}
         <div className='col-span-2 flex flex-wrap items-center gap-2 mt-2'>
           <label className='block font-medium mb-1'>
-            Select Colors <span className='text-nezeza_red_600'>*</span>
+            Select Colors <span className='text-vesoko_red_600'>*</span>
           </label>
           {colorOptions.map((color) => (
             <button
@@ -296,7 +296,7 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
               key={color}
               className={`w-7 h-7 rounded-full border-2 flex-shrink-0 mr-1 ${
                 selectedColors.includes(color)
-                  ? 'border-nezeza_green_600 ring-2 ring-nezeza_green_600'
+                  ? 'border-vesoko_green_600 ring-2 ring-vesoko_green_600'
                   : 'border-gray-300'
               }`}
               style={{ background: color }}
@@ -311,7 +311,7 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
             id='featured'
             type='checkbox'
             {...register('featured')}
-            className='form-checkbox accent-nezeza_green_600'
+            className='form-checkbox accent-vesoko_green_600'
           />
           <label htmlFor='featured' className='font-medium'>
             Featured
@@ -322,7 +322,7 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
             id='freeShipping'
             type='checkbox'
             {...register('freeShipping')}
-            className='form-checkbox accent-nezeza_green_600'
+            className='form-checkbox accent-vesoko_green_600'
           />
           <label htmlFor='freeShipping' className='font-medium'>
             Free Shipping
@@ -333,7 +333,7 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
             id='availability'
             type='checkbox'
             {...register('availability')}
-            className='form-checkbox accent-nezeza_green_600'
+            className='form-checkbox accent-vesoko_green_600'
             defaultChecked
           />
           <label htmlFor='availability' className='font-medium'>

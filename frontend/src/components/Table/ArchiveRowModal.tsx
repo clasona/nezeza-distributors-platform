@@ -20,26 +20,26 @@ const ArchiveRowModal = <T extends { _id: number | string }>({
 
   const handleArchive = async () => {
     if ('_id' in rowData) {
-        onArchive(rowData._id);
-        // const orderData: Partial<OrderProps> = {
-        //   fulfillmentStatus: 'Archived',
-        // };
-        // if (rowData._id) {
-        //   await archiveOrder(rowData._id as string, orderData);
-        // }
-        
+      onArchive(rowData._id);
+      // const orderData: Partial<OrderProps> = {
+      //   fulfillmentStatus: 'Archived',
+      // };
+      // if (rowData._id) {
+      //   await archiveOrder(rowData._id as string, orderData);
+      // }
+
       onClose(); // Close the modal after deletion
     }
   };
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
-      <div className='bg-nezeza_light_blue p-6 rounded-lg shadow-lg w-96'>
+      <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-96'>
         <h3 className='text-lg font-semibold mb-4'>Confirm Archive</h3>
         {/* {isOrderProps(rowData) && ( */}
         <p className='mb-4'>
           Are you sure you want to archive the order with ID #{' '}
-          <span className='font-bold text-nezeza_dark_blue'>{rowData._id}</span>
+          <span className='font-bold text-vesoko_dark_blue'>{rowData._id}</span>
           ? <br />
           This action cannot be undone.
         </p>
@@ -47,7 +47,7 @@ const ArchiveRowModal = <T extends { _id: number | string }>({
         {/* {isInventoryProps(rowData) && (
           <p className='mb-4'>
             Are you sure you want to delete the inventory item with ID{' '}
-            <span className='font-bold text-nezeza_dark_blue'>
+            <span className='font-bold text-vesoko_dark_blue'>
               {rowData._id}
             </span>
             ? <br />
@@ -57,7 +57,7 @@ const ArchiveRowModal = <T extends { _id: number | string }>({
         <div className='flex justify-end space-x-4'>
           <button
             onClick={onClose}
-            className='px-4 py-2 text-nezeza_gray_600 bg-gray-300 rounded-md hover:text-white hover:bg-gray-400'
+            className='px-4 py-2 text-vesoko_gray_600 bg-gray-300 rounded-md hover:text-white hover:bg-gray-400'
           >
             Cancel
           </button>

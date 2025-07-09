@@ -41,8 +41,8 @@ const SingleOrderDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-    const handleOpenFullCancelModal = () => setIsFullCancelModalOpen(true);
-    const handleCloseFullCancelModal = () => setIsFullCancelModalOpen(false);
+  const handleOpenFullCancelModal = () => setIsFullCancelModalOpen(true);
+  const handleCloseFullCancelModal = () => setIsFullCancelModalOpen(false);
 
   const handleFullOrderCancelSubmit = async (reason: string) => {
     if (!order) return; // Should not happen if modal is opened correctly
@@ -100,7 +100,7 @@ const SingleOrderDetails = () => {
 
                 <button
                   //   onClick={() => onViewInvoice?.(order._id)}
-                  className='px-4 py-1 text-white bg-nezeza_dark_blue rounded-md hover:bg-blue-600'
+                  className='px-4 py-1 text-white bg-vesoko_dark_blue rounded-md hover:bg-blue-600'
                 >
                   View Invoice
                 </button>
@@ -111,14 +111,14 @@ const SingleOrderDetails = () => {
                   Archive
                 </button>
                 <button
-                  className='px-4 py-1 bg-gray-300 text-nezeza_gray_600 rounded-md hover:bg-gray-400'
+                  className='px-4 py-1 bg-gray-300 text-vesoko_gray_600 rounded-md hover:bg-gray-400'
                   onClick={() => router.back()}
                 >
                   Back
                 </button>
                 {/* <button
                   onClick={onClose}
-                  className='px-4 py-1 bg-gray-300 text-nezeza_gray_600 rounded-md hover:bg-gray-400'
+                  className='px-4 py-1 bg-gray-300 text-vesoko_gray_600 rounded-md hover:bg-gray-400'
                 >
                   Close
                 </button> */}

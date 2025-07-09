@@ -10,3 +10,12 @@ export const registerUser = async (userData: UserProps) => {
     throw error;
   }
 };
+
+export const registerUserGoogle = async (userData: UserProps) => {
+  try {
+    const response = await axiosInstance.post('/auth/register/google', userData);
+    return response.data;
+  } catch (error: any) {
+    throw error;
+  }
+}

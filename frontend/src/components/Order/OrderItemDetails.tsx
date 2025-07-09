@@ -7,12 +7,9 @@ import CancelItemModal from './CancelItemModal';
 
 interface OrderItemDetailsProps {
   item: OrderItemsProps;
-  orderId: string; 
+  orderId: string;
 }
-export const OrderItemDetails = ({
-  item,
-  orderId,
-}: OrderItemDetailsProps ) => {
+export const OrderItemDetails = ({ item, orderId }: OrderItemDetailsProps) => {
   const router = useRouter();
 
   const [product, setProduct] = useState<ProductProps | null>(null);
@@ -48,9 +45,7 @@ export const OrderItemDetails = ({
       setCancelSuccess(response.msg);
       // Optionally refetch order data or update UI here
     } catch (err: any) {
-      setCancelError(
-        err || 'Failed to cancel item. Please try again.'
-      );
+      setCancelError(err || 'Failed to cancel item. Please try again.');
     } finally {
       setLoadingCancel(false);
     }
@@ -72,7 +67,7 @@ export const OrderItemDetails = ({
           <div className='flex items-center justify-between gap-4'>
             <div className='flex-1'>
               <h5 className='text-lg font-semibold'>{product.title}</h5>
-              <p className='text-sm text-nezeza_gray_600'>
+              <p className='text-sm text-vesoko_gray_600'>
                 {item.quantity} x ${item.price.toFixed(2)}
               </p>
             </div>
@@ -100,7 +95,7 @@ export const OrderItemDetails = ({
               More Info
             </button>
             <button
-              className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-nezeza_green_600 hover:text-white transition duration-300'
+              className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-vesoko_green_600 hover:text-white transition duration-300'
               // onClick={() => handleOpenQuantityModal(product)}
             >
               TODO: Buy Again

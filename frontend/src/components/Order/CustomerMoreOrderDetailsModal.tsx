@@ -41,15 +41,13 @@ const CustomerMoreOrderDetailsModal = <T extends SubOrderProps>({
 
   const isOrderProps = (data: any): data is SubOrderProps =>
     'fulfillmentStatus' in data;
-  
+
   useEffect(() => {
     console.log('Received rowData:', rowData);
     if (isOpen) {
       setOrderData(rowData);
     }
-    
   }, [isOpen, rowData, setValue]);
-
 
   const handleUpdateOrder = () => {
     const newStatus = getValues('fulfillmentStatus');
@@ -65,7 +63,7 @@ const CustomerMoreOrderDetailsModal = <T extends SubOrderProps>({
       aria-labelledby='modal-title'
       className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'
     >
-      <div className='bg-nezeza_light_blue p-6 rounded-lg shadow-lg w-full max-w-7xl'>
+      <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-full max-w-7xl'>
         <div className='flex justify-between items-center mb-4'>
           <h3 id='modal-title' className='text-lg font-semibold'>
             Customer Order Details
@@ -74,7 +72,7 @@ const CustomerMoreOrderDetailsModal = <T extends SubOrderProps>({
           <div className='space-x-3'>
             <button
               onClick={onClose}
-              className='px-4 py-2 bg-gray-300 text-nezeza_gray_600 rounded-md hover:bg-gray-400 transition'
+              className='px-4 py-2 bg-gray-300 text-vesoko_gray_600 rounded-md hover:bg-gray-400 transition'
             >
               Close
             </button>
@@ -85,7 +83,7 @@ const CustomerMoreOrderDetailsModal = <T extends SubOrderProps>({
           <div className='flex justify-between'>
             <p>
               Order #:{' '}
-              <span className='font-bold text-nezeza_dark_blue'>
+              <span className='font-bold text-vesoko_dark_blue'>
                 {orderData._id}
               </span>
             </p>
@@ -102,7 +100,7 @@ const CustomerMoreOrderDetailsModal = <T extends SubOrderProps>({
             </p>
             <p>
               Order Date:{' '}
-              <span className='font-bold text-nezeza_dark_blue'>
+              <span className='font-bold text-vesoko_dark_blue'>
                 {orderData.createdAt}
               </span>
             </p>
@@ -121,7 +119,7 @@ const CustomerMoreOrderDetailsModal = <T extends SubOrderProps>({
           <button
             onClick={handleUpdateOrder}
             className={
-              'px-4 py-2 text-white bg-nezeza_green_600 hover:bg-nezeza_green_800 rounded-md'
+              'px-4 py-2 text-white bg-vesoko_green_600 hover:bg-vesoko_green_800 rounded-md'
             }
           >
             Update Order

@@ -74,7 +74,7 @@ const StoreRegistrationForm = ({
           state: data.residenceState,
           zip: data.residenceZipCode,
           country: data.residenceCountry,
-          phone: data.phone
+          phone: data.phone,
         },
       },
       storeInfo: {
@@ -91,7 +91,7 @@ const StoreRegistrationForm = ({
           state: data.storeState,
           zip: data.storeZipCode,
           country: data.storeCountry,
-          phone: data.storePhone
+          phone: data.storePhone,
         },
       },
       verificationDocs: {
@@ -132,15 +132,15 @@ const StoreRegistrationForm = ({
   };
 
   return (
-    <div className='bg-nezeza_powder_blue sm:px-2 md:px-4'>
+    <div className='bg-vesoko_powder_blue sm:px-2 md:px-4'>
       <form
         className='relative rounded-lg p-4 sm:p-6 md:p-8'
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h2 className='text-3xl text-nezeza_dark_blue font-bold text-center mb-4'>
-          Nezeza Store Application
+        <h2 className='text-3xl text-vesoko_dark_blue font-bold text-center mb-4'>
+          VeSoko Store Application
         </h2>
-        <p className='text-center mb-6 text-nezeza_gray_600'>
+        <p className='text-center mb-6 text-vesoko_gray_600'>
           Please fill in information as it appears on your official ID and
           registered business documents.
         </p>
@@ -152,7 +152,7 @@ const StoreRegistrationForm = ({
               key={index}
               className={`flex-1 text-center cursor-pointer ${
                 index <= currentSection
-                  ? 'text-nezeza_green_800'
+                  ? 'text-vesoko_green_800'
                   : 'text-gray-400'
               }`}
               onClick={() => setCurrentSection(index)}
@@ -207,7 +207,7 @@ const StoreRegistrationForm = ({
         <button
           type='button'
           className={`absolute left-0 top-1/2 transform -translate-y-1/2 ${
-            currentSection > 0 ? 'text-nezeza_dark_blue' : 'text-gray-400'
+            currentSection > 0 ? 'text-vesoko_dark_blue' : 'text-gray-400'
           }`}
           onClick={handlePrevious}
           disabled={currentSection === 0}
@@ -220,7 +220,7 @@ const StoreRegistrationForm = ({
           type='button'
           className={`absolute right-0 top-1/2 transform -translate-y-1/2 ${
             currentSection < sections.length - 1
-              ? 'text-nezeza_dark_blue'
+              ? 'text-vesoko_dark_blue'
               : 'text-gray-400'
           }`}
           onClick={handleNext}
@@ -244,7 +244,7 @@ const StoreRegistrationForm = ({
           {currentSection < sections.length - 1 && (
             <button
               type='button'
-              className='bg-nezeza_dark_blue text-white px-4 py-1 rounded-md hover:bg-nezeza_yellow hover:text-black'
+              className='bg-vesoko_dark_blue text-white px-4 py-1 rounded-md hover:bg-vesoko_yellow hover:text-black'
               onClick={handleNext}
             >
               Next
@@ -257,7 +257,7 @@ const StoreRegistrationForm = ({
               className={`${
                 isSubmitting
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-nezeza_green_600 hover:bg-nezeza_green_800'
+                  : 'bg-vesoko_green_600 hover:bg-vesoko_green_800'
               } text-white px-4 py-1 rounded-md`}
             >
               {isSubmitting ? 'Submitting...' : 'SUBMIT'}

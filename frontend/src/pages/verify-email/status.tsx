@@ -15,8 +15,8 @@ const VerifyEmailStatusPage = () => {
       if (typeof token === 'string' && typeof email === 'string') {
         setIsLoading(true);
         try {
-            const result = await verifyEmail(email, token);
-            console.log('success status', result.success)
+          const result = await verifyEmail(email, token);
+          console.log('success status', result.success);
           setIsVerified(result.success);
           if (!result.success) {
             setErrorMessage(result.message || 'Verification failed.');
@@ -33,7 +33,7 @@ const VerifyEmailStatusPage = () => {
     };
 
     if (token && email) {
-     handleVerifyEmail();
+      handleVerifyEmail();
     }
   }, [token, email]);
 
@@ -45,18 +45,18 @@ const VerifyEmailStatusPage = () => {
     return (
       <div className='text-center p-4'>
         An error occurred while trying to load the verify email status page.
-        Please contact us at support@nezeza.com for assistance.
+        Please contact us at support@vesoko.com for assistance.
       </div>
     );
   }
 
   return (
-    <div className='w-full bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue p-4'>
+    <div className='w-full bg-vesoko_powder_blue min-h-screen flex items-center justify-center'>
+      <div className='bg-vesoko_light_blue p-4'>
         <div className='w-full max-w-md bg-white p-6 space-y-4 rounded-lg shadow-lg text-center flex flex-col'>
           {isVerified === true ? (
             <div>
-              <h3 className='text-xl font-semibold text-nezeza_green_600'>
+              <h3 className='text-xl font-semibold text-vesoko_green_600'>
                 Email Verified Successfully
               </h3>
               <p className='mt-4 text-gray-600'>
@@ -65,7 +65,7 @@ const VerifyEmailStatusPage = () => {
               </p>
               <button
                 type='button'
-                className='mt-6 px-4 py-2 rounded-md bg-nezeza_dark_blue text-white hover:bg-nezeza_green_600 hover:text-white transition-colors duration-300'
+                className='mt-6 px-4 py-2 rounded-md bg-vesoko_dark_blue text-white hover:bg-vesoko_green_600 hover:text-white transition-colors duration-300'
                 onClick={goToLogin}
                 disabled={isLoading}
               >
@@ -74,7 +74,7 @@ const VerifyEmailStatusPage = () => {
             </div>
           ) : isVerified === false ? (
             <div>
-              <h3 className='text-xl font-semibold text-nezeza_red_600'>
+              <h3 className='text-xl font-semibold text-vesoko_red_600'>
                 Email Not Verified
               </h3>
               <p className='mt-4 text-gray-600'>
@@ -87,7 +87,7 @@ const VerifyEmailStatusPage = () => {
           ) : (
             <div>
               <h3 className='text-xl font-semibold text-gray-700'>
-                Verifying Email... 
+                Verifying Email...
               </h3>
               <p className='mt-4 text-gray-600'>
                 Please wait while we verify your email.

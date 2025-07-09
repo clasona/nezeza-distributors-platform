@@ -44,7 +44,7 @@ export const calculateOrderStats = (
       count: existingOrders.filter(
         (order) => order.fulfillmentStatus === 'Archived'
       ).length,
-      className: 'bg-nezeza_gray_600 ',
+      className: 'bg-vesoko_gray_600 ',
     },
   ];
 };

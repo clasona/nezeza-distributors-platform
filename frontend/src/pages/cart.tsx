@@ -17,10 +17,10 @@ const cartPage = () => {
               className='flex items-center justify-between border-b-[1px]
                         border-b-gray-400 pb-1'
             >
-              <p className='text-2xl font-semibold text-nezeza_dark_blue'>
+              <p className='text-2xl font-semibold text-vesoko_dark_blue'>
                 Shopping Cart
               </p>
-              <p className='text-lg font-semibold text-nezeza_dark_blue'>
+              <p className='text-lg font-semibold text-vesoko_dark_blue'>
                 Subtotal
               </p>
             </div>
@@ -47,8 +47,8 @@ const cartPage = () => {
         <div className='w-full col-span-2 sm:col-span-5 flex flex-col items-center justify-center py-5 rounded-lg shadow-lg'>
           <h1 className='text-lg font-medium mb-4'>Your Cart is Empty</h1>
           <button
-            className='w-52 h-10 bg-nezeza_dark_blue text-white rounded-text-sm
-                    font-semibold hover:bg-nezeza_green_600 hover:text-white'
+            className='w-52 h-10 bg-vesoko_dark_blue text-white rounded-text-sm
+                    font-semibold hover:bg-vesoko_green_600 hover:text-white'
             onClick={() => (window.location.href = '/')}
           >
             Go to Shopping

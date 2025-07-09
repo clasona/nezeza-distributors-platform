@@ -29,7 +29,7 @@ export const CustomerOrderItemDetails = ({ item }: { item: ProductProps }) => {
         <div>
           <div className='flex-1'>
             <h5 className='text-lg font-semibold'>{item.title}</h5>
-            <p className='text-sm text-nezeza_gray_600'>
+            <p className='text-sm text-vesoko_gray_600'>
               {item.quantity} x ${item.price.toFixed(2)}
             </p>
           </div>
@@ -43,7 +43,7 @@ export const CustomerOrderItemDetails = ({ item }: { item: ProductProps }) => {
             </button>
 
             <button
-              className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-nezeza_dark_blue hover:text-white transition duration-300'
+              className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-vesoko_dark_blue hover:text-white transition duration-300'
               onClick={() => {
                 router.push(`/product/${item._id}`);
               }}

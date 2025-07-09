@@ -4,7 +4,9 @@ const router = express.Router();
 const { authenticateUser } = require('../middleware/authentication');
 const { 
     register, 
+    registerGoogle,
     login, 
+    loginGoogle,
     verifyEmail,
     checkUserVerified,
     logout,
@@ -16,7 +18,9 @@ const {
 } = require('../controllers/authController');
 
 router.post('/register', register);
+router.post('/register/google', registerGoogle);
 router.post('/login', login);
+router.post('/login/google', loginGoogle);
 router.post('/verify-email', verifyEmail);
 router.get('/verify/status', checkUserVerified);
 router.delete('/logout',authenticateUser, logout);

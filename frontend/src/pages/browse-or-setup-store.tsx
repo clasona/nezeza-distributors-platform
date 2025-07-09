@@ -1,15 +1,14 @@
-
 const BrowseOrSetupStore = () => {
   return (
     <div className='w-full bg-gray-100 min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue p-4'>
+      <div className='bg-vesoko_light_blue p-4'>
         <div className='w-full bg-white p-6 rounded-lg shadow-lg'>
           <h1 className='text-2xl font-semibold text-center text-gray-800 mb-4'>
             Welcome! Where to next?
           </h1>
           <div className='text-center'>
             <button
-              className='px-4 py-2 rounded-md bg-nezeza_dark_blue text-white hover:bg-nezeza_yellow hover:text-black transition-colors duration-300'
+              className='px-4 py-2 rounded-md bg-vesoko_dark_blue text-white hover:bg-vesoko_yellow hover:text-black transition-colors duration-300'
               onClick={() => (window.location.href = '/')}
             >
               Browse Products
@@ -18,7 +17,7 @@ const BrowseOrSetupStore = () => {
           <p className='mt-4 text-center text-gray-600'>OR</p>
           <div className='text-center mt-4'>
             <button
-              className='px-4 py-2 rounded-md bg-nezeza_dark_blue text-white hover:bg-nezeza_yellow hover:text-black transition-colors duration-300'
+              className='px-4 py-2 rounded-md bg-vesoko_dark_blue text-white hover:bg-vesoko_yellow hover:text-black transition-colors duration-300'
               onClick={() => (window.location.href = '/setup-store')}
             >
               Setup Store

@@ -1,14 +1,14 @@
 import { XCircle } from 'lucide-react';
-import React from 'react'
+import React from 'react';
 
-interface ClearFiltersProps{
-    clearFiltersFunction: () => void;
+interface ClearFiltersProps {
+  clearFiltersFunction: () => void;
 }
 const ClearFilters = ({ clearFiltersFunction }: ClearFiltersProps) => {
   return (
     <button
       onClick={clearFiltersFunction}
-      className='p-1 text-red-500 hover:text-nezeza_red_600 focus:outline-none focus:ring focus:ring-red-300 rounded-md'
+      className='p-1 text-red-500 hover:text-vesoko_red_600 focus:outline-none focus:ring focus:ring-red-300 rounded-md'
       title='Clear Filters'
     >
       <XCircle className='w-5 h-5' aria-hidden='true' />
@@ -16,4 +16,4 @@ const ClearFilters = ({ clearFiltersFunction }: ClearFiltersProps) => {
   );
 };
 
-export default ClearFilters
+export default ClearFilters;

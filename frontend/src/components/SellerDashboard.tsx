@@ -62,16 +62,18 @@ const SellerDashboard = () => {
 
   return (
     <div>
-      <h2 className='flex text-2xl font-semibold text-center justify-center text-nezeza_dark_slate mb-4'>{`Welcome back, ${username}!`}</h2>
+      <h2 className='flex text-2xl font-semibold text-center justify-center text-vesoko_dark_slate mb-4'>{`Welcome back, ${username}!`}</h2>
       {!hasStripeActiveAccount && (
-        <div className='bg-nezeza_red_200 p-2 sm:p-4 rounded-xl shadow-lg text-center sm:mb-4'>
+        <div className='bg-vesoko_red_200 p-2 sm:p-4 rounded-xl shadow-lg text-center sm:mb-4'>
           <p className='text-lg'>
             You haven’t set up your Stripe account yet.{' '}
             <span
-              className='font-semibold text-nezeza_green_600 underline cursor-pointer'
+              className='font-semibold text-vesoko_green_600 underline cursor-pointer'
               onClick={async () => {
                 try {
-                  const response = await createStripeConnectAccount(userInfo.email);
+                  const response = await createStripeConnectAccount(
+                    userInfo.email
+                  );
                   if (response && response.url) {
                     window.open(response.url, '_blank');
                   } else {
@@ -102,14 +104,14 @@ const SellerDashboard = () => {
 
       <div className='p-4 sm:p-6 space-y-4 sm:space-y-6'>
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
+          <h4 className='text-xl text-center font-semibold text-vesoko_dark_blue mb-2'>
             Store Overview
           </h4>
-          {/* <LargeCard className='bg-nezeza_green_600 ' /> */}
+          {/* <LargeCard className='bg-vesoko_green_600 ' /> */}
           <div className='grid md:grid-cols-2 gap-6 '>
             <div className='p-2 sm:p-4 bg-yellow-100 rounded-xl text-center shadow-md'>
               <span className='text-lg font-medium'>Total Expenses</span>
-              <p className='text-xl font-bold text-nezeza_yellow_600'>
+              <p className='text-xl font-bold text-vesoko_yellow_600'>
                 $6, 000
               </p>
             </div>
@@ -122,20 +124,20 @@ const SellerDashboard = () => {
         </div>
         {storeType !== 'manufacturing' && (
           <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-            <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
+            <h4 className='text-xl text-center font-semibold text-vesoko_dark_blue mb-2'>
               My Orders Overview
             </h4>
             <SmallCards orderStats={myOrderStats} />
           </div>
         )}
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
+          <h4 className='text-xl text-center font-semibold text-vesoko_dark_blue mb-2'>
             Customer Orders Overview
           </h4>
           <SmallCards orderStats={customerOrderStats} />
         </div>
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
+          <h4 className='text-xl text-center font-semibold text-vesoko_dark_blue mb-2'>
             Payments Overview
           </h4>
           {/* <div className='p-4 bg-purple-100 rounded-xl text-center shadow-md'>
@@ -144,16 +146,16 @@ const SellerDashboard = () => {
           <div className='grid md:grid-cols-2 gap-4 '>
             <p className='font-bold'>
               Pending balance:{' '}
-              <span className='text-nezeza_yellow_600'>$2,000</span>
+              <span className='text-vesoko_yellow_600'>$2,000</span>
             </p>
             <div className='flex space-x-4'>
               <p className='font-bold'>
                 Available balance:{' '}
-                <span className='text-nezeza_green_600'>$1,000</span>
+                <span className='text-vesoko_green_600'>$1,000</span>
               </p>
               <Link
                 href=''
-                className='font-semibold text-nezeza_green_600 underline hover:cursor-pointer'
+                className='font-semibold text-vesoko_green_600 underline hover:cursor-pointer'
               >
                 Withdrawal
               </Link>
@@ -161,17 +163,17 @@ const SellerDashboard = () => {
           </div>
         </div>
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
+          <h4 className='text-xl text-center font-semibold text-vesoko_dark_blue mb-2'>
             Inventory Alerts
           </h4>
           <p className='text-lg font-medium'>
             Low quantity items:{' '}
-            <span className='font-bold text-nezeza_red_600'>4</span>
+            <span className='font-bold text-vesoko_red_600'>4</span>
           </p>
         </div>
 
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue mb-2'>
+          <h4 className='text-xl text-center font-semibold text-vesoko_dark_blue mb-2'>
             Store Notifications
           </h4>
           <ul className='space-y-2'>
@@ -184,7 +186,7 @@ const SellerDashboard = () => {
         </div>
 
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-xl text-center font-semibold text-nezeza_dark_blue'>
+          <h4 className='text-xl text-center font-semibold text-vesoko_dark_blue'>
             Weekly Sales Charts
           </h4>
           <div className='bg-gray-200 p-10 text-center rounded-xl shadow-md'>

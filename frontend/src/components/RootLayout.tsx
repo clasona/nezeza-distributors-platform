@@ -18,10 +18,10 @@ const RootLayout = ({ children }: Props) => {
 
   const [showSidebar, setShowSidebar] = useState(true); //TODO: make false
 
-  const [isLoading, setIsLoading] = useState(true); 
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const dataLoaded = !!userInfo && !!storeInfo; 
+    const dataLoaded = !!userInfo && !!storeInfo;
 
     if (dataLoaded) {
       setIsLoading(false);
@@ -40,7 +40,7 @@ const RootLayout = ({ children }: Props) => {
   // }
 
   return (
-    <div className='flex flex-col min-h-screen bg-nezeza_powder_blue'>
+    <div className='flex flex-col min-h-screen bg-vesoko_powder_blue'>
       <Header />
       {userInfo && (
         <HeaderBottom

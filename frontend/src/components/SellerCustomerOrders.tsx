@@ -34,10 +34,11 @@ const SellerCustomerOrders = () => {
   const [successMessage, setSuccessMessage] = useState<string>('');
 
   // For sorting and filtering
-const [statusFilter, setStatusFilter] = useState<{
-  value: string;
-  label: string;
-} | null>({ value: 'All', label: 'All' });  const [sortColumn, setSortColumn] = useState('');
+  const [statusFilter, setStatusFilter] = useState<{
+    value: string;
+    label: string;
+  } | null>({ value: 'All', label: 'All' });
+  const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -284,7 +285,7 @@ const [statusFilter, setStatusFilter] = useState<{
             buttonTitle='Refresh'
             buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
-            className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
+            className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
             onClick={async () => {
               await fetchData();
             }}
@@ -333,7 +334,7 @@ const [statusFilter, setStatusFilter] = useState<{
          Filter by dates (always on large, conditional on small) */}
         {/* <button
           onClick={toggleMoreFilters}
-          className='hidden sm:inline text-sm text-nezeza_dark_blue underline'
+          className='hidden sm:inline text-sm text-vesoko_dark_blue underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
         </button> */}
@@ -349,7 +350,7 @@ const [statusFilter, setStatusFilter] = useState<{
       <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
         <table
           id='customer-orders-table'
-          className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
+          className='w-full text-sm text-left rtl:text-right text-vesoko_gray_600 dark:text-gray-400'
         >
           <TableHead
             checked={selectedRows.length === filteredOrders.length}
@@ -389,7 +390,7 @@ const [statusFilter, setStatusFilter] = useState<{
                       // },
                       {
                         content: (
-                          <Link href='#' className='text-nezeza_dark_blue'>
+                          <Link href='#' className='text-vesoko_dark_blue'>
                             {order.products.length}
                           </Link>
                         ),
@@ -423,7 +424,7 @@ const [statusFilter, setStatusFilter] = useState<{
                         {order.products.map((item) => (
                           <div
                             key={item._id}
-                            className='flex items-center px-20 gap-4 border-b border-nezeza_light_blue pb-2'
+                            className='flex items-center px-20 gap-4 border-b border-vesoko_light_blue pb-2'
                           >
                             <img
                               src={item.image}
@@ -434,7 +435,7 @@ const [statusFilter, setStatusFilter] = useState<{
                               <p className='font-semibold'>
                                 {item.title || 'Title Missing'}
                               </p>
-                              <p className='text-nezeza_gray_600'>
+                              <p className='text-vesoko_gray_600'>
                                 {item.quantity} x ${item.price}
                               </p>
                               {/* <p>
@@ -442,7 +443,7 @@ const [statusFilter, setStatusFilter] = useState<{
                               <Link
                                 href='#'
                                 target='_blank'
-                                className='text-nezeza_dark_blue'
+                                className='text-vesoko_dark_blue'
                               >
                                 {item.sellerStoreId.name ||
                                   'Store Name Missing'}

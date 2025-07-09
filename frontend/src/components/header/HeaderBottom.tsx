@@ -16,7 +16,7 @@ const HeaderBottom = ({ showSidebar, setShowSidebar }: HeaderBottomProps) => {
   const dispatch = useDispatch();
 
   return (
-    <div className='w-full h-10 bg-nezeza_light_blue text-sm text-black px-4 flex items-center justify-center relative'>
+    <div className='w-full h-10 bg-vesoko_light_blue text-sm text-black px-4 flex items-center justify-center relative'>
       <p
         className='flex items-center gap-1 h-8 px-2 border border-transparent
         hover:border-white cursor-pointer duration-300 '

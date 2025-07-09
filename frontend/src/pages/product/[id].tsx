@@ -94,7 +94,7 @@ const ProductDetails = () => {
   return (
     <div className='max-w-6xl mx-auto px-2 md:px-6 py-6'>
       <button
-        className='px-4 py-1 bg-gray-300 text-nezeza_gray_600 rounded-md hover:bg-gray-400 mb-3'
+        className='px-4 py-1 bg-gray-300 text-vesoko_gray_600 rounded-md hover:bg-gray-400 mb-3'
         onClick={() => router.back()}
       >
         Back
@@ -142,7 +142,7 @@ const ProductDetails = () => {
                       key={idx}
                       className={`inline-block w-2 h-2 rounded-full ${
                         idx === activeImage
-                          ? 'bg-nezeza_green_600'
+                          ? 'bg-vesoko_green_600'
                           : 'bg-gray-300'
                       }`}
                     />
@@ -152,7 +152,7 @@ const ProductDetails = () => {
               {/* Out of stock badge */}
               {!product.availability && (
                 <div className='absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center'>
-                  <p className='bg-white p-2 text-nezeza_red_600 text-lg font-semibold rounded'>
+                  <p className='bg-white p-2 text-vesoko_red_600 text-lg font-semibold rounded'>
                     Out of Stock
                   </p>
                 </div>
@@ -223,13 +223,13 @@ const ProductDetails = () => {
             <div className='mt-6 flex flex-col sm:flex-row flex-wrap gap-4 w-full'>
               <Button
                 onClick={handleAddToCart}
-                className='bg-nezeza_dark_blue text-white flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-nezeza_green_600 transition w-full sm:w-auto'
+                className='bg-vesoko_dark_blue text-white flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-vesoko_green_600 transition w-full sm:w-auto'
               >
                 <ShoppingCart className='mr-2' /> Add to Cart
               </Button>
               <Button
                 onClick={handleAddToFavorite}
-                className='border border-gray-300 flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-gray-100 hover:text-nezeza_green_800 transition w-full sm:w-auto'
+                className='border border-gray-300 flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-gray-100 hover:text-vesoko_green_800 transition w-full sm:w-auto'
               >
                 <Heart className='mr-2 text-red-500' /> Add to Favorites
               </Button>
@@ -237,15 +237,15 @@ const ProductDetails = () => {
               <div className='w-full sm:w-auto'>
                 <Button
                   onClick={() => handleBuyNow(product)}
-                  className={`flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 ${
-                    !userInfo ? 'pointer-events-none bg-nezeza_gray_600' : ''
+                  className={`flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 hover:text-white duration-300 ${
+                    !userInfo ? 'pointer-events-none bg-vesoko_gray_600' : ''
                   }`}
                 >
                   Buy Now
                 </Button>
 
                 {!userInfo && (
-                  <p className='text-xs mt-1 text-nezeza_red_600 font-semibold animate-bounce'>
+                  <p className='text-xs mt-1 text-vesoko_red_600 font-semibold animate-bounce'>
                     Please Login to buy now!
                   </p>
                 )}
@@ -276,7 +276,7 @@ const ProductDetails = () => {
             {/* See Reviews Link */}
             <button
               onClick={handleOpenReviewModal}
-              className='bg-transparent text-nezeza_dark_blue hover:underline p-0 h-auto text-base'
+              className='bg-transparent text-vesoko_dark_blue hover:underline p-0 h-auto text-base'
             >
               Reviews ({product.numOfReviews || 0})
             </button>

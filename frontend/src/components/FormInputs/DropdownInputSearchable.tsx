@@ -50,7 +50,7 @@ const DropdownInputSearchable = ({
       register(name)?.onChange(event);
     }
   };
-  
+
   const minWidthPx = 200;
   const customStyles: StylesConfig<{ value: string; label: string }, false> = {
     control: (provided, state) => ({
@@ -82,7 +82,7 @@ const DropdownInputSearchable = ({
       {label && (
         <label className='block text-sm font-medium leading-6 text-gray-700'>
           {label}
-          {isRequired && <span className='text-nezeza_red_600'> *</span>}
+          {isRequired && <span className='text-vesoko_red_600'> *</span>}
         </label>
       )}
       <Select
@@ -96,7 +96,7 @@ const DropdownInputSearchable = ({
         name={name} // Pass name to the Select component
         ref={register ? register(name)?.ref : null} // Register the ref
         onBlur={register ? register(name)?.onBlur : undefined} // Handle blur
-        className='border border-gray-300 rounded-md shadow-sm focus:border-nezeza_green_600 focus:ring-nezeza_green_600 focus:ring-1 text-sm font-inter'
+        className='border border-gray-300 rounded-md shadow-sm focus:border-vesoko_green_600 focus:ring-vesoko_green_600 focus:ring-1 text-sm font-inter'
       />
       {errors?.[name] && (
         <p className='mt-1 text-sm text-red-500'>{label} is required</p>

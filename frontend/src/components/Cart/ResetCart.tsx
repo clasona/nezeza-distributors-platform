@@ -25,7 +25,7 @@ const ResetCart = () => {
     //   dispatch(resetCart());
     // }
   };
-  
+
   return (
     <div>
       <button
@@ -36,7 +36,7 @@ const ResetCart = () => {
       </button>
       <Link
         href='/'
-        className='ml-4 font-semibold text-nezeza_dark_blue rounded-lg hover:underline'
+        className='ml-4 font-semibold text-vesoko_dark_blue rounded-lg hover:underline'
       >
         Continue shopping
       </Link>

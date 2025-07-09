@@ -1,15 +1,42 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  reactStrictMode: true, //causes the components to run twice, read more: https://stackoverflow.com/questions/60618844/react-hooks-useeffect-is-called-twice-even-if-an-empty-array-is-used-as-an-ar
-  // add any domains/routes that we should allow images to be fetched from
+  reactStrictMode: true,
   images: {
-    domains: [
-      'fakestoreapi.com',
-      'dl.airtable.com',
-      'nezeza-products.s3.us-east-2.amazonaws.com',
-      'res.cloudinary.com',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'fakestoreapi.com',
+        port: '', // Leave empty if no specific port
+        pathname: '/**', // Allows any path on this hostname
+      },
+      {
+        protocol: 'https',
+        hostname: 'dl.airtable.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'nezeza-products.s3.us-east-2.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
+      },
+      // If you have a backend API that serves images, add its domain here too
+      // For example, if your backend serves images from api.vizpac.com/uploads
+      // {
+      //   protocol: 'https',
+      //   hostname: 'api.vizpac.com',
+      //   port: '',
+      //   pathname: '/**',
+      // },
     ],
   },
 };

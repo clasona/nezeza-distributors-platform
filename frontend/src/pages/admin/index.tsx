@@ -28,8 +28,8 @@ const AdminLayout = ({ children }: PropsWithChildren<{}>) => {
         <main
           className={`${
             showSidebar
-              ? 'ml-60 p-8 bg-slate-300 dark:bg-slate-900 text-nezeza_light_slate min-h-screen'
-              : 'p-8 bg-slate-300 dark:bg-slate-900 text-nezeza_light_slate min-h-screen'
+              ? 'ml-60 p-8 bg-slate-300 dark:bg-slate-900 text-vesoko_light_slate min-h-screen'
+              : 'p-8 bg-slate-300 dark:bg-slate-900 text-vesoko_light_slate min-h-screen'
           }`}
         >
           {children}

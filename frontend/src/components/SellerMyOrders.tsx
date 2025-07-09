@@ -343,7 +343,7 @@ const SellerMyOrders = () => {
             buttonTitle='Refresh'
             buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
-            className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
+            className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
             onClick={async () => {
               await fetchData();
             }}
@@ -394,7 +394,7 @@ const SellerMyOrders = () => {
          Filter by dates (always on large, conditional on small) */}
         {/* <button
           onClick={toggleMoreFilters}
-          className='hidden sm:inline text-sm text-nezeza_dark_blue underline'
+          className='hidden sm:inline text-sm text-vesoko_dark_blue underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
         </button> */}
@@ -410,7 +410,7 @@ const SellerMyOrders = () => {
       <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
         <table
           id='my-orders-table'
-          className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
+          className='w-full text-sm text-left rtl:text-right text-vesoko_gray_600 dark:text-gray-400'
         >
           <TableHead
             checked={selectedRows.length === filteredOrders.length}
@@ -447,7 +447,7 @@ const SellerMyOrders = () => {
                       // { content: '' },
                       {
                         content: (
-                          <Link href='#' className='text-nezeza_dark_blue'>
+                          <Link href='#' className='text-vesoko_dark_blue'>
                             {order.orderItems.length}{' '}
                           </Link>
                         ),
@@ -490,7 +490,7 @@ const SellerMyOrders = () => {
                         {order.orderItems.map((item) => (
                           <div
                             key={item._id}
-                            className='flex items-center px-20 gap-4 border-b border-nezeza_light_blue pb-2'
+                            className='flex items-center px-20 gap-4 border-b border-vesoko_light_blue pb-2'
                           >
                             <img
                               src={item.image}
@@ -501,7 +501,7 @@ const SellerMyOrders = () => {
                               <p className='font-semibold'>
                                 {item.product.title || 'Title Missing'}
                               </p>
-                              <p className='text-nezeza_gray_600'>
+                              <p className='text-vesoko_gray_600'>
                                 {item.quantity} x ${item.price}
                               </p>
                               <p>
@@ -509,7 +509,7 @@ const SellerMyOrders = () => {
                                 <Link
                                   href='#'
                                   target='_blank'
-                                  className='text-nezeza_dark_blue'
+                                  className='text-vesoko_dark_blue'
                                 >
                                   {item.sellerStoreId.name ||
                                     'Store Name Missing'}
@@ -525,7 +525,7 @@ const SellerMyOrders = () => {
                               <Button
                                 buttonTitle='Update Product'
                                 icon={RotateCw}
-                                className='px-2 py-1 outline text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
+                                className='px-2 py-1 outline text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
                                 onClick={async () => {
                                   getOrderStatus(order._id).then((status) => {
                                     if (status) {
@@ -565,7 +565,7 @@ const SellerMyOrders = () => {
                               <Button
                                 buttonTitle='Create New Product'
                                 icon={Plus}
-                                className='px-2 py-1 outline text-nezeza_green_600 hover:text-white hover:bg-nezeza_green_600'
+                                className='px-2 py-1 outline text-vesoko_green_600 hover:text-white hover:bg-vesoko_green_600'
                                 onClick={() => {
                                   getOrderStatus(order._id).then((status) => {
                                     if (status) {

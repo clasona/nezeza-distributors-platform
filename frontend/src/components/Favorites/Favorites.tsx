@@ -9,7 +9,7 @@ interface FavoritesProps {
 }
 const Favorites = ({ productData }: FavoritesProps) => {
   return (
-    <div className='flex items-center justify-center rounded-lg bg-nezeza_dark_blue text-white w-24'>
+    <div className='flex items-center justify-center rounded-lg bg-vesoko_dark_blue text-white w-24'>
       <Link
         href={'/favorites'}
         className='flex items-center px-2  border
@@ -21,7 +21,7 @@ const Favorites = ({ productData }: FavoritesProps) => {
           alt='favoritesImg'
         />
         <p className='text-xs font-semibold mt-3'>Favorites</p>
-        <span className='absolute text-nezeza_yellow text-sm -top-0 left-[29px] font-bold'>
+        <span className='absolute text-vesoko_yellow text-sm -top-0 left-[29px] font-bold'>
           {productData ? productData.length : 0}
         </span>
       </Link>

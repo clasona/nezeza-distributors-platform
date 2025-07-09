@@ -34,7 +34,7 @@ const TextAreaInput = ({
         className='block text-sm font-medium leading-6 text-gray-700'
       >
         {label}
-        {isRequired && <span className='text-nezeza_red_600'> *</span>}
+        {isRequired && <span className='text-vesoko_red_600'> *</span>}
       </label>
       <div>
         <textarea
@@ -44,13 +44,13 @@ const TextAreaInput = ({
           rows={2}
           defaultValue={defaultValue}
           autoComplete={name}
-          className={`block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-nezeza_green_600 ${
-            errors[name] && 'border-nezeza_red_600'
-          } ${errors[name] && 'text-nezeza_red_600'}`}
+          className={`block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:border-vesoko_green_600 ${
+            errors[name] && 'border-vesoko_red_600'
+          } ${errors[name] && 'text-vesoko_red_600'}`}
           placeholder={`Enter the ${label.toLowerCase()}`}
         />
         {errors[name] && (
-          <span className='text-sm text-nezeza_red_600'>
+          <span className='text-sm text-vesoko_red_600'>
             {label} is required
           </span>
         )}

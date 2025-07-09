@@ -72,7 +72,7 @@ const TopNavbar = ({
 
   return (
     <div
-      className={`flex items-center justify-between bg-nezeza_light_blue dark:bg-slate-800 text-nezeza_dark_slate dark:text-nezeza_light_slate h-20 px-8 py-4 fixed top-0 w-full z-50 ${
+      className={`flex items-center justify-between bg-vesoko_light_blue dark:bg-slate-800 text-vesoko_dark_slate dark:text-vesoko_light_slate h-20 px-8 py-4 fixed top-0 w-full z-50 ${
         showSidebar ? 'sm:ml-60 sm:pr-[20rem]' : ''
       }`}
     >
@@ -82,25 +82,25 @@ const TopNavbar = ({
       >
         <GoSidebarCollapse />
       </button>
-      <h2 className='text-2xl font-bold text-center text-nezeza_dark_blue'>
+      <h2 className='text-2xl font-bold text-center text-vesoko_dark_blue'>
         {storeName}
       </h2>
 
       <div className='flex items-center space-x-3'>
         <button>
           {/* <ThemeSwitcher /> */}
-          {/* <MdOutlineLightMode className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate '></MdOutlineLightMode> */}
+          {/* <MdOutlineLightMode className='text-2xl text-vesoko_dark_slate group-hover:text-vesoko_dark_slate '></MdOutlineLightMode> */}
         </button>
         <DropdownMenu>
           <DropdownMenuTrigger>
             <button
               type='button'
-              className='relative inline-flex items-center p-3 text-sm font-medium text-center text-nezeza_dark_slate bg-transparent rounded-lg'
+              className='relative inline-flex items-center p-3 text-sm font-medium text-center text-vesoko_dark_slate bg-transparent rounded-lg'
             >
-              {/* <MdOutlineNotifications className='text-2xl text-nezeza_dark_slate group-hover:text-nezeza_dark_slate '></MdOutlineNotifications> */}
+              {/* <MdOutlineNotifications className='text-2xl text-vesoko_dark_slate group-hover:text-vesoko_dark_slate '></MdOutlineNotifications> */}
               <Bell />
               <span className='sr-only'>Notifications</span>
-              <div className='absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-nezeza_red_600 border-2  rounded-full -top-0 end-6 dark:border-gray-900'>
+              <div className='absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-vesoko_red_600 border-2  rounded-full -top-0 end-6 dark:border-gray-900'>
                 {unreadCount}
               </div>
             </button>

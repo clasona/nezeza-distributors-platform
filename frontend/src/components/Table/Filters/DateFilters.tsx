@@ -26,16 +26,16 @@ const DateFilters: React.FC<DateFiltersProps> = ({
           id='start-date'
           value={startDate}
           onChange={(e) => onStartDateChange(e.target.value)}
-          className='sm:py-2 sm:px-2 text-xs sm:text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-nezeza_light_blue focus:border-nezeza_light_blue'
+          className='sm:py-2 sm:px-2 text-xs sm:text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-vesoko_light_blue focus:border-vesoko_light_blue'
           placeholder='Start Date'
         />
-        <span className='text-nezeza_gray_600'>to</span>
+        <span className='text-vesoko_gray_600'>to</span>
         <input
           type='date'
           id='end-date'
           value={endDate}
           onChange={(e) => onEndDateChange(e.target.value)}
-          className='sm:py-2 sm:px-2 text-xs sm:text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-nezeza_light_blue focus:border-nezeza_light_blue'
+          className='sm:py-2 sm:px-2 text-xs sm:text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-vesoko_light_blue focus:border-vesoko_light_blue'
           placeholder='End Date'
         />
       </div>

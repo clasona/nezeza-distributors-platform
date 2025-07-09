@@ -95,7 +95,7 @@ const BuyQuantityModal: React.FC<BuyQuantityModalProps> = ({
             buttonTitle='Confirm'
             onClick={handleConfirm}
             disabled={quantity < 1 || quantity > maxQuantity}
-            className='px-4 py-2 bg-nezeza_dark_blue text-white rounded-md hover:bg-nezeza_dark_blue_2'
+            className='px-4 py-2 bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_dark_blue_2'
           />
         </div>
       </div>

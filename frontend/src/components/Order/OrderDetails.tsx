@@ -14,14 +14,14 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
       <div className='flex justify-between'>
         <p className='text-l font-semibold'>
           Order #{' '}
-          <span className='font-bold text-nezeza_dark_blue'>{order._id}</span>
+          <span className='font-bold text-vesoko_dark_blue'>{order._id}</span>
         </p>
         <p className='text-l font-semibold'>
           Status: <FormattedStatus status={order.fulfillmentStatus} />
         </p>
         <p className='text-l font-semibold'>
           Date:{' '}
-          <span className='font-bold text-nezeza_dark_blue'>
+          <span className='font-bold text-vesoko_dark_blue'>
             {formatDate(order.createdAt)}
           </span>
         </p>

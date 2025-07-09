@@ -26,21 +26,27 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps, UserProps } from '../../../type';
-import logo from '../../images/logo.jpg';
+import logo from '../../images/soko-logo.png';
 import { LogoutButton } from '../LogoutButton';
-import SearchField from '../Table/SearchField';
+import SearchField2 from '../header/SearchField2';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
 
-// import { SessionProvider } from "next-auth/react";
+interface HeaderProps {
+  onSearchChange?: (query: string) => void;
+  searchQuery?: string;
+}
 
-const Header = () => {
+const Header = ({
+  onSearchChange = () => {},
+  searchQuery = '',
+}: HeaderProps) => {
   const { data: session } = useSession();
   const { cartItemsData, favoritesItemsData, userInfo, storeInfo } =
     useSelector((state: stateProps) => state.next);
   const [currentUserData, setCurrentUserData] = useState<UserProps | null>(
     null
   );
-  const [searchQuery, setSearchQuery] = useState('');
+  // const [searchQuery, setSearchQuery] = useState('');
 
   const dispatch = useDispatch();
 
@@ -99,12 +105,12 @@ const Header = () => {
   //   setFilteredOrders(flteredBySearching);
   // }, [searchQuery, statusFilter, myOrders]);
 
-  const handleSearchChange = (query: string) => {
-    setSearchQuery(query); // Update the search query
-  };
+  // const handleSearchChange = (query: string) => {
+  //   setSearchQuery(query); // Update the search query
+  // };
 
   return (
-    <div className='w-full h-20 bg-nezeza_dark_blue text-lightText sticky top-0 z-50'>
+    <div className='w-full h-20 bg-vesoko_dark_blue text-lightText sticky top-0 z-50'>
       <div className='h-full w-full mx-auto flex items-center justify-between gap-1 sm:gap-3 px-4'>
         {/* logo */}
         <Link
@@ -127,22 +133,12 @@ const Header = () => {
         </div> */}
         {/* searchbar */}
         <div className='flex-grow'>
-          <SearchField
-            searchFieldPlaceholder='nezeza products'
-            onSearchChange={handleSearchChange}
+          <SearchField2
+            searchFieldPlaceholder='vesoko products'
+            onSearchChange={onSearchChange}
+            value={searchQuery}
           />
         </div>
-
-        {/* <div className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-1 sm:px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[60%] sm:h-[70%] relative flex-shrink'>
-          <Heart className='w-22 h-22' />
-          <p className='text-white font-bold text-center sm:text-xs'>
-            Favorites
-          </p>
-
-          <span className='absolute right-2 top-2 w-4 h-4 border border-nezeza_yellow flex items-center justify-center top-[-1px] text-xs font-semibold text-nezeza_yellow'>
-            {favoritesItemsData ? favoritesItemsData.length : 0}
-          </span>
-        </div> */}
 
         {/* favoritesItemsData */}
         <Link
@@ -150,7 +146,7 @@ const Header = () => {
           className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
         >
           <Heart className='w-22 h-22 text-white' />
-          <span className='absolute text-nezeza_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-nezeza_dark_blue border border-nezeza_yellow'>
+          <span className='absolute text-vesoko_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-vesoko_dark_blue border border-vesoko_yellow'>
             {favoritesItemsData ? favoritesItemsData.length : 0}
           </span>
           <p className='text-white font-bold text-center sm:text-xs'>
@@ -163,7 +159,7 @@ const Header = () => {
           className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
         >
           <ShoppingCart className='w-22 h-22 text-white' />
-          <span className='absolute text-nezeza_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-nezeza_dark_blue border border-nezeza_yellow'>
+          <span className='absolute text-vesoko_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-vesoko_dark_blue border border-vesoko_yellow'>
             {cartItemsData ? cartItemsData.length : 0}
           </span>
           <p className='text-white font-bold text-center sm:text-xs'>Cart</p>

@@ -25,7 +25,7 @@ const CloudinaryImageUpload = ({
           {label}
         </label>
       )}
-      {/* <CldUploadWidget uploadPreset='nezeza-preset-unsigned-1'> */}
+      {/* <CldUploadWidget uploadPreset='vesoko-preset-unsigned-1'> */}
       <CldUploadWidget
         options={{
           resourceType: 'image', // Cloudinary supports 'raw' for files
@@ -51,7 +51,7 @@ const CloudinaryImageUpload = ({
             <Button
               buttonTitle='Upload Image'
               icon={Upload}
-              className='space-x-3 px-6 py-2 text-white bg-nezeza_dark_blue hover:bg-nezeza_green_800'
+              className='space-x-3 px-6 py-2 text-white bg-vesoko_dark_blue hover:bg-vesoko_green_800'
               onClick={handleOnClick}
             />
           );
@@ -60,7 +60,7 @@ const CloudinaryImageUpload = ({
 
       {resource && (
         <div>
-          <p className='mt-2 text-nezeza_green_600'>
+          <p className='mt-2 text-vesoko_green_600'>
             Image uploaded successfully
           </p>
           <img src={resource.secure_url} alt='Uploaded Image' width='100' />

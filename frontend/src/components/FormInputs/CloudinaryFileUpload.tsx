@@ -27,7 +27,7 @@ const CloudinaryFileUpload = ({
       )}
       <CldUploadWidget
         // signatureEndpoint='/api/cloudinary-sign-image/route' // Update to the endpoint for file signing
-        uploadPreset='nezeza-preset-unsigned-1'
+        uploadPreset='vesoko-preset-unsigned-1'
         options={{
           resourceType: 'raw', // Cloudinary supports 'raw' for files
           // TODO: Restrict to PDF files
@@ -53,7 +53,7 @@ const CloudinaryFileUpload = ({
             <Button
               buttonTitle='Upload File'
               icon={Upload}
-              className='space-x-3 px-6 py-2 text-white bg-nezeza_dark_blue hover:bg-nezeza_green_800'
+              className='space-x-3 px-6 py-2 text-white bg-vesoko_dark_blue hover:bg-vesoko_green_800'
               onClick={handleOnClick}
             />
           );
@@ -62,7 +62,7 @@ const CloudinaryFileUpload = ({
 
       {resource && (
         <div className='mt-2'>
-          <p className='text-nezeza_green_600'>
+          <p className='text-vesoko_green_600'>
             File uploaded successfully: {resource.original_filename}
           </p>
           <p>
@@ -70,7 +70,7 @@ const CloudinaryFileUpload = ({
               href={resource.secure_url}
               target='_blank'
               rel='noopener noreferrer'
-              className='text-nezeza_dark_blue underline'
+              className='text-vesoko_dark_blue underline'
             >
               Download File
             </a>

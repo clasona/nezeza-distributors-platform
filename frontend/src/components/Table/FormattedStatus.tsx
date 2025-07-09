@@ -10,7 +10,7 @@ const FormattedStatus = ({ status }: StatusProps) => {
     Fulfilled: 'bg-purple-100 text-purple-800',
     Shipped: 'bg-blue-100 text-blue-800',
     Delivered: 'bg-teal-100 text-teal-800',
-    Approved: 'bg-green-100 text-nezeza_green_800',
+    Approved: 'bg-green-100 text-vesoko_green_800',
     Canceled: 'bg-red-100 text-red-800',
     Declined: 'bg-red-100 text-red-800',
     Archived: 'bg-gray-100 text-gray-800',

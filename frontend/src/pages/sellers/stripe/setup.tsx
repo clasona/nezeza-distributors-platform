@@ -124,8 +124,8 @@ const StripeSetupPage = () => {
   }
 
   return (
-    <div className='w-full bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue rounded-lg p-4'>
+    <div className='w-full bg-vesoko_powder_blue min-h-screen flex items-center justify-center'>
+      <div className='bg-vesoko_light_blue rounded-lg p-4'>
         <div className='bg-white p-6 sm:p-8 rounded-lg shadow-xl text-center max-w-lg w-full'>
         <h1 className='text-2xl font-semibold mb-4'>
             Stripe Account Setup Required
@@ -133,7 +133,7 @@ const StripeSetupPage = () => {
 
           <p className='text-gray-700 mb-6'>
             Dear {userInfo?.firstName || 'Seller'},<br />
-            Welcome to Nezeza.
+            Welcome to VeSoko.
             <br />
             As a seller, you need to set up your Stripe account to start selling
             on the platform. This account will be used for you to receive and
@@ -144,7 +144,7 @@ const StripeSetupPage = () => {
             isLoading={isLoading}
             buttonTitle='Setup Stripe Account'
             loadingButtonTitle='Redirecting to Stripe...'
-            className='w-full text-center justify-center max-w-xs mx-auto py-3 bg-nezeza_dark_blue text-white rounded-md hover:bg-nezeza_dark_blue_2 transition-colors duration-300 text-lg font-semibold'
+            className='w-full text-center justify-center max-w-xs mx-auto py-3 bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_dark_blue_2 transition-colors duration-300 text-lg font-semibold'
             onClick={handleSetupStripe}
             disabled={isLoading}
           />

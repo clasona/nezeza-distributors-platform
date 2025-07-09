@@ -10,7 +10,7 @@ interface CartProps {
 }
 const Cart = ({ productData }: CartProps) => {
   return (
-    <div className='flex items-center justify-center rounded-lg bg-nezeza_dark_blue text-white w-24'>
+    <div className='flex items-center justify-center rounded-lg bg-vesoko_dark_blue text-white w-24'>
       <Link
         href={'/cart'}
         className='flex items-center px-2  border
@@ -23,7 +23,7 @@ const Cart = ({ productData }: CartProps) => {
           alt='cartImg'
         />
         <p className='text-xs font-semibold mt-3'>Cart</p>
-        <span className='absolute text-nezeza_yellow text-sm -top-0 left-[29px] font-bold'>
+        <span className='absolute text-vesoko_yellow text-sm -top-0 left-[29px] font-bold'>
           {productData ? productData.length : 0}
         </span>
       </Link>

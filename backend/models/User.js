@@ -6,13 +6,15 @@ const addressSchema = require('./Address'); // Assuming you have an Address sche
 const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: [true, 'Please provide name'],
+    required: [true, 'Please provide first name'],
     // minlength: 3,
     maxlength: 50,
   },
   lastName: {
     type: String,
-    required: [true, 'Please provide name'],
+    required: [function () {
+      return this.provider === 'credentials';
+    }, 'Please provide last name'],
     // minlength: 3,
     maxlength: 50,
     default: '',
@@ -29,7 +31,9 @@ const UserSchema = new mongoose.Schema({
 
   password: {
     type: String,
-    required: [true, 'Please provide password'],
+    required: [function () {
+      return this.provider === 'credentials';
+    }, 'Please provide password'],
     minlength: 6,
   },
   previousPasswords: {
@@ -99,6 +103,11 @@ const UserSchema = new mongoose.Schema({
   residenceAddress: {
     type: mongoose.Schema.ObjectId,
     ref: 'Address',
+  },
+  provider: {
+    type: String,
+    enum: ['credentials', 'google', 'facebook', 'apple'],
+    default: 'credentials',
   },
 });
 

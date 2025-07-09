@@ -67,16 +67,16 @@ const RegisterVerifyPage = () => {
     return (
       <div className='text-center'>
         An error occurred while trying to load the verify email page. Please
-        contact us at support@nezeza.com for assistance.
+        contact us at support@vesoko.com for assistance.
       </div>
     );
   }
 
   return (
-    <div className='w-full bg-nezeza_powder_blue min-h-screen flex items-center justify-center'>
-      <div className='bg-nezeza_light_blue p-4'>
+    <div className='w-full bg-vesoko_powder_blue min-h-screen flex items-center justify-center'>
+      <div className='bg-vesoko_light_blue p-4'>
         <div className='w-full max-w-md bg-white p-6 space-y-4 rounded-lg shadow-lg text-center flex flex-col'>
-          <h3 className='text-xl font-semibold text-nezeza_green_600'>
+          <h3 className='text-xl font-semibold text-vesoko_green_600'>
             Verify Your Email
           </h3>
           <p className='mt-4 text-gray-600'>
@@ -84,12 +84,12 @@ const RegisterVerifyPage = () => {
             check your inbox and follow the instructions to verify your email.
           </p>
           {errorMessage && (
-            <p className='mt-2 text-center text-nezeza_red_600'>
+            <p className='mt-2 text-center text-vesoko_red_600'>
               {errorMessage}
             </p>
           )}
           {resendMessage && (
-            <p className='mt-2 text-center text-nezeza_green_600'>
+            <p className='mt-2 text-center text-vesoko_green_600'>
               {resendMessage}
             </p>
           )}
@@ -103,7 +103,7 @@ const RegisterVerifyPage = () => {
           {isVerified !== null && (
             <button
               type='button'
-              className='mt-6 px-4 py-2 rounded-md bg-nezeza_dark_blue text-white hover:bg-nezeza_green_600 hover:text-white transition-colors duration-300'
+              className='mt-6 px-4 py-2 rounded-md bg-vesoko_dark_blue text-white hover:bg-vesoko_green_600 hover:text-white transition-colors duration-300'
               onClick={checkVerification}
               disabled={isLoading}
             >

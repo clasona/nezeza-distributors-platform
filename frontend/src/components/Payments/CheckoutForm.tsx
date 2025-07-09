@@ -3,7 +3,7 @@ import {
   AddressElement,
   PaymentElement,
   useElements,
-  useStripe
+  useStripe,
 } from '@stripe/react-stripe-js';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -80,7 +80,7 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
         onSubmit={handleSubmit}
         className='bg-white shadow-lg rounded-lg p-4 w-full max-w-md '
       >
-        <h2 className='text-lg text-center font-bold mb-4 text-nezeza_dark_blue'>
+        <h2 className='text-lg text-center font-bold mb-4 text-vesoko_dark_blue'>
           NEZEZA
         </h2>
         {/* <h2 className='text-lg font-semibold mb-4 text-gray-700'>Checkout</h2> */}
@@ -101,7 +101,7 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
             }}
           />
           {!cardComplete && (
-            <div className='flex text-center justify-center mt-4 text-nezeza_red_600 text-xs'>
+            <div className='flex text-center justify-center mt-4 text-vesoko_red_600 text-xs'>
               Please complete all payment details.
             </div>
           )}

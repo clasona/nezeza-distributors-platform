@@ -40,14 +40,15 @@ const SellerInventory = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductProps | null>(
     null
   );
-      const [showMoreFilters, setshowMoreFilters] = useState(false);
-      const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
+  const [showMoreFilters, setshowMoreFilters] = useState(false);
+  const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
   const [successMessage, setSuccessMessage] = useState<string>('');
 
   const [statusFilter, setStatusFilter] = useState<{
     value: string;
     label: string;
-  } | null>({ value: 'All', label: 'All' });  const [sortColumn, setSortColumn] = useState('');
+  } | null>({ value: 'All', label: 'All' });
+  const [sortColumn, setSortColumn] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -107,10 +108,10 @@ const SellerInventory = () => {
         .join(' ')
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-    //  const statusMatch =
-    //    statusFilter === null ||
-    //    (statusFilter.value === 'All' && statusFilter.label === 'All') ||
-    //    order.fulfillmentStatus === statusFilter.value;
+      //  const statusMatch =
+      //    statusFilter === null ||
+      //    (statusFilter.value === 'All' && statusFilter.label === 'All') ||
+      //    order.fulfillmentStatus === statusFilter.value;
       // return searchMatch && statusMatch;
       return searchMatch;
     });
@@ -289,7 +290,7 @@ const SellerInventory = () => {
             buttonTitle='Refresh'
             buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
-            className='text-nezeza_dark_blue hover:text-white hover:bg-nezeza_dark_blue'
+            className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
             onClick={async () => {
               await fetchData();
             }}
@@ -327,7 +328,7 @@ const SellerInventory = () => {
          Filter by dates (always on large, conditional on small) */}
         {/* <button
           onClick={toggleMoreFilters}
-          className='hidden sm:inline text-sm text-nezeza_dark_blue underline'
+          className='hidden sm:inline text-sm text-vesoko_dark_blue underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
         </button> */}
@@ -341,7 +342,7 @@ const SellerInventory = () => {
       <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
         <table
           id='inventory-table'
-          className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
+          className='w-full text-sm text-left rtl:text-right text-vesoko_gray_600 dark:text-gray-400'
         >
           <TableHead
             checked={selectedRows.length === filteredInventory.length}

@@ -30,15 +30,13 @@ import BuyQuantityModal from './Product/BuyQuantityModal';
 import ReviewsModal from './Reviews/ReviewsModal';
 import SuccessMessageModal from './SuccessMessageModal';
 
-const Products = () => {
-  const [products, setProducts] = useState<ProductProps[]>([]);
+const Products = ({ products }: { products: ProductProps[] }) => {
+  // const [products, setProducts] = useState<ProductProps[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const { storeInfo } = useSelector((state: stateProps) => state.next);
   const [isLoading, setIsLoading] = useState(false);
-  const { cartItemsData, userInfo } = useSelector(
-    (state: stateProps) => state.next
-  );
+  const { userInfo } = useSelector((state: stateProps) => state.next);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -70,29 +68,30 @@ const Products = () => {
     setExpandedProductId((prevId) => (prevId === productId ? null : productId));
   };
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    let productsData;
-    try {
-      if (storeInfo) {
-        if (storeInfo.storeType == 'wholesale') {
-          productsData = await getManufacturersProducts();
-        } else if (storeInfo.storeType == 'retail') {
-          productsData = await getWholesalersProducts();
-        }
-      } else {
-        productsData = await getRetailersProducts();
-      }
-      setProducts(productsData);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // const fetchData = async () => {
+  //   setIsLoading(true);
+  //   let productsData;
+  //   try {
+  //     if (storeInfo) {
+  //       if (storeInfo.storeType == 'wholesale') {
+  //         productsData = await getManufacturersProducts();
+  //       } else if (storeInfo.storeType == 'retail') {
+  //         productsData = await getWholesalersProducts();
+  //       }
+  //     } else {
+  //       productsData = await getRetailersProducts();
+  //     }
+  //     setProducts(productsData);
+  //   } catch (error) {
+  //     handleError(error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   const handleOpenReviewModal = (productId: string) => {
     setOpenReviewProductId(productId);
@@ -178,7 +177,6 @@ const Products = () => {
         addedToInventory: false,
         status: 'Active',
         cancelledQuantity: 0,
-        // Add any other properties that OrderItemsProps expects if missing
       };
 
       const itemsForPaymentIntent: any = [singleOrderItem];
@@ -266,7 +264,7 @@ const Products = () => {
   }
 
   return (
-    <div className='w-full px-2 sm:px-4 grid grid-cols-2 sm:grid-cols-4 gap-4 products-top'>
+    <div className='w-full px-2 sm:px-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 products-top'>
       {products.map((product: ProductProps) => {
         const imagesArr =
           Array.isArray(product.images) && product.images.length
@@ -279,14 +277,14 @@ const Products = () => {
         return (
           <div
             key={product._id}
-            className={`w-full bg-white text-black p-3 sm:p-3 border border-gray-300 rounded-lg group overflow-hidden hover:cursor-pointer `}
+            className={`w-full bg-white text-black p-2 xs:p-3 border border-gray-300 rounded-lg group overflow-hidden hover:cursor-pointer flex flex-col`}
           >
             <div className='w-full aspect-w-1 aspect-h-1 relative'>
               <div
                 onClick={() => {
                   router.push(`/product/${product._id}`);
                 }}
-                className='relative'
+                className='relative h-full'
               >
                 {/* Carousel */}
                 {imagesArr.length > 1 && (
@@ -304,7 +302,7 @@ const Products = () => {
                 )}
                 <Image
                   className='w-full h-full object-cover scale-90 hover:scale-100
-                          transition-transform duration-300'
+                          transition-transform duration-300 rounded-md'
                   src={imagesArr[currIndex]}
                   alt='productImg'
                   width={300}
@@ -332,7 +330,7 @@ const Products = () => {
                         key={idx}
                         className={`inline-block w-2 h-2 rounded-full ${
                           idx === currIndex
-                            ? 'bg-nezeza_green_600'
+                            ? 'bg-vesoko_green_600'
                             : 'bg-gray-300'
                         }`}
                       />
@@ -341,14 +339,14 @@ const Products = () => {
                 )}
                 {product.quantity < 1 && (
                   <div className='absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center'>
-                    <p className='bg-white p-2 text-nezeza_red_600 text-lg font-semibold'>
+                    <p className='bg-white p-2 text-vesoko_red_600 text-lg font-semibold'>
                       Out of Stock
                     </p>
                   </div>
                 )}
               </div>
-              {/* Action Buttons: right-bottom, below right chevron */}
-              <div className='absolute flex flex-col gap-1 right-2 bottom-2 sm:right-4 sm:bottom-4 z-20'>
+              {/* Action Buttons: right-bottom, horizontal on mobile, vertical on desktop */}
+              <div className='absolute flex flex-row sm:flex-col gap-1 right-2 bottom-2 sm:right-4 sm:bottom-4 z-20'>
                 {!(product.quantity < 1) && (
                   <Button
                     onClick={() => handleAddToCart(product)}
@@ -356,8 +354,8 @@ const Products = () => {
                     buttonTitle=''
                     loadingButtonTitle=''
                     icon={ShoppingCart}
-                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-md flex items-center justify-center
-                      text-lg sm:text-xl bg-white border border-gray-400 shadow hover:bg-nezeza_green_600 hover:text-white cursor-pointer duration-300
+                    className={`w-8 h-8 sm:w-12 sm:h-12 rounded-md flex items-center justify-center
+                      text-lg sm:text-xl bg-white border border-gray-400 shadow hover:bg-vesoko_green_600 hover:text-white cursor-pointer duration-300
                       ${
                         product.quantity < 1
                           ? 'cursor-not-allowed opacity-50'
@@ -377,8 +375,8 @@ const Products = () => {
                   buttonTitle=''
                   loadingButtonTitle=''
                   icon={Heart}
-                  className='w-10 h-10 sm:w-12 sm:h-12 rounded-md flex items-center justify-center text-lg sm:text-xl
-                    bg-white border border-gray-400 shadow hover:bg-nezeza_green_600 hover:text-white cursor-pointer duration-300'
+                  className='w-8 h-8 sm:w-12 sm:h-12 rounded-md flex items-center justify-center text-lg sm:text-xl
+                    bg-white border border-gray-400 shadow hover:bg-vesoko_green_600 hover:text-white cursor-pointer duration-300'
                   disabled={
                     addingToCartProductId === product._id ||
                     addingToFavoritesProductId === product._id ||
@@ -387,11 +385,11 @@ const Products = () => {
                 />
               </div>
             </div>
-            <hr />
-            <div className='px-2 py-1 flex flex-col gap-1'>
+            <hr className='my-2' />
+            <div className='px-1 xs:px-2 py-1 flex-1 flex flex-col gap-1'>
               <div>
                 <div className='flex justify-between w-full'>
-                  <p className='text-xs text-nezeza_gray_600 tracking-wide'>
+                  <p className='text-xs text-vesoko_gray_600 tracking-wide'>
                     {product.category}
                   </p>
                 </div>
@@ -415,7 +413,7 @@ const Products = () => {
                     ))}
                     <button
                       onClick={() => handleOpenReviewModal(product._id)}
-                      className='bg-transparent text-nezeza_dark_blue hover:underline p-0 h-auto text-base'
+                      className='bg-transparent text-vesoko_dark_blue hover:underline p-0 h-auto text-base'
                     >
                       ({product.numOfReviews || 0})
                     </button>
@@ -427,7 +425,7 @@ const Products = () => {
                   }}
                 >
                   <p className='flex items-center'>
-                    <span className='text-nezeza_dark_blue font-bold'>
+                    <span className='text-vesoko_dark_blue font-bold'>
                       <FormattedPrice amount={product.price} />
                     </span>
                   </p>
@@ -485,7 +483,7 @@ const Products = () => {
                     ? 'Adding to Favorites...'
                     : 'Adding to Cart...'
                 }
-                className='flex items-center justify-center h-8 sm:h-10 text-sm sm:text-base font-medium bg-nezeza_dark_blue text-white rounded-md hover:bg-nezeza_dark_blue_2
+                className='flex items-center justify-center h-8 sm:h-10 text-sm sm:text-base font-medium bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_dark_blue_2
                            duration-300 mt-2 w-full'
                 disabled={
                   addingToCartProductId === product._id ||
@@ -500,7 +498,7 @@ const Products = () => {
                   isLoading={buyingNowProductId === product._id}
                   buttonTitle='Buy Now'
                   loadingButtonTitle='Processing...'
-                  className='flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 mt-2 w-full'
+                  className='flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 hover:text-white duration-300 mt-2 w-full'
                   disabled={
                     addingToCartProductId === product._id ||
                     addingToFavoritesProductId === product._id ||
@@ -510,7 +508,7 @@ const Products = () => {
               )}
               {product.quantity < 1 && (
                 <div className='text-xs text-center'>
-                  <span className='text-nezeza_red_600'>
+                  <span className='text-vesoko_red_600'>
                     (notified when available)
                   </span>
                 </div>

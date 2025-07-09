@@ -1,6 +1,6 @@
 'use client';
 
-import logo from '@/images/logo.jpg';
+import logo from '@/images/soko-logo.png';
 import {
   Book,
   CircleDollarSign,
@@ -10,7 +10,7 @@ import {
   Store,
   Truck,
   UserRoundPen,
-  UsersRound
+  UsersRound,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -29,7 +29,7 @@ const SideNavbar = ({
   basePath,
 }: SideNavbarProps) => {
   const pathname = usePathname();
- 
+
   const sidebarLinks = [
     {
       title: 'Dashboard',
@@ -90,8 +90,8 @@ const SideNavbar = ({
       className={`${
         // TODO: add some styling for the sidebar side scroll at some point?
         showSidebar
-          ? 'bg-nezeza_dark_blue space-y-6 w-60 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
-          : 'bg-nezeza_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+          ? 'bg-vesoko_dark_blue space-y-6 w-60 h-screen text-slate-50 fixed left-0 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+          : 'bg-vesoko_dark_blue space-y-6 w-16 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
       } hidden sm:block`}
     >
       <div className=' px-6 py-2'>
@@ -108,7 +108,7 @@ const SideNavbar = ({
             // target={item.target}
             className={`${
               item.href == pathname
-                ? 'flex items-center space-x-3 px-6 py-1 bg-nezeza_green_600 rounded-md border-l-4 border-white'
+                ? 'flex items-center space-x-3 px-6 py-1 bg-vesoko_green_600 rounded-md border-l-4 border-white'
                 : 'flex items-center space-x-3 px-6 py-1 rounded-md'
             }`}
           >
@@ -119,7 +119,7 @@ const SideNavbar = ({
         ))}
 
         <div className='flex px-6 py-8'>
-          <LogoutButton className='py-2'/>
+          <LogoutButton className='py-2' />
         </div>
       </div>
     </div>

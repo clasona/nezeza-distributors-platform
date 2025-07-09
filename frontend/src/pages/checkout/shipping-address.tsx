@@ -116,7 +116,7 @@ const CheckoutAddressPage = () => {
 
   return (
     <RootLayout>
-      <div className='bg-nezeza_powder_blue min-h-[calc(100vh-100px)] p-2 sm:p-4 md:p-8 flex items-center justify-center'>
+      <div className='bg-vesoko_powder_blue min-h-[calc(100vh-100px)] p-2 sm:p-4 md:p-8 flex items-center justify-center'>
         <div className='bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-xl max-w-2xl w-full'>
           <PageHeader heading='Enter Shipping Address' />
 
@@ -185,7 +185,7 @@ const CheckoutAddressPage = () => {
             <SubmitButton
               isLoading={isSubmitting}
               buttonTitle='Continue to Review'
-              className='w-full py-3 mt-6 bg-nezeza_green_600 text-white rounded-md hover:bg-nezeza_green_800 transition-colors duration-300 text-lg font-semibold'
+              className='w-full py-3 mt-6 bg-vesoko_green_600 text-white rounded-md hover:bg-vesoko_green_800 transition-colors duration-300 text-lg font-semibold'
             />
           </form>
 

@@ -283,7 +283,7 @@
 //       <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
 //         <table
 //           id='inventory-table'
-//           className='w-full text-sm text-left rtl:text-right text-nezeza_gray_600 dark:text-gray-400'
+//           className='w-full text-sm text-left rtl:text-right text-vesoko_gray_600 dark:text-gray-400'
 //         >
 //           <TableHead columns={tableColumns} handleSort={handleSort} />
 //           <tbody>

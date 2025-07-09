@@ -45,7 +45,7 @@ const CartProduct = ({ item }: CartProductProps) => {
       />
       <div className='flex flex-col sm:flex-row items-start sm:items-center px-2 gap-2 sm:gap-4 w-full'>
         <div className='flex flex-col gap-1 w-full'>
-          <p className='text-lg font-semibold text-nezeza_dark_blue'>
+          <p className='text-lg font-semibold text-vesoko_dark_blue'>
             {item.title}
           </p>
           <p className='text-sm text-gray-600'>
@@ -57,19 +57,19 @@ const CartProduct = ({ item }: CartProductProps) => {
           {product.description.length > 100 && (
             <button
               onClick={toggleDescription}
-              className='text-sm text-nezeza_dark_blue hover:underline'
+              className='text-sm text-vesoko_dark_blue hover:underline'
             >
               {showFullDescription ? 'Show Less' : 'Read More'}
             </button>
           )}{' '}
           <p className='text-sm text-gray-600'>
             Unit Price{' '}
-            <span className='font-semibold text-nezeza_dark_blue'>
+            <span className='font-semibold text-vesoko_dark_blue'>
               <FormattedPrice amount={item.price} />
             </span>
           </p>
           {isOutOfStock ? (
-            <p className='text-nezeza_red_600 font-bold'>Out of Stock</p>
+            <p className='text-vesoko_red_600 font-bold'>Out of Stock</p>
           ) : (
             <div className='flex flex-col sm:flex-row items-center gap-2 sm:gap-6 mt-2'>
               <div className='flex items-center justify-between border border-gray-300 px-3 py-1 rounded-full sm:w-28 w-full shadow-md shadow-gray-300'>
@@ -122,8 +122,8 @@ const CartProduct = ({ item }: CartProductProps) => {
                   setSuccessMessage('Moved to favorites successfully!');
                   dispatch(deleteCartProduct(product._id));
                 }}
-                className='flex items-center gap-2 h-6 sm:h-8 px-3 sm:px-4 text-xs sm:text-sm font-medium bg-nezeza_dark_blue text-white rounded-md 
-               hover:bg-nezeza_green_600 transition duration-300'
+                className='flex items-center gap-2 h-6 sm:h-8 px-3 sm:px-4 text-xs sm:text-sm font-medium bg-vesoko_dark_blue text-white rounded-md 
+               hover:bg-vesoko_green_600 transition duration-300'
                 aria-label='Move to Favorites'
               >
                 <Heart className='h-4 w-4' />
@@ -138,7 +138,7 @@ const CartProduct = ({ item }: CartProductProps) => {
             </div>
           )}
         </div>
-        <div className='text-lg font-semibold text-nezeza_dark_blue'>
+        <div className='text-lg font-semibold text-vesoko_dark_blue'>
           <FormattedPrice amount={item.price * item.quantity} />
         </div>
       </div>

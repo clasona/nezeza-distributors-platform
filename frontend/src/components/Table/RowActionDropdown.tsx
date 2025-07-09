@@ -31,7 +31,7 @@ const RowActionDropdown = ({ actions }: RowActionDropdownProps) => {
 
       <div
         id='dropdownMenuButton2'
-        className={`z-10 absolute right-0 mt-2 w-48 bg-nezeza_light_blue rounded-md shadow-lg ${
+        className={`z-10 absolute right-0 mt-2 w-48 bg-vesoko_light_blue rounded-md shadow-lg ${
           isOpen ? 'block' : 'hidden'
         }`}
       >

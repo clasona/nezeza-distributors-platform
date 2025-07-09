@@ -46,7 +46,7 @@ const CancelItemModal: React.FC<CancelItemModalProps> = ({
     <div className='fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50'>
       <div className='bg-white p-6 rounded-lg shadow-md w-80'>
         <h3 className='text-lg font-semibold mb-4'>{title}</h3>
-        { cancelledQuantity > 0 && (
+        {cancelledQuantity > 0 && (
           <div className='mb-3 bg-yellow-50 border-l-4 border-yellow-400 p-2 text-yellow-800 text-sm rounded'>
             You’ve already cancelled <strong>{cancelledQuantity}</strong>{' '}
             {cancelledQuantity === 1 ? 'item' : 'items'} from this order item.
@@ -86,7 +86,7 @@ const CancelItemModal: React.FC<CancelItemModalProps> = ({
             Cancel
           </button>
           <button
-            className='px-4 py-1 bg-nezeza_dark_blue text-white rounded hover:bg-nezeza_dark_blue_2 cursor-pointer transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
+            className='px-4 py-1 bg-vesoko_dark_blue text-white rounded hover:bg-vesoko_dark_blue_2 cursor-pointer transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
             onClick={() => onSubmit(quantity, reason)}
             disabled={
               quantity < 1 ||

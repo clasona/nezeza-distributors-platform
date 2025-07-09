@@ -1,4 +1,9 @@
-import { removeStore, removeUser, resetCart, resetFavorites } from '@/redux/nextSlice';
+import {
+  removeStore,
+  removeUser,
+  resetCart,
+  resetFavorites,
+} from '@/redux/nextSlice';
 import { updateCart } from '@/utils/cart/updateCart';
 import { LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
@@ -29,6 +34,8 @@ export const LogoutButton = ({
     setLogoutError('');
 
     try {
+      console.log('Logging out user:', userInfo?._id);
+      console.log('Cart items data:', cartItemsData);
       await updateCart(cartItemsData, userInfo?._id); // Ensure cart is updated first
       await updateFavorites(favoritesItemsData, userInfo?._id);
       // Clear Redux state
@@ -50,7 +57,7 @@ export const LogoutButton = ({
   return (
     <div>
       <button
-        className={`${className} flex items-center space-x-2 rounded-lg px-2 py-1 text-white bg-nezeza_red_600 hover:bg-nezeza_red_700`}
+        className={`${className} flex items-center space-x-2 rounded-lg px-2 py-1 text-white bg-vesoko_red_600 hover:bg-vesoko_red_700`}
         onClick={handleLogOutClick}
       >
         <LogOut />
@@ -61,7 +68,7 @@ export const LogoutButton = ({
 
       {isLoggingOut && (
         <div className='fixed flex top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 justify-center items-center z-50'>
-          <div className='text-nezeza_red_600 bg-nezeza_light_blue p-6 rounded-lg shadow-md'>
+          <div className='text-vesoko_red_600 bg-vesoko_light_blue p-6 rounded-lg shadow-md'>
             <p>Logging you out...</p>
             {logoutError && <p className='text-red-500 mt-2'>{logoutError}</p>}
           </div>

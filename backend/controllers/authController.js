@@ -74,7 +74,8 @@ const register = async (req, res, next) => {
       roles: roles.map((role) => role._id), // Assign multiple role IDs
       verificationToken,
       previousPasswords: [], // Initialize previousPasswords array
-    });
+      provider: 'credentials', 
+    }); 
 
     // Add the current password to the previousPasswords array
     user.previousPasswords.push(user.password);
@@ -109,6 +110,72 @@ const register = async (req, res, next) => {
   }
 };
 
+const registerGoogle = async (req, res, next) => {
+  const { firstName, lastName, email, storeType } = req.body;
+  try {
+    const emailAlreadyExists = await User.findOne({ email });
+    if (emailAlreadyExists) {
+      throw new CustomError.BadRequestError('Email already exists');
+    }
+
+    let roleNames = [];
+
+    switch (storeType) {
+      case 'admin':
+        roleNames[0] = 'admin';
+        break;
+      case 'manufacturing':
+        roleNames[0] = 'owner';
+        roleNames[1] = 'manufacturer';
+        break;
+      case 'wholesale':
+        roleNames[0] = 'owner';
+        roleNames[1] = 'wholesaler';
+        break;
+      case 'retail':
+        roleNames[0] = 'owner';
+        roleNames[1] = 'retailer';
+        break;
+      case 'retailer':
+        roleNames[0] = 'owner';
+        roleNames[1] = 'retailer';
+        break;
+      default:
+      case 'user':
+      case undefined:
+        roleNames[0] = 'customer';
+    }
+
+    let roles = await Role.find({ name: { $in: roleNames } });
+
+    if (!roles || roles.length === 0) {
+      return res
+        .status(StatusCodes.OK)
+        .json({ message: 'Please provide valid role(s)' });
+    }
+
+    // No password/verificationToken for Google registration
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      roles: roles.map((role) => role._id), // Assign multiple role IDs
+      isVerified: true, // Mark as verified
+      provider: 'google', // Track that this user registered with Google
+      previousPasswords: [], // No password for Google user
+    });
+
+    res.locals.user = user;
+
+    if (!req.skipResponse) {
+      res.status(StatusCodes.CREATED).json({
+        msg: 'Success! Google account registered.',
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 /* 
  Login user.
   User must provide correct email and password to be able to login.
@@ -164,6 +231,63 @@ const login = async (req, res) => {
 
   const token = await Token.create(userToken);
   // attach tokens to response
+  attachCookiesToResponse({ res, user: tokenUser, refreshToken });
+
+  res.status(StatusCodes.OK).json({ user });
+};
+
+const loginGoogle = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    throw new CustomError.BadRequestError('Please provide email');
+  }
+
+  const user = await User.findOne({ email })
+    .populate('roles')
+    .populate('storeId');
+
+  if (!user) {
+    throw new CustomError.UnauthenticatedError('Invalid Credentials');
+  }
+
+  // Optionally: check provider
+  if (user.provider !== 'google') {
+    throw new CustomError.UnauthenticatedError('Not a Google account');
+  }
+
+  // Optionally: check isVerified (for Google users you may set this on registration)
+  if (!user.isVerified && !user.isEmailVerified) {
+    throw new CustomError.UnauthenticatedError(
+      'Account not verified. Please verify your email!'
+    );
+  }
+
+  const tokenUser = createTokenUser(user);
+
+  // now attach 2 tokens (access token and refresh token) to cookies
+  let refreshToken = '';
+  const existingToken = await Token.findOne({ user: user._id });
+
+  if (existingToken) {
+    const { isValid } = existingToken;
+    if (!isValid) {
+      throw new CustomError.UnauthenticatedError('Invalid Credentials');
+    }
+    refreshToken = existingToken.refreshToken;
+    attachCookiesToResponse({ res, user: tokenUser, refreshToken });
+    res.status(StatusCodes.OK).json({ user });
+    return;
+  }
+
+  // create new token
+  refreshToken = crypto.randomBytes(40).toString('hex');
+  const userAgent = req.headers['user-agent'];
+  const ip = req.ip;
+  const userToken = { refreshToken, ip, userAgent, user: user._id };
+
+  await Token.create(userToken);
+
   attachCookiesToResponse({ res, user: tokenUser, refreshToken });
 
   res.status(StatusCodes.OK).json({ user });
@@ -283,7 +407,7 @@ const forgotPassword = async (req, res) => {
   if (user) {
     const passwordToken = crypto.randomBytes(70).toString('hex');
     // send email
-    const origin = 'http://localhost:3000'; // server where the frontend is running if it is not on this server
+    const origin = process.env.CLIENT_URL;
     await sendResetPasswordEmail({
       name: user.name,
       email: user.email,
@@ -338,7 +462,9 @@ const resetPassword = async (req, res) => {
 
 module.exports = {
   register,
+  registerGoogle,
   login,
+  loginGoogle,
   logout,
   verifyEmail,
   checkUserVerified,

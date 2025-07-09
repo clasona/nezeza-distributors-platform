@@ -64,7 +64,7 @@ const CartPayment = () => {
     <div className='flex flex-col gap-4 p-2 sm:p-4'>
       <div className='flex gap-2 items-start'>
         <span
-          className='bg-nezeza_green_600 rounded-full p-1 h-6 w-6 text-sm
+          className='bg-vesoko_green_600 rounded-full p-1 h-6 w-6 text-sm
                  text-white flex items-center justify-center mt-1'
         >
           <SiMediamarkt />
@@ -83,15 +83,15 @@ const CartPayment = () => {
       <div className='flex flex-col items-center text-center justify-center'>
         <button
           onClick={handleCheckout}
-          className={`w-full sm:w-auto p-2 text-sm font-semibold bg-nezeza_green_600 text-white rounded-lg hover:bg-nezeza_green_800 hover:text-white duration-300 ${
-            !userInfo ? 'pointer-events-none bg-nezeza_gray_600' : ''
+          className={`w-full sm:w-auto p-2 text-sm font-semibold bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 hover:text-white duration-300 ${
+            !userInfo ? 'pointer-events-none bg-vesoko_gray_600' : ''
           }`}
         >
           Proceed to Review & Checkout
         </button>
 
         {!userInfo && (
-          <p className='text-xs mt-1 text-nezeza_red_600 font-semibold animate-bounce'>
+          <p className='text-xs mt-1 text-vesoko_red_600 font-semibold animate-bounce'>
             Please Login to Continue
           </p>
         )}

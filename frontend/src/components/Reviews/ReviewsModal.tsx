@@ -50,10 +50,10 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
     null
   );
 
-//   const { imageIndices, handleNextImage, handlePrevImage } =
-//     useFavoritesWithImageControls({
-//       items: products,
-//     });
+  //   const { imageIndices, handleNextImage, handlePrevImage } =
+  //     useFavoritesWithImageControls({
+  //       items: products,
+  //     });
 
   const fetchProductReviews = useCallback(async () => {
     setLoadingReviews(true);
@@ -77,12 +77,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
     } finally {
       setLoadingReviews(false);
     }
-  }, [
-    product?._id,
-    setLoadingReviews,
-    setErrorLoadingReviews,
-    setReviews,
-  ]);
+  }, [product?._id, setLoadingReviews, setErrorLoadingReviews, setReviews]);
 
   useEffect(() => {
     fetchProductReviews();
@@ -335,7 +330,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
                     <div className='flex gap-2'>
                       <button
                         onClick={() => handleSaveEdit(review._id)}
-                        className={`bg-nezeza_green_600 text-white py-2 px-4 rounded-lg hover:bg-nezeza_green_800 cursor-pointer ${
+                        className={`bg-vesoko_green_600 text-white py-2 px-4 rounded-lg hover:bg-vesoko_green_800 cursor-pointer ${
                           isUpdatingReview
                             ? 'opacity-50 cursor-not-allowed'
                             : ''
@@ -375,7 +370,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
                         <div className='flex gap-2'>
                           <button
                             onClick={() => handleEditReview(review)}
-                            className='text-nezeza_dark_blue hover:underline text-sm cursor-pointer'
+                            className='text-vesoko_dark_blue hover:underline text-sm cursor-pointer'
                           >
                             Edit
                           </button>
@@ -445,7 +440,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
             </div>
             <button
               onClick={handleCreateReview}
-              className={`bg-nezeza_green_600 text-white py-2 px-4 rounded-lg hover:bg-nezeza_green_800 cursor-pointer ${
+              className={`bg-vesoko_green_600 text-white py-2 px-4 rounded-lg hover:bg-vesoko_green_800 cursor-pointer ${
                 isSubmittingReview ? 'opacity-50 cursor-not-allowed' : ''
               }`}
               disabled={isSubmittingReview}
@@ -463,7 +458,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
           >
             Close
           </button>
-          {/* <button className='bg-nezeza_green_600 text-white py-2 px-4 rounded-lg hover:bg-nezeza_green_800'>
+          {/* <button className='bg-vesoko_green_600 text-white py-2 px-4 rounded-lg hover:bg-vesoko_green_800'>
             Select
           </button> */}
         </div>

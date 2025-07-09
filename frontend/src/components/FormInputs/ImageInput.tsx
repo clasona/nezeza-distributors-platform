@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form';
 
-
 interface ImageInputProps {
   label: string;
   id: string;
@@ -49,9 +48,9 @@ const ImageInput: React.FC<ImageInputProps> = ({
         className='block text-sm font-medium leading-6 text-gray-700'
       >
         {label}
-        {isRequired && <span className='text-nezeza_red_600'> *</span>}
+        {isRequired && <span className='text-vesoko_red_600'> *</span>}
       </label>
-      <div >
+      <div>
         <input
           {...register(name, { required: isRequired })}
           type='file'
@@ -70,7 +69,7 @@ const ImageInput: React.FC<ImageInputProps> = ({
           />
         )} */}
         {errors[name] && (
-          <span className='text-sm text-nezeza_red_600'>
+          <span className='text-sm text-vesoko_red_600'>
             {label} is required
           </span>
         )}

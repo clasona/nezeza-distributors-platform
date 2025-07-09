@@ -84,7 +84,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
       <div className='mt-6'>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className='w-full max-w-4xl p-4 bg-nezeza_light_blue border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 mx-auto my-3'
+          className='w-full max-w-4xl p-4 bg-vesoko_light_blue border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 mx-auto my-3'
         >
           {/* Profile Picture Section */}
           <div className='flex flex-col items-center mb-3'>
@@ -101,13 +101,13 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
               {/* 
               <button
                 type='button'
-                className='absolute bottom-0 right-0 bg-nezeza_green_600 text-white border rounded-full p-1 shadow-sm'
+                className='absolute bottom-0 right-0 bg-vesoko_green_600 text-white border rounded-full p-1 shadow-sm'
                 title='Change profile picture'
               >
                 <Edit3 className='w-4 h-4 text-white' />
               </button> */}
             </div>
-            <p className='text-sm text-nezeza_gray_600 mt-2'>
+            <p className='text-sm text-vesoko_gray_600 mt-2'>
               Change profile picture
             </p>
             {/* Main product image */}
@@ -232,7 +232,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
               buttonTitle='Save Changes'
               loadingButtonTitle='Saving...'
             />
-            <p className='text-center text-nezeza_gray_600'>
+            <p className='text-center text-vesoko_gray_600'>
               You will be logged out for the changes to take effect.
             </p>
           </div>

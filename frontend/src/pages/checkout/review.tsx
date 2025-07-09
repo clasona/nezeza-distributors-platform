@@ -10,11 +10,10 @@ import { useSelector } from 'react-redux';
 import { AddressProps, stateProps } from '../../../type';
 import Link from 'next/link';
 
-
 const CheckoutReviewPage = () => {
-   const { cartItemsData, userInfo, shippingAddress } = useSelector(
-     (state: stateProps) => state.next
-   );
+  const { cartItemsData, userInfo, shippingAddress } = useSelector(
+    (state: stateProps) => state.next
+  );
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [shippingGroups, setShippingGroups] = useState<any[]>([]);
@@ -22,17 +21,14 @@ const CheckoutReviewPage = () => {
     [groupId: string]: string;
   }>({});
   const [error, setError] = useState<string | null>(null);
-    const [isProceeding, setIsProceeding] = useState(false);
+  const [isProceeding, setIsProceeding] = useState(false);
 
   useEffect(() => {
     async function loadShipping() {
       setIsLoading(true);
       setError(null);
       try {
-        const data = await createShipping(
-          cartItemsData,
-          shippingAddress,
-        );
+        const data = await createShipping(cartItemsData, shippingAddress);
         console.log('Shipping data:', data);
         // Assume data.shippingGroups from backend structure
         setShippingGroups(data.shippingGroups || []);
@@ -98,7 +94,10 @@ const CheckoutReviewPage = () => {
     setError(null);
     try {
       // Create Payment Intent
-      const response = await createPaymentIntent(cartItemsData, shippingAddress);
+      const response = await createPaymentIntent(
+        cartItemsData,
+        shippingAddress
+      );
       if (response.status !== 200 || !response.data?.clientSecret) {
         setError('Could not create payment intent. Please try again.');
         setIsProceeding(false);
@@ -138,14 +137,18 @@ const CheckoutReviewPage = () => {
       <button
         type='button'
         onClick={() => router.push('/checkout/shipping-address')}
-        className='mt-3 sm:mt-0 bg-nezeza_green_600 text-white font-medium px-4 py-2 rounded hover:bg-nezeza_green_800 transition'
+        className='mt-3 sm:mt-0 bg-vesoko_green_600 text-white font-medium px-4 py-2 rounded hover:bg-vesoko_green_800 transition'
       >
         Change
       </button>
     </div>
   );
 
-  if (isLoading || shippingGroups.length === 0 || shippingGroups[0].deliveryOptions.length === 0) {
+  if (
+    isLoading ||
+    shippingGroups.length === 0 ||
+    shippingGroups[0].deliveryOptions.length === 0
+  ) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
         <Loading message='delivery options...' />
@@ -161,8 +164,8 @@ const CheckoutReviewPage = () => {
   }
 
   return (
-    <div className='bg-nezeza_powder_blue min-h-screen py-8 px-2 md:px-8'>
-      <h2 className='text-2xl font-bold mb-4 text-nezeza_dark_blue text-center'>
+    <div className='bg-vesoko_powder_blue min-h-screen py-8 px-2 md:px-8'>
+      <h2 className='text-2xl font-bold mb-4 text-vesoko_dark_blue text-center'>
         Review &amp; Choose Delivery Options
       </h2>
       <div className='max-w-3xl mx-auto flex flex-col gap-4'>
@@ -212,7 +215,7 @@ const CheckoutReviewPage = () => {
                     key={option.rateId}
                     className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
                       selectedRateId === option.rateId
-                        ? 'border border-nezeza_green_600 bg-green-50'
+                        ? 'border border-vesoko_green_600 bg-green-50'
                         : 'border border-gray-200'
                     }`}
                   >
@@ -221,7 +224,7 @@ const CheckoutReviewPage = () => {
                       name={`delivery-${group.groupId}`}
                       checked={selectedRateId === option.rateId}
                       onChange={() => handleRadio(group.groupId, option.rateId)}
-                      className='form-radio text-nezeza_green_600'
+                      className='form-radio text-vesoko_green_600'
                     />
                     <span className='font-medium'>{option.label}</span>
                     <span className='text-gray-500 text-sm'>
@@ -246,7 +249,7 @@ const CheckoutReviewPage = () => {
         })}
         {/* Order Summary */}
         <div className='bg-white rounded-lg shadow-lg p-6 border'>
-          <h3 className='text-lg font-bold mb-4 text-nezeza_dark_blue'>
+          <h3 className='text-lg font-bold mb-4 text-vesoko_dark_blue'>
             Order Summary
           </h3>
           <div className='space-y-2 text-gray-700'>
@@ -270,7 +273,7 @@ const CheckoutReviewPage = () => {
             </div>
           </div>
           <hr className='my-3' />
-          <div className='flex justify-between text-lg font-bold text-nezeza_dark_blue'>
+          <div className='flex justify-between text-lg font-bold text-vesoko_dark_blue'>
             <span>Total:</span>
             <span>
               <FormattedPrice amount={grandTotal} />
@@ -282,7 +285,7 @@ const CheckoutReviewPage = () => {
             buttonTitle={isProceeding ? 'Processing...' : 'Proceed to Payment'}
             isLoading={isProceeding}
             disabled={!canSubmit || isProceeding}
-            className='w-full py-3 text-center justify-center bg-nezeza_green_600 text-white rounded-md hover:bg-nezeza_green_800 transition-colors duration-300 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed'
+            className='w-full py-3 text-center justify-center bg-vesoko_green_600 text-white rounded-md hover:bg-vesoko_green_800 transition-colors duration-300 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed'
             onClick={handleProceedToPayment}
           />
           {!canSubmit && (
@@ -294,7 +297,7 @@ const CheckoutReviewPage = () => {
         {/* add option to go back to cart */}
         <div className='mt-4 text-center'>
           <Link href='/cart'>
-            <p className='text-nezeza_dark_blue hover:underline'>
+            <p className='text-vesoko_dark_blue hover:underline'>
               &larr; Back to Cart
             </p>
           </Link>

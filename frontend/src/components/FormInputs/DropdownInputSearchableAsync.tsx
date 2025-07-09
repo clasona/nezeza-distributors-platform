@@ -74,7 +74,7 @@ const DropdownInputSearchableAsync = ({
     <div className={className}>
       <label className='block text-sm font-medium leading-6 text-gray-700'>
         {label}
-        {isRequired && <span className='text-nezeza_red_600'> *</span>}
+        {isRequired && <span className='text-vesoko_red_600'> *</span>}
       </label>
       <AsyncSelect
         cacheOptions

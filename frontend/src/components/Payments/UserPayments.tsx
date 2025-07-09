@@ -35,7 +35,7 @@ const UserPayments = () => {
       <Heading title='Payments Overview' />
       <div className='p-4 sm:p-6 space-y-4 sm:space-y-6'>
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-2xl font-semibold text-nezeza_dark_blue mb-4'>
+          <h4 className='text-2xl font-semibold text-vesoko_dark_blue mb-4'>
             Stripe Account
           </h4>
           {hasStripeActiveAccount ? (
@@ -43,7 +43,7 @@ const UserPayments = () => {
               Your Stripe account is connected.{' '}
               <Link
                 href='/stripe-account'
-                className='text-nezeza_green_600 font-semibold underline'
+                className='text-vesoko_green_600 font-semibold underline'
               >
                 View/Edit Account
               </Link>
@@ -53,7 +53,7 @@ const UserPayments = () => {
               You haven’t set up your Stripe account yet.{' '}
               <Link
                 href='/stripe/setup'
-                className='text-nezeza_green_600 font-semibold underline'
+                className='text-vesoko_green_600 font-semibold underline'
               >
                 Set up now
               </Link>
@@ -62,7 +62,7 @@ const UserPayments = () => {
         </div>
 
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-2xl font-semibold text-nezeza_dark_blue mb-4'>
+          <h4 className='text-2xl font-semibold text-vesoko_dark_blue mb-4'>
             Balance Overview
           </h4>
           <div className='grid md:grid-cols-2 gap-4 sm:gap-6'>
@@ -82,7 +82,7 @@ const UserPayments = () => {
         </div>
 
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-2xl font-semibold text-nezeza_dark_blue mb-4'>
+          <h4 className='text-2xl font-semibold text-vesoko_dark_blue mb-4'>
             Recent Transactions
           </h4>
           <ul className='space-y-4'>
@@ -100,7 +100,7 @@ const UserPayments = () => {
         </div>
 
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg'>
-          <h4 className='text-2xl font-semibold text-nezeza_dark_blue mb-4'>
+          <h4 className='text-2xl font-semibold text-vesoko_dark_blue mb-4'>
             Withdraw Funds
           </h4>
           <p className='text-lg mb-4'>
@@ -109,7 +109,7 @@ const UserPayments = () => {
               ${availableBalance}
             </span>
           </p>
-          <button className='bg-nezeza_green_600 text-white px-4 sm:px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-green-700'>
+          <button className='bg-vesoko_green_600 text-white px-4 sm:px-6 py-3 rounded-xl font-semibold shadow-md hover:bg-green-700'>
             Withdraw Funds
           </button>
         </div>
