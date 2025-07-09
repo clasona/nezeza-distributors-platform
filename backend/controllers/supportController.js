@@ -29,7 +29,7 @@ const createSupportTicket = async (req, res) => {
       attachments,
     } = req.body;
 
-    // Validate required fields
+    // Validate the required fields
     if (!subject || !description || !category) {
       throw new CustomError.BadRequestError(
         'Subject, description, and category are required'
