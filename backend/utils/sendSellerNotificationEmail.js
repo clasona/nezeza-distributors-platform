@@ -36,12 +36,14 @@ const sendSellerNotificationEmail = ({
     }</p>
 
       <p>Please log in to your seller dashboard to confirm and fulfill the order:</p>
-      <a href="https://nezeza.com/seller-dashboard">Go to Seller Dashboard</a>
+      <a href="${
+        process.env.CLIENT_URL
+      }/login">Go to Seller Dashboard</a>
 
-      <p>If you have any questions, contact our support team at <a href="mailto:support@nezeza.com">support@nezeza.com</a>.</p>
+      <p>If you have any questions, contact our support team at <a href="mailto:support@vesoko.com">support@vesoko.com</a>.</p>
 
-      <p>Thank you for selling with Nezeza!</p>
-      <strong>Nezeza Team</strong>
+      <p>Thank you for selling with VeSoko!</p>
+      <strong>VeSoko Team</strong>
     `,
   });
 };

@@ -46,7 +46,7 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
 
   return sendEmail({
     to: email,
-    subject: 'Nezeza Order Confirmation',
+    subject: 'VeSoko Order Confirmation',
     html: `<h4>Dear ${name},</h4>${message}`,
   });
 };
@@ -130,7 +130,7 @@ const sendBuyerPaymentRefundEmail = async ({
 
   return sendEmail({
     to: email,
-    subject: 'Nezeza Refund Confirmation',
+    subject: 'VeSoko Refund Confirmation',
     html: `<h4>Dear ${name},</h4>${message}`,
   });
 };
@@ -170,7 +170,7 @@ const sendBuyerFullOrderRefundEmail = async ({
 
   return sendEmail({
     to: email,
-    subject: `Nezeza Full Order Cancellation & Refund - Order #${orderId}`, // Clear subject
+    subject: `VeSoko Full Order Cancellation & Refund - Order #${orderId}`, // Clear subject
     html: `<h4>Dear ${name},</h4>${message}`,
   });
 };

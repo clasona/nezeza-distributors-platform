@@ -778,7 +778,7 @@ const sendTicketEscalationEmail = async ({
 }) => {
   const adminEmails = process.env.ADMIN_EMAILS
     ? process.env.ADMIN_EMAILS.split(',')
-    : ['admin@nezeza.com'];
+    : ['admin@vesoko.com'];
 
   const content = `
     <div class="email-content">
@@ -1189,7 +1189,7 @@ module.exports = {
 // }) => {
 //   const adminEmails = process.env.ADMIN_EMAILS
 //     ? process.env.ADMIN_EMAILS.split(',')
-//     : ['admin@nezeza.com'];
+//     : ['admin@vesoko.com'];
 
 //   const getPriorityColor = (priority) => {
 //     switch (priority) {
@@ -1258,7 +1258,7 @@ module.exports = {
 //         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
 
 //         <p style="color: #999; font-size: 12px; text-align: center;">
-//           Nezeza Support System - Automated Alert
+//           VeSoko Support System - Automated Alert
 //         </p>
 //       </div>
 //     </div>

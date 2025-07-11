@@ -11,7 +11,7 @@ import { mergeCartItems } from '@/utils/cart/mergeCartItems';
 import { handleError } from '@/utils/errorUtils';
 import { signIn, useSession } from 'next-auth/react';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { FaGoogle } from 'react-icons/fa';
+import { FcGoogle } from 'react-icons/fc';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps, StoreProps } from '../../type';
 import { useRouter } from 'next/navigation';
@@ -389,7 +389,7 @@ const LoginPage = () => {
             {loadingStates.isGoogleLoading ? (
               <span className='animate-spin mr-2 h-5 w-5 border-t-2 border-white rounded-full'></span>
             ) : (
-              <FaGoogle className='w-5 h-5' />
+              <FcGoogle className='w-5 h-5' />
             )}
             {loadingStates.isGoogleLoading
               ? 'Signing in with Google...'

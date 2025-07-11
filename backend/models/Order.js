@@ -17,7 +17,7 @@ const SingleOrderItemSchema = mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'Store',
     required: true,
-  }, 
+  },
   sellerStoreAddress: addressSchema,
   addedToInventory: {
     type: Boolean,
@@ -25,7 +25,13 @@ const SingleOrderItemSchema = mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Active', 'Cancelled', 'Returned', 'Partially Cancelled', 'Partially Returned'],
+    enum: [
+      'Active',
+      'Cancelled',
+      'Returned',
+      'Partially Cancelled',
+      'Partially Returned',
+    ],
     default: 'Active',
   },
   cancelledQuantity: {
@@ -36,7 +42,7 @@ const SingleOrderItemSchema = mongoose.Schema({
 
 const OrderSchema = mongoose.Schema(
   {
-    // TODO: add transaction fee field // converse with nezeza
+    // TODO: add transaction fee field // converse with vesoko
     totalAmount: {
       type: Number,
       required: true,
@@ -97,8 +103,8 @@ const OrderSchema = mongoose.Schema(
       ref: 'User',
       required: true,
     }, // Can be wholesaler or retailer or customer
-    shippingAddress: addressSchema, 
-    billingAddress: addressSchema, 
+    shippingAddress: addressSchema,
+    billingAddress: addressSchema,
     subOrders: [
       {
         type: mongoose.Schema.ObjectId,

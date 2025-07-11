@@ -15,12 +15,12 @@ const sendVerificationEmail = async ({
 }) => {
   const verifyEmail = `${origin}/verify-email/status?token=${verificationToken}&email=${email}`;
 
-  const message = `<p>Please click on the link to confirm your email address for your account on Nezeza Platform</p> : 
+  const message = `<p>Please click on the link to confirm your email address for your account on VeSoko Platform</p> : 
   <a href="${verifyEmail}">Verify Email</a> </p>`;
 
   return sendEmail({
     to: email,
-    subject: 'Please verify your email address for Nezeza Platform',
+    subject: 'Please verify your email address for VeSoko Platform',
     html: `<h4> Dear, ${name}</h4>
     ${message}
     `,

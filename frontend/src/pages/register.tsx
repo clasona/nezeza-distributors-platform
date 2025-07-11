@@ -6,7 +6,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FaGoogle } from 'react-icons/fa';
+import { FcGoogle } from 'react-icons/fc';
 
 const RegisterPage = () => {
   // State hooks
@@ -220,7 +220,7 @@ const RegisterPage = () => {
             disabled={isSeller}
             tabIndex={isSeller ? -1 : 0}
           >
-            <FaGoogle className='w-5 h-5' />
+            <FcGoogle className='w-5 h-5' />
             Signup with Google
           </button>
           {/* </div> */}
