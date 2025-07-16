@@ -97,4 +97,10 @@ const SupportCenterLayout: React.FC<SupportCenterLayoutProps> = ({
   );
 };
 
+<<<<<<< HEAD
 export default SupportCenterLayout;
+=======
+export default SupportCenter;
+
+
+>>>>>>> ae05db5 (progress thus far on support center frontend)

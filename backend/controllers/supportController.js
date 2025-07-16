@@ -87,7 +87,7 @@ const createSupportTicket = async (req, res) => {
 
     // Send email notifications
     await sendTicketCreatedEmail({
-      userEmail: 'clasona.us@gmail.com',
+      userEmail: 'shyanne55@ethereal.email',
       userName: `${user.firstName} ${user.lastName}`,
       ticketNumber: ticket.ticketNumber,
       subject: ticket.subject,

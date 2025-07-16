@@ -4,7 +4,7 @@ const nodemailerConfig = require('./nodemailerConfig');
 
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 // for production
-const sendEmail = async ({ to, subject, html }) => {
+const sendEmailgreet = async ({ to, subject, html }) => {
   console.log(to);
   const message = {
     to: to,
@@ -29,7 +29,7 @@ const sendEmail = async ({ to, subject, html }) => {
   }
 };
 // for testing
-const sendEmailEthereal = async ({ to, subject, html }) => {
+const sendEmail = async ({ to, subject, html }) => {
   let testAccount = await nodemailer.createTestAccount();
   const transporter = nodemailer.createTransport(nodemailerConfig);
   console.log(to);
