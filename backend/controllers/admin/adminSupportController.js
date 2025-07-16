@@ -209,7 +209,7 @@ const assignTicket = async (req, res) => {
 
     // Send notification email to assigned admin
     await sendTicketAssignedEmail({
-      adminEmail: 'clasona.us@gmail.com',
+      adminEmail: 'shyanne55@ethereal.email',
       //assignedUser.email,
       adminName: `${assignedUser.firstName} ${assignedUser.lastName}`,
       ticketNumber: ticket.ticketNumber,
@@ -294,7 +294,7 @@ const updateTicketAdmin = async (req, res) => {
     // Send status update email to user if status changed
     if (statusChanged) {
       await sendTicketStatusUpdateEmail({
-        userEmail: 'clasona.us@gmail.com',
+        userEmail: 'shyanne55@ethereal.email',
         //ticket.userId.email,
         userName: `${ticket.userId.firstName} ${ticket.userId.lastName}`,
         ticketNumber: ticket.ticketNumber,
