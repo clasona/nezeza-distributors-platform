@@ -3,11 +3,11 @@ import UserSupport from '@/components/Support/UserSupport';
 
 const CustomerSupport = () => {
   return (
-    <div>
-      <RootLayout>
+    <RootLayout>
+      <div className='max-w-3xl mx-auto py-8'>
         <UserSupport />
-      </RootLayout>
-    </div>
+      </div>
+    </RootLayout>
   );
 };
 

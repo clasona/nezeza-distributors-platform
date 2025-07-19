@@ -81,7 +81,7 @@ const CheckoutForm = ({ clientSecret }: CheckoutFormProps) => {
         className='bg-white shadow-lg rounded-lg p-4 w-full max-w-md '
       >
         <h2 className='text-lg text-center font-bold mb-4 text-vesoko_dark_blue'>
-          NEZEZA
+          VeSoko
         </h2>
         {/* <h2 className='text-lg font-semibold mb-4 text-gray-700'>Checkout</h2> */}
         {/* Shipping Address */}
