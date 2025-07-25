@@ -1,0 +1,33 @@
+import axiosInstance from '../axiosInstance';
+import { SupportTicket } from './createSupportTicket';
+
+export interface AddMessageData {
+  message: string;
+  attachments?: File[];
+}
+
+export const addMessageToTicket = async (
+  ticketId: string, 
+  data: AddMessageData
+): Promise<{ success: boolean; ticket: SupportTicket; message: string }> => {
+  try {
+    const formData = new FormData();
+    formData.append('message', data.message);
+    
+    if (data.attachments && data.attachments.length > 0) {
+      data.attachments.forEach((file) => {
+        formData.append('attachments', file);
+      });
+    }
+    
+    const response = await axiosInstance.post(`/support/tickets/${ticketId}/message`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Failed to add message to ticket');
+  }
+}; 
