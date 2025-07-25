@@ -30,7 +30,7 @@ const SupportCenterLayout: React.FC<SupportCenterLayoutProps> = ({
           
           {/* Tab Bar */}
           {tabBar && (
-            <div className="border-t border-gray-200 pt-4 pb-2">
+            <div className="border-t border-gray-200 pt-4 pb-2 flex justify-center">
               {tabBar}
             </div>
           )}
