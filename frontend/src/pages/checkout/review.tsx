@@ -28,11 +28,21 @@ const CheckoutReviewPage = () => {
       setIsLoading(true);
       setError(null);
       try {
+        // Call backend to get shipping options for cart items
+        // The backend implements a robust fallback system:
+        // 1. First tries to get real shipping rates from Shippo API and Uber API
+        // 2. If seller addresses are missing, provides default shipping options
+        // 3. If external APIs (Shippo/Uber) fail, falls back to standard rates
+        // 4. This ensures users always see shipping options and never get stuck on loading
         const data = await createShipping(cartItemsData, shippingAddress);
         console.log('Shipping data:', data);
-        // Assume data.shippingGroups from backend structure
+        
+        // Backend returns shippingGroups array - each group represents items from one seller
+        // Each group contains deliveryOptions (shipping methods available for that seller)
         setShippingGroups(data.shippingGroups || []);
-        // Pre-select first delivery option per group
+        
+        // Pre-select first delivery option per group for better UX
+        // This prevents users from having to manually select an option for each group
         const defaults: { [groupId: string]: string } = {};
         (data.shippingGroups || []).forEach((group: any) => {
           if (group.deliveryOptions.length > 0) {
@@ -41,6 +51,8 @@ const CheckoutReviewPage = () => {
         });
         setSelectedOptions(defaults);
       } catch (err: any) {
+        // Even if the shipping API completely fails, we show an error
+        // but the fallback system in the backend should prevent this from happening
         setError(err.message || 'Failed to load shipping options');
       }
       setIsLoading(false);
@@ -192,13 +204,13 @@ const CheckoutReviewPage = () => {
                   >
                     {item.image && (
                       <img
-                        src={item.image}
-                        alt={item.name}
+                        src={item.product.images[0]}
+                        alt={item.product.name}
                         className='w-14 h-14 object-cover rounded'
                       />
                     )}
                     <div className='flex-grow'>
-                      <div className='font-medium'>{item.name}</div>
+                      <div className='font-medium'>{item.product.title}</div>
                       <div className='text-gray-500 text-sm'>
                         Qty: {item.quantity}
                       </div>

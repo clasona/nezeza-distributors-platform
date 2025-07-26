@@ -9,37 +9,51 @@ const {
 } = require('../utils');
 
 const authenticateUser = async (req, res, next) => {
-  //const token = req.signedCookies.token;
-  // unpack both tokens from cookies and validate them
   const { refreshToken, accessToken } = req.signedCookies;
 
-  // if (!token) {
-  //   throw new CustomError.UnauthenticatedError('Authentication Invalid');
-  // }
+  // Add debugging to understand what's happening
+  // console.log('Auth middleware - cookies received:', { 
+  //   hasAccessToken: !!accessToken, 
+  //   hasRefreshToken: !!refreshToken,
+  //   path: req.path 
+  // });
 
   try {
-    // const { name, userId, roles } = isTokenValid({ token });
-    // req.user = { name, userId, roles };
-    // next();
     // if access token is valid, attach it to the request and go next middleware
     if (accessToken) {
-      const payload = isTokenValid(accessToken);
-      req.user = payload.user;
-      return next();
+      try {
+        const payload = isTokenValid(accessToken);
+        req.user = payload.user;
+        console.log('Auth middleware - access token valid for user:', payload.user.userId);
+        return next();
+      } catch (error) {
+        console.log('Auth middleware - access token invalid, trying refresh token');
+        // Access token invalid, try refresh token
+      }
+    }
+
+    // Check if refresh token exists
+    if (!refreshToken) {
+      console.log('Auth middleware - no refresh token available');
+      throw new CustomError.UnauthenticatedError('Authentication Invalid');
     }
 
     // if refresh token is valid, attach it to the request and go to the next middleware
     const payload = isTokenValid(refreshToken);
+    console.log('Auth middleware - refresh token valid for user:', payload.user.userId);
 
     const existingToken = await Token.findOne({
       user: payload.user.userId,
       refreshToken: payload.refreshToken,
     });
+    
     // if no existing token or the token is not valid, throw an error
     if (!existingToken || !existingToken?.isValid) {
+      console.log('Auth middleware - existing token not found or invalid');
       throw new CustomError.UnauthenticatedError('Authentication Invalid');
     }
-    //attach the existing token to the request and go to the next middleware
+    
+    // attach the existing token to the request and go to the next middleware
     attachCookiesToResponse({
       res,
       user: payload.user,
@@ -47,8 +61,10 @@ const authenticateUser = async (req, res, next) => {
     });
 
     req.user = payload.user;
+    console.log('Auth middleware - refreshed tokens for user:', payload.user.userId);
     next();
   } catch (error) {
+    console.log('Auth middleware - authentication failed:', error.message);
     throw new CustomError.UnauthenticatedError('Authentication Invalid');
   }
 };

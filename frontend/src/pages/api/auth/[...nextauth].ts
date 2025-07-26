@@ -3,6 +3,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { z } from 'zod';
 import bcrypt from 'bcryptjs';
+import { getUserForAuth } from '@/utils/user/getUserForAuth';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
 import { registerUserGoogle } from '@/utils/auth/registerUser';
 
@@ -75,34 +76,41 @@ const authOptions = {
           }
 
           const { email, password } = parsedCredentials.data;
-          const response = await getUserByEmail(email);
+          const response = await getUserForAuth(email);
 
-          if (!response || !response.data.user) {
+          if (!response || !response.data?.data?.user) {
             console.log('User not found');
             return null;
           }
 
-          const user = response.data.user;
+          const user = response.data.data.user;
 
-          // Check if the user has a previousPasswords array and get the first one
-          if (user.previousPasswords && user.previousPasswords.length > 0) {
-            const storedHashedPassword = user.previousPasswords[0];
-            const passwordsMatch = await bcrypt.compare(
-              password,
-              storedHashedPassword
-            );
-
-            if (passwordsMatch) {
-              // Remove sensitive information before returning
-              const { previousPasswords, ...userWithoutPasswords } = user;
-              return {
-                ...userWithoutPasswords,
-                provider: 'credentials',
-              };
+          let passwordsMatch = false;
+          
+          // First, check if user has a current password (most recent)
+          if (user.password) {
+            passwordsMatch = await bcrypt.compare(password, user.password);
+          }
+          
+          // If current password doesn't match, check previous passwords as fallback
+          if (!passwordsMatch && user.previousPasswords && user.previousPasswords.length > 0) {
+            for (let i = 0; i < user.previousPasswords.length; i++) {
+              const storedHashedPassword = user.previousPasswords[i];
+              const prevMatch = await bcrypt.compare(password, storedHashedPassword);
+              if (prevMatch) {
+                passwordsMatch = true;
+                break;
+              }
             }
-          } else {
-            console.log('No previous passwords found for user');
-            return null;
+          }
+
+          if (passwordsMatch) {
+            // Remove sensitive information before returning
+            const { password: _, previousPasswords, ...userWithoutPasswords } = user;
+            return {
+              ...userWithoutPasswords,
+              provider: 'credentials',
+            };
           }
 
           console.log('Password does not match');

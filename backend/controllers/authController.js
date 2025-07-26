@@ -473,7 +473,7 @@ const forgotPassword = async (req, res) => {
     // send email
     const origin = process.env.CLIENT_URL;
     await sendResetPasswordEmail({
-      name: user.name,
+      name: user.firstName,
       email: user.email,
       token: passwordToken,
       origin,
@@ -505,23 +505,98 @@ const resetPassword = async (req, res) => {
   if (!token || !email || !password) {
     throw new CustomError.BadRequestError('Please provide all values');
   }
+
+  // Validate password strength
+  if (password.length < 6) {
+    throw new CustomError.BadRequestError('Password must be at least 6 characters long');
+  }
+
   const user = await User.findOne({ email });
 
-  if (user) {
-    const currentDate = new Date();
+  if (!user) {
+    throw new CustomError.BadRequestError('Invalid reset token or email');
+  }
 
-    if (
-      user.passwordToken === createHash(token) &&
-      user.passwordTokenExpirationDate > currentDate
-    ) {
-      user.password = password;
-      user.passwordToken = null;
-      user.passwordTokenExpirationDate = null;
-      await user.save();
+  const currentDate = new Date();
+
+  // Check if token is valid and not expired
+  if (
+    user.passwordToken !== createHash(token) ||
+    !user.passwordTokenExpirationDate ||
+    user.passwordTokenExpirationDate <= currentDate
+  ) {
+    throw new CustomError.BadRequestError('Invalid or expired reset token');
+  }
+
+  // Check if new password is different from previous passwords
+  if (user.previousPasswords && user.previousPasswords.length > 0) {
+    for (const prevPassword of user.previousPasswords) {
+      const bcrypt = require('bcryptjs');
+      const isSamePassword = await bcrypt.compare(password, prevPassword);
+      if (isSamePassword) {
+        throw new CustomError.BadRequestError('Please choose a different password from your recent passwords');
+      }
     }
   }
 
-  res.send('reset password');
+  // Save current password to previous passwords before updating
+  if (user.password) {
+    user.previousPasswords = user.previousPasswords || [];
+    user.previousPasswords.push(user.password);
+    // Keep only last 5 passwords
+    if (user.previousPasswords.length > 5) {
+      user.previousPasswords = user.previousPasswords.slice(-5);
+    }
+  }
+
+  // Update password and clear reset token
+  user.password = password;
+  user.passwordToken = null;
+  user.passwordTokenExpirationDate = null;
+  await user.save();
+
+  res.status(StatusCodes.OK).json({
+    success: true,
+    msg: 'Password reset successful! You can now login with your new password.'
+  });
+};
+
+/*
+ * Get user by email for authentication purposes (includes password fields)
+ * This endpoint is specifically for NextAuth authentication
+ * @param {string} email - The user's email address
+ * @returns {Promise<object>} - User object with password fields included
+ */
+const getUserForAuth = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (!email) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ msg: 'Email parameter is required.' });
+    }
+
+    const user = await User.findOne({ email: email })
+      .populate('roles')
+      .populate('storeId');
+
+    if (!user) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ msg: `No user with email: ${email}` });
+    }
+
+    return res.status(StatusCodes.OK).json({ 
+      data: { user },
+      success: true 
+    });
+  } catch (error) {
+    console.error('Error fetching user for auth by email:', error);
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ msg: 'Internal server error.' });
+  }
 };
 
 module.exports = {
@@ -535,4 +610,5 @@ module.exports = {
   resendVerificationEmail,
   forgotPassword,
   resetPassword,
+  getUserForAuth,
 };

@@ -79,6 +79,7 @@ const Header = ({
               firstName: userData.firstName,
               lastName: userData.lastName,
               email: userData.email,
+              image: userData.image || null,
               address: userData.address || null,
               storeId: userData.storeId || null,
             })
@@ -175,7 +176,7 @@ const Header = ({
                     {' '}
                     {/* Wrapper div */}
                     <Image
-                      src={currentUserData?.image || defaultUserImage}
+                      src={userInfo?.image || currentUserData?.image || defaultUserImage}
                       alt='userProfilePicture'
                       width={40}
                       height={40}

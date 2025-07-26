@@ -13,6 +13,7 @@ const {
     logout,
     resetPassword,
     forgotPassword,
+    getUserForAuth,
     //getUserProfile,
     //updateUserProfile,
     //updateUserPassword, 
@@ -28,6 +29,7 @@ router.post('/resend-verification', resendVerificationEmail);
 router.delete('/logout',authenticateUser, logout);
 router.post('/reset-password', resetPassword);
 router.post('/forgot-password', forgotPassword);
+router.get('/user-for-auth/:email', getUserForAuth);
 //router.get('/logout', logout); previous logout route was used for testing purposes
 
 
