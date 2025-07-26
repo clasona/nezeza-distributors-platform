@@ -28,7 +28,18 @@ const Home = () => {
     try {
       setIsSearching(true);
       const data = await getRetailersProducts(filters);
-      setProducts(data || []);
+      
+      // Sort products by rating (highest first), then by number of reviews
+      const sortedProducts = (data || []).sort((a: ProductProps, b: ProductProps) => {
+        // First sort by rating (descending)
+        if (b.rating !== a.rating) {
+          return b.rating - a.rating;
+        }
+        // If ratings are equal, sort by number of reviews (descending)
+        return (b.numOfReviews || 0) - (a.numOfReviews || 0);
+      });
+      
+      setProducts(sortedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
       setProducts([]);
