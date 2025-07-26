@@ -249,7 +249,7 @@ const Products = ({ products }: { products: ProductProps[] }) => {
     }));
   };
 
-  if (!products.length && !isLoading) {
+  if (!products?.length && !isLoading) {
     return (
       <div className='w-full text-center text-bold'>
         No products available at the moment.

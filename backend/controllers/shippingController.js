@@ -45,6 +45,7 @@ async function geocodeAddress(address) {
       return null;
     }
   } catch (error) {
+    errorLoggingMiddleware(err, req, res);
     console.error(
       'Geocoding API error:',
       error.response?.data || error.message
@@ -215,7 +216,7 @@ const getShippingOptions = async (req, res) => {
       const sellerAddress =
         items[0].sellerAddress ||
         (items[0].sellerStoreId && items[0].sellerStoreId.address);
-      
+
       // console.log('cusomter', customerAddress, 'seller', sellerAddress);
 
       // Defensive: If seller address missing, skip
@@ -288,6 +289,7 @@ const getShippingOptions = async (req, res) => {
       shippingGroups,
     });
   } catch (error) {
+    errorLoggingMiddleware(err, req, res);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -441,6 +443,7 @@ const createShippingLabel = async (req, res) => {
     });
     res.json({ transaction });
   } catch (error) {
+    errorLoggingMiddleware(err, req, res);
     res.json({ success: false, error: error.message });
   }
 };
@@ -480,6 +483,7 @@ const listAllShipments = async (req, res) => {
       data: result,
     });
   } catch (error) {
+    errorLoggingMiddleware(err, req, res);
     res.json({
       success: false,
       error: error.response?.data || error.message,

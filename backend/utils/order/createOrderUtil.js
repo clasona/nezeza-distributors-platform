@@ -14,6 +14,9 @@ const SubOrder = require('../../models/SubOrder');
 const {
   groupProductsBySeller,
 } = require('../../helpers/groupProductsBySeller');
+const {
+  errorLoggingMiddleware,
+} = require('../../controllers/admin/adminSystemMonitoringController');
 
 /* 
   Create a new order, group items by seller,
@@ -63,13 +66,12 @@ const createSubOrders = async (fullOrder, session) => {
  * @param {string} orderData.buyerId - The ID of the authenticated buyer.
  * @returns {Promise<{orderId: string}>} - The order ID.
  */
-const createOrderUtil = async (
+const createOrderUtil = async ({
   cartItems,
-  shippingAddress,
   shippingFee,
   paymentMethod,
-  buyerId
-) => {
+  buyerId,
+}) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -176,9 +178,18 @@ const createOrderUtil = async (
 
     const totalAmount = totalTax + totalShipping + subtotal;
 
-    if (typeof shippingAddress === 'string') {
-      shippingAddress = JSON.parse(shippingAddress);
-    }
+    // if (typeof shippingAddress === 'string') {
+    //   shippingAddress = JSON.parse(shippingAddress);
+    // }
+
+    const shippingAddress = {
+      street: '12345 Market St',
+      city: 'San Francisco',
+      state: 'CA',
+      zipCode: '94103',
+      country: 'USA',
+      phone: '8608084545',
+    };
     // if (typeof billingAddress === 'string') {
     //   billingAddress = JSON.parse(billingAddress);
     // }
@@ -225,6 +236,7 @@ const createOrderUtil = async (
 
     return order._id;
   } catch (error) {
+    errorLoggingMiddleware(error);
     await session.abortTransaction();
     session.endSession();
     console.error('Error in createOrder utility:', error);

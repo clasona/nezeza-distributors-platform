@@ -221,7 +221,7 @@ export interface AddressProps {
   _id?: number;
   fullName?: string;
   street1: string;
-  street2?: string; 
+  street2?: string;
   city: string;
   state: string;
   zip: string;
