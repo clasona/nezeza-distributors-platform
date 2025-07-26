@@ -3,17 +3,34 @@ const { StatusCodes } = require('http-status-codes');
 
 const cartController = {
   getCart: async (req, res) => {
-    //TODO: Find storeId if available
     try {
-      const cart = await Cart.findOne({ buyerId: req.user.userId }).populate(
-        'cartItems.product'
-      ); // Populate product details
+      const cart = await Cart.findOne({ buyerId: req.user.userId })
+        .populate({
+          path: 'cartItems.product',
+          populate: {
+            path: 'storeId',
+            model: 'Store'
+          }
+        });
+        
       if (!cart) {
-        return res.status(StatusCodes.CREATED).json({ cartItems: [] }); // Return empty array if no cart
+        return res.status(StatusCodes.CREATED).json({ cartItems: [] });
       }
-      res.status(StatusCodes.CREATED).json(cart);
+      
+      // Transform cart items to include seller information needed for shipping
+      const transformedCartItems = cart.cartItems.map(item => ({
+        ...item.toObject(),
+        sellerStoreId: item.product.storeId,
+        sellerAddress: item.product.storeId?.address,
+        productId: item.product._id
+      }));
+      
+      res.status(StatusCodes.CREATED).json({
+        ...cart.toObject(),
+        cartItems: transformedCartItems
+      });
     } catch (error) {
-      console.error(error);
+      console.error('Error in getCart:', error);
       res.status(500).json({ message: 'Server error' });
     }
   },

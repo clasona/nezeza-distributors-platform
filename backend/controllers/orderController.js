@@ -179,6 +179,10 @@ const getSingleOrder = async (req, res) => {
       populate: [
         {
           path: 'product',
+          populate: {
+            path: 'storeId',
+            model: 'Store'
+          }
         },
       ],
     })
@@ -226,6 +230,10 @@ const getOrderByPaymentIntentId = async (req, res) => {
       populate: [
         {
           path: 'product',
+          populate: {
+            path: 'storeId',
+            model: 'Store'
+          }
         },
       ],
     })
@@ -307,6 +315,10 @@ const getCurrentUserOrders = async (req, res) => {
       },
       {
         path: 'product',
+        populate: {
+          path: 'storeId',
+          model: 'Store'
+        }
       },
     ],
   });

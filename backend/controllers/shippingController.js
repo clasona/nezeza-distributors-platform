@@ -10,7 +10,7 @@ const shippo = new Shippo({
 function addressToString(address) {
   return `${address.street1 || address.street}, ${address.city}, ${
     address.state
-  } ${address.zipCode}, ${address.country || 'US'}`;
+  } ${address.zipCode || address.zip}, ${address.country || 'US'}`;
 }
 
 async function geocodeAddress(address) {
@@ -60,7 +60,7 @@ function convertAddressFormat(address) {
     street_address: streetAddress,
     city: address.city,
     state: address.state,
-    zip_code: address.zipCode,
+    zip_code: address.zipCode || address.zip,
     country: address.country,
   });
 }
@@ -204,7 +204,20 @@ const getShippingOptions = async (req, res) => {
   const { cartItems, customerAddress } = req.body;
 
   try {
+    console.log('=== SHIPPING DEBUG ===');
+    console.log('Cart items received:', JSON.stringify(cartItems, null, 2));
+    console.log('Customer address:', JSON.stringify(customerAddress, null, 2));
+    
+    if (!cartItems || cartItems.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No cart items provided',
+        shippingGroups: [],
+      });
+    }
+
     const itemsBySeller = groupItemsBySeller(cartItems);
+    console.log('Items grouped by seller:', JSON.stringify(itemsBySeller, null, 2));
 
     const standardRatesObj = {};
     const sameDayRatesObj = {};
@@ -216,11 +229,12 @@ const getShippingOptions = async (req, res) => {
       const sellerAddress =
         items[0].sellerAddress ||
         (items[0].sellerStoreId && items[0].sellerStoreId.address);
-
-      // console.log('cusomter', customerAddress, 'seller', sellerAddress);
+      
+      console.log(`Seller ${sellerId} address:`, JSON.stringify(sellerAddress, null, 2));
 
       // Defensive: If seller address missing, skip
       if (!sellerAddress) {
+        console.warn(`Missing seller address for seller ${sellerId}`);
         standardRatesObj[sellerId] = [];
         sameDayRatesObj[sellerId] = { error: 'Seller address missing' };
         continue;

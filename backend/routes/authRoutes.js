@@ -9,6 +9,7 @@ const {
     loginGoogle,
     verifyEmail,
     checkUserVerified,
+    resendVerificationEmail,
     logout,
     resetPassword,
     forgotPassword,
@@ -23,6 +24,7 @@ router.post('/login', login);
 router.post('/login/google', loginGoogle);
 router.post('/verify-email', verifyEmail);
 router.get('/verify/status', checkUserVerified);
+router.post('/resend-verification', resendVerificationEmail);
 router.delete('/logout',authenticateUser, logout);
 router.post('/reset-password', resetPassword);
 router.post('/forgot-password', forgotPassword);

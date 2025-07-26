@@ -1,0 +1,101 @@
+Please do thorough testing of each feature and provide detailed notes for feedback,,,,,,,,,
+Note: For testing purposes create user account ,,,,,,,,,
+1,For customer accounts - use your personal email and create an account,,,,,,,,
+2,For retailer accounts - use clasona.dev@gmail.com; PW:Teamclasona@2023,,,,,,,,
+3,For payments uses these cards: 424242424242424,,,,,,,,
+Category,Project (Quick Rationale),Key Tasks,Key Subtasks,Assignee,What Works,What doesn't Work,More notes,Progress,Timeline
+"1. Final Non-Prod Testing & Finalization
+Ensure that all platform workflows are stable before launch.",Core Platform Functionality,Overall Platform Navigation & Responsiveness,"- Navigation Test Report: All links verified, no broken links found.
+- Responsiveness Test Report: Screenshots/videos confirming correct rendering on specified devices/browsers.
+- Visual QA Report: No major styling inconsistencies or broken elements.",Harieth,- Notes on the doc report attached,- Notes on the doc report attached,Platform functionality,DONE,Jul 7 - Jul 11
+,,Search & Filtering,"- Search & Filter Test Report: All search/filter combinations tested, expected results returned.
+- Performance metrics for search queries within acceptable limits.",,,,,DONE,
+,User Account Management (Both Buyer & Seller),User Registration & Login,"- Account Creation/Login Test Report: All flows passed, error messages displayed correctly for invalid inputs.
+-Confirmation of password reset emails received.
+- Seller forced redirect to /sellers-shared/setup-stripe confirmed.",Dominique,-Buyer registration and account verification email,"- can't logout from ""buyer"" profile, it's just stuck, same for safari and also firefox
+
+-Seller registration: I provided a fake number and it went thru
+-Seller registration: Email not verified if legit or not
+
+-Seller registration: documents page is still red after uploading, there is nothing that shows me that the update was successfull
+
+-Seler registration: Couldn't submit because upload didnt work
+","-When selecting the stire type:
+It should be:
+Manufacuturer
+Wholesaler
+Retailer
+
+-Second page of store registration shows the store type choice again. Why don't we remove the first page for less pages.
+
+
+-Why do we collect personal email and also store email? What if same?",DONE,
+,,Profile Management,"- Profile Management Test Report: All update operations successful, data persistence verified.
+- Address book entries added/edited/deleted correctly.",,,"Seller account:
+-Details in my profile arent prefilled
+-Doesn't seem like address change is possible
+-Can't test further because I cannot logout, it says that changes are only effect after logging out, why?
+
+Buyer account:
+-details are prefilled
+-Changing address doesn't bring addresses as you put information
+-Changed name and address, saved changes, logged out and it didn't save",,DONE,
+,Store application (seller) and review (admin),Seller application process and review (approval/decline),,Dominique,,,,PENDING,
+,Product & Catalog Management (Seller Specific),Product Listing & Editing,"- Product Listing Test Report: Products created/edited successfully, data integrity verified in backend.
+- Image upload functionality working as expected.
+- Correct product visibility on buyer storefronts.",Harieth,- Notes on the doc report attached,- Notes on the doc report attached,https://docs.google.com/document/d/1VrF7SiQIOT6iuuz6yFc0AlT2CD_dY5_5Y6Szo0IYCo0/edit?tab=t.0,DONE,
+,,Inventory Management,"- Inventory Update Test Report: Stock levels accurate after manual updates and order placement.
+- Low stock alerts triggered correctly.
+",,,,,PENDING,
+,Buyer Journey & Checkout (Customer Specific),Cart/Favorites Management,"- Cart/Favorites Functionality Test Report: All cart operations working as expected, total price accurate.
+- Cart /Favorites contents persist across sessions.
+",Boca,"Putting item in your favorites.
+
+Items stay after logging out and logging back in","How do I know if an item is already in my favorites cart without having to open a cart?
+-When I see an item already in my favorites, the favorite button should be selected or filled.
+
+-Not all images load in cart and favorites",,DONE,
+,,Shipping Address Entry & Validation,"- Address Validation Test Report: All validation scenarios tested, correct feedback provided.
+- Address saved to user profile in backend.
+- Successful redirection to review page.
+",,Page loads,"Didn't see any address validation option.
+
+Why are we showing all those countries if shipping is only for US right now?
+
+States should be a drop down.
+
+The phone number I put was fake and wasn't validated. 
+
+Loading delivery options is taking forever to open.
+
+What's the format for the State field? (NY or New York?)",,PENDING,
+,,Order Review & Shipping Options Selection,"- Order Review Test Report: Summary accurate, shipping options displayed correctly per seller.
+- Total cost updates dynamically with shipping selection.
+- ""Proceed to Payment"" button navigates to /checkout/payment.
+",,,-shipping options didn't open so I coudn't proceed.,,PENDING,
+,,Payment Processing,"- Payment Processing Test Report: Successful and failed payment scenarios tested, correct outcomes.
+- Redirection to /payment-status page with correct status.
+- Payment intent status verified in Stripe dashboard (test mode).
+",,,-shipping options didn't open so I coudn't proceed.,,PENDING,
+,Order Management (Seller Specific),Order Viewing & Status Updates,"- Seller Order Management Test Report: Orders visible, status updates functional.
+- Buyer notification for order status changes confirmed.
+",Boca,Page visible.,"Currently no orders visible, since I couldn't check out.
+
+Allows me to move pages even with 0 customer orders. (arrows to move pages)",waiting for bug to be fixed so I can proceed with the tests above.,PENDING,
+,Post-Purchase Experience (Customer Specific),Order Tracking & History,"- Order History Test Report: All past orders accessible and accurate.
+- Order details view correct.
+",,,,,PENDING,
+,Payments & Commissions (Both),Commission Calculation & Payouts,"- Commission Calculation Report: Backend verification of correct commission amounts.
+- Seller payout initiated successfully (in test mode).
+- Seller dashboard accurately displays earnings.
+",Harieth,- Notes on the doc report attached,- Notes on the doc report attached,https://docs.google.com/document/d/1VrF7SiQIOT6iuuz6yFc0AlT2CD_dY5_5Y6Szo0IYCo0/edit?tab=t.0,DONE,
+,Notifications & Communication,Email Notifications for different actions,"- Email Notification Log: All expected emails sent and received in test environment (e.g., Mailtrap, Ethereal).
+- Email content and links are correct.
+",George,,,,PENDING,
+,Support Material & Ticketing System,"Ticketing System, Response Plan, FAQs?",,"Yves, George",,,,BLOCKED,
+,Security & Data Integrity,Basic Security Testing,"- Basic Security Test Report: No obvious vulnerabilities found, access controls enforced.
+- Data privacy checks passed.
+- Data and Access controls for buyers, sellers
+","George, Yves",,,,PENDING,
+,Performance & Scalability (Basic),Core Flow Performance,"- Performance Metrics Report: Key page load times and API response times documented and within acceptable limits.
+","George, Yves",,,,PENDING,

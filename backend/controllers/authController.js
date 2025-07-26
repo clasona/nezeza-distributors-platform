@@ -399,6 +399,58 @@ Reset password.
  *  @param req - Express request object  
    - email, password, passwordToken
  */
+const resendVerificationEmail = async (req, res) => {
+  const { email } = req.body;
+  
+  if (!email) {
+    throw new CustomError.BadRequestError('Please provide email address');
+  }
+  
+  try {
+    const user = await User.findOne({ email });
+    
+    if (!user) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        msg: 'No account with this email address exists'
+      });
+    }
+    
+    if (user.isVerified) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        msg: 'Account is already verified'
+      });
+    }
+    
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(40).toString('hex');
+    user.verificationToken = verificationToken;
+    await user.save();
+    
+    const origin = process.env.CLIENT_URL;
+    
+    // Send verification email
+    await sendVerificationEmail({
+      name: user.firstName,
+      email: user.email,
+      verificationToken,
+      origin,
+    });
+    
+    res.status(StatusCodes.OK).json({
+      success: true,
+      msg: 'Verification email sent successfully. Please check your email.'
+    });
+  } catch (error) {
+    console.error('Error resending verification email:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      msg: 'Failed to resend verification email. Please try again.'
+    });
+  }
+};
+
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   if (!email) {
@@ -471,6 +523,7 @@ module.exports = {
   logout,
   verifyEmail,
   checkUserVerified,
+  resendVerificationEmail,
   forgotPassword,
   resetPassword,
 };

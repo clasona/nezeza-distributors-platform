@@ -3,17 +3,34 @@ const { StatusCodes } = require('http-status-codes');
 
 const favoritesController = {
   getFavorites: async (req, res) => {
-    //TODO: Find storeId if available
     try {
-      const favorites = await Favorites.findOne({ buyerId: req.user.userId }).populate(
-        'favoritesItems.product'
-      ); // Populate product details
+      const favorites = await Favorites.findOne({ buyerId: req.user.userId })
+        .populate({
+          path: 'favoritesItems.product',
+          populate: {
+            path: 'storeId',
+            model: 'Store'
+          }
+        });
+        
       if (!favorites) {
-        return res.status(StatusCodes.CREATED).json({ favoritesItems: [] }); // Return empty array if no favorites
+        return res.status(StatusCodes.CREATED).json({ favoritesItems: [] });
       }
-      res.status(StatusCodes.CREATED).json(favorites);
+      
+      // Transform favorites items to include seller information
+      const transformedFavoritesItems = favorites.favoritesItems.map(item => ({
+        ...item.toObject(),
+        sellerStoreId: item.product.storeId,
+        sellerAddress: item.product.storeId?.address,
+        productId: item.product._id
+      }));
+      
+      res.status(StatusCodes.CREATED).json({
+        ...favorites.toObject(),
+        favoritesItems: transformedFavoritesItems
+      });
     } catch (error) {
-      console.error(error);
+      console.error('Error in getFavorites:', error);
       res.status(500).json({ message: 'Server error' });
     }
   },
