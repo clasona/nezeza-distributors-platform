@@ -14,6 +14,9 @@ const {
   sendResetPasswordEmail,
   createHash,
 } = require('../utils');
+const {
+  errorLoggingMiddleware,
+} = require('../controllers/admin/adminSystemMonitoringController');
 
 const register = async (req, res, next) => {
   const { firstName, lastName, email, password, storeType } = req.body;
@@ -301,7 +304,7 @@ const loginGoogle = async (req, res) => {
  */
 const verifyEmail = async (req, res) => {
   const { verificationToken, email } = req.body;
-    console.log(verificationToken, email);
+  console.log(verificationToken, email);
 
   try {
     const user = await User.findOne({ email });
@@ -325,13 +328,12 @@ const verifyEmail = async (req, res) => {
 
     res.status(StatusCodes.OK).json({ success: true, msg: 'Email Verified' });
   } catch (error) {
+    errorLoggingMiddleware(error);
     console.error('Verification error:', error);
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({
-        success: false,
-        msg: 'Verification Failed: Internal server error',
-      });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      msg: 'Verification Failed: Internal server error',
+    });
   }
 };
 
@@ -357,6 +359,7 @@ const checkUserVerified = async (req, res) => {
       .status(StatusCodes.OK)
       .json({ verified: user.isVerified, msg: 'Verification status checked' });
   } catch (error) {
+    errorLoggingMiddleware(error, req, res);
     console.error('Error checking verification status:', error);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)

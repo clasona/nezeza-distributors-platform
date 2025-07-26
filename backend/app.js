@@ -37,6 +37,9 @@ const favoritesRouter = require('./routes/favoritesRoutes');
 const shippingRouter = require('./routes/shippingRoutes');
 const supportRouter = require('./routes/supportRoutes');
 const adminSupportRouter = require('./routes/admin/adminSupportRoutes');
+const amdinAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
+const amdinFinancialRoutes = require('./routes/admin/adminFinancialRoutes');
+const amdinMonitoringRoutes = require('./routes/admin/adminMonitoringRoutes');
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
@@ -108,7 +111,9 @@ app.use('/api/v1/shipping', shippingRouter);
 app.use('/api/v1/support', supportRouter);
 app.use('/api/v1/admin/support', adminSupportRouter);
 app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
-
+app.use('/api/v1/admin/analytics', amdinAnalyticsRoutes);
+app.use('/api/v1/admin/financial', amdinFinancialRoutes);
+app.use('/api/v1/admin/monitoring', amdinMonitoringRoutes);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 

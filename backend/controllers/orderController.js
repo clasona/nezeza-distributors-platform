@@ -9,8 +9,12 @@ const SubOrder = require('../models/SubOrder');
 const Product = require('../models/Product');
 const Address = require('../models/Address');
 const Refund = require('../models/Refund');
-const { createOrderUtil } = require('../utils/order/createOrderUtil');
+//const { createOrderUtil } = require('../utils/order/createOrderUtil');
+const createOrderUtil = require('../utils/order/createOrderUtil');
 const processRefundUtil = require('../utils/payment/refunds');
+const {
+  errorLoggingMiddleware,
+} = require('../controllers/admin/adminSystemMonitoringController');
 
 // utils imports
 const { StatusCodes } = require('http-status-codes');
@@ -30,6 +34,7 @@ const {
   sendSellerItemCancellationNotificationEmail,
   sendSellerFullOrderCancellationEmail,
 } = require('../utils/email/sellerOrderEmailUtils');
+//const { createOrderUtil } = require('../utils/order/createOrderUtil');
 // helpers imports
 const { groupProductsBySeller } = require('../helpers/groupProductsBySeller');
 //const {updateOrderFulfillmentStatus} = require('../utils/updateFulfillmentStatus');
@@ -55,17 +60,15 @@ const createOrder = async (req, res) => {
     const buyerId = req.user.userId; // authenticated buyer's id
 
     // Call the reusable utility
-    const result = await createOrderUtil({
-      cartItems,
-      shippingFee,
-      paymentMethod,
-      buyerId,
+    const result = await createOrderUtil(
+      { cartItems, shippingFee, paymentMethod, buyerId }
       // You might pass shipping/billing addresses here if they are dynamic
-    });
+    );
 
     res.status(StatusCodes.CREATED).json(result);
   } catch (error) {
     console.error('Error in createOrderController:', error);
+    errorLoggingMiddleware(error, req, res);
     if (error.name === 'CustomError') {
       // Assuming your CustomError has a 'name' property
       return res.status(error.statusCode).json({ msg: error.message });

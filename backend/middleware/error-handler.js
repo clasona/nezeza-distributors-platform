@@ -1,6 +1,10 @@
 const { StatusCodes } = require('http-status-codes');
+const {
+  errorLoggingMiddleware,
+} = require('../../backend/controllers/admin/adminSystemMonitoringController');
 const errorHandlerMiddleware = (err, req, res, next) => {
   console.log(err);
+  errorLoggingMiddleware(err, req, res);
   let customError = {
     // set default
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
