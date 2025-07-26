@@ -13,7 +13,9 @@ const {
   processRefund,
   refundTest,
   sellerRequestPayOut,
-  getSellerRevenue,
+    getSellerRevenue,
+  getUserPaymentMethods,
+  confirmWithSavedCard,
   createCustomerSession,
   createSubscription,
   cancelSubscription,
@@ -29,6 +31,8 @@ router.get(
 router.get('/has-active-stripe-account/by-email/:email', hasActiveStripeAccount);
 router.post('/seller-subscription', createSubscription);
 router.post('/cancel-subscription', cancelSubscription);
+router.post('/confirm-with-saved-card', authenticateUser, confirmWithSavedCard);
+router.get('/user-payment-methods', authenticateUser, getUserPaymentMethods);
 router.post('/confirm-payment', confirmPayment);
 router.post('/refund', processRefund);
 router.post('/refund', refundTest);

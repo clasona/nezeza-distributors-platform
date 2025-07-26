@@ -11,7 +11,7 @@ import { AddressProps, stateProps } from '../../../type';
 import Link from 'next/link';
 
 const CheckoutReviewPage = () => {
-  const { cartItemsData, userInfo, shippingAddress } = useSelector(
+  const { cartItemsData, userInfo, shippingAddress, buyNowProduct } = useSelector(
     (state: stateProps) => state.next
   );
   const router = useRouter();
@@ -23,18 +23,46 @@ const CheckoutReviewPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isProceeding, setIsProceeding] = useState(false);
 
+  // Determine which items to use: buy now product or cart items
+  const itemsToProcess = useMemo(() => {
+    if (buyNowProduct && buyNowProduct.isBuyNow) {
+      // Convert buy now product to the format expected by shipping/payment APIs
+      const imagesArr = Array.isArray(buyNowProduct.product.images) && buyNowProduct.product.images.length
+        ? buyNowProduct.product.images
+        : buyNowProduct.product.image
+        ? [buyNowProduct.product.image]
+        : [];
+      
+      return [{
+        title: buyNowProduct.product.title,
+        price: buyNowProduct.product.price,
+        quantity: buyNowProduct.quantity,
+        description: buyNowProduct.product.description,
+        category: buyNowProduct.product.category,
+        image: imagesArr[0] || '',
+        product: buyNowProduct.product,
+        sellerStoreId: buyNowProduct.product.storeId,
+        sellerStoreAddress: buyNowProduct.product.storeId?.address,
+        addedToInventory: false,
+        status: 'Active',
+        cancelledQuantity: 0,
+      }];
+    }
+    return cartItemsData;
+  }, [buyNowProduct, cartItemsData]);
+
   useEffect(() => {
     async function loadShipping() {
       setIsLoading(true);
       setError(null);
       try {
-        // Call backend to get shipping options for cart items
+        // Call backend to get shipping options for items (either cart or buy now)
         // The backend implements a robust fallback system:
         // 1. First tries to get real shipping rates from Shippo API and Uber API
         // 2. If seller addresses are missing, provides default shipping options
         // 3. If external APIs (Shippo/Uber) fail, falls back to standard rates
         // 4. This ensures users always see shipping options and never get stuck on loading
-        const data = await createShipping(cartItemsData, shippingAddress);
+        const data = await createShipping(itemsToProcess, shippingAddress);
         console.log('Shipping data:', data);
         
         // Backend returns shippingGroups array - each group represents items from one seller
@@ -58,7 +86,7 @@ const CheckoutReviewPage = () => {
       setIsLoading(false);
     }
     loadShipping();
-  }, []);
+  }, [itemsToProcess, shippingAddress]);
 
   // Calculate subtotal
   const subtotal = useMemo(() => {
@@ -86,7 +114,60 @@ const CheckoutReviewPage = () => {
     return total;
   }, [selectedOptions, shippingGroups]);
 
-  const tax = useMemo(() => subtotal * 0.075, [subtotal]);
+  // Calculate tax using individual product tax rates
+  const tax = useMemo(() => {
+    return shippingGroups.reduce(
+      (totalTax, group) =>
+        totalTax +
+        group.items.reduce(
+          (groupTax: number, item: any) => {
+            const itemSubtotal = item.price * item.quantity;
+            const rawTaxRate = item.product?.taxRate || 0;
+            
+            // Handle both decimal (0.05) and percentage (5) formats
+            // If tax rate is <= 1, assume it's already a decimal (0.05 = 5%)
+            // If tax rate is > 1, assume it's a percentage (5 = 5%)
+            const itemTaxRate = rawTaxRate <= 1 ? rawTaxRate : rawTaxRate / 100;
+            
+            const itemTax = itemSubtotal * itemTaxRate;
+            console.log(`Item: ${item.product?.title}, Subtotal: $${itemSubtotal}, Tax Rate: ${rawTaxRate}${rawTaxRate <= 1 ? ' (decimal)' : '% (percentage)'}, Tax: $${itemTax}`);
+            
+            return groupTax + itemTax;
+          },
+          0
+        ),
+      0
+    );
+  }, [shippingGroups]);
+
+  // Get unique tax rates for display purposes
+  const uniqueTaxRates = useMemo(() => {
+    const rates = new Set<number>();
+    shippingGroups.forEach(group => {
+      group.items.forEach((item: any) => {
+        const taxRate = item.product?.taxRate || 0;
+        if (taxRate > 0) {
+          rates.add(taxRate);
+        }
+      });
+    });
+    return Array.from(rates).sort((a, b) => a - b);
+  }, [shippingGroups]);
+
+  // Create tax display label
+  const taxLabel = useMemo(() => {
+    if (uniqueTaxRates.length === 0) {
+      return 'Tax:';
+    } else if (uniqueTaxRates.length === 1) {
+      const rate = uniqueTaxRates[0];
+      // Convert to percentage for display: if rate <= 1, multiply by 100
+      const displayRate = rate <= 1 ? rate * 100 : rate;
+      return `Tax (${displayRate}%):`;
+    } else {
+      return 'Tax:';
+    }
+  }, [uniqueTaxRates]);
+
   const grandTotal = subtotal + shippingTotal + tax;
 
   const handleRadio = (groupId: string, rateId: string) => {
@@ -105,9 +186,9 @@ const CheckoutReviewPage = () => {
     setIsProceeding(true);
     setError(null);
     try {
-      // Create Payment Intent
+      // Create Payment Intent using either cart items or buy now product
       const response = await createPaymentIntent(
-        cartItemsData,
+        itemsToProcess,
         shippingAddress
       );
       if (response.status !== 200 || !response.data?.clientSecret) {
@@ -278,7 +359,7 @@ const CheckoutReviewPage = () => {
               </span>
             </div>
             <div className='flex justify-between'>
-              <span>Tax (7.5%):</span>
+              <span>{taxLabel}</span>
               <span>
                 <FormattedPrice amount={tax} />
               </span>
@@ -306,11 +387,11 @@ const CheckoutReviewPage = () => {
             </div>
           )}
         </div>
-        {/* add option to go back to cart */}
+        {/* add option to go back */}
         <div className='mt-4 text-center'>
-          <Link href='/cart'>
+          <Link href={buyNowProduct && buyNowProduct.isBuyNow ? '/' : '/cart'}>
             <p className='text-vesoko_dark_blue hover:underline'>
-              &larr; Back to Cart
+              &larr; {buyNowProduct && buyNowProduct.isBuyNow ? 'Back to Products' : 'Back to Cart'}
             </p>
           </Link>
         </div>

@@ -1,4 +1,4 @@
-import { addToCart, addToFavorites, setBuyNowProduct } from '@/redux/nextSlice';
+import { addToCart, addToFavorites, setBuyNowProduct, setShippingAddress } from '@/redux/nextSlice';
 import { handleError } from '@/utils/errorUtils';
 import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
 import {
@@ -154,57 +154,23 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
     setIsQuantityModalOpen(true);
   };
 
-  // Buy Now (Redirect to Checkout)
+  // Buy Now (Redirect to Checkout Review)
   const handleConfirmBuyNow = async (quantity: number) => {
     if (!selectedProductForBuyNow) return; // Should not happen
 
     setBuyingNowProductId(selectedProductForBuyNow._id);
 
     try {
-      // Get the first valid image from images array, or fallback to empty string
-      const imagesArr =
-        Array.isArray(selectedProductForBuyNow.images) &&
-        selectedProductForBuyNow.images.length
-          ? selectedProductForBuyNow.images
-          : selectedProductForBuyNow.image
-          ? [selectedProductForBuyNow.image]
-          : [];
-      const imageToUse = imagesArr[0] || '';
+      // Check if user has a shipping address
+      if (!userInfo.address || !userInfo.address.street1) {
+        setErrorMessage('Please add a shipping address to your profile first.');
+        setBuyingNowProductId(null);
+        setSelectedProductForBuyNow(null);
+        setIsQuantityModalOpen(false);
+        return;
+      }
 
-      const singleOrderItem: OrderItemsProps = {
-        title: selectedProductForBuyNow.title,
-        price: selectedProductForBuyNow.price,
-        quantity: quantity,
-        description: selectedProductForBuyNow.description,
-        category: selectedProductForBuyNow.category,
-        image: imageToUse,
-        product: selectedProductForBuyNow,
-        sellerStoreId: selectedProductForBuyNow.storeId,
-        sellerStoreAddress: selectedProductForBuyNow.storeId
-          .address as AddressProps,
-        addedToInventory: false,
-        status: 'Active',
-        cancelledQuantity: 0,
-      };
-
-      const itemsForPaymentIntent: any = [singleOrderItem];
-
-      const testShippingAddress: AddressProps = {
-        fullName: userInfo.firstName || '',
-        street1: userInfo.address?.street1 || '',
-        city: userInfo.address?.city || '',
-        state: userInfo.address?.state || '',
-        zip: userInfo.address?.zip || '',
-        country: userInfo.address?.country || '',
-        phone: userInfo.address?.phone || '',
-        email: userInfo.email || '',
-      };
-      const response = await createPaymentIntent(
-        itemsForPaymentIntent,
-        testShippingAddress
-      );
-      const clientSecret = response?.data?.clientSecret;
-
+      // Set the buy now product in Redux
       dispatch(
         setBuyNowProduct({
           product: selectedProductForBuyNow,
@@ -213,18 +179,23 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
         })
       );
 
-      // Proceed to checkout if clientSecret is available
-      if (clientSecret) {
-        router.push(
-          {
-            pathname: '/checkout/buy-now',
-            query: { clientSecret },
-          },
-          '/checkout/buy-now'
-        );
-      } else {
-        setErrorMessage('No client secret found.');
-      }
+      // Set shipping address from user info
+      const shippingAddress: AddressProps = {
+        fullName: `${userInfo.firstName || ''} ${userInfo.lastName || ''}`.trim(),
+        street1: userInfo.address.street1,
+        street2: userInfo.address.street2 || '',
+        city: userInfo.address.city,
+        state: userInfo.address.state,
+        zip: userInfo.address.zip,
+        country: userInfo.address.country,
+        phone: userInfo.address.phone || userInfo.phone || '',
+        email: userInfo.email,
+      };
+
+      dispatch(setShippingAddress(shippingAddress));
+
+      // Redirect to checkout review page
+      router.push('/checkout/review');
     } catch (error: any) {
       handleError(error);
       setErrorMessage(

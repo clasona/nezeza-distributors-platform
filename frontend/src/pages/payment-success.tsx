@@ -2,36 +2,156 @@ import { clearBuyNowProduct, resetCart } from '@/redux/nextSlice';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { stateProps } from '../../type';
+import { useRouter } from 'next/router';
+import { getOrderByPaymentIntentId } from '@/utils/order/getOrderByPaymentIntentId';
+import { stateProps, OrderProps } from '../../type';
+import { useSession } from 'next-auth/react';
+import { getSellerTypeBaseurl } from '@/lib/utils';
 
 const SuccessPage = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const { data: session } = useSession();
   const { buyNowProduct } = useSelector((state: stateProps) => state.next);
   const [orderNumber, setOrderNumber] = useState<string>('');
   const [estimatedDelivery, setEstimatedDelivery] = useState<string>('');
+  const [order, setOrder] = useState<OrderProps | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>('');
+  const [loadingMessage, setLoadingMessage] = useState('Processing your order...');
+
+  // Function to get the correct order details URL based on user type
+  const getOrderDetailsUrl = () => {
+    if (!session?.user) {
+      return '/customer/orders'; // Default fallback
+    }
+
+    const user = session.user;
+    
+    // If user has no storeId, they are a customer
+    if (!user.storeId) {
+      return order ? `/customer/order/${order._id}` : '/customer/orders';
+    }
+
+    // If user has storeId, route based on store type
+    const storeType = user.storeId.storeType;
+    const baseUrl = getSellerTypeBaseurl(storeType);
+    
+    if (baseUrl) {
+      return `/${baseUrl}/orders/my-orders`;
+    }
+    
+    // Fallback to customer orders if store type is unknown
+    return '/customer/orders';
+  };
 
   useEffect(() => {
-    // Generate order number and estimated delivery
-    // CHANGE
-    const orderNum = `VK-${Date.now().toString().slice(-8)}`;
-    setOrderNumber(orderNum);
-    
-    // Calculate estimated delivery (5-7 business days from now)
-    const deliveryDate = new Date();
-    deliveryDate.setDate(deliveryDate.getDate() + 5);
-    setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    }));
+    const fetchOrderDetails = async () => {
+      const { payment_intent_id } = router.query;
+      
+      if (payment_intent_id && typeof payment_intent_id === 'string') {
+        try {
+          setLoading(true);
+          // Fetch actual order details using payment intent ID
+          const orderData = await getOrderByPaymentIntentId(payment_intent_id);
+          setOrder(orderData);
+          setOrderNumber(orderData._id);
+          
+          // Calculate estimated delivery based on order creation date + 5-7 business days
+          const deliveryDate = new Date(orderData.createdAt);
+          deliveryDate.setDate(deliveryDate.getDate() + 5);
+          setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }));
+        } catch (err: any) {
+          console.error('Error fetching order details:', err);
+          setError('Failed to load order details');
+          // Fallback to generated order number if API fails
+          const orderNum = `VK-${Date.now().toString().slice(-8)}`;
+          setOrderNumber(orderNum);
+          
+          const deliveryDate = new Date();
+          deliveryDate.setDate(deliveryDate.getDate() + 5);
+          setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }));
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        // Fallback if no payment intent ID in URL
+        const orderNum = `VK-${Date.now().toString().slice(-8)}`;
+        setOrderNumber(orderNum);
+        
+        const deliveryDate = new Date();
+        deliveryDate.setDate(deliveryDate.getDate() + 5);
+        setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        }));
+        setLoading(false);
+      }
+    };
 
+    fetchOrderDetails();
+
+    // Clean up Redux state
     if (buyNowProduct?.isBuyNow) {
       dispatch(clearBuyNowProduct());
     } else {
       dispatch(resetCart());
     }
-  }, [dispatch, buyNowProduct]);
+  }, [dispatch, buyNowProduct, router.query]);
+
+  if (loading) {
+    return (
+      <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-white to-vesoko_light_blue flex items-center justify-center px-4 py-8'>
+        <div className='max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden p-8'>
+          <div className='text-center'>
+            <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-vesoko_dark_blue mx-auto mb-4'></div>
+            <p className='text-lg font-medium text-gray-700'>{loadingMessage}</p>
+            <p className='text-sm text-gray-500 mt-2'>This may take a few moments...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-white to-vesoko_light_blue flex items-center justify-center px-4 py-8'>
+        <div className='max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden p-8'>
+          <div className='text-center'>
+            <div className='text-red-500 text-6xl mb-4'>⚠️</div>
+            <h2 className='text-2xl font-bold text-gray-800 mb-2'>Unable to Load Order Details</h2>
+            <p className='text-gray-600 mb-6'>{error}</p>
+            <div className='flex flex-col sm:flex-row gap-4 justify-center'>
+              <Link
+                href={getOrderDetailsUrl()}
+                className='flex items-center justify-center px-6 py-3 bg-vesoko_dark_blue text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 shadow-md'
+              >
+                View Order Details
+              </Link>
+              <Link
+                href='/'
+                className='flex items-center justify-center px-6 py-3 bg-white text-vesoko_dark_blue border-2 border-vesoko_dark_blue font-semibold rounded-lg hover:bg-vesoko_dark_blue hover:text-white transition duration-300'
+              >
+                Continue Shopping
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-white to-vesoko_light_blue flex items-center justify-center px-4 py-8'>
@@ -96,7 +216,7 @@ const SuccessPage = () => {
 
           <div className='flex flex-col sm:flex-row gap-4 justify-center'>
             <Link
-              href='/account/orders'
+              href={getOrderDetailsUrl()}
               className='flex items-center justify-center px-6 py-3 bg-vesoko_dark_blue text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 shadow-md'
             >
               <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

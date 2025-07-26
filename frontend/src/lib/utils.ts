@@ -24,12 +24,17 @@ export const getOrderStatus = async (orderId: string) => {
 
 export const getOrderFulfillmentStatuses = () => [
   { value: 'pending', label: 'Pending' },
-  { value: 'cancelled', label: 'Cancelled' },
-  { value: 'fulfilled', label: 'Fulfilled' },
-  { value: 'delivered', label: 'Delivered' },
-  { value: 'returned', label: 'Returned' },
-  { value: 'shipped', label: 'Shipped' },
+  { value: 'confirmed', label: 'Confirmed' },
+  { value: 'processing', label: 'Processing' },
   { value: 'partially_fulfilled', label: 'Partially Fulfilled' },
-  { value: 'canceled_partially', label: 'Canceled Partially' },
+  { value: 'fulfilled', label: 'Fulfilled' },
+  { value: 'partially_shipped', label: 'Partially Shipped' },
+  { value: 'shipped', label: 'Shipped' },
+  { value: 'partially_delivered', label: 'Partially Delivered' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'partially_cancelled', label: 'Partially Cancelled' },
+  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'partially_returned', label: 'Partially Returned' },
+  { value: 'returned', label: 'Returned' },
   { value: 'archived', label: 'Archived' },
 ];

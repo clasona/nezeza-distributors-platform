@@ -33,9 +33,16 @@ const OrderDetails = ({ order }: OrderDetailsProps) => {
       <div className='mt-4'>
         <h4 className='text-md font-semibold mb-2'>Shipping Address</h4>
         <p className='text-sm'>
-          {/* {order.shippingAddress.street1}, {order.shippingAddress.city},{' '}
-          {order.shippingAddress.state} {order.shippingAddress.zip},{' '}
-          {order.shippingAddress.country} */}
+          {order.shippingAddress ? (
+            [
+              order.shippingAddress.street1,
+              order.shippingAddress.city,
+              [order.shippingAddress.state, order.shippingAddress.zip].filter(Boolean).join(' '),
+              order.shippingAddress.country
+            ].filter(Boolean).join(', ')
+          ) : (
+            'No shipping address provided'
+          )}
         </p>
       </div>
     </div>

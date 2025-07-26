@@ -1,5 +1,5 @@
 import { getSellerTypeBaseurl } from '@/lib/utils';
-import { ChevronDown, Menu, Star, Tag, Truck, Clock, SquareArrowOutUpRight, X } from 'lucide-react';
+import { ChevronDown, Menu, Star, Tag, Truck, Clock, SquareArrowOutUpRight, X, Utensils } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState, useRef, useEffect } from 'react';
@@ -33,7 +33,7 @@ const HeaderBottom = ({
   // Categories from your product form
   const categories = [
     { value: 'all', label: 'All Categories', icon: Menu },
-    { value: 'food', label: 'Food & Beverages', icon: '🍔' },
+    { value: 'food', label: 'Food & Beverages', icon: Utensils },
     { value: 'electronics', label: 'Electronics', icon: '📱' },
     { value: 'clothing', label: 'Clothing & Fashion', icon: '👕' },
     { value: 'furniture', label: 'Furniture & Home', icon: '🪑' },

@@ -65,6 +65,8 @@ export interface OrderItemsProps {
     | 'Partially Cancelled'
     | 'Partially Returned';
   cancelledQuantity: number;
+  taxRate?: number; // Tax rate as decimal (e.g., 0.08 for 8%)
+  taxAmount?: number; // Calculated tax amount for this item
 }
 
 // for buyers

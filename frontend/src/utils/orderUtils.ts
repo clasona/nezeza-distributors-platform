@@ -19,6 +19,20 @@ export const calculateOrderStats = (
       className: 'bg-yellow-600',
     },
     {
+      status: 'Confirmed',
+      count: existingOrders.filter(
+        (order) => order.fulfillmentStatus === 'Confirmed'
+      ).length,
+      className: 'bg-green-600',
+    },
+    {
+      status: 'Processing',
+      count: existingOrders.filter(
+        (order) => order.fulfillmentStatus === 'Processing'
+      ).length,
+      className: 'bg-vesoko_dark_blue',
+    },
+    {
       status: 'Fulfilled',
       count: existingOrders.filter(
         (order) => order.fulfillmentStatus === 'Fulfilled'
@@ -30,7 +44,7 @@ export const calculateOrderStats = (
       count: existingOrders.filter(
         (order) => order.fulfillmentStatus === 'Shipped'
       ).length,
-      className: 'bg-blue-600',
+      className: 'bg-vesoko_dark_blue',
     },
     {
       status: 'Delivered',
@@ -38,6 +52,13 @@ export const calculateOrderStats = (
         (order) => order.fulfillmentStatus === 'Delivered'
       ).length,
       className: 'bg-teal-600',
+    },
+    {
+      status: 'Cancelled',
+      count: existingOrders.filter(
+        (order) => order.fulfillmentStatus === 'Cancelled'
+      ).length,
+      className: 'bg-red-600',
     },
     {
       status: 'Archived',

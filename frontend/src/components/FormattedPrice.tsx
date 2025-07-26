@@ -6,7 +6,8 @@ interface Props {
     const formattedAmount = new Number(amount).toLocaleString("en-US", {
       style: "currency",
       currency: "USD",
-      minimumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     });
     return <span>{formattedAmount}</span>;
   };

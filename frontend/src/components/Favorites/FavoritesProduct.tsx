@@ -40,7 +40,7 @@ const FavoritesProduct = ({ item }: FavoritesProductProps) => {
         className='object-cover w-32 h-32 sm:w-40 sm:h-40'
         width={150}
         height={150}
-        src={item.image}
+        src={item.product.images[0]}
         alt='productImage'
       />
       <div className='flex flex-col sm:flex-row items-start sm:items-center px-2 gap-2 sm:gap-4 w-full'>

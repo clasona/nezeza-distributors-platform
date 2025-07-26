@@ -49,6 +49,7 @@ const MESSAGES = {
   USER_DETAILS_ERROR: 'Failed to retrieve user details after login.',
   GOOGLE_AUTH_ERROR: 'Failed to authenticate with backend after Google login.',
   UNEXPECTED_ERROR: 'An unexpected error occurred during login.',
+  ACCOUNT_NOT_VERIFIED: 'Account not verified. Please verify your email!',
 } as const;
 
 const LoginPage = () => {
@@ -279,11 +280,28 @@ const LoginPage = () => {
         }
       } catch (error: any) {
         handleError(error);
-        setErrorMessage(error.message || MESSAGES.UNEXPECTED_ERROR);
-      } finally {
-        if (isComponentMountedRef.current) {
-          updateLoadingState({ isLoading: false });
+        
+        // Extract the error message properly
+        let errorMessage: string = MESSAGES.UNEXPECTED_ERROR;
+        
+        if (error?.response?.data?.msg) {
+          // Backend API error message
+          errorMessage = error.response.data.msg;
+        } else if (error?.message) {
+          // Generic error message
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          // Direct string error
+          errorMessage = error;
         }
+        
+        setErrorMessage(errorMessage);
+        
+        // Ensure loading state is cleared immediately on error
+        setLoadingStates({ isLoading: false, isGoogleLoading: false });
+      } finally {
+        // Always clear loading state in finally block
+        setLoadingStates({ isLoading: false, isGoogleLoading: false });
       }
     },
     [

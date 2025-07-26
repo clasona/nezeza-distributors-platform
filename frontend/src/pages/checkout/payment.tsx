@@ -20,7 +20,7 @@ const stripePromise = loadStripe(
 
 const CheckoutPaymentPage = () => {
   const router = useRouter();
-  const { cartItemsData, shippingAddress } = useSelector(
+  const { cartItemsData, shippingAddress, buyNowProduct } = useSelector(
     (state: stateProps) => state.next
   );
 
@@ -41,10 +41,13 @@ const CheckoutPaymentPage = () => {
     // You might want to redirect back to the review page or show an error.
   }
 
-  // Redirect if cart is empty or no shipping address (should not happen if flow is followed)
+  // Redirect if no items (cart or buy now) or no shipping address
   useEffect(() => {
-    if (!cartItemsData.length) {
-      router.replace('/'); // Redirect to home if cart is empty
+    // Check if we have either cart items or a buy now product
+    const hasItems = cartItemsData.length > 0 || (buyNowProduct && buyNowProduct.isBuyNow);
+    
+    if (!hasItems) {
+      router.replace('/'); // Redirect to home if no items
       return;
     }
     if (!shippingAddress) {
@@ -53,7 +56,7 @@ const CheckoutPaymentPage = () => {
     }
     // You might also want to check if shipping options were selected/confirmed here
     // e.g., if a Redux state variable indicates that the review step was completed.
-  }, [cartItemsData, shippingAddress, router]);
+  }, [cartItemsData, buyNowProduct, shippingAddress, router]);
 
   // Memoize options for Stripe Elements
   const options = useMemo(

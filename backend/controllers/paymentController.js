@@ -69,12 +69,13 @@ const webhookHandler = async (req, res) => {
         console.log('PaymentIntent was successful!.....');
         const paymentIntent = event.data.object;
         const paymentIntentId = paymentIntent.id;
-        const orderItems = paymentIntent.metadata.orderItems;
-        const shippingAddress = paymentIntent.metadata.shippingAddress
+        const orderItems = JSON.parse(paymentIntent.metadata.orderItems);
+        const shippingAddress = JSON.parse(paymentIntent.metadata.shippingAddress);
         const buyerId = paymentIntent.metadata.buyerId;
         const customerEmail = paymentIntent.metadata.customerEmail;
         const customerFirstName = paymentIntent.metadata.customerFirstName;
         const totalAmount = paymentIntent.metadata.totalAmount;
+        const paymentMethodId = paymentIntent.payment_method;
 
         // Handle successful payment intent
 
@@ -90,19 +91,76 @@ const webhookHandler = async (req, res) => {
           );
         } else {
           console.log('Creating the order....');
-          const orderId = await createOrderUtil(
-            orderItems,
-            shippingAddress,
-            0, //TODO: Add shipping fee
-            'credit_card', //TODO: Add payment method
-            buyerId
-          );
-          console.log('Order created successfully.');
+          const orderId = await createOrderUtil({
+            cartItems: orderItems,
+            shippingFee: 0, //TODO: Add shipping fee
+            paymentMethod: 'credit_card', //TODO: Add payment method
+            buyerId: buyerId
+          });
+          console.log('Order created successfully.')
           const order = await Order.findById(orderId).populate('subOrders');
           order.paymentStatus = 'Paid';
+          order.fulfillmentStatus = 'Confirmed'; // Update fulfillment status when payment succeeds
           order.paymentIntentId = paymentIntentId;
           await order.save();
-          console.log('Order updated successfully .');
+          console.log('Order updated successfully - status changed to Confirmed.');
+          
+          // Save payment method for first-time users
+          if (buyerId && paymentMethodId) {
+            const user = await User.findById(buyerId);
+            if (user) {
+              // Create Stripe customer if missing
+              if (!user.stripeAccountId) {
+                const customer = await stripe.customers.create({
+                  email: user.email,
+                  name: user.firstName + (user.lastName ? ' ' + user.lastName : ''),
+                  metadata: {
+                    nezezaUserId: user._id.toString(),
+                  },
+                });
+                user.stripeAccountId = customer.id;
+                console.log('Created Stripe customer and updated user.stripeAccountId:', customer.id);
+              }
+              
+              // Save default payment method if not already set
+              let shouldAttach = false;
+              if (!user.stripeDefaultPaymentMethodId && paymentMethodId) {
+                user.stripeDefaultPaymentMethodId = paymentMethodId;
+                shouldAttach = true;
+                console.log('Updated user with default payment method.');
+              }
+              await user.save();
+              
+              // Attach payment method to Stripe customer if needed
+              if (shouldAttach && user.stripeAccountId && paymentMethodId) {
+                try {
+                  await stripe.paymentMethods.attach(paymentMethodId, {
+                    customer: user.stripeAccountId,
+                  });
+                  console.log('Attached payment method to Stripe customer:', user.stripeAccountId);
+                  
+                  // Set default payment method for invoices only after successful attachment
+                  await stripe.customers.update(user.stripeAccountId, {
+                    invoice_settings: { default_payment_method: paymentMethodId }
+                  });
+                  console.log('Set default payment method for Stripe customer:', user.stripeAccountId);
+                } catch (err) {
+                  console.error('Error attaching payment method to Stripe customer:', err.message);
+                  // Don't try to set default payment method if attachment failed
+                }
+              } else if (user.stripeAccountId && paymentMethodId && user.stripeDefaultPaymentMethodId === paymentMethodId) {
+                // If payment method is already set as default, try to update customer settings
+                try {
+                  await stripe.customers.update(user.stripeAccountId, {
+                    invoice_settings: { default_payment_method: paymentMethodId }
+                  });
+                  console.log('Updated default payment method for existing Stripe customer:', user.stripeAccountId);
+                } catch (err) {
+                  console.error('Error updating default payment method for Stripe customer:', err.message);
+                }
+              }
+            }
+          }
           // await confirmPayment(orderId, paymentIntentId); //contains all the functionality for updating order, payments, etc
 
           console.log('Sending confirmation email to buyer...');
@@ -490,12 +548,16 @@ const createPaymentIntent = async (req, res) => {
       amount: totalAmount * 100, // In cents
       currency: 'usd',
       payment_method_types: ['card'],
+      setup_future_usage: 'off_session', // This saves the card
       metadata: metadata,
     });
     console.log('Payment intent created successfully.');
     res
       .status(StatusCodes.OK)
-      .json({ clientSecret: paymentIntent.client_secret });
+      .json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id
+      });
   } catch (error) {
     console.error('Error creating Payment Intent:', error);
     res
@@ -925,6 +987,52 @@ const refundTest = async (req, res) => {
   }
 };
 //confirmPayment('67d894391232d717c78f476e', 'pi_3R3lE2Ixvdd0pNY40k7n6MnT');
+// Get user payment methods
+const getUserPaymentMethods = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user || !user.stripeAccountId) {
+      return res.json({ methods: [] });
+    }
+    const methods = await stripe.paymentMethods.list({
+      customer: user.stripeAccountId,
+      type: 'card',
+    });
+    res.json({ methods: methods.data });
+  } catch (error) {
+    console.error('Error fetching user payment methods:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Confirm payment with saved card
+const confirmWithSavedCard = async (req, res) => {
+  try {
+    const { paymentIntentId } = req.body;
+    const user = await User.findById(req.user.userId);
+    if (!user || !user.stripeAccountId || !user.stripeDefaultPaymentMethodId) {
+      return res.status(400).json({ error: 'No saved payment method or Stripe customer.' });
+    }
+
+    await stripe.paymentIntents.update(paymentIntentId, {
+      payment_method: user.stripeDefaultPaymentMethodId,
+      customer: user.stripeAccountId,
+    });
+
+    // Confirm payment intent with saved card
+    const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId, {
+      payment_method: user.stripeDefaultPaymentMethodId,
+    });
+    if (paymentIntent.status === 'succeeded') {
+      return res.json({ success: true });
+    } else {
+      return res.status(400).json({ error: 'Payment failed', status: paymentIntent.status });
+    }
+  } catch (error) {
+    console.error('Error confirming payment with saved card:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 module.exports = {
   webhookHandler,
@@ -941,4 +1049,6 @@ module.exports = {
   createSubscription,
   cancelSubscription,
   refundTest,
+  getUserPaymentMethods,
+  confirmWithSavedCard,
 };
