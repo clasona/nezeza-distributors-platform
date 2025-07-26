@@ -166,7 +166,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
       dispatch(addUser(updatedUserInfo));
       
       // Update local state as well
-      setCurrentUserData(prev => ({ ...prev, ...updatedFields }));
+      setCurrentUserData((prev: any) => ({ ...prev, ...updatedFields }));
       
       setErrorMessage('');
       setSuccessMessage(`Account data updated successfully!`);
