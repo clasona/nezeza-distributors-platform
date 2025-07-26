@@ -14,6 +14,7 @@ import DropdownInput from '../FormInputs/DropdownInput';
 import SubmitButton from '../FormInputs/SubmitButton';
 import TextAreaInput from '../FormInputs/TextAreaInput';
 import TextInput from '../FormInputs/TextInput';
+import TagsInput from '../FormInputs/TagsInput';
 import SuccessMessageModal from '../SuccessMessageModal';
 import CloudinaryUploadWidget from '../Cloudinary/UploadWidget';
 
@@ -87,6 +88,12 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
             if (data.images && Array.isArray(data.images)) {
               setImageUrls(data.images);
             }
+            if (data.tags && Array.isArray(data.tags)) {
+              setTags(data.tags);
+            }
+            if (data.colors && Array.isArray(data.colors)) {
+              setSelectedColors(data.colors);
+            }
           }
         } catch (error) {
           console.error('Error fetching product data:', error);
@@ -99,6 +106,8 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
 
   // Color selection state for multi input
   const [selectedColors, setSelectedColors] = useState<string[]>(['#222']);
+  // Tags state
+  const [tags, setTags] = useState<string[]>([]);
   const handleColorChange = (color: string) => {
     setSelectedColors((prev) =>
       prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
@@ -153,6 +162,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
       ...data,
       images: imageUrls,
       colors: selectedColors,
+      tags: tags,
       storeId: storeInfo?._id,
       featured: !!data.featured,
       freeShipping: !!data.freeShipping,
@@ -178,6 +188,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
 
       setImageUrls([]);
       setSelectedColors(['#222']);
+      setTags([]);
 
       if (onSubmitSuccess) {
         onSubmitSuccess(response.data);
@@ -217,6 +228,17 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
           errors={errors}
           className='sm:col-span-2' //span full row
         />
+        
+        {/* Tags Input */}
+        <div className='sm:col-span-2'>
+          <TagsInput
+            label='Product Tags'
+            tags={tags}
+            onChange={setTags}
+            placeholder='Add tags to help customers find your product...'
+            maxTags={15}
+          />
+        </div>
         <TextInput
           label='Quantity'
           id='quantity'
@@ -236,8 +258,8 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
 
         {/* Images */}
         <div className='col-span-2 mt-3 flex flex-wrap gap-2'>
-          <label className='block font-medium mb-1'>
-            Product Images <span className='text-vesoko_red_600'> *</span>
+          <label className='block text-sm font-medium mb-1'>
+            Product Images <span className='text-sm text-vesoko_red_600'> *</span>
           </label>
 
           {imageUrls.map((url, i) => (
@@ -270,7 +292,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
         </div>
         {/* Colors */}
         <div className='col-span-2 flex flex-wrap items-center gap-2 mt-2'>
-          <label className='block font-medium mb-1'>
+          <label className='block text-sm font-medium mb-1'>
             Select Colors <span className='text-vesoko_red_600'>*</span>
           </label>
           {colorOptions.map((color) => (
@@ -289,28 +311,28 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
           ))}
         </div>
         {/* Boolean fields */}
-        <div className='flex items-center gap-2 mt-2'>
+        {/* <div className='flex items-center gap-2 mt-2'>
           <input
             id='featured'
             type='checkbox'
             {...register('featured')}
             className='form-checkbox accent-vesoko_green_600'
           />
-          <label htmlFor='featured' className='font-medium'>
+          <label htmlFor='featured' className='text-sm font-medium'>
             Featured
           </label>
-        </div>
-        <div className='flex items-center gap-2 mt-2'>
+        </div> */}
+        {/* <div className='flex items-center gap-2 mt-2'>
           <input
             id='freeShipping'
             type='checkbox'
             {...register('freeShipping')}
             className='form-checkbox accent-vesoko_green_600'
           />
-          <label htmlFor='freeShipping' className='font-medium'>
+          <label htmlFor='freeShipping' className='text-sm font-medium'>
             Free Shipping
           </label>
-        </div>
+        </div> */}
         <div className='flex items-center gap-2 mt-2'>
           <input
             id='availability'

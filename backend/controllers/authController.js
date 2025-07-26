@@ -374,22 +374,31 @@ const checkUserVerified = async (req, res) => {
  *  @param res - Express response object
  */
 const logout = async (req, res) => {
-  await Token.findOneAndDelete({ user: req.user.userId });
+  try {
+    // Delete the refresh token from database
+    await Token.findOneAndDelete({ user: req.user.userId });
 
-  res.cookie('accessToken', 'logout', {
-    httpOnly: true,
-    expires: new Date(Date.now()),
-  });
-  res.cookie('refreshToken', 'logout', {
-    httpOnly: true,
-    expires: new Date(Date.now()),
-  });
-  // previous code for logout
-  // res.cookie('token', 'logout', {
-  //   httpOnly: true,
-  //   expires: new Date(Date.now()),
-  // });
-  res.status(StatusCodes.OK).json({ msg: 'user logged out!' });
+    // Clear cookies with same configuration as when they were set
+    res.cookie('accessToken', 'logout', {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+      secure: process.env.NODE_ENV === 'production',
+      signed: true,
+      sameSite: 'none'
+    });
+    res.cookie('refreshToken', 'logout', {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+      secure: process.env.NODE_ENV === 'production',
+      signed: true,
+      sameSite: 'none'
+    });
+    
+    res.status(StatusCodes.OK).json({ msg: 'user logged out!' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg: 'Logout failed' });
+  }
 };
 /* 
 Reset password.

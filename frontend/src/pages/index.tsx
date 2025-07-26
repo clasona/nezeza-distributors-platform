@@ -1,28 +1,68 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/router';
 import Banner from '@/components/Banner';
 import Products from '@/components/Products';
 import { getRetailersProducts } from '@/utils/product/getProductsBySeller';
 import { ProductProps } from '../../type';
 import Header from '@/components/header/Header';
+import HeaderBottom from '@/components/header/HeaderBottom';
 import Footer from '@/components/Footer';
 
 const Home = () => {
+  const router = useRouter();
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [currentCategory, setCurrentCategory] = useState<string>('all');
+  const [currentFilter, setCurrentFilter] = useState<string>('');
+  
+  // Track if search query update is from URL to prevent infinite loop
+  const isUpdatingFromURL = useRef(false);
 
-  // Fetch products once on mount
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const data = await getRetailersProducts();
-      setProducts(data);
-    };
-    fetchProducts();
+  // Fetch products based on filters
+  const fetchProducts = useCallback(async (filters?: {
+    searchQuery?: string;
+    category?: string;
+    filter?: string;
+  }) => {
+    try {
+      setIsSearching(true);
+      const data = await getRetailersProducts(filters);
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setProducts([]);
+    } finally {
+      setIsSearching(false);
+    }
   }, []);
 
-  // Handler for search field in Header
-  const handleSearchChange = useCallback((query: string) => {
-    setSearchQuery(query);
+  // Handle URL parameters and fetch products accordingly
+  useEffect(() => {
+    const { category, filter, search } = router.query;
+    
+    const filters = {
+      searchQuery: search as string || '',
+      category: category as string || 'all',
+      filter: filter as string || ''
+    };
+    
+    setCurrentCategory(filters.category);
+    setCurrentFilter(filters.filter);
+    
+    // Sync search query state with URL parameter and mark as URL update
+    isUpdatingFromURL.current = true;
+    setSearchQuery(search as string || '');
+    
+    // Fetch products based on URL parameters
+    fetchProducts(filters);
+  }, [router.query, fetchProducts]);
 
+  // Handler for search field in Header with debouncing
+  const handleSearchChange = useCallback((query: string) => {
+    isUpdatingFromURL.current = false; // Mark as user input
+    setSearchQuery(query);
+    
     // If user is typing, scroll to products
     const productsTop = document.querySelector('.products-top');
     if (productsTop) {
@@ -33,12 +73,45 @@ const Home = () => {
     }
   }, []);
 
-  // Filter products by searchQuery
-  const filteredProducts = products.filter(
-    (product: ProductProps) =>
-      product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Separate effect for debounced search (only for user input)
+  useEffect(() => {
+    // Skip if this is an update from URL
+    if (isUpdatingFromURL.current) {
+      isUpdatingFromURL.current = false;
+      return;
+    }
+    
+    const timeoutId = setTimeout(() => {
+      const newQuery = { ...router.query };
+      
+      if (searchQuery.trim()) {
+        // Add search query to URL
+        newQuery.search = searchQuery;
+      } else {
+        // Remove search query from URL if empty
+        delete newQuery.search;
+      }
+      
+      // Update URL with new query parameters
+      router.push({
+        pathname: '/',
+        query: newQuery
+      }, undefined, { shallow: true });
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, router]);
+
+  // Handlers for HeaderBottom callbacks
+  const handleCategorySelect = useCallback((category: string) => {
+    setCurrentCategory(category);
+    // URL update is handled by HeaderBottom component
+  }, []);
+
+  const handleFilterSelect = useCallback((filter: string) => {
+    setCurrentFilter(filter);
+    // URL update is handled by HeaderBottom component
+  }, []);
   // Scroll to products
   const handleBuyClick = () => {
     const productsTop = document.querySelector('.products-top');
@@ -52,14 +125,24 @@ const Home = () => {
     }
   };
   return (
-    <main>
+    <div className='flex flex-col min-h-screen bg-vesoko_powder_blue'>
       <Header onSearchChange={handleSearchChange} searchQuery={searchQuery} />
-      <div className='bg-vesoko_powder_blue'>
-        <Banner onBuyClick={handleBuyClick} />
-        <Products products={filteredProducts} />
-      </div>
+      <HeaderBottom 
+        showSidebar={false}
+        setShowSidebar={() => {}}
+        onCategorySelect={handleCategorySelect}
+        onFilterSelect={handleFilterSelect}
+      />
+      <main className='flex-1'>
+        <div className='bg-vesoko_powder_blue'>
+          <Banner onBuyClick={handleBuyClick} />
+          <div className='min-h-[400px]'> {/* Ensure minimum height for content area */}
+            <Products products={products} isLoading={isSearching} />
+          </div>
+        </div>
+      </main>
       <Footer />
-    </main>
+    </div>
   );
 };
 

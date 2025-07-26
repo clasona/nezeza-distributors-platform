@@ -7,6 +7,7 @@ export interface ProductProps {
   quantity: number;
   description: string;
   category: string;
+  tags: string[]; // Array of tags for search and categorization
   image?: string;
   images: string[]; // Optional if the product has multiple images
   colors: string[]; // Array of color hex codes

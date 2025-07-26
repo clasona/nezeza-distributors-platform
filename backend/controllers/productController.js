@@ -127,13 +127,27 @@ const createProductsQuery = (req) => {
     averageRating,
     featured,
     name,
+    search, // Add search parameter
     limit = 0, // Default limit
     offset = 0, // Default offset
   } = req.query;
 
   // Build the query object for filtering
   const query = {};
-  if (name) query.name = name;
+  
+  // Handle search functionality - search in title, description, category, and tags
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: 'i' } }, // Case-insensitive search in title
+      { description: { $regex: search, $options: 'i' } }, // Case-insensitive search in description
+      { category: { $regex: search, $options: 'i' } }, // Case-insensitive search in category
+      { tags: { $in: [new RegExp(search, 'i')] } } // Case-insensitive search in tags array
+    ];
+  }
+  
+  // Handle exact name match (keep for backward compatibility)
+  if (name) query.title = { $regex: name, $options: 'i' };
+  
   if (category) query.category = category;
   if (createdAt) query.createdAt = { $gte: new Date(createdAt) }; // Filter by creation date
   if (updatedAt) query.updatedAt = { $gte: new Date(updatedAt) }; // Filter by updated date
@@ -146,7 +160,6 @@ const createProductsQuery = (req) => {
     query.price = {};
     if (minPrice) query.price.$gte = parseFloat(minPrice);
     if (maxPrice) query.price.$lte = parseFloat(maxPrice);
-    console.log(query);
   }
 
   return query;
@@ -415,6 +428,40 @@ const uploadImage = async (req, res) => {
   res.status(StatusCodes.OK).json({ image: `/uploads/${productImage.name}` });
 };
 
+/*
+ * Get search suggestions - categories and popular tags
+ * @param req - Express request object
+ * @param res - Express response object
+ */
+const getSearchSuggestions = async (req, res) => {
+  try {
+    // Get all available categories from the enum
+    const categories = ['food', 'electronics', 'furniture', 'clothing', 'others'];
+    
+    // Get popular tags from existing products
+    const tagAggregation = await Product.aggregate([
+      { $unwind: '$tags' }, // Deconstruct tags array
+      { $group: { _id: '$tags', count: { $sum: 1 } } }, // Group by tag and count
+      { $sort: { count: -1 } }, // Sort by count descending
+      { $limit: 20 }, // Get top 20 tags
+      { $project: { tag: '$_id', count: 1, _id: 0 } } // Format output
+    ]);
+    
+    const popularTags = tagAggregation.map(item => item.tag);
+    
+    res.status(StatusCodes.OK).json({
+      categories,
+      popularTags,
+      suggestions: [...categories, ...popularTags] // Combined list for autocomplete
+    });
+  } catch (error) {
+    console.error('Error getting search suggestions:', error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+      error: 'Failed to get search suggestions' 
+    });
+  }
+};
+
 module.exports = {
   createProduct,
   getAllProducts,
@@ -422,6 +469,7 @@ module.exports = {
   getAllWholesalersProducts,
   getAllManufacturersProducts,
   getSingleProduct,
+  getSearchSuggestions,
   // getProduct,
   updateProduct,
   deleteProduct,

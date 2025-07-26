@@ -54,10 +54,16 @@ This document organizes feedback from test users across different platform funct
 
 ### Authentication & Session Issues
 
-4. **Cannot logout from buyer profile**
+4. **Cannot logout from buyer profile** ✅ **FIXED**
    - **Issue**: Logout functionality stuck on some profiles
-   - **Browsers**: Safari, Firefox and chrome sometimes confirmed
-   - **Impact**: Users cannot switch accounts or log out properly
+   - **Root Cause**: Multiple issues - JWT token expiration mismatch, incorrect cookie clearing, missing backend logout call
+   - **Fix Applied**: 
+     - Fixed JWT access token expiration time consistency (was 15 minutes, now properly 24 hours)
+     - Updated logout function to clear cookies with same configuration as when set
+     - Created frontend logout utility that calls backend `/auth/logout` endpoint
+     - Fixed cookie configuration to include `sameSite: 'none'`, `secure`, and `signed` properties
+   - **Technical Details**: Updated `jwt.js`, `authController.js`, `LogoutButton.tsx`, and created `logoutUser.ts` utility
+   - **Status**: ✅ **RESOLVED** - Logout should now work consistently across all browsers
 
 5. **Cart/favorites cleared after re-login** 📍 *NEEDS CLARIFICATION*
    - **Issue**: Shopping cart and favorites cleared when logging back in
@@ -104,10 +110,16 @@ This document organizes feedback from test users across different platform funct
 
 ### Search & Discovery
 
-13. **Limited search functionality**
+13. **Limited search functionality** ✅ **FIXED**
     - **Issue**: Cannot search by general terms (e.g., "Milk")
-    - **Current**: Only searches by brand names (e.g., "Inyange")
-    - **Impact**: Poor product discovery
+    - **Root Cause**: Backend search was only doing exact matches on product names instead of partial text search
+    - **Fix Applied**: 
+      - Updated backend `productController.js` to use MongoDB regex search with case-insensitive option
+      - Added search functionality for both product titles and descriptions
+      - Updated frontend home page to use backend search instead of client-side filtering
+      - Added search debouncing to avoid excessive API calls
+    - **Technical Details**: Modified `createProductsQuery` function and updated `getRetailersProducts` utility
+    - **Status**: ✅ **RESOLVED** - Search now works for partial matches in product names and descriptions
 
 14. **Store identification missing** 📍 *NEEDS CLARIFICATION*
     - **Issue**: Products show by name but stores aren't identified

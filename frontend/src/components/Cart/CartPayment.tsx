@@ -84,7 +84,7 @@ const CartPayment = () => {
         <button
           onClick={handleCheckout}
           className={`w-full sm:w-auto p-2 text-sm font-semibold bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 hover:text-white duration-300 ${
-            !userInfo ? 'pointer-events-none bg-vesoko_gray_600' : ''
+            !userInfo ? ' cursor-not-allowed bg-vesoko_gray_600 opacity-50' : ''
           }`}
         >
           Proceed to Review & Checkout

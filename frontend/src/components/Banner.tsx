@@ -14,9 +14,9 @@ interface BannerProps {
 const Banner = ({ onBuyClick }: BannerProps) => {
   const { userInfo } = useSelector((state: stateProps) => state.next);
   return (
-    <div className='relative mb-4 banner-bottom'>
+    <div className='relative mb-4 banner-bottom h-40 sm:h-48 md:h-56 overflow-hidden'>
       {!userInfo ? (
-        <div>
+        <div className='relative w-full h-full'>
           <video
             autoPlay
             loop
@@ -31,25 +31,23 @@ const Banner = ({ onBuyClick }: BannerProps) => {
             Your browser does not support the video tag.
           </video>
 
-          <div className='absolute inset-0 flex flex-col items-center justify-center text-white text-center z-10'>
-            <p className='text-2xl font-semibold mb-4'>
-              {' '}
-              Discover amazing products or sell your own on the VeSoko platform.
+          <div className='absolute inset-0 flex flex-col items-center justify-center text-white text-center z-10 px-4'>
+            <p className='text-sm sm:text-base md:text-lg font-semibold mb-3 max-w-xl leading-tight'>
+              Discover amazing products or sell your own on VeSoko
             </p>
-            <div className='flex w-full max-w-xs gap-4 justify-center'>
-              {' '}
+            <div className='flex w-full max-w-xs gap-2 justify-center'>
               <button
-                className='flex items-center justify-center bg-vesoko_dark_blue hover:bg-blue-800 hover:underline text-white font-bold py-2 px-4 rounded-md w-1/2'
+                className='flex items-center justify-center bg-vesoko_dark_blue hover:bg-blue-800 text-white font-medium py-1.5 px-3 rounded text-sm w-1/2 transition-colors duration-200'
                 onClick={onBuyClick}
               >
-                Buy
+                Buy Now
               </button>
-              <span className='text-white self-center'>or</span>{' '}
+              <span className='text-white self-center text-xs'>or</span>
               <Link
                 href='/seller-onboarding'
-                className='flex items-center justify-center bg-vesoko_green_600 hover:bg-vesoko_green_800 hover:underline  text-white font-bold py-2 px-4 rounded-md w-1/2 '
+                className='flex items-center justify-center bg-vesoko_green_600 hover:bg-vesoko_green_800 text-white font-medium py-1.5 px-3 rounded text-sm w-1/2 transition-colors duration-200'
               >
-                Sell
+                Sell Now
               </Link>
             </div>
           </div>
@@ -57,26 +55,50 @@ const Banner = ({ onBuyClick }: BannerProps) => {
           <div className='w-full h-[20%] bg-gradient-to-t from-gray-100 to-transparent absolute bottom-0 z-20'></div>
         </div>
       ) : (
-        <Carousel
-          autoPlay
-          infiniteLoop
-          showStatus={false}
-          showIndicators={false}
-          interval={3000}
-        >
-          <div>
-            <Image priority src={sliderImg_1} alt='sliderImg' />
-          </div>
-          <div>
-            <Image src={sliderImg_2} alt='sliderImg' />
-          </div>
-          <div>
-            <Image src={sliderImg_3} alt='sliderImg' />
-          </div>
-          <div>
-            <Image src={sliderImg_4} alt='sliderImg' />
-          </div>
-        </Carousel>
+        <div className='w-full h-full'>
+          <Carousel
+            autoPlay
+            infiniteLoop
+            showStatus={false}
+            showIndicators={false}
+            interval={3000}
+            className='h-full'
+          >
+            <div className='h-full'>
+              <Image 
+                priority 
+                src={sliderImg_1} 
+                alt='sliderImg' 
+                className='w-full h-full object-cover'
+                style={{ height: '100%' }}
+              />
+            </div>
+            <div className='h-full'>
+              <Image 
+                src={sliderImg_2} 
+                alt='sliderImg' 
+                className='w-full h-full object-cover'
+                style={{ height: '100%' }}
+              />
+            </div>
+            <div className='h-full'>
+              <Image 
+                src={sliderImg_3} 
+                alt='sliderImg' 
+                className='w-full h-full object-cover'
+                style={{ height: '100%' }}
+              />
+            </div>
+            <div className='h-full'>
+              <Image 
+                src={sliderImg_4} 
+                alt='sliderImg' 
+                className='w-full h-full object-cover'
+                style={{ height: '100%' }}
+              />
+            </div>
+          </Carousel>
+        </div>
       )}
     </div>
   );

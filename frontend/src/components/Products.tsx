@@ -30,12 +30,20 @@ import BuyQuantityModal from './Product/BuyQuantityModal';
 import ReviewsModal from './Reviews/ReviewsModal';
 import SuccessMessageModal from './SuccessMessageModal';
 
-const Products = ({ products }: { products: ProductProps[] }) => {
+interface ProductsProps {
+  products: ProductProps[];
+  isLoading?: boolean;
+}
+
+const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
   // const [products, setProducts] = useState<ProductProps[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const { storeInfo } = useSelector((state: stateProps) => state.next);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Use prop isLoading if provided, otherwise use internal state
+  const effectiveIsLoading = propIsLoading !== undefined ? propIsLoading : isLoading;
   const { userInfo } = useSelector((state: stateProps) => state.next);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -249,17 +257,30 @@ const Products = ({ products }: { products: ProductProps[] }) => {
     }));
   };
 
-  if (!products?.length && !isLoading) {
+  if (!products?.length && !effectiveIsLoading) {
     return (
-      <div className='w-full text-center text-bold'>
-        No products available at the moment.
+      <div className='w-full px-4 py-16'>
+        <div className='text-center'>
+          <div className='text-6xl mb-4'>🔍</div>
+          <h3 className='text-xl font-semibold text-gray-700 mb-2'>
+            No products found
+          </h3>
+          <p className='text-gray-500 max-w-md mx-auto'>
+            Try adjusting your search or browse our categories to discover amazing products.
+          </p>
+        </div>
       </div>
     );
   }
 
-  if (isLoading) {
+  if (effectiveIsLoading) {
     return (
-      <div className='w-full text-center text-bold'>Loading products...</div>
+      <div className='w-full px-4 py-16 text-center'>
+        <div className='inline-flex items-center justify-center'>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-vesoko_dark_blue mr-3'></div>
+          <span className='text-lg font-medium text-gray-700'>Loading products...</span>
+        </div>
+      </div>
     );
   }
 

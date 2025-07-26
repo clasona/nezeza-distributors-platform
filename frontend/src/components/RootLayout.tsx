@@ -42,12 +42,10 @@ const RootLayout = ({ children }: Props) => {
   return (
     <div className='flex flex-col min-h-screen bg-vesoko_powder_blue'>
       <Header />
-      {userInfo && (
-        <HeaderBottom
-          showSidebar={showSidebar}
-          setShowSidebar={setShowSidebar}
-        />
-      )}
+      <HeaderBottom
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+      />
       <div className='flex flex-1'>
         {/* {userInfo && !storeInfo && (
           <>

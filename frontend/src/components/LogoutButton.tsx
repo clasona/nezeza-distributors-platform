@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
 import { updateFavorites } from '@/utils/favorites/updateFavorites';
+import { logoutUser } from '@/utils/auth/logoutUser';
 
 interface LogoutButtonProps {
   redirectTo?: string;
@@ -34,19 +35,23 @@ export const LogoutButton = ({
     setLogoutError('');
 
     try {
-      await updateCart(cartItemsData, userInfo?._id); // Ensure cart is updated first
+      // Save user data before logout
+      await updateCart(cartItemsData, userInfo?._id);
       await updateFavorites(favoritesItemsData, userInfo?._id);
+      
+      // Call backend logout endpoint to clear cookies and tokens
+      await logoutUser();
+      
       // Clear Redux state
       dispatch(removeUser());
       dispatch(removeStore());
       dispatch(resetCart());
       dispatch(resetFavorites());
 
-      // Wait for Redux state to update before redirecting
-      setTimeout(() => {
-        signOut({ callbackUrl: redirectTo || '/' });
-      }, 100);
+      // Sign out from NextAuth and redirect
+      await signOut({ callbackUrl: redirectTo || '/' });
     } catch (error) {
+      console.error('Logout error:', error);
       setLogoutError('Logout failed. Please try again.');
       setIsLoggingOut(false);
     }

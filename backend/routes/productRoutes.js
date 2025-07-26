@@ -16,6 +16,7 @@ const {
   updateProduct,
   deleteProduct,
   uploadImage,
+  getSearchSuggestions,
 } = require('../controllers/productController');
 
 const { getSingleProductReviews } = require('../controllers/reviewController');
@@ -37,6 +38,7 @@ router
 router.route('/retailers').get(getAllRetailersProducts);
 router.route('/wholesalers').get(getAllWholesalersProducts);
 router.route('/manufacturers').get(getAllManufacturersProducts);
+router.route('/search-suggestions').get(getSearchSuggestions);
 
 router
   .route('/uploadImage')

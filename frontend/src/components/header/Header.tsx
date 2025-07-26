@@ -26,7 +26,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps, UserProps } from '../../../type';
-import logo from '../../images/soko-logo.png';
+import logo from '../../images/main.png';
 import { LogoutButton } from '../LogoutButton';
 import SearchField2 from '../header/SearchField2';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
@@ -110,29 +110,28 @@ const Header = ({
   // };
 
   return (
-    <div className='w-full h-20 bg-vesoko_dark_blue text-lightText sticky top-0 z-50'>
-      <div className='h-full w-full mx-auto flex items-center justify-between gap-1 sm:gap-3 px-4'>
+    <div className='w-full bg-vesoko_dark_blue text-lightText sticky top-0 z-50'>
+      {/* Main header row */}
+      <div className='h-20 w-full mx-auto flex items-center justify-between px-4'>
         {/* logo */}
         <Link
           href={'/'}
-          className='px-1 sm:px-2 border border-transparent hover:border-white cursor-pointer duration-300 flex items-center justify-center h-[60%] sm:h-[70%]'
+          className='flex-shrink-0 border border-transparent hover:border-white cursor-pointer duration-300 flex items-center justify-center h-[60%] sm:h-[70%]'
         >
-          <Image
-            className='w-16 sm:w-32 object-cover'
-            src={logo}
-            alt='logoImg'
-          />
-        </Link>
-        {/* delivery */}
-        {/* <div className='px-2 border border-transparent hover:border-white cursor-pointer duration-300 items-center justify-center h-[70%] hidden lg:flex gap-1'>
-          <SlLocationPin />
-          <div className='text-xs'>
-            <p>Deliver to</p>
-            <p className='text-white font-bold uppercase'>Chicago</p>
+          <div className='flex items-center justify-center w-[100px] h-[60px] sm:w-[180px] sm:h-[80px]'>
+            <Image
+              src={logo}
+              alt='logoImg'
+              width={220}
+              height={90}
+              className='object-contain w-[110%] h-[110%]'
+              priority
+            />
           </div>
-        </div> */}
-        {/* searchbar */}
-        <div className='flex-grow'>
+        </Link>
+        
+        {/* searchbar - hidden on mobile, shown on sm+ */}
+        <div className='hidden sm:flex flex-grow mx-3 sm:mx-4'>
           <SearchField2
             searchFieldPlaceholder='vesoko products'
             onSearchChange={onSearchChange}
@@ -140,49 +139,51 @@ const Header = ({
           />
         </div>
 
-        {/* favoritesItemsData */}
-        <Link
-          href={'/favorites'}
-          className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
-        >
-          <Heart className='w-22 h-22 text-white' />
-          <span className='absolute text-vesoko_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-vesoko_dark_blue border border-vesoko_yellow'>
-            {favoritesItemsData ? favoritesItemsData.length : 0}
-          </span>
-          <p className='text-white font-bold text-center sm:text-xs'>
-            Favorites
-          </p>
-        </Link>
+        {/* Right side navigation */}
+        <div className='flex items-center gap-1 sm:gap-2 px-1 sm:px-3'>
+          {/* favoritesItemsData */}
+          <Link
+            href={'/favorites'}
+            className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 sm:px-3 border border-transparent hover:border-white cursor-pointer duration-300 h-[70px] relative flex-shrink-0'
+          >
+            <Heart className='w-5 h-5 sm:w-6 sm:h-6 text-white' />
+            <span className='absolute text-vesoko_yellow text-xs top-[-1px] right-[2px] sm:right-[4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-vesoko_dark_blue border border-vesoko_yellow'>
+              {favoritesItemsData ? favoritesItemsData.length : 0}
+            </span>
+            <p className='text-white font-bold text-center text-[10px] sm:text-xs mt-1'>
+              Favorites
+            </p>
+          </Link>
 
-        <Link
-          href={'/cart'}
-          className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
-        >
-          <ShoppingCart className='w-22 h-22 text-white' />
-          <span className='absolute text-vesoko_yellow text-xs top-[-1px] right-[-4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-vesoko_dark_blue border border-vesoko_yellow'>
-            {cartItemsData ? cartItemsData.length : 0}
-          </span>
-          <p className='text-white font-bold text-center sm:text-xs'>Cart</p>
-        </Link>
+          <Link
+            href={'/cart'}
+            className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 sm:px-3 border border-transparent hover:border-white cursor-pointer duration-300 h-[70px] relative flex-shrink-0'
+          >
+            <ShoppingCart className='w-5 h-5 sm:w-6 sm:h-6 text-white' />
+            <span className='absolute text-vesoko_yellow text-xs top-[-1px] right-[2px] sm:right-[4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-vesoko_dark_blue border border-vesoko_yellow'>
+              {cartItemsData ? cartItemsData.length : 0}
+            </span>
+            <p className='text-white font-bold text-center text-[10px] sm:text-xs mt-1'>Cart</p>
+          </Link>
 
-        {/* signin */}
-        {userInfo ? (
-          <div className='flex items-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] gap-1'>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <div className='w-8 h-8 rounded-full overflow-hidden'>
-                  {' '}
-                  {/* Wrapper div */}
-                  <Image
-                    src={currentUserData?.image || defaultUserImage}
-                    alt='userProfilePicture'
-                    width={40}
-                    height={40}
-                    layout='responsive'
-                    sizes='40px'
-                    className='w-full h-full object-cover'
-                  />
-                </div>
+          {/* signin */}
+          {userInfo ? (
+            <div className='flex items-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70px] gap-1'>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <div className='w-8 h-8 rounded-full overflow-hidden'>
+                    {' '}
+                    {/* Wrapper div */}
+                    <Image
+                      src={currentUserData?.image || defaultUserImage}
+                      alt='userProfilePicture'
+                      width={40}
+                      height={40}
+                      layout='responsive'
+                      sizes='40px'
+                      className='w-full h-full object-cover'
+                    />
+                  </div>
 
                 {/* <div
                   className='text-xs text-gray-100 flec flex-col
@@ -269,15 +270,25 @@ const Header = ({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        ) : (
-          <Link
-            href={'/login'}
-            className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70%] relative'
-          >
-            <CircleUserRound size={22} className='text-white' />
-            <p className='text-white font-bold text-center sm:text-xs'>Login</p>
-          </Link>
-        )}
+          ) : (
+            <Link
+              href={'/login'}
+              className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70px] relative'
+            >
+              <CircleUserRound size={22} className='text-white' />
+              <p className='text-white font-bold text-center sm:text-xs'>Login</p>
+            </Link>
+          )}
+        </div>
+      </div>
+      
+      {/* Mobile search bar row - shown only on small screens */}
+      <div className='sm:hidden bg-vesoko_dark_blue px-4 pb-3'>
+        <SearchField2
+          searchFieldPlaceholder='vesoko products'
+          onSearchChange={onSearchChange}
+          value={searchQuery}
+        />
       </div>
     </div>
   );

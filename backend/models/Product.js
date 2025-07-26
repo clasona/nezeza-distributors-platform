@@ -37,6 +37,16 @@ const ProductSchema = new mongoose.Schema(
       required: [true, 'Please provide product category'],
       enum: ['food', 'electronics', 'furniture', 'clothing', 'others'],
     },
+    tags: {
+      type: [String],
+      default: [],
+      validate: {
+        validator: function(tags) {
+          return tags.every(tag => typeof tag === 'string' && tag.trim().length > 0);
+        },
+        message: 'All tags must be non-empty strings'
+      }
+    },
 
     colors: {
       type: [String],
