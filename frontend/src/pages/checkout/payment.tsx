@@ -24,17 +24,19 @@ const CheckoutPaymentPage = () => {
     (state: stateProps) => state.next
   );
 
-  // In a real application, the clientSecret would be fetched from your backend
-  // after confirming the order details (cart items, shipping address, selected shipping options, and total).
-  // For demonstration, let's assume it's passed via query param or fetched directly here.
+  // Extract clientSecret and paymentIntentId from URL parameters
   let clientSecret: string | undefined = undefined;
+  let paymentIntentId: string | undefined = undefined;
+  
   if (router.query.clientSecret) {
     clientSecret = router.query.clientSecret.toString();
-  } else {
-    // *** IMPORTANT: In a real app, you MUST fetch the clientSecret from your backend here
-    // based on the total amount. This usually involves making an API call to your backend
-    // after the user has reviewed and confirmed their order on the previous page.
-    // For this mock, we'll just log an error.
+  }
+  
+  if (router.query.paymentIntentId) {
+    paymentIntentId = router.query.paymentIntentId.toString();
+  }
+  
+  if (!clientSecret) {
     console.warn(
       'Client Secret not found in URL parameters. This should be fetched from your backend for actual payments.'
     );
@@ -81,7 +83,7 @@ const CheckoutPaymentPage = () => {
         </h2>
         {clientSecret ? (
           <Elements stripe={stripePromise} options={options}>
-            <CheckoutForm clientSecret={clientSecret} />
+            <CheckoutForm clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
           </Elements>
         ) : (
           <div className='flex flex-col items-center justify-center h-48'>

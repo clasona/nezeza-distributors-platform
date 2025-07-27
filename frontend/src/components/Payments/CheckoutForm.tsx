@@ -67,14 +67,18 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
     if (useSaved) {
       // Use backend util to confirm payment with saved card
       try {
-        if (!paymentIntentId) {
+        // Extract payment intent ID from client secret
+        const extractedPaymentIntentId = clientSecret.split('_secret_')[0];
+        
+        if (!extractedPaymentIntentId) {
           setIsLoading(false);
           setErrorMessage('Payment intent not found.');
           return;
         }
-        const res = await confirmWithSavedCard(paymentIntentId);
+        
+        const res = await confirmWithSavedCard(extractedPaymentIntentId);
         if (res.success) {
-          router.push(`/payment-success?payment_intent_id=${paymentIntentId}`);
+          router.push(`/payment-success?payment_intent_id=${extractedPaymentIntentId}`);
         } else {
           handleError({ message: res.error || 'Payment failed' });
         }

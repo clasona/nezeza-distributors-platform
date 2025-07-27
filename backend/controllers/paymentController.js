@@ -97,13 +97,17 @@ const webhookHandler = async (req, res) => {
             paymentMethod: 'credit_card', //TODO: Add payment method
             buyerId: buyerId
           });
-          console.log('Order created successfully.')
+          console.log('Order created successfully. Order ID:', orderId)
           const order = await Order.findById(orderId).populate('subOrders');
+          console.log('Order found:', order ? `Order ${order._id}` : 'No order found');
+          
           order.paymentStatus = 'Paid';
           order.fulfillmentStatus = 'Confirmed'; // Update fulfillment status when payment succeeds
           order.paymentIntentId = paymentIntentId;
+          
+          console.log('About to save order with paymentIntentId:', paymentIntentId);
           await order.save();
-          console.log('Order updated successfully - status changed to Confirmed.');
+          console.log(`Order updated successfully - paymentIntentId: ${order.paymentIntentId}, status: ${order.fulfillmentStatus}`);
           
           // Save payment method for first-time users
           if (buyerId && paymentMethodId) {

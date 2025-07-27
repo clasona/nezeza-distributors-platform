@@ -23,13 +23,23 @@ const formatOrderItems = (items) => {
 // Format shipping address as HTML
 const formatShippingAddress = (address) => {
   if (!address) return '<p>No shipping address provided.</p>';
+  
+  // Handle different address field naming conventions
+  const street = address.street1 || address.street || '';
+  const street2 = address.street2 || address.apt || '';
+  const zipCode = address.zipCode || address.zip || '';
+  const country = address.country || 'United States';
+  const phone = address.phone || '';
+  
   return `
-    <p>
-      ${address.fullName ? address.fullName + '<br/>' : ''}
-      ${address.street}<br/>
-      ${address.city}, ${address.state} ${address.zip}<br/>
-      ${address.country}
-    </p>
+    <div style="line-height: 1.6;">
+      ${address.fullName ? `<strong>${address.fullName}</strong><br/>` : ''}
+      ${street}<br/>
+      ${street2 ? `${street2}<br/>` : ''}
+      ${address.city}, ${address.state} ${zipCode}<br/>
+      ${country}<br/>
+      ${phone ? `📞 ${phone}` : ''}
+    </div>
   `;
 };
 

@@ -50,40 +50,68 @@ const SuccessPage = () => {
       const { payment_intent_id } = router.query;
       
       if (payment_intent_id && typeof payment_intent_id === 'string') {
-        try {
-          setLoading(true);
-          // Fetch actual order details using payment intent ID
-          const orderData = await getOrderByPaymentIntentId(payment_intent_id);
-          setOrder(orderData);
-          setOrderNumber(orderData._id);
-          
-          // Calculate estimated delivery based on order creation date + 5-7 business days
-          const deliveryDate = new Date(orderData.createdAt);
-          deliveryDate.setDate(deliveryDate.getDate() + 5);
-          setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          }));
-        } catch (err: any) {
-          console.error('Error fetching order details:', err);
-          setError('Failed to load order details');
-          // Fallback to generated order number if API fails
-          const orderNum = `VK-${Date.now().toString().slice(-8)}`;
-          setOrderNumber(orderNum);
-          
-          const deliveryDate = new Date();
-          deliveryDate.setDate(deliveryDate.getDate() + 5);
-          setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          }));
-        } finally {
-          setLoading(false);
-        }
+        const maxRetries = 6;
+        const retryDelay = 2500; // 2.5 seconds
+        let retryCount = 0;
+        
+        const attemptFetch = async (): Promise<void> => {
+          try {
+            setLoadingMessage(
+              retryCount === 0 
+                ? 'Processing your order...' 
+                : `Finalizing order details... (${retryCount}/${maxRetries})`
+            );
+            
+            // Fetch actual order details using payment intent ID
+            const orderData = await getOrderByPaymentIntentId(payment_intent_id);
+            setOrder(orderData);
+            setOrderNumber(orderData._id);
+            
+            // Calculate estimated delivery based on order creation date + 5-7 business days
+            const deliveryDate = new Date(orderData.createdAt);
+            deliveryDate.setDate(deliveryDate.getDate() + 5);
+            setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', { 
+              weekday: 'long', 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            }));
+            
+            setLoading(false);
+            console.log('✅ Order details fetched successfully:', orderData._id);
+          } catch (err: any) {
+            console.error(`Attempt ${retryCount + 1} failed:`, err);
+            
+            if (retryCount < maxRetries - 1) {
+              retryCount++;
+              console.log(`🔄 Retrying in ${retryDelay/1000} seconds... (${retryCount}/${maxRetries})`);
+              setTimeout(() => {
+                attemptFetch();
+              }, retryDelay);
+            } else {
+              console.error('❌ All retry attempts failed:', err);
+              setError('Unable to load order details after multiple attempts. The order may still be processing.');
+              
+              // Fallback to generated order number if all retries fail
+              const orderNum = `VK-${Date.now().toString().slice(-8)}`;
+              setOrderNumber(orderNum);
+              
+              const deliveryDate = new Date();
+              deliveryDate.setDate(deliveryDate.getDate() + 5);
+              setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              }));
+              
+              setLoading(false);
+            }
+          }
+        };
+        
+        // Start the first attempt
+        attemptFetch();
       } else {
         // Fallback if no payment intent ID in URL
         const orderNum = `VK-${Date.now().toString().slice(-8)}`;

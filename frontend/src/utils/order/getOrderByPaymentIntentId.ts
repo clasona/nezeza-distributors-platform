@@ -13,6 +13,7 @@ export const getOrderByPaymentIntentId = async (paymentIntentId: string, maxRetr
         console.log('order data not fetched.');
         return null;
       } else {
+        console.log('order data fetched successfully: ', response.data.order);
         return response.data.order;
       }
     } catch (error: any) {

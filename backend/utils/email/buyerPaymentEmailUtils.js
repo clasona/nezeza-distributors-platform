@@ -11,18 +11,31 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
 
   if (!order) throw new Error('Order not found for confirmation email');
 
+  // Enhanced shipping information
+  const shippingMethod = order.shippingMethod || 'Standard Shipping';
+  const estimatedDeliveryDate = moment(order.createdAt).add(5, 'days').format('MMMM D, YYYY');
+  
   const orderSummary = `
-    <p><strong>Order Date:</strong> ${moment(order.createdAt).format(
-      'MMMM D, YYYY'
-    )}</p>
-    <p><strong>Order Status:</strong> ${order.fulfillmentStatus}</p>
-    <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
-    <p><strong>Payment Status:</strong> ${order.paymentStatus}</p>
-    <p><strong>Shipping Address:</strong> ${formatShippingAddress(
-      order.shippingAddress
-    )}</p>
-    <p><strong>Items:</strong></p>
-    ${formatOrderItems(order.orderItems)}
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="color: #333; margin-top: 0;">📦 Order Information</h3>
+      <p><strong>Order Date:</strong> ${moment(order.createdAt).format('MMMM D, YYYY')}</p>
+      <p><strong>Order Status:</strong> <span style="color: #28a745;">${order.fulfillmentStatus}</span></p>
+      <p><strong>Payment Method:</strong> ${order.paymentMethod.replace('_', ' ').toUpperCase()}</p>
+      <p><strong>Payment Status:</strong> <span style="color: #28a745;">${order.paymentStatus}</span></p>
+      <p><strong>Estimated Delivery Date:</strong> ${estimatedDeliveryDate}</p>
+    </div>
+    
+    <div style="background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="color: #333; margin-top: 0;">🚚 Shipping Information</h3>
+      <p><strong>Shipping Method:</strong> ${shippingMethod}</p>
+      <p><strong>Shipping Address:</strong></p>
+      ${formatShippingAddress(order.shippingAddress)}
+    </div>
+    
+    <div style="background-color: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="color: #333; margin-top: 0;">📋 Order Items</h3>
+      ${formatOrderItems(order.orderItems)}
+    </div>
   `;
 
   const paymentSummary = `

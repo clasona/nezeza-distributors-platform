@@ -68,33 +68,98 @@ const sendSellerNewOrderNotificationEmail = async ({
   const shippingAddress = formatShippingAddress(order.shippingAddress);
   const shippingMethod = order.shippingMethod || 'Standard Shipping';
 
-  const html = `
-    <div style="font-family: Arial, sans-serif;">
-      <h2 style="color: #FF9800;">You've got a new order!</h2>
-      <p>You have received a new order <strong>#${orderId}</strong> from <strong>${buyerName}</strong>. Please review the details below and process the order as soon as possible.</p>
-
-      <h3>Order Details</h3>
+  // Enhanced shipping and order details
+  const estimatedDeliveryDate = moment(order.createdAt).add(5, 'days').format('MMMM D, YYYY');
+  const buyerContactInfo = order.buyerId ? (
+    order.buyerId.email ? `<p><strong>Buyer Email:</strong> ${order.buyerId.email}</p>` : ''
+  ) : '';
+  const shippingAddressFormatted = formatShippingAddress(order.shippingAddress);
+  
+  // Enhanced order summary with shipping details
+  const orderDetailsSection = `
+    <div style="background-color: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="color: #333; margin-top: 0;">📦 Order Information</h3>
       <p><strong>Order Date:</strong> ${orderDate}</p>
       <p><strong>Buyer:</strong> ${buyerName}</p>
-      <ul style="margin-bottom: 20px;">${itemsList}</ul>
-
-      <p><strong>Total Amount (Your Items):</strong> $${totalAmount}</p>
+      ${buyerContactInfo}
+      <p><strong>Order Status:</strong> <span style="color: #28a745;">New Order - Action Required</span></p>
+    </div>
+  `;
+  
+  const itemsSection = `
+    <div style="background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="color: #333; margin-top: 0;">📋 Your Items in This Order</h3>
+      <ul style="margin-bottom: 20px; padding-left: 20px;">${itemsList}</ul>
+      <div style="background-color: #d4edda; padding: 15px; border-radius: 5px; margin-top: 15px;">
+        <p style="margin: 0; font-size: 18px;"><strong>💰 Total Amount (Your Items): $${totalAmount}</strong></p>
+        <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">Subtotal: $${sellerSubtotal.toFixed(2)} | Tax: $${sellerTax.toFixed(2)} | Shipping: $${sellerShipping.toFixed(2)}</p>
+      </div>
+    </div>
+  `;
+  
+  const shippingSection = `
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="color: #333; margin-top: 0;">🚚 Shipping & Delivery Information</h3>
       <p><strong>Shipping Method:</strong> ${shippingMethod}</p>
-      <p>${shippingAddress}</p>
-
-      <p>Please log in to your seller dashboard to confirm and fulfill the order:</p>
-      <a href="${client_url}/${storeType}" style="color: #FF9800;">Go to Seller Dashboard</a>
-
-      <hr style="border-top: 1px solid #eee; margin: 20px 0;" />
-      <p>If you have any questions, contact our support team at <a href="mailto:support@vesoko.com" style="color: #FF9800;">support@vesoko.com</a>.</p>
-
-      <footer style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 10px; text-align: center; color: #888;">
-        Thank you for selling with VeSoko!<br>
-        <strong>VeSoko Team</strong>
-      </footer>
+      <p><strong>Estimated Delivery Date:</strong> ${estimatedDeliveryDate}</p>
+      <p><strong>Customer Shipping Address:</strong></p>
+      <div style="background-color: #e9ecef; padding: 15px; border-radius: 5px; font-family: monospace;">
+        ${shippingAddressFormatted}
+      </div>
+      <div style="background-color: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 5px; margin-top: 15px;">
+        <p style="margin: 0; color: #0c5460;"><strong>⚠️ Important:</strong> Please ensure items are packaged securely and shipped using the specified method. Update the tracking information in your dashboard once the package is dispatched.</p>
+      </div>
+    </div>
+  `;
+  
+  const actionSection = `
+    <div style="background-color: #fff2cc; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+      <h3 style="color: #333; margin-top: 0;">🎯 Next Steps</h3>
+      <p>Please log in to your seller dashboard to:</p>
+      <ul style="text-align: left; display: inline-block;">
+        <li>Confirm the order and update inventory</li>
+        <li>Print shipping labels and packing slips</li>
+        <li>Update order status and tracking information</li>
+        <li>Communicate with the customer if needed</li>
+      </ul>
+      <a href="${client_url}/${storeType}" style="display: inline-block; background-color: #FF9800; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 15px;">Go to Seller Dashboard</a>
     </div>
   `;
 
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <div style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <h1 style="margin: 0; font-size: 28px;">🎉 New Order Received!</h1>
+        <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Order #${orderId} from ${buyerName}</p>
+      </div>
+      
+      <div style="padding: 0 20px;">
+        <p style="font-size: 16px; color: #333; margin: 20px 0;">You have received a new order! Please review the details below and process the order as soon as possible to ensure timely delivery to your customer.</p>
+        
+        ${orderDetailsSection}
+        ${itemsSection}
+        ${shippingSection}
+        ${actionSection}
+        <div style="background: #ffebcc; padding: 15px; border-radius: 5px;">
+          <h4 style="margin: 0;">🚚 Next Steps:</h4>
+          <ul>
+            <li>Confirm the order to move it into processing.</li>
+            <li>Ship items using the specified method.</li>
+            <li>Update the order status to inform the buyer.</li>
+          </ul>
+        </div>
+        
+        <hr style="border-top: 1px solid #eee; margin: 30px 0;" />
+        <p style="color: #666; font-size: 14px;">If you have any questions or need assistance, contact our support team at <a href="mailto:support@vesoko.com" style="color: #FF9800;">support@vesoko.com</a>.</p>
+        
+        <footer style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; text-align: center; color: #888;">
+          <p style="margin: 0;">Thank you for selling with VeSoko!</p>
+          <p style="margin: 5px 0 0 0; font-weight: bold;">VeSoko Team</p>
+        </footer>
+      </div>
+    </div>
+  `;
   return sendEmail({
     to: sellerStore.email,
     subject: `New Order #${orderId} Received – Action Required`,

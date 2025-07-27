@@ -212,15 +212,37 @@ const getOrderByPaymentIntentId = async (req, res) => {
   const { paymentIntentId } = req.params; // The order ID from the URL params
   const userId = req.user.userId; // get the user ID attached to the request after authentication
 
+  console.log('=== getOrderByPaymentIntentId DEBUG ===');
+  console.log('Payment Intent ID:', paymentIntentId);
+  console.log('User ID:', userId);
+
   const user = await User.findById(userId);
+  console.log('User found:', user ? `${user.firstName} ${user.lastName}` : 'No user found');
 
   const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
+  console.log('Is individual customer:', isIndividualCustomer);
 
   const storeId = isIndividualCustomer ? userId : user.storeId;
+  console.log('Store ID for query:', storeId);
 
   if (!storeId) {
     throw new CustomError.UnauthorizedError('Not authorized to view order');
   }
+  
+  // First, let's check if ANY order exists with this payment intent ID
+  const anyOrder = await Order.findOne({ paymentIntentId: paymentIntentId });
+  console.log('Any order with this payment intent ID exists:', anyOrder ? `Order ${anyOrder._id}` : 'No order found');
+  
+  if (anyOrder) {
+    console.log('Order details:', {
+      orderId: anyOrder._id,
+      buyerId: anyOrder.buyerId,
+      buyerStoreId: anyOrder.buyerStoreId,
+      paymentIntentId: anyOrder.paymentIntentId,
+      paymentStatus: anyOrder.paymentStatus
+    });
+  }
+  
   const order = await Order.findOne({ paymentIntentId: paymentIntentId })
     .select('-subOrders')
     .populate('buyerId', '-password')
@@ -239,8 +261,10 @@ const getOrderByPaymentIntentId = async (req, res) => {
     })
     .exec(); //Find the full order by ID
 
-  ///console.log(order);
+  console.log('Order after population:', order ? `Order ${order._id}` : 'No order found after population');
+  
   if (!order) {
+    console.log('ERROR: Order not found - this should not happen if anyOrder was found above');
     throw new CustomError.NotFoundError(
       `No order with payment intent id : ${paymentIntentId}`
     );

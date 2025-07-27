@@ -13,6 +13,8 @@ const CartPayment = () => {
     (state: stateProps) => state.next
   );
   const [totalAmount, setTotalAmount] = useState(0);
+  const [qualifiesForFreeShipping, setQualifiesForFreeShipping] = useState(false);
+  const [freeShippingThreshold] = useState(50); // Set your free shipping threshold
   const dispatch = useDispatch();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -20,12 +22,33 @@ const CartPayment = () => {
 
   useEffect(() => {
     let amount = 0;
-    cartItemsData.map((item: StoreProduct) => {
+    let hasEligibleProducts = false;
+    
+    cartItemsData.map((item: OrderItemsProps) => {
       amount += item.price * item.quantity;
+      
+      // Check if any products qualify for free shipping
+      // You can customize this logic based on your business rules
+      if (item.product && (
+        item.product.freeShipping || // Product has free shipping flag
+        item.product.price >= 25 || // Products over $25 qualify
+        item.product.category === 'electronics' // Certain categories qualify
+      )) {
+        hasEligibleProducts = true;
+      }
       return;
     });
+    
     setTotalAmount(amount);
-  }, [cartItemsData]);
+    
+    // Order qualifies for free shipping if:
+    // 1. Total amount meets threshold AND has eligible products, OR
+    // 2. Cart contains products that individually qualify for free shipping
+    setQualifiesForFreeShipping(
+      (amount >= freeShippingThreshold && hasEligibleProducts) ||
+      hasEligibleProducts
+    );
+  }, [cartItemsData, freeShippingThreshold]);
 
   const handleCheckout = () => {
     try {
@@ -62,17 +85,36 @@ const CartPayment = () => {
 
   return (
     <div className='flex flex-col gap-4 p-2 sm:p-4'>
-      <div className='flex gap-2 items-start'>
-        <span
-          className='bg-vesoko_green_600 rounded-full p-1 h-6 w-6 text-sm
-                 text-white flex items-center justify-center mt-1'
-        >
-          <SiMediamarkt />
-        </span>
-        <p className='text-xs sm:text-sm'>
-          Your order qualifies for FREE Shipping. Continue for more details
-        </p>
-      </div>
+      {qualifiesForFreeShipping && (
+        <div className='flex gap-2 items-start'>
+          <span
+            className='bg-vesoko_green_600 rounded-full p-1 h-6 w-6 text-sm
+                   text-white flex items-center justify-center mt-1'
+          >
+            <SiMediamarkt />
+          </span>
+          <p className='text-xs sm:text-sm'>
+            🎉 Your order qualifies for FREE Shipping! Continue for more details
+          </p>
+        </div>
+      )}
+      
+      {!qualifiesForFreeShipping && totalAmount > 0 && (
+        <div className='flex gap-2 items-start'>
+          <span
+            className='bg-amber-500 rounded-full p-1 h-6 w-6 text-sm
+                   text-white flex items-center justify-center mt-1'
+          >
+            🚚
+          </span>
+          <p className='text-xs sm:text-sm text-gray-600'>
+            Add <FormattedPrice amount={freeShippingThreshold - totalAmount} /> more to qualify for FREE shipping
+            {totalAmount < freeShippingThreshold && (
+              <span className='text-vesoko_green_600 font-semibold'> (${freeShippingThreshold} minimum)</span>
+            )}
+          </p>
+        </div>
+      )}
       <p className='flex flex-col sm:flex-row items-center justify-between px-2 font-semibold'>
         Total Price:{' '}
         <span className='font-bold text-lg sm:text-xl'>

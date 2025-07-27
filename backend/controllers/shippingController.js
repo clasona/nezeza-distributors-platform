@@ -216,7 +216,7 @@ const getShippingOptions = async (req, res) => {
     }
 
     const itemsBySeller = groupItemsBySeller(cartItems);
-    console.log('Items grouped by seller:', JSON.stringify(itemsBySeller, null, 2));
+    // console.log('Items grouped by seller:', JSON.stringify(itemsBySeller, null, 2));
 
     const standardRatesObj = {};
     const sameDayRatesObj = {};
@@ -229,7 +229,7 @@ const getShippingOptions = async (req, res) => {
         items[0].sellerAddress ||
         (items[0].sellerStoreId && items[0].sellerStoreId.address);
       
-      console.log(`Seller ${sellerId} address:`, JSON.stringify(sellerAddress, null, 2));
+      // console.log(`Seller ${sellerId} address:`, JSON.stringify(sellerAddress, null, 2));
 
       // FALLBACK STRATEGY #1: Missing Seller Address
       // When seller address data is missing from cart items, we can't call external APIs (Shippo/Uber)

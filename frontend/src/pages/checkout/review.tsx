@@ -63,7 +63,6 @@ const CheckoutReviewPage = () => {
         // 3. If external APIs (Shippo/Uber) fail, falls back to standard rates
         // 4. This ensures users always see shipping options and never get stuck on loading
         const data = await createShipping(itemsToProcess, shippingAddress);
-        console.log('Shipping data:', data);
         
         // Backend returns shippingGroups array - each group represents items from one seller
         // Each group contains deliveryOptions (shipping methods available for that seller)
@@ -130,7 +129,6 @@ const CheckoutReviewPage = () => {
             const itemTaxRate = rawTaxRate <= 1 ? rawTaxRate : rawTaxRate / 100;
             
             const itemTax = itemSubtotal * itemTaxRate;
-            console.log(`Item: ${item.product?.title}, Subtotal: $${itemSubtotal}, Tax Rate: ${rawTaxRate}${rawTaxRate <= 1 ? ' (decimal)' : '% (percentage)'}, Tax: $${itemTax}`);
             
             return groupTax + itemTax;
           },
@@ -191,17 +189,23 @@ const CheckoutReviewPage = () => {
         itemsToProcess,
         shippingAddress
       );
+      console.log('Payment intent response:', response);
       if (response.status !== 200 || !response.data?.clientSecret) {
         setError('Could not create payment intent. Please try again.');
         setIsProceeding(false);
         return;
       }
       const clientSecret = response.data.clientSecret;
+      const paymentIntentId = response.data.paymentIntentId;
+      
+      console.log('Payment intent created:', { clientSecret, paymentIntentId });
+      
       router.push({
         pathname: '/checkout/payment',
         query: {
           total: grandTotal.toFixed(2),
           clientSecret,
+          paymentIntentId,
         },
       });
     } catch (err: any) {

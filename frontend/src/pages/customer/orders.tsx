@@ -457,7 +457,7 @@ const Orders = () => {
                         {order.orderItems.slice(0, 3).map((item, index) => (
                           <div key={index} className='flex items-center space-x-3 bg-white rounded-lg p-3'>
                             <img
-                              src={item.image}
+                              src={item.product.images[0]}
                               alt={item.title}
                               className='w-12 h-12 object-cover rounded-lg'
                             />
