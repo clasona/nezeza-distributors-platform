@@ -37,11 +37,19 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
   `;
 
   const message = `
-    <p>Thank you for your payment! Your order has been successfully confirmed.</p>
-    ${orderSummary}
-    <p><strong>--- Payment Summary ---</strong></p>
-    ${paymentSummary}
-    <p>If you have any questions or need assistance with your order, please contact us.</p>
+    <div style="font-family: Arial, sans-serif;">
+      <h2 style="color: #4CAF50;">Thank you for your payment!</h2>
+      <p>Your order has been successfully confirmed.</p>
+      ${orderSummary}
+      <h3 style="margin-top: 20px;">Payment Summary</h3>
+      ${paymentSummary}
+      <hr style="border-top: 1px solid #eee; margin: 20px 0;" />
+      <p style="color: #555;">If you have any questions or need assistance with your order, please contact us.</p>
+      <footer style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 10px; text-align: center; color: #888;">
+        VeSoko Team<br>
+        <a href="mailto:support@vesoko.com" style="color: #4CAF50;">support@vesoko.com</a>
+      </footer>
+    </div>
   `;
 
   return sendEmail({

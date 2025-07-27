@@ -163,25 +163,38 @@ const webhookHandler = async (req, res) => {
           }
           // await confirmPayment(orderId, paymentIntentId); //contains all the functionality for updating order, payments, etc
 
+          // Send emails with error handling
           console.log('Sending confirmation email to buyer...');
-          await sendBuyerPaymentConfirmationEmail({
-            name: customerFirstName,
-            email: customerEmail,
-            orderId: orderId,
-          });
+          try {
+            await sendBuyerPaymentConfirmationEmail({
+              name: customerFirstName,
+              email: customerEmail,
+              orderId: orderId,
+            });
+            console.log('Buyer confirmation email sent successfully.');
+          } catch (emailError) {
+            console.error('Failed to send buyer confirmation email:', emailError.message);
+            // Continue processing - don't let email failure stop the webhook
+          }
 
           // Send email to sellers
           console.log('Sending email to sellers...');
           const subOrders = order.subOrders;
           for (const subOrder of subOrders) {
-            await sendSellerNewOrderNotificationEmail({
-              sellerStoreId: subOrder.sellerStoreId,
-              orderId: orderId,
-              sellerOrderItems: subOrder.products,
-              sellerSubtotal: subOrder.totalAmount,
-              sellerTax: subOrder.totalTax,
-              sellerShipping: subOrder.totalShipping,
-            });
+            try {
+              await sendSellerNewOrderNotificationEmail({
+                sellerStoreId: subOrder.sellerStoreId,
+                orderId: orderId,
+                sellerOrderItems: subOrder.products,
+                sellerSubtotal: subOrder.totalAmount,
+                sellerTax: subOrder.totalTax,
+                sellerShipping: subOrder.totalShipping,
+              });
+              console.log(`Seller notification email sent for store ${subOrder.sellerStoreId}`);
+            } catch (emailError) {
+              console.error(`Failed to send seller notification email for store ${subOrder.sellerStoreId}:`, emailError.message);
+              // Continue processing - don't let email failure stop the webhook
+            }
           }
 
           // await updateSellerBalances(order); // Call the update balances function

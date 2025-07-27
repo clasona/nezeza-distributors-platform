@@ -31,6 +31,7 @@ const reviewRouter = require('./routes/reviewRoutes');
 const orderRouter = require('./routes/orderRoutes');
 const paymentRouter = require('./routes/paymentRoutes');
 const inventoryRouter = require('./routes/inventoryRoutes');
+const emailTestRouter = require('./routes/emailTestRoutes');
 const notificationRouter = require('./routes/notificationRoutes');
 const cartRouter = require('./routes/cartRoutes');
 const favoritesRouter = require('./routes/favoritesRoutes');
@@ -114,6 +115,8 @@ app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 app.use('/api/v1/admin/analytics', amdinAnalyticsRoutes);
 app.use('/api/v1/admin/financial', amdinFinancialRoutes);
 app.use('/api/v1/admin/monitoring', amdinMonitoringRoutes);
+// email test routes
+app.use('/api/v1/email-test', emailTestRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 

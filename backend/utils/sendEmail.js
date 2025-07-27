@@ -9,8 +9,8 @@ const sendEmail = async ({ to, subject, html }) => {
   const message = {
     to: to,
     from: {
-      email: 'abotgeorge1@gmail.com', // replace with your own email
-      name: 'Soko Platform',
+      email: process.env.VERIFIED_EMAIL,
+      name: 'VeSoko Platform',
     },
     subject: subject,
     html: html,

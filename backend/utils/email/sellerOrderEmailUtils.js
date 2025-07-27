@@ -69,31 +69,30 @@ const sendSellerNewOrderNotificationEmail = async ({
   const shippingMethod = order.shippingMethod || 'Standard Shipping';
 
   const html = `
-    <h4>Dear ${sellerStore.firstName || 'Seller'},</h4>
-    <p>You have received a new order <strong>#${orderId}</strong> from <strong>${buyerName}</strong>. Please review the details below and process the order as soon as possible.</p>
+    <div style="font-family: Arial, sans-serif;">
+      <h2 style="color: #FF9800;">You've got a new order!</h2>
+      <p>You have received a new order <strong>#${orderId}</strong> from <strong>${buyerName}</strong>. Please review the details below and process the order as soon as possible.</p>
 
-    <h4>📦 Order Details:</h4>
-    <p><strong>Order Date:</strong> ${orderDate}</p>
-    <p><strong>Buyer:</strong> ${buyerName}</p>
-    <ul>${itemsList}</ul>
+      <h3>Order Details</h3>
+      <p><strong>Order Date:</strong> ${orderDate}</p>
+      <p><strong>Buyer:</strong> ${buyerName}</p>
+      <ul style="margin-bottom: 20px;">${itemsList}</ul>
 
-    <p><strong>💰 Total Amount (Your Items):</strong> $${totalAmount}</p>
-    <p><strong>🚚 Shipping Method:</strong> ${shippingMethod}</p>
-    <p>${order.shippingAddress.street}</p>
-    <p>${
-      order.shippingAddress.apt ? `Apt #${order.shippingAddress.apt}` : ''
-    }</p>
-    <p>${order.shippingAddress.city}, ${order.shippingAddress.state} ${
-    order.shippingAddress.zip
-  }</p>
+      <p><strong>Total Amount (Your Items):</strong> $${totalAmount}</p>
+      <p><strong>Shipping Method:</strong> ${shippingMethod}</p>
+      <p>${shippingAddress}</p>
 
-    <p>Please log in to your seller dashboard to confirm and fulfill the order:</p>
-    <a href="${client_url}/${storeType}">Go to Seller Dashboard</a>
+      <p>Please log in to your seller dashboard to confirm and fulfill the order:</p>
+      <a href="${client_url}/${storeType}" style="color: #FF9800;">Go to Seller Dashboard</a>
 
-    <p>If you have any questions, contact our support team at <a href="mailto:support@vesoko.com">support@vesoko.com</a>.</p>
+      <hr style="border-top: 1px solid #eee; margin: 20px 0;" />
+      <p>If you have any questions, contact our support team at <a href="mailto:support@vesoko.com" style="color: #FF9800;">support@vesoko.com</a>.</p>
 
-    <p>Thank you for selling with VeSoko!</p>
-    <strong>VeSoko Team</strong>
+      <footer style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 10px; text-align: center; color: #888;">
+        Thank you for selling with VeSoko!<br>
+        <strong>VeSoko Team</strong>
+      </footer>
+    </div>
   `;
 
   return sendEmail({
