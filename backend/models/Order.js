@@ -133,6 +133,10 @@ const OrderSchema = mongoose.Schema(
     refundId: {
       type: String,
     },
+    estimatedDeliveryDate: {
+      type: Date,
+      required: true,
+    },
   },
   { timestamps: true }
 );

@@ -71,6 +71,9 @@ const webhookHandler = async (req, res) => {
         const paymentIntentId = paymentIntent.id;
         const orderItems = JSON.parse(paymentIntent.metadata.orderItems);
         const shippingAddress = JSON.parse(paymentIntent.metadata.shippingAddress);
+        const billingAddress = paymentIntent.metadata.billingAddress ? 
+          JSON.parse(paymentIntent.metadata.billingAddress) : null;
+        const shippingFee = parseFloat(paymentIntent.metadata.shippingFee || '0');
         const buyerId = paymentIntent.metadata.buyerId;
         const customerEmail = paymentIntent.metadata.customerEmail;
         const customerFirstName = paymentIntent.metadata.customerFirstName;
@@ -93,9 +96,11 @@ const webhookHandler = async (req, res) => {
           console.log('Creating the order....');
           const orderId = await createOrderUtil({
             cartItems: orderItems,
-            shippingFee: 0, //TODO: Add shipping fee
-            paymentMethod: 'credit_card', //TODO: Add payment method
-            buyerId: buyerId
+            shippingFee: shippingFee,
+            paymentMethod: 'credit_card',
+            buyerId: buyerId,
+            shippingAddress: shippingAddress,
+            billingAddress: billingAddress
           });
           console.log('Order created successfully. Order ID:', orderId)
           const order = await Order.findById(orderId).populate('subOrders');

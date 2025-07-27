@@ -69,7 +69,7 @@ const sendSellerNewOrderNotificationEmail = async ({
   const shippingMethod = order.shippingMethod || 'Standard Shipping';
 
   // Enhanced shipping and order details
-  const estimatedDeliveryDate = moment(order.createdAt).add(5, 'days').format('MMMM D, YYYY');
+  const estimatedDeliveryDate = moment(order.estimatedDeliveryDate).format('MMMM D, YYYY');
   const buyerContactInfo = order.buyerId ? (
     order.buyerId.email ? `<p><strong>Buyer Email:</strong> ${order.buyerId.email}</p>` : ''
   ) : '';

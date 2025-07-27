@@ -13,7 +13,7 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
 
   // Enhanced shipping information
   const shippingMethod = order.shippingMethod || 'Standard Shipping';
-  const estimatedDeliveryDate = moment(order.createdAt).add(5, 'days').format('MMMM D, YYYY');
+  const estimatedDeliveryDate = moment(order.estimatedDeliveryDate).format('MMMM D, YYYY');
   
   const orderSummary = `
     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">

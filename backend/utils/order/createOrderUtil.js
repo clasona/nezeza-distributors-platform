@@ -17,6 +17,7 @@ const {
 const {
   errorLoggingMiddleware,
 } = require('../../controllers/admin/adminSystemMonitoringController');
+const calculateEstimatedDelivery = require('./calculateEstimatedDelivery');
 
 /* 
   Create a new order, group items by seller,
@@ -64,13 +65,17 @@ const createSubOrders = async (fullOrder, session) => {
  * @param {number} orderData.shippingFee - The shipping fee for the order.
  * @param {string} orderData.paymentMethod - The payment method used.
  * @param {string} orderData.buyerId - The ID of the authenticated buyer.
+ * @param {object} orderData.shippingAddress - The shipping address for the order.
+ * @param {object} orderData.billingAddress - The billing address for the order (optional, defaults to shipping address).
  * @returns {Promise<{orderId: string}>} - The order ID.
  */
 const createOrderUtil = async ({
   cartItems,
-  shippingFee,
+  shippingFee = 0,
   paymentMethod,
   buyerId,
+  shippingAddress,
+  billingAddress,
 }) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -92,8 +97,8 @@ const createOrderUtil = async ({
       throw new CustomError.BadRequestError('No cart items provided');
     }
 
-    if (!shippingFee && shippingFee !== 0) {
-      // Check for explicit 0 as well
+    // Validate shipping fee (allow 0 for free shipping)
+    if (shippingFee === null || shippingFee === undefined) {
       throw new CustomError.BadRequestError('Please provide shipping fee');
     }
 
@@ -171,28 +176,42 @@ const createOrderUtil = async ({
 
       subtotal += item.quantity * price;
       totalTax += itemTax * item.quantity;
-      totalShipping += 0; // Assuming flat shipping is handled per item or order
+      // Shipping is calculated separately and passed as shippingFee parameter
 
       stockUpdates.push({ productId: _id, quantity: item.quantity });
     }
 
+    // Use actual shipping fee instead of hardcoded 0
+    totalShipping = shippingFee;
     const totalAmount = totalTax + totalShipping + subtotal;
 
-    // if (typeof shippingAddress === 'string') {
-    //   shippingAddress = JSON.parse(shippingAddress);
-    // }
+    // Calculate estimated delivery date (5 business days from order creation)
+    const estimatedDeliveryDate = calculateEstimatedDelivery(new Date(), 5);
 
-    const shippingAddress = {
-      street: '12345 Market St',
-      city: 'San Francisco',
-      state: 'CA',
-      zipCode: '94103',
-      country: 'USA',
-      phone: '8608084545',
-    };
-    // if (typeof billingAddress === 'string') {
-    //   billingAddress = JSON.parse(billingAddress);
-    // }
+    // Validate and process addresses
+    if (!shippingAddress) {
+      throw new CustomError.BadRequestError('Shipping address is required');
+    }
+
+    // Parse addresses if they come as strings (from payment intent metadata)
+    let parsedShippingAddress = shippingAddress;
+    let parsedBillingAddress = billingAddress || shippingAddress; // Default billing to shipping
+
+    if (typeof shippingAddress === 'string') {
+      try {
+        parsedShippingAddress = JSON.parse(shippingAddress);
+      } catch (error) {
+        throw new CustomError.BadRequestError('Invalid shipping address format');
+      }
+    }
+
+    if (typeof billingAddress === 'string') {
+      try {
+        parsedBillingAddress = JSON.parse(billingAddress);
+      } catch (error) {
+        throw new CustomError.BadRequestError('Invalid billing address format');
+      }
+    }
 
     const [order] = await Order.create(
       [
@@ -202,11 +221,12 @@ const createOrderUtil = async ({
           totalTax,
           totalShipping,
           paymentMethod,
-          shippingAddress: shippingAddress, // Use the ID of the created address
-          billingAddress: shippingAddress, // TODO: get from paymentIntent? Use the ID of the created address (or a separate one)
+          shippingAddress: parsedShippingAddress,
+          billingAddress: parsedBillingAddress,
           buyerId,
           buyerStoreId: buyerStore._id,
           subOrders: [],
+          estimatedDeliveryDate,
         },
       ],
       { session }

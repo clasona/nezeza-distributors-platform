@@ -56,14 +56,24 @@ const fakeStripeAPI = async ({ amount, currency }) => {
  */
 const createOrder = async (req, res) => {
   try {
-    const { items: cartItems, shippingFee, paymentMethod } = req.body;
+    const { 
+      items: cartItems, 
+      shippingFee, 
+      paymentMethod, 
+      shippingAddress, 
+      billingAddress 
+    } = req.body;
     const buyerId = req.user.userId; // authenticated buyer's id
 
     // Call the reusable utility
-    const result = await createOrderUtil(
-      { cartItems, shippingFee, paymentMethod, buyerId }
-      // You might pass shipping/billing addresses here if they are dynamic
-    );
+    const result = await createOrderUtil({
+      cartItems, 
+      shippingFee, 
+      paymentMethod, 
+      buyerId,
+      shippingAddress,
+      billingAddress
+    });
 
     res.status(StatusCodes.CREATED).json(result);
   } catch (error) {
@@ -188,7 +198,6 @@ const getSingleOrder = async (req, res) => {
     })
     .exec(); //Find the full order by ID
 
-  ///console.log(order);
   if (!order) {
     throw new CustomError.NotFoundError(`No order with id : ${orderId}`);
   }
@@ -212,35 +221,18 @@ const getOrderByPaymentIntentId = async (req, res) => {
   const { paymentIntentId } = req.params; // The order ID from the URL params
   const userId = req.user.userId; // get the user ID attached to the request after authentication
 
-  console.log('=== getOrderByPaymentIntentId DEBUG ===');
-  console.log('Payment Intent ID:', paymentIntentId);
-  console.log('User ID:', userId);
-
   const user = await User.findById(userId);
-  console.log('User found:', user ? `${user.firstName} ${user.lastName}` : 'No user found');
 
   const isIndividualCustomer = !user.storeId; // True if buyer has no storeId (i.e., is a customer)
-  console.log('Is individual customer:', isIndividualCustomer);
 
   const storeId = isIndividualCustomer ? userId : user.storeId;
 
   if (!storeId) {
     throw new CustomError.UnauthorizedError('Not authorized to view order');
   }
-  
+
   // First, let's check if ANY order exists with this payment intent ID
   const anyOrder = await Order.findOne({ paymentIntentId: paymentIntentId });
-  console.log('Any order with this payment intent ID exists:', anyOrder ? `Order ${anyOrder._id}` : 'No order found');
-  
-  if (anyOrder) {
-    console.log('Order details:', {
-      orderId: anyOrder._id,
-      buyerId: anyOrder.buyerId,
-      buyerStoreId: anyOrder.buyerStoreId,
-      paymentIntentId: anyOrder.paymentIntentId,
-      paymentStatus: anyOrder.paymentStatus
-    });
-  }
   
   const order = await Order.findOne({ paymentIntentId: paymentIntentId })
     .select('-subOrders')
@@ -260,10 +252,7 @@ const getOrderByPaymentIntentId = async (req, res) => {
     })
     .exec(); //Find the full order by ID
 
-  console.log('Order after population:', order ? `Order ${order._id}` : 'No order found after population');
-  
   if (!order) {
-    console.log('ERROR: Order not found - this should not happen if anyOrder was found above');
     throw new CustomError.NotFoundError(
       `No order with payment intent id : ${paymentIntentId}`
     );
@@ -1063,7 +1052,6 @@ const cancelSingleOrderProduct = async (req, res) => {
         refundStatus = 'completed'; // Update local status variable
 
         // Send refund email to buyer
-        console.log('Sending refund email to buyer...');
         await sendBuyerPaymentRefundEmail({
           name: order.buyerId.firstName,
           email: order.buyerId.email,
@@ -1073,10 +1061,8 @@ const cancelSingleOrderProduct = async (req, res) => {
           orderId: orderId,
           orderItemId: orderItem._id.toString(),
         });
-        console.log('Refund email sent to buyer successfully');
 
         //send refund email to seller
-        console.log('Sending refund email to seller...');
         await sendSellerItemCancellationNotificationEmail({
           sellerStoreId: orderItem.sellerStoreId,
           orderId: orderId,
@@ -1086,7 +1072,6 @@ const cancelSingleOrderProduct = async (req, res) => {
           refundReason: refundReason,
           refundDate: new Date(),
         });
-        console.log('Refund email sent to sellers successfully');
       } else {
         // If Stripe call failed or didn't return a valid ID, we report failure without creating a Refund doc
         // (or you could create a 'failed' one here if you want a record of *attempted* refunds)
@@ -1128,14 +1113,10 @@ const cancelSingleOrderProduct = async (req, res) => {
   if (orderItem.cancelledQuantity === orderItem.quantity) {
     orderItem.status = 'Cancelled'; // Fully cancelled
     subOrder.fulfillmentStatus = 'Cancelled';
-    console.log(`Order item fully cancelled: ${orderItem.title}.`);
   } else {
     // This implies orderItem.cancelledQuantity < orderItem.quantity
     orderItem.status = 'Partially Cancelled';
     subOrder.fulfillmentStatus = 'Partially Cancelled';
-    console.log(
-      `Order item partially cancelled: ${cancelQuantity} of ${orderItem.title} cancelled.`
-    );
   }
   // Update overall order fulfillmentStatus
   const allCancelled = order.orderItems.every(
@@ -1169,11 +1150,6 @@ const cancelSingleOrderProduct = async (req, res) => {
   // Save the sub-order and full order with updated fulfillment status
   await subOrder.save();
   await order.save();
-
-  console.log(
-    'Order item cancellation processed. Refund status:',
-    refundStatus
-  );
 
   res.status(StatusCodes.OK).json({
     msg: `Order item ${

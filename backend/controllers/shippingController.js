@@ -203,9 +203,9 @@ const getShippingOptions = async (req, res) => {
   const { cartItems, customerAddress } = req.body;
 
   try {
-    console.log('=== SHIPPING DEBUG ===');
-    console.log('Cart items received:', JSON.stringify(cartItems, null, 2));
-    console.log('Customer address:', JSON.stringify(customerAddress, null, 2));
+    // console.log('=== SHIPPING DEBUG ===');
+    // console.log('Cart items received:', JSON.stringify(cartItems, null, 2));
+    // console.log('Customer address:', JSON.stringify(customerAddress, null, 2));
     
     if (!cartItems || cartItems.length === 0) {
       return res.status(400).json({
