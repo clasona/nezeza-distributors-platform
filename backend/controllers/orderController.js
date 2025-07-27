@@ -223,7 +223,6 @@ const getOrderByPaymentIntentId = async (req, res) => {
   console.log('Is individual customer:', isIndividualCustomer);
 
   const storeId = isIndividualCustomer ? userId : user.storeId;
-  console.log('Store ID for query:', storeId);
 
   if (!storeId) {
     throw new CustomError.UnauthorizedError('Not authorized to view order');
