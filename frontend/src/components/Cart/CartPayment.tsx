@@ -42,11 +42,10 @@ const CartPayment = () => {
     setTotalAmount(amount);
     
     // Order qualifies for free shipping if:
-    // 1. Total amount meets threshold AND has eligible products, OR
-    // 2. Cart contains products that individually qualify for free shipping
+    // 1. Total amount meets threshold AND has eligible products
+    // Only show free shipping message when both conditions are met
     setQualifiesForFreeShipping(
-      (amount >= freeShippingThreshold && hasEligibleProducts) ||
-      hasEligibleProducts
+      amount >= freeShippingThreshold && hasEligibleProducts
     );
   }, [cartItemsData, freeShippingThreshold]);
 

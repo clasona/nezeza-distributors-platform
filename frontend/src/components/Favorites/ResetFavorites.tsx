@@ -25,13 +25,14 @@ const ResetFavorites = () => {
     // }
   };
   return (
-    <div>
+    <div className='flex items-center justify-between py-4'>
       <button
         onClick={handleResetFavoritesClick}
-        className='w-44 h-10 font-semibold bg-gray-200 rounded-lg hover:bg-red-600 hover:text-white duration-300'
+        className='px-6 py-2 text-sm font-semibold text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors duration-300'
       >
-        Reset favorites
+        Reset Favorites
       </button>
+
       {/* Reset Favorites Modal */}
       {isConfirmFavoritesResetModalOpen && (
         <ConfirmResetFavoritesModal

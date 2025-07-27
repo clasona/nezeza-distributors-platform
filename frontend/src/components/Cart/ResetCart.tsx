@@ -27,18 +27,18 @@ const ResetCart = () => {
   };
 
   return (
-    <div>
+    <div className='flex items-center gap-4 py-4'>
       <button
         onClick={handleResetCartClick}
-        className='w-44 h-10 font-semibold bg-gray-200 rounded-lg hover:bg-red-600 hover:text-white duration-300'
+        className='px-6 py-2 text-sm font-semibold text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors duration-300'
       >
-        Reset cart
+        Reset Cart
       </button>
       <Link
         href='/'
-        className='ml-4 font-semibold text-vesoko_dark_blue rounded-lg hover:underline'
+        className='text-sm font-semibold text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors duration-300'
       >
-        Continue shopping
+        Continue Shopping
       </Link>
       {/* Reset Cart Modal */}
       {isConfirmCartResetModalOpen && (

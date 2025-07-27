@@ -197,6 +197,27 @@ export const nextSlice = createSlice({
       state.favoritesItemsData = [];
     },
 
+    // Add all favorites to cart and clear favorites
+    addAllFavoritesToCart: (state) => {
+      // Iterate through all favorites and add them to cart
+      state.favoritesItemsData.forEach((favoriteItem) => {
+        const existingCartItem = state.cartItemsData.find(
+          (cartItem: OrderItemsProps) => cartItem.product._id === favoriteItem.product._id
+        );
+
+        if (existingCartItem) {
+          // If item already exists in cart, increase quantity
+          existingCartItem.quantity += favoriteItem.quantity;
+        } else {
+          // If item doesn't exist in cart, add it
+          state.cartItemsData.push({ ...favoriteItem });
+        }
+      });
+
+      // Clear favorites after adding to cart
+      state.favoritesItemsData = [];
+    },
+
     // add a user info to cart for checkout
     addUser: (state, action) => {
       state.userInfo = action.payload;
@@ -263,6 +284,7 @@ export const {
   deleteFavoritesProduct,
   resetCart,
   resetFavorites,
+  addAllFavoritesToCart,
   addUser,
   removeUser,
   addStore,

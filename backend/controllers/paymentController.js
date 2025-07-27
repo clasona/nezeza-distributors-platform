@@ -28,6 +28,10 @@ const {
   sendSellerItemCancellationNotificationEmail,
   sendSellerFullOrderCancellationEmail,
 } = require('../utils/email/sellerOrderEmailUtils');
+const {
+  sendOrderConfirmationEmailAndNotification,
+  sendSellerNewOrderEmailAndNotification,
+} = require('../utils/sendEmailAndNotification');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 

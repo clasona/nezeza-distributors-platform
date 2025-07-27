@@ -34,6 +34,10 @@ const {
   sendSellerItemCancellationNotificationEmail,
   sendSellerFullOrderCancellationEmail,
 } = require('../utils/email/sellerOrderEmailUtils');
+const {
+  sendOrderConfirmationEmailAndNotification,
+  sendOrderStatusUpdateEmailAndNotification,
+} = require('../utils/sendEmailAndNotification');
 //const { createOrderUtil } = require('../utils/order/createOrderUtil');
 // helpers imports
 const { groupProductsBySeller } = require('../helpers/groupProductsBySeller');
@@ -660,18 +664,18 @@ const updateToShipped = async (req, res) => {
     // Update the fullOrder status
     updateOrderFulfillmentStatus(order, fulfillmentStatus);
 
-    // Notify the buyer and seller that the order has been shipped
-
-    await sendNotification({
-      email: subOrder.buyerId.email,
-      firstName: subOrder.buyerId.firstName,
-      subject: `Your ${storeId} Order has Shipped`,
-      message: `Your order: ${subOrder._id} from store: ${storeId} has Shipped.`,
-    });
-    await sendNotification({
-      email,
-      subject: 'Your Order Shipped',
-      message: `Your order: ${subOrder._id} from your store: ${storeId} has Shipped.`,
+    // Notify the buyer that the order has been shipped
+    const store = await Store.findById(storeId);
+    const storeName = store ? store.name : `Store ${storeId}`;
+    
+    await sendOrderStatusUpdateEmailAndNotification({
+      buyerEmail: subOrder.buyerId.email,
+      buyerId: subOrder.buyerId._id,
+      buyerName: subOrder.buyerId.firstName,
+      orderId: subOrder._id,
+      status: 'Shipped',
+      storeName: storeName,
+      trackingNumber: subOrder.shippingDetails?.trackingNumber || null,
     });
   } else {
     throw new CustomError.BadRequestError(
