@@ -34,6 +34,7 @@ const CheckoutReviewPage = () => {
         : [];
       
       return [{
+        _id: buyNowProduct.product._id,
         title: buyNowProduct.product.title,
         price: buyNowProduct.product.price,
         quantity: buyNowProduct.quantity,
@@ -41,8 +42,14 @@ const CheckoutReviewPage = () => {
         category: buyNowProduct.product.category,
         image: imagesArr[0] || '',
         product: buyNowProduct.product,
+        sellerId: buyNowProduct.product.storeId?._id || buyNowProduct.product.storeId,
         sellerStoreId: buyNowProduct.product.storeId,
+        sellerAddress: buyNowProduct.product.storeId?.address,
         sellerStoreAddress: buyNowProduct.product.storeId?.address,
+        weight: buyNowProduct.product.weight || 1,
+        length: buyNowProduct.product.length || 6,
+        width: buyNowProduct.product.width || 6,
+        height: buyNowProduct.product.height || 4,
         addedToInventory: false,
         status: 'Active',
         cancelledQuantity: 0,

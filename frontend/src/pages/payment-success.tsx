@@ -58,7 +58,7 @@ const SuccessPage = () => {
           try {
             setLoadingMessage(
               retryCount === 0 
-                ? 'Processing your order...' 
+                ? 'Submitting your order...' 
                 : `Finalizing order details... (${retryCount}/${maxRetries})`
             );
             
@@ -67,14 +67,13 @@ const SuccessPage = () => {
             setOrder(orderData);
             setOrderNumber(orderData._id);
             
-            // Calculate estimated delivery based on order creation date + 5-7 business days
-            const deliveryDate = new Date(orderData.createdAt);
-            deliveryDate.setDate(deliveryDate.getDate() + 5);
-            setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            // Use the estimated delivery date from the order
+            const deliveryDate = new Date(orderData.estimatedDeliveryDate);
+            setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
             }));
             
             setLoading(false);

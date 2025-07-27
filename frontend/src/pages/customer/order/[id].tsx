@@ -26,7 +26,8 @@ import {
   FileText,
   Archive,
   Download,
-  X
+  X,
+  Clock
 } from 'lucide-react';
 
 const SingleOrderDetails = () => {
@@ -347,7 +348,7 @@ const SingleOrderDetails = () => {
               <div className='bg-white rounded-xl shadow-sm border mb-6'>
                 <div className='p-6'>
                   <h2 className='text-xl font-semibold text-gray-900 mb-4'>Order Summary</h2>
-                  <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                  <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4'>
                     <div className='flex items-center space-x-3'>
                       <div className='p-2 bg-gray-100 rounded-lg'>
                         <Calendar className='w-5 h-5 text-gray-600' />
@@ -384,6 +385,19 @@ const SingleOrderDetails = () => {
                         <p className='font-medium text-gray-900'>{order.paymentMethod}</p>
                       </div>
                     </div>
+                    {order.estimatedDeliveryDate && (
+                      <div className='flex items-center space-x-3'>
+                        <div className='p-2 bg-gray-100 rounded-lg'>
+                          <Clock className='w-5 h-5 text-gray-600' />
+                        </div>
+                        <div>
+                          <p className='text-sm text-gray-500'>Estimated Delivery</p>
+                          <p className='font-medium text-vesoko_dark_blue'>
+                            {formatDate(order.estimatedDeliveryDate)}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

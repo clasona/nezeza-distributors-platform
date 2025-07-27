@@ -1,4 +1,4 @@
-import { addToCart, addToFavorites, setBuyNowProduct, setShippingAddress } from '@/redux/nextSlice';
+import { addToCart, addToFavorites, setBuyNowProduct, setShippingAddress, increaseQuantity, decreaseQuantity, deleteFavoritesProduct, deleteCartProduct } from '@/redux/nextSlice';
 import { handleError } from '@/utils/errorUtils';
 import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
 import {
@@ -12,6 +12,8 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
+  Plus,
+  Minus,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -44,7 +46,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
   
   // Use prop isLoading if provided, otherwise use internal state
   const effectiveIsLoading = propIsLoading !== undefined ? propIsLoading : isLoading;
-  const { userInfo } = useSelector((state: stateProps) => state.next);
+  const { userInfo, cartItemsData, favoritesItemsData } = useSelector((state: stateProps) => state.next);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -118,7 +120,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
           quantity: 1,
         })
       );
-      setSuccessMessage('Added successfully!');
+      setSuccessMessage('Added to cart!');
     } catch (error: any) {
       handleError(error);
       setErrorMessage(error);
@@ -127,17 +129,28 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
     }
   };
 
-  // Modified Add to Favorites handler
+  // Modified Add to Favorites handler - toggle add/remove
   const handleAddToFavorite = async (product: ProductProps) => {
+    const isCurrentlyInFavorites = Array.isArray(favoritesItemsData)
+      ? favoritesItemsData.some(item => item.product._id === product._id)
+      : false;
+    
     setAddingToFavoritesProductId(product._id);
     try {
-      await dispatch(
-        addToFavorites({
-          product,
-          quantity: 1,
-        })
-      );
-      setSuccessMessage('Added successfully!');
+      if (isCurrentlyInFavorites) {
+        // Remove from favorites
+        dispatch(deleteFavoritesProduct(product._id));
+        setSuccessMessage('Removed from favorites!');
+      } else {
+        // Add to favorites
+        await dispatch(
+          addToFavorites({
+            product,
+            quantity: 1,
+          })
+        );
+        setSuccessMessage('Added to favorites!');
+      }
     } catch (error) {
       handleError(error);
     } finally {
@@ -265,6 +278,36 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
             ? [product.image]
             : [];
         const currIndex = carouselIndexes[product._id] || 0;
+        
+        // Check if product is in cart or favorites
+        interface CartItem {
+          product: ProductProps;
+          quantity: number;
+        }
+
+        interface FavoritesItem {
+          product: ProductProps;
+          quantity: number;
+        }
+
+        const isInCart: boolean = Array.isArray(cartItemsData)
+          ? (cartItemsData as CartItem[]).some((item: CartItem) => item.product._id === product._id)
+          : false;
+        interface FavoritesItem {
+          product: ProductProps;
+          quantity: number;
+        }
+        const isInFavorites: boolean = Array.isArray(favoritesItemsData)
+          ? (favoritesItemsData as FavoritesItem[]).some((item: FavoritesItem) => item.product._id === product._id)
+          : false;
+        interface CartItem {
+          product: ProductProps;
+          quantity: number;
+        }
+        const cartItem: CartItem | undefined = (Array.isArray(cartItemsData)
+          ? (cartItemsData as CartItem[])
+          : []
+        ).find((item: CartItem) => item.product._id === product._id);
 
         return (
           <div
@@ -337,44 +380,92 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                   </div>
                 )}
               </div>
-              {/* Action Buttons: right-bottom, horizontal on mobile, vertical on desktop */}
-              <div className='absolute flex flex-row sm:flex-col gap-1 right-2 bottom-2 sm:right-4 sm:bottom-4 z-20'>
-                {!(product.quantity < 1) && (
-                  <Button
-                    onClick={() => handleAddToCart(product)}
-                    isLoading={addingToCartProductId === product._id}
-                    buttonTitle=''
-                    loadingButtonTitle=''
-                    icon={ShoppingCart}
-                    className={`w-8 h-8 sm:w-12 sm:h-12 rounded-md flex items-center justify-center
-                      text-lg sm:text-xl bg-white border border-gray-400 shadow hover:bg-vesoko_green_600 hover:text-white cursor-pointer duration-300
-                      ${
-                        product.quantity < 1
-                          ? 'cursor-not-allowed opacity-50'
-                          : ''
-                      }`}
+              {/* Action Buttons: smaller, better positioned */}
+              <div className='absolute right-1 top-1 z-20'>
+                <div className='flex flex-col gap-1 items-end'>
+                  {/* Cart Button - show quantity controls if in cart, otherwise show add to cart */}
+                  {!(product.quantity < 1) && (
+                    <div className='flex items-center'>
+                      {isInCart && cartItem ? (
+                        // Quantity controls when product is in cart
+                        <div className='flex items-center bg-vesoko_green_600 text-white rounded-md px-1.5 py-1 gap-1 shadow-md'>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (cartItem.quantity === 1) {
+                                // Remove item from cart when quantity reaches 0
+                                dispatch(deleteCartProduct(product._id));
+                                setSuccessMessage('Removed from cart!');
+                              } else {
+                                dispatch(decreaseQuantity({ id: product._id }));
+                              }
+                            }}
+                            className='hover:bg-vesoko_green_800 rounded p-0.5 transition-colors'
+                          >
+                            <Minus size={10} />
+                          </button>
+                          <span className='text-xs font-semibold min-w-[16px] text-center'>
+                            {cartItem.quantity}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              dispatch(increaseQuantity({ id: product._id }));
+                            }}
+                            className='hover:bg-vesoko_green_800 rounded p-0.5 transition-colors'
+                          >
+                            <Plus size={10} />
+                          </button>
+                        </div>
+                      ) : (
+                        // Add to cart button when not in cart
+                        <Button
+                          onClick={() => {
+                            handleAddToCart(product);
+                          }}
+                          isLoading={addingToCartProductId === product._id}
+                          buttonTitle=''
+                          loadingButtonTitle=''
+                          icon={ShoppingCart}
+                          className='w-7 h-7 rounded-md flex items-center justify-center
+                            text-sm bg-white/90 border border-gray-300 shadow-md hover:bg-vesoko_green_600 hover:text-white cursor-pointer duration-300 backdrop-blur-sm'
+                          disabled={
+                            addingToCartProductId === product._id ||
+                            addingToFavoritesProductId === product._id ||
+                            buyingNowProductId === product._id
+                          }
+                        />
+                      )}
+                    </div>
+                  )}
+                  {/* Favorites Button - always positioned on the right */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToFavorite(product);
+                    }}
                     disabled={
-                      product.quantity < 1 ||
                       addingToCartProductId === product._id ||
                       addingToFavoritesProductId === product._id ||
                       buyingNowProductId === product._id
                     }
-                  />
-                )}
-                <Button
-                  onClick={() => handleAddToFavorite(product)}
-                  isLoading={addingToFavoritesProductId === product._id}
-                  buttonTitle=''
-                  loadingButtonTitle=''
-                  icon={Heart}
-                  className='w-8 h-8 sm:w-12 sm:h-12 rounded-md flex items-center justify-center text-lg sm:text-xl
-                    bg-white border border-gray-400 shadow hover:bg-vesoko_green_600 hover:text-white cursor-pointer duration-300'
-                  disabled={
-                    addingToCartProductId === product._id ||
-                    addingToFavoritesProductId === product._id ||
-                    buyingNowProductId === product._id
-                  }
-                />
+                    className={`w-7 h-7 rounded-md flex items-center justify-center text-sm
+                      border shadow-md hover:bg-red-50 hover:border-red-500 cursor-pointer duration-300 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                        isInFavorites 
+                          ? 'bg-red-50 text-red-600 border-red-500' 
+                          : 'bg-white/90 border-gray-300 text-red-500'
+                      }`}
+                  >
+                    {addingToFavoritesProductId === product._id ? (
+                      <div className='animate-spin rounded-full h-3 w-3 border-b-2 border-current'></div>
+                    ) : (
+                      <Heart 
+                        size={16} 
+                        className={isInFavorites ? 'fill-red-500' : ''}
+                      />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
             <hr className='my-2' />

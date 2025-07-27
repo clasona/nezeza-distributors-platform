@@ -83,6 +83,7 @@ export interface OrderProps {
   paymentMethod: string;
   shippingAddress: AddressProps;
   archived: boolean;
+  estimatedDeliveryDate: string;
 }
 
 /// for sellers

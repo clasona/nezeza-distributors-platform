@@ -31,7 +31,8 @@ import {
   AlertCircle,
   Filter,
   Download,
-  ShoppingBag
+  ShoppingBag,
+  Clock
 } from 'lucide-react';
 
 const Orders = () => {
@@ -378,7 +379,7 @@ const Orders = () => {
                       isNewestOrder ? 'ring-2 ring-green-200 bg-green-50' : ''
                     }`}>
                       {isNewestOrder && (
-                        <div className='absolute top-2 right-2'>
+                        <div className='absolute top-0 right-2'>
                           <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'>
                             <span className='w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5'></span>
                             Newest
@@ -393,7 +394,7 @@ const Orders = () => {
                             </h3>
                             <FormattedStatus status={order.fulfillmentStatus} />
                           </div>
-                        <div className='grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm text-gray-600'>
+                        <div className='grid grid-cols-1 sm:grid-cols-4 gap-4 text-sm text-gray-600'>
                           <div className='flex items-center'>
                             <Calendar className='w-4 h-4 mr-2' />
                             {formatDate(order.createdAt)}
@@ -406,6 +407,14 @@ const Orders = () => {
                             <Package className='w-4 h-4 mr-2' />
                             {order.orderItems.length} item{order.orderItems.length !== 1 ? 's' : ''}
                           </div>
+                          {order.estimatedDeliveryDate && (
+                            <div className='flex items-center'>
+                              <Clock className='w-4 h-4 mr-2' />
+                              <span className='text-vesoko_dark_blue font-medium'>
+                                Est. {formatDate(order.estimatedDeliveryDate)}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className='flex items-center space-x-2 ml-4'>

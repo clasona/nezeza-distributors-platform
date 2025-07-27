@@ -76,7 +76,7 @@ export const nextSlice = createSlice({
           quantity: quantity,
           description: product.description,
           category: product.category,
-          image: product.image,
+          image: product.images[0],
           product: product, // Store the entire product object
           sellerStoreId: product.storeId,
           sellerStoreAddress: product.storeId.address,
@@ -108,7 +108,7 @@ export const nextSlice = createSlice({
           quantity: quantity,
           description: product.description,
           category: product.category,
-          image: product.image,
+          image: product.images[0],
           product: product, // Store the entire product object
           sellerStoreId: product.storeId,
           sellerStoreAddress: product.storeId.address,

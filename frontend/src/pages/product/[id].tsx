@@ -1,6 +1,7 @@
 import SuccessMessageModal from '@/components/SuccessMessageModal';
+import ErrorMessageModal from '@/components/ErrorMessageModal';
 import { Button } from '@/components/ui/button';
-import { addToCart, addToFavorites } from '@/redux/nextSlice';
+import { addToCart, addToFavorites, setBuyNowProduct, setShippingAddress, increaseQuantity, decreaseQuantity, deleteFavoritesProduct, deleteCartProduct } from '@/redux/nextSlice';
 import {
   AlertTriangle,
   CheckCircle,
@@ -10,20 +11,33 @@ import {
   Truck,
   ChevronLeft,
   ChevronRight,
+  Plus,
+  Minus,
+  ArrowLeft,
+  Package,
+  Shield,
+  Award,
 } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ProductProps, stateProps } from '../../../type';
+import { ProductProps, stateProps, AddressProps } from '../../../type';
 import { getSingleProduct } from '../../utils/product/getSingleProduct';
 import ReviewsModal from '@/components/Reviews/ReviewsModal';
+import FormattedPrice from '@/components/FormattedPrice';
+import { handleError } from '@/utils/errorUtils';
 
 const ProductDetails = () => {
-  const { userInfo } = useSelector((state: stateProps) => state.next);
+  const { userInfo, cartItemsData, favoritesItemsData } = useSelector((state: stateProps) => state.next);
   const router = useRouter();
   const { id } = router.query;
   const [product, setProduct] = useState<ProductProps | null>(null);
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [addingToCartProductId, setAddingToCartProductId] = useState<string | null>(null);
+  const [addingToFavoritesProductId, setAddingToFavoritesProductId] = useState<string | null>(null);
+  const [buyingNowProductId, setBuyingNowProductId] = useState<string | null>(null);
   const dispatch = useDispatch();
   const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false);
 
@@ -41,27 +55,141 @@ const ProductDetails = () => {
     }
   }, [id]);
 
-  // Add to Cart
-  const handleAddToCart = () => {
-    dispatch(addToCart({ product, quantity: 1 }));
-    setSuccessMessage('Added to Cart!');
+  // Check if product is in cart or favorites
+  const isInCart = Array.isArray(cartItemsData)
+    ? cartItemsData.some(item => item.product._id === product?._id)
+    : false;
+  const isInFavorites = Array.isArray(favoritesItemsData)
+    ? favoritesItemsData.some(item => item.product._id === product?._id)
+    : false;
+  const cartItem = Array.isArray(cartItemsData)
+    ? cartItemsData.find(item => item.product._id === product?._id)
+    : undefined;
+
+  // Add to Cart with enhanced functionality
+  const handleAddToCart = async () => {
+    if (!product) return;
+    setAddingToCartProductId(product._id);
+    try {
+      await dispatch(
+        addToCart({
+          product,
+          quantity,
+        })
+      );
+      setSuccessMessage('Added to cart!');
+    } catch (error: any) {
+      handleError(error);
+      setErrorMessage(error?.message || 'Error adding to cart');
+    } finally {
+      setAddingToCartProductId(null);
+    }
   };
 
-  // Add to Favorites
-  const handleAddToFavorite = () => {
-    dispatch(addToFavorites({ product, quantity: 1 }));
-    setSuccessMessage('Added to Favorites!');
+  // Add to Favorites with toggle functionality
+  const handleAddToFavorite = async () => {
+    if (!product) return;
+    setAddingToFavoritesProductId(product._id);
+    try {
+      if (isInFavorites) {
+        dispatch(deleteFavoritesProduct(product._id));
+        setSuccessMessage('Removed from favorites!');
+      } else {
+        await dispatch(
+          addToFavorites({
+            product,
+            quantity: 1,
+          })
+        );
+        setSuccessMessage('Added to favorites!');
+      }
+    } catch (error: any) {
+      handleError(error);
+      setErrorMessage(error?.message || 'Error updating favorites');
+    } finally {
+      setAddingToFavoritesProductId(null);
+    }
   };
 
-  // Buy Now (Redirect to Checkout)
-  const handleBuyNow = async (product: ProductProps) => {
-    await dispatch(
-      addToCart({
-        product,
-        quantity: 1,
-      })
-    );
-    router.push('/checkout');
+  // Buy Now (Redirect to Checkout Review) - uses quantity from page selector
+  const handleBuyNow = async () => {
+    if (!product || !userInfo) {
+      setErrorMessage('Please login to buy now!');
+      return;
+    }
+    
+    setBuyingNowProductId(product._id);
+    try {
+      // Check if user has a shipping address
+      if (!userInfo.address || !userInfo.address.street1) {
+        setErrorMessage('Please add a shipping address to your profile first.');
+        setBuyingNowProductId(null);
+        return;
+      }
+
+      // Set the buy now product in Redux using the selected quantity from the page
+      dispatch(
+        setBuyNowProduct({
+          product,
+          quantity, // Use the quantity from the page selector
+          isBuyNow: true,
+        })
+      );
+
+      // Set shipping address from user info
+      const shippingAddress: AddressProps = {
+        fullName: `${userInfo.firstName || ''} ${userInfo.lastName || ''}`.trim(),
+        street1: userInfo.address.street1,
+        street2: userInfo.address.street2 || '',
+        city: userInfo.address.city,
+        state: userInfo.address.state,
+        zip: userInfo.address.zip,
+        country: userInfo.address.country,
+        phone: userInfo.address.phone || userInfo.phone || '',
+        email: userInfo.email,
+      };
+
+      dispatch(setShippingAddress(shippingAddress));
+
+      // Redirect to checkout review page
+      router.push('/checkout/review');
+    } catch (error: any) {
+      handleError(error);
+      setErrorMessage(error?.message || 'Error during Buy Now process.');
+    } finally {
+      setBuyingNowProductId(null);
+    }
+  };
+
+  // Quantity handlers
+  const handleIncreaseQuantity = () => {
+    if (quantity < product!.quantity) {
+      setQuantity(prev => prev + 1);
+    }
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(prev => prev - 1);
+    }
+  };
+
+  // Cart quantity handlers
+  const handleCartIncrease = () => {
+    if (product) {
+      dispatch(increaseQuantity({ id: product._id }));
+    }
+  };
+
+  const handleCartDecrease = () => {
+    if (product && cartItem) {
+      if (cartItem.quantity === 1) {
+        dispatch(deleteCartProduct(product._id));
+        setSuccessMessage('Removed from cart!');
+      } else {
+        dispatch(decreaseQuantity({ id: product._id }));
+      }
+    }
   };
 
   const handleOpenReviewModal = () => {
@@ -185,8 +313,8 @@ const ProductDetails = () => {
               )}
               {product.availability ? (
                 <span className='flex items-center text-green-600 font-medium'>
-                  <CheckCircle className='h-5 w-5 mr-1' /> In Stock (
-                  {product.quantity} left)
+                  <CheckCircle className='h-5 w-5 mr-1' /> 
+                  {product.quantity <= 20 ? `In Stock (${product.quantity} left)` : 'In Stock'}
                 </span>
               ) : (
                 <span className='flex items-center text-red-500 font-medium'>
@@ -211,45 +339,138 @@ const ProductDetails = () => {
                   {product.colors.map((color, index) => (
                     <div
                       key={index}
-                      className='w-8 h-8 rounded-full border'
+                      className='w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer hover:border-vesoko_green_600 transition-colors'
                       style={{ backgroundColor: color }}
+                      title={color}
                     ></div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Actions */}
-            <div className='mt-6 flex flex-col sm:flex-row flex-wrap gap-4 w-full'>
-              <Button
-                onClick={handleAddToCart}
-                className='bg-vesoko_dark_blue text-white flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-vesoko_green_600 transition w-full sm:w-auto'
-              >
-                <ShoppingCart className='mr-2' /> Add to Cart
-              </Button>
-              <Button
-                onClick={handleAddToFavorite}
-                className='border border-gray-300 flex items-center justify-center px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-gray-100 hover:text-vesoko_green_800 transition w-full sm:w-auto'
-              >
-                <Heart className='mr-2 text-red-500' /> Add to Favorites
-              </Button>
-
-              <div className='w-full sm:w-auto'>
-                <Button
-                  onClick={() => handleBuyNow(product)}
-                  className={`flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 hover:text-white duration-300 ${
-                    !userInfo ? 'pointer-events-none bg-vesoko_gray_600' : ''
-                  }`}
+            {/* Quantity Selector */}
+            <div className='mt-6'>
+              <p className='font-medium text-gray-700 mb-2'>Quantity:</p>
+              <div className='flex items-center gap-3'>
+                <button
+                  onClick={handleDecreaseQuantity}
+                  disabled={quantity <= 1}
+                  className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_green_600 hover:bg-vesoko_green_50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                 >
-                  Buy Now
-                </Button>
-
-                {!userInfo && (
-                  <p className='text-xs mt-1 text-vesoko_red_600 font-semibold animate-bounce'>
-                    Please Login to buy now!
-                  </p>
+                  <Minus size={16} />
+                </button>
+                <span className='mx-4 text-lg font-semibold min-w-[2rem] text-center'>
+                  {quantity}
+                </span>
+                <button
+                  onClick={handleIncreaseQuantity}
+                  disabled={quantity >= product.quantity}
+                  className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_green_600 hover:bg-vesoko_green_50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                  <Plus size={16} />
+                </button>
+                {product.quantity <= 20 && (
+                  <span className='text-sm text-gray-500 ml-2'>
+                    ({product.quantity} available)
+                  </span>
                 )}
               </div>
+            </div>
+
+            {/* Actions */}
+            <div className='mt-8 space-y-4'>
+              {/* Cart Actions */}
+              {isInCart && cartItem ? (
+                <div className='flex items-center gap-4 p-4 bg-green-50 border border-green-200 rounded-lg'>
+                  <CheckCircle className='text-green-600' size={20} />
+                  <span className='text-green-700 font-medium'>In Cart ({cartItem.quantity})</span>
+                  <div className='flex items-center gap-2 ml-auto'>
+                    <button
+                      onClick={handleCartDecrease}
+                      className='w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:border-vesoko_green_600 transition-colors'
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className='mx-2 font-semibold'>{cartItem.quantity}</span>
+                    <button
+                      onClick={handleCartIncrease}
+                      disabled={cartItem.quantity >= product.quantity}
+                      className='w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:border-vesoko_green_600 transition-colors disabled:opacity-50'
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleAddToCart}
+                  disabled={addingToCartProductId === product._id || !product.availability}
+                  className='w-full bg-vesoko_dark_blue text-white flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg hover:bg-vesoko_green_600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                  {addingToCartProductId === product._id ? (
+                    <>
+                      <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingCart className='mr-2' size={20} />
+                      Add to Cart
+                    </>
+                  )}
+                </Button>
+              )}
+
+              {/* Favorites and Buy Now Row */}
+              <div className='flex flex-col sm:flex-row gap-4'>
+                <Button
+                  onClick={handleAddToFavorite}
+                  disabled={addingToFavoritesProductId === product._id}
+                  className={`flex-1 border-2 flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg transition-colors ${
+                    isInFavorites
+                      ? 'border-red-500 bg-red-50 text-red-600 hover:bg-red-100'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-vesoko_green_600 hover:bg-vesoko_green_50 hover:text-vesoko_green_800'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {addingToFavoritesProductId === product._id ? (
+                    <>
+                      <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2'></div>
+                      {isInFavorites ? 'Removing...' : 'Adding...'}
+                    </>
+                  ) : (
+                    <>
+                      <Heart
+                        className={`mr-2 ${isInFavorites ? 'fill-red-500 text-red-500' : 'text-red-500'}`}
+                        size={20}
+                      />
+                      {isInFavorites ? 'Remove from Favorites' : 'Add to Favorites'}
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  onClick={handleBuyNow}
+                  disabled={buyingNowProductId === product._id || !product.availability || !userInfo}
+                  className={`flex-1 flex items-center justify-center px-6 py-3 text-base font-semibold bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                    !userInfo ? 'bg-gray-400' : ''
+                  }`}
+                >
+                  {buyingNowProductId === product._id ? (
+                    <>
+                      <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2'></div>
+                      Processing...
+                    </>
+                  ) : (
+                    'Buy Now'
+                  )}
+                </Button>
+              </div>
+
+              {!userInfo && (
+                <p className='text-sm text-center text-vesoko_red_600 font-medium bg-red-50 p-2 rounded-lg border border-red-200'>
+                  Please login to make purchases
+                </p>
+              )}
             </div>
           </div>
 
@@ -291,10 +512,15 @@ const ProductDetails = () => {
             />
           )}
         </div>
-        {successMessage && (
-          <SuccessMessageModal successMessage={successMessage} />
-        )}
       </div>
+      
+      {/* Success and Error Modals */}
+      {successMessage && (
+        <SuccessMessageModal successMessage={successMessage} />
+      )}
+      {errorMessage && (
+        <ErrorMessageModal errorMessage={errorMessage} />
+      )}
     </div>
   );
 };
