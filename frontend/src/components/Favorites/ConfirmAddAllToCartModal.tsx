@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { stateProps } from '../../../type';
+import { stateProps, OrderItemsProps } from '../../../type';
 
 interface ConfirmAddAllToCartModalProps {
   isOpen: boolean;
@@ -18,7 +18,7 @@ const ConfirmAddAllToCartModal = ({
   if (!isOpen) return null;
 
   const totalItems = favoritesItemsData.length;
-  const totalValue = favoritesItemsData.reduce((sum, item) => sum + item.price, 0);
+  const totalValue = favoritesItemsData.reduce((sum: number, item: OrderItemsProps) => sum + item.price, 0);
 
   const handleConfirmAddAllToCart = () => {
     onConfirmAddAllToCart();
