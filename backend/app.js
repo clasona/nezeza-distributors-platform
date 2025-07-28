@@ -38,9 +38,7 @@ const shippingRouter = require('./routes/shippingRoutes');
 const supportRouter = require('./routes/supportRoutes');
 const adminSupportRouter = require('./routes/admin/adminSupportRoutes');
 
-//Gabe practie
-const gabeRouter = require('./routes/gabeRoute')
-const gabeUserRoute = require('./routes/gabeUserRoute')
+
 
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
@@ -115,8 +113,8 @@ app.use('/api/v1/admin/support', adminSupportRouter);
 app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 
 //gabe again
-app.use('/api/v1/gabe', gabeRouter)
-app.use('/api/v1/gabeuser', gabeUserRoute)
+// app.use('/api/v1/gabe', gabeRouter)
+// app.use('/api/v1/gabeuser', gabeUserRoute)
 
 
 app.use(notFoundMiddleware);
