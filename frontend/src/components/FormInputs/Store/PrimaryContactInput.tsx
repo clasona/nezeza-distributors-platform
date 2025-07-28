@@ -6,20 +6,21 @@ import countries from '@/pages/data/countries.json';
 import {
   Control,
   FieldErrors,
-  FieldValues,
   useForm,
   UseFormRegister,
 } from 'react-hook-form';
 import StoreFormHeading from './StoreFormHeading';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../../../type';
+import { User, Mail, Phone, MapPin, Calendar, Globe } from 'lucide-react';
+import { StoreApplicationFormData } from '@/types/storeApplication';
 
 interface PrimaryContactInputProps {
-  errors: FieldErrors;
+  errors: FieldErrors<StoreApplicationFormData>;
   defaultValue?: string;
-  register: UseFormRegister<FieldValues>;
-  setValue: (name: string, value: string) => void;
-  control: Control<FieldValues>;
+  register: UseFormRegister<StoreApplicationFormData>;
+  setValue: (name: keyof StoreApplicationFormData, value: string) => void;
+  control: Control<StoreApplicationFormData>;
 }
 
 const PrimaryContactInput = ({
@@ -53,8 +54,8 @@ const PrimaryContactInput = ({
         label='First Name'
         id='firstName'
         name='firstName'
-        register={register}
-        errors={errors}
+        register={register as any}
+        errors={errors as any}
         type='text'
         className='col-span-1'
       />
@@ -62,8 +63,8 @@ const PrimaryContactInput = ({
         label='Last Name'
         id='lastName'
         name='lastName'
-        register={register}
-        errors={errors}
+        register={register as any}
+        errors={errors as any}
         type='text'
         className='col-span-1'
       />
@@ -71,8 +72,8 @@ const PrimaryContactInput = ({
         label='Email'
         id='email'
         name='email'
-        register={register}
-        errors={errors}
+        register={register as any}
+        errors={errors as any}
         type='email'
         // disabled
       />
@@ -80,8 +81,8 @@ const PrimaryContactInput = ({
         label='Phone'
         id='phone'
         name='phone'
-        register={register}
-        errors={errors}
+        register={register as any}
+        errors={errors as any}
         type='tel'
         // disabled
       />
@@ -90,8 +91,8 @@ const PrimaryContactInput = ({
         id='citizenshipCountry'
         name='citizenshipCountry'
         options={countryOptions}
-        register={register}
-        errors={errors}
+        register={register as any}
+        errors={errors as any}
       />
       {/* <DropdownInput
         label='Country of Birth'
@@ -105,8 +106,8 @@ const PrimaryContactInput = ({
         label='Date of Birth'
         id='dob'
         name='dob'
-        register={register}
-        errors={errors}
+        register={register as any}
+        errors={errors as any}
         type='date'
       />
       <StoreFormHeading heading='Residence Address' />
@@ -116,10 +117,10 @@ const PrimaryContactInput = ({
         stateFieldName='residenceState'
         countryFieldName='residenceCountry'
         zipFieldName='residenceZipCode'
-        register={register}
-        errors={errors}
-        control={control}
-        setValue={setValue}
+        register={register as any}
+        errors={errors as any}
+        control={control as any}
+        setValue={setValue as any}
       />
     </div>
   );

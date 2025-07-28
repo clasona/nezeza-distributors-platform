@@ -76,10 +76,10 @@ const StoreInfoSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // storeLogo: {
-  //   type: Object, // Store the Cloudinary resource object
-  //   required: true,
-  // },
+  logo: {
+    type: String, // Store the Cloudinary secure URL
+    required: false,
+  },
   // address: {
   //   type: mongoose.Schema.ObjectId,
   //   ref: 'Address',

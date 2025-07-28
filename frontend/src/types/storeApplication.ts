@@ -1,0 +1,27 @@
+// Form schema type that matches the store application form
+export type StoreApplicationFormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  citizenshipCountry: string;
+  dob: string;
+  residenceStreet: string;
+  residenceCity: string;
+  residenceState: string;
+  residenceCountry: string;
+  residenceZipCode: string;
+  storeType: string;
+  storeRegistrationNumber: string;
+  storeName: string;
+  storeCategory: string;
+  storeDescription: string;
+  storeEmail: string;
+  storePhone: string;
+  storeLogo?: string;
+  storeStreet: string;
+  storeCity: string;
+  storeState: string;
+  storeCountry: string;
+  storeZipCode: string;
+};

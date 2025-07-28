@@ -54,6 +54,11 @@ const AddressInput = ({
     control,
     name: `${countryFieldName}`, // Watch the country field
   });
+  
+  const selectedState = useWatch({
+    control,
+    name: `${stateFieldName}`, // Watch the state field
+  });
 
   const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
   const [loadingStates, setLoadingStates] = useState(false);
@@ -130,6 +135,18 @@ const AddressInput = ({
       setSelectedCountryOption(null);
     }
   }, [selectedCountry, countryOptions]);
+  
+  // Sync selectedStateOption with form's current state value
+  useEffect(() => {
+    if (selectedState && stateOptions.length > 0) {
+      const foundState = stateOptions.find(
+        (option) => option.value === selectedState
+      );
+      setSelectedStateOption(foundState || null);
+    } else if (!selectedState) {
+      setSelectedStateOption(null);
+    }
+  }, [selectedState, stateOptions]);
   
   const handleCountryChange = (
     option: { value: string; label: string } | null

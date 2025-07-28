@@ -19,6 +19,7 @@ import {
   LayoutDashboard,
   ListOrdered,
   ShoppingCart,
+  User,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -111,185 +112,193 @@ const Header = ({
   // };
 
   return (
-    <div className='w-full bg-vesoko_dark_blue text-lightText sticky top-0 z-50'>
+    <div className='w-full bg-gradient-to-r from-vesoko_dark_blue via-blue-700 to-vesoko_dark_blue text-white sticky top-0 z-50 shadow-lg backdrop-blur-sm'>
       {/* Main header row */}
-      <div className='h-20 w-full mx-auto flex items-center justify-between px-4'>
-        {/* logo */}
+      <div className='h-16 sm:h-20 w-full max-w-7xl mx-auto flex items-center justify-between px-2 sm:px-4'>
+        {/* Logo - Mobile Optimized */}
         <Link
           href={'/'}
-          className='flex-shrink-0 border border-transparent hover:border-white cursor-pointer duration-300 flex items-center justify-center h-[60%] sm:h-[70%]'
+          className='flex-shrink-0 group transition-all duration-300 hover:scale-105'
         >
-          <div className='flex items-center justify-center w-[100px] h-[60px] sm:w-[180px] sm:h-[80px]'>
+          <div className='flex items-center justify-center w-[100px] h-[50px] xs:w-[120px] xs:h-[60px] sm:w-[180px] sm:h-[70px] lg:w-[200px] lg:h-[80px] relative'>
             <Image
               src={logo}
-              alt='logoImg'
+              alt='VeSoko Logo'
               width={220}
               height={90}
-              className='object-contain w-[110%] h-[110%]'
+              className='object-contain w-full h-full filter brightness-110 group-hover:brightness-125 transition-all duration-300'
               priority
             />
+            <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg'></div>
           </div>
         </Link>
         
-        {/* searchbar - hidden on mobile, shown on sm+ */}
-        <div className='hidden sm:flex flex-grow mx-3 sm:mx-4'>
-          <SearchField2
-            searchFieldPlaceholder='vesoko products'
-            onSearchChange={onSearchChange}
-            value={searchQuery}
-          />
+        {/* Searchbar - Enhanced design */}
+        <div className='hidden sm:flex flex-grow mx-4 lg:mx-8 max-w-2xl'>
+          <div className='w-full relative'>
+            <SearchField2
+              searchFieldPlaceholder='authentic African products...'
+              onSearchChange={onSearchChange}
+              value={searchQuery}
+            />
+          </div>
         </div>
 
-        {/* Right side navigation */}
-        <div className='flex items-center gap-1 sm:gap-2 px-1 sm:px-3'>
-          {/* favoritesItemsData */}
+        {/* Right side navigation - Mobile Optimized */}
+        <div className='flex items-center gap-1 sm:gap-2 lg:gap-3'>
+          {/* Favorites - Mobile Optimized */}
           <Link
             href={'/favorites'}
-            className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 sm:px-3 border border-transparent hover:border-white cursor-pointer duration-300 h-[70px] relative flex-shrink-0'
+            className='group relative flex flex-col items-center justify-center px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-xl hover:bg-white/10 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/20 min-h-[44px] touch-manipulation'
           >
-            <Heart className='w-5 h-5 sm:w-6 sm:h-6 text-white' />
-            <span className='absolute text-vesoko_yellow text-xs top-[-1px] right-[2px] sm:right-[4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-vesoko_dark_blue border border-vesoko_yellow'>
-              {favoritesItemsData ? favoritesItemsData.length : 0}
-            </span>
-            <p className='text-white font-bold text-center text-[10px] sm:text-xs mt-1'>
+            <div className='relative'>
+              <Heart className='w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:scale-110 transition-transform duration-300' />
+              {favoritesItemsData && favoritesItemsData.length > 0 && (
+                <span className='absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-vesoko_green_600 text-white text-xs font-bold rounded-full min-w-[16px] h-[16px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center shadow-lg animate-pulse text-[10px] sm:text-xs'>
+                  {favoritesItemsData.length > 9 ? '9+' : favoritesItemsData.length}
+                </span>
+              )}
+            </div>
+            <span className='text-white font-medium text-[10px] sm:text-xs mt-0.5 sm:mt-1 group-hover:text-vesoko_green_200 transition-colors duration-300'>
               Favorites
-            </p>
+            </span>
           </Link>
 
+          {/* Cart - Mobile Optimized */}
           <Link
             href={'/cart'}
-            className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 sm:px-3 border border-transparent hover:border-white cursor-pointer duration-300 h-[70px] relative flex-shrink-0'
+            className='group relative flex flex-col items-center justify-center px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-xl hover:bg-white/10 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/20 min-h-[44px] touch-manipulation'
           >
-            <ShoppingCart className='w-5 h-5 sm:w-6 sm:h-6 text-white' />
-            <span className='absolute text-vesoko_yellow text-xs top-[-1px] right-[2px] sm:right-[4px] font-semibold min-w-[16px] h-[16px] flex items-center justify-center bg-vesoko_dark_blue border border-vesoko_yellow'>
-              {cartItemsData ? cartItemsData.length : 0}
+            <div className='relative'>
+              <ShoppingCart className='w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:scale-110 transition-transform duration-300' />
+              {cartItemsData && cartItemsData.length > 0 && (
+                <span className='absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-vesoko_green_600 text-white text-xs font-bold rounded-full min-w-[16px] h-[16px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center shadow-lg animate-pulse text-[10px] sm:text-xs'>
+                  {cartItemsData.length > 9 ? '9+' : cartItemsData.length}
+                </span>
+              )}
+            </div>
+            <span className='text-white font-medium text-[10px] sm:text-xs mt-0.5 sm:mt-1 group-hover:text-vesoko_green_200 transition-colors duration-300'>
+              Cart
             </span>
-            <p className='text-white font-bold text-center text-[10px] sm:text-xs mt-1'>Cart</p>
           </Link>
 
-          {/* signin */}
+          {/* User Account - Mobile Optimized */}
           {userInfo ? (
-            <div className='flex items-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70px] gap-1'>
+            <div className='flex items-center'>
               <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <div className='w-8 h-8 rounded-full overflow-hidden'>
-                    {' '}
-                    {/* Wrapper div */}
-                    <Image
-                      src={userInfo?.image || currentUserData?.image || defaultUserImage}
-                      alt='userProfilePicture'
-                      width={40}
-                      height={40}
-                      layout='responsive'
-                      sizes='40px'
-                      className='w-full h-full object-cover'
-                    />
+                <DropdownMenuTrigger className='group relative flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl hover:bg-white/10 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/20 min-h-[44px] touch-manipulation'>
+                  <div className='relative'>
+                    <div className='w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden border-2 border-white/30 group-hover:border-white/60 transition-all duration-300'>
+                      <Image
+                        src={userInfo?.image || currentUserData?.image || defaultUserImage}
+                        alt='Profile Picture'
+                        width={40}
+                        height={40}
+                        className='w-full h-full object-cover'
+                      />
+                    </div>
+                    <div className='absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 bg-vesoko_green_600 rounded-full border-1 sm:border-2 border-white'></div>
                   </div>
-
-                {/* <div
-                  className='text-xs text-gray-100 flec flex-col
-                justify-between'
-                >
-                  <p className='text-white font-bold'>Hi,</p>
-                  <p>{userInfo.firstName}</p>
-                </div> */}
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className='px-2 py-4 pr-8'>
-                <DropdownMenuLabel>Account</DropdownMenuLabel>
-
-                <DropdownMenuSeparator />
-                {storeInfo ? (
-                  <DropdownMenuItem>
-                    <Link
-                      href={`/${getSellerTypeBaseurl(storeInfo.storeType)}`}
-                      className='flex items-center space-x-2'
-                    >
-                      <LayoutDashboard className='w-4 h-4' />
-                      <span>Seller Dashboard</span>
-                    </Link>
+                  <div className='hidden md:block text-left'>
+                    <p className='text-white font-medium text-sm'>Hello!</p>
+                    <p className='text-white/80 text-xs'>{userInfo.firstName || 'User'}</p>
+                  </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className='w-56 bg-white/95 backdrop-blur-sm border border-gray-200 shadow-xl rounded-xl p-2 mt-2'>
+                  <DropdownMenuLabel className='text-gray-900 font-semibold px-3 py-2'>
+                    My Account
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className='bg-gray-200' />
+                  
+                  {storeInfo ? (
+                    <DropdownMenuItem className='rounded-lg hover:bg-vesoko_green_50 transition-colors duration-200'>
+                      <Link
+                        href={`/${getSellerTypeBaseurl(storeInfo.storeType)}`}
+                        className='flex items-center space-x-3 w-full px-2 py-2'
+                      >
+                        <LayoutDashboard className='w-5 h-5 text-vesoko_green_600' />
+                        <span className='text-gray-700 font-medium'>Seller Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ) : (
+                    <>
+                      <DropdownMenuItem className='rounded-lg hover:bg-blue-50 transition-colors duration-200'>
+                        <Link
+                          href='/customer/my-account'
+                          className='flex items-center space-x-3 w-full px-2 py-2'
+                        >
+                          <User className='w-5 h-5 text-blue-600' />
+                          <span className='text-gray-700 font-medium'>My Account</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className='rounded-lg hover:bg-blue-50 transition-colors duration-200'>
+                        <Link
+                          href='/customer/orders'
+                          className='flex items-center space-x-3 w-full px-2 py-2'
+                        >
+                          <ListOrdered className='w-5 h-5 text-blue-600' />
+                          <span className='text-gray-700 font-medium'>My Orders</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className='rounded-lg hover:bg-blue-50 transition-colors duration-200'>
+                        <Link
+                          href='/customer/payments'
+                          className='flex items-center space-x-3 w-full px-2 py-2'
+                        >
+                          <CircleDollarSign className='w-5 h-5 text-blue-600' />
+                          <span className='text-gray-700 font-medium'>Payments</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className='rounded-lg hover:bg-blue-50 transition-colors duration-200'>
+                        <Link
+                          href='/customer/notifications'
+                          className='flex items-center space-x-3 w-full px-2 py-2'
+                        >
+                          <Bell className='w-5 h-5 text-blue-600' />
+                          <span className='text-gray-700 font-medium'>Notifications</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className='rounded-lg hover:bg-blue-50 transition-colors duration-200'>
+                        <Link
+                          href='/customer/support'
+                          className='flex items-center space-x-3 w-full px-2 py-2'
+                        >
+                          <CircleHelp className='w-5 h-5 text-blue-600' />
+                          <span className='text-gray-700 font-medium'>Support</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuSeparator className='bg-gray-200 my-2' />
+                  <DropdownMenuItem className='rounded-lg hover:bg-red-50 transition-colors duration-200'>
+                    <div className='w-full px-2 py-1'>
+                      <LogoutButton />
+                    </div>
                   </DropdownMenuItem>
-                ) : (
-                  <div>
-                    <DropdownMenuItem>
-                      <Link
-                        href={`/customer/my-account`}
-                        className='flex items-center space-x-2'
-                      >
-                        <CircleUserRound />
-                        <span>My Account</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link
-                        href={`/customer/orders`}
-                        className='flex items-center space-x-2'
-                      >
-                        <ListOrdered />
-                        <span>Orders</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link
-                        href={`/customer/payments`}
-                        className='flex items-center space-x-2'
-                      >
-                        <CircleDollarSign />
-                        <span>Payments</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link
-                        href={`/customer/notifications`}
-                        className='flex items-center space-x-2'
-                      >
-                        <Bell />
-                        <span>Notifications</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link href={`/`} className='flex items-center space-x-2'>
-                        <ShoppingCart />
-                        <span>Shopping</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link
-                        href={`/customer/support`}
-                        className='flex items-center space-x-2'
-                      >
-                        <CircleHelp />
-                        <span>Support</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </div>
-                )}
-                <DropdownMenuItem>
-                  <div>
-                    <LogoutButton />
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ) : (
             <Link
-              href={'/login'}
-              className='text-xs sm:text-sm text-gray-100 flex flex-col items-center justify-center px-2 border border-transparent hover:border-white cursor-pointer duration-300 h-[70px] relative'
+              href='/login'
+              className='group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-vesoko_green_600 hover:bg-vesoko_green_700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl min-h-[44px] touch-manipulation'
             >
-              <CircleUserRound size={22} className='text-white' />
-              <p className='text-white font-bold text-center sm:text-xs'>Login</p>
+              <User size={16} className='sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-300' />
+              <span className='text-xs sm:text-sm'>Sign In</span>
             </Link>
           )}
         </div>
       </div>
       
-      {/* Mobile search bar row - shown only on small screens */}
-      <div className='sm:hidden bg-vesoko_dark_blue px-4 pb-3'>
-        <SearchField2
-          searchFieldPlaceholder='vesoko products'
-          onSearchChange={onSearchChange}
-          value={searchQuery}
-        />
+      {/* Mobile search bar row - Enhanced design */}
+      <div className='sm:hidden bg-gradient-to-r from-vesoko_dark_blue via-blue-700 to-vesoko_dark_blue px-4 pb-4 pt-2 border-t border-white/10'>
+        <div className='relative'>
+          <SearchField2
+            searchFieldPlaceholder='authentic African products...'
+            onSearchChange={onSearchChange}
+            value={searchQuery}
+          />
+        </div>
       </div>
     </div>
   );

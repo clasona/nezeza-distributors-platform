@@ -269,7 +269,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
   }
 
   return (
-    <div className='w-full px-2 sm:px-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 products-top'>
+    <div className='w-full px-2 sm:px-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 xl:gap-8 products-top animate-fade-in'>
       {products.map((product: ProductProps) => {
         const imagesArr =
           Array.isArray(product.images) && product.images.length
@@ -312,14 +312,14 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
         return (
           <div
             key={product._id}
-            className={`w-full bg-white text-black p-2 xs:p-3 border border-gray-300 rounded-lg group overflow-hidden hover:cursor-pointer flex flex-col`}
+            className={`w-full bg-white text-black p-2 sm:p-3 lg:p-4 border border-gray-200 rounded-xl sm:rounded-2xl group overflow-hidden hover:cursor-pointer flex flex-col transition-all duration-300 hover:shadow-2xl hover:border-vesoko_green_600/20 hover:-translate-y-2 transform touch-manipulation`}
           >
-            <div className='w-full aspect-w-1 aspect-h-1 relative'>
+            <div className='w-full aspect-square relative mb-4 overflow-hidden rounded-xl bg-gray-50'>
               <div
                 onClick={() => {
                   router.push(`/product/${product._id}`);
                 }}
-                className='relative h-full'
+                className='relative h-full group-hover:scale-105 transition-transform duration-500 cursor-pointer'
               >
                 {/* Carousel */}
                 {imagesArr.length > 1 && (
@@ -336,8 +336,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                   </button>
                 )}
                 <Image
-                  className='w-full h-full object-cover scale-90 hover:scale-100
-                          transition-transform duration-300 rounded-md'
+                  className='w-full h-full object-cover rounded-xl transition-all duration-500'
                   src={imagesArr[currIndex]}
                   alt='productImg'
                   width={300}
@@ -380,9 +379,9 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                   </div>
                 )}
               </div>
-              {/* Action Buttons: smaller, better positioned */}
-              <div className='absolute right-1 top-1 z-20'>
-                <div className='flex flex-col gap-1 items-end'>
+              {/* Action Buttons: Modern floating style */}
+              <div className='absolute right-3 top-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
+                <div className='flex flex-col gap-2 items-end'>
                   {/* Cart Button - show quantity controls if in cart, otherwise show add to cart */}
                   {!(product.quantity < 1) && (
                     <div className='flex items-center'>
@@ -427,8 +426,8 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                           buttonTitle=''
                           loadingButtonTitle=''
                           icon={ShoppingCart}
-                          className='w-7 h-7 rounded-md flex items-center justify-center
-                            text-sm bg-white/90 border border-gray-300 shadow-md hover:bg-vesoko_green_600 hover:text-white cursor-pointer duration-300 backdrop-blur-sm'
+                          className='w-10 h-10 rounded-full flex items-center justify-center
+                            text-sm bg-white shadow-lg hover:bg-vesoko_green_600 hover:text-white cursor-pointer duration-300 transform hover:scale-110'
                           disabled={
                             addingToCartProductId === product._id ||
                             addingToFavoritesProductId === product._id ||
@@ -449,11 +448,11 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                       addingToFavoritesProductId === product._id ||
                       buyingNowProductId === product._id
                     }
-                    className={`w-7 h-7 rounded-md flex items-center justify-center text-sm
-                      border shadow-md hover:bg-red-50 hover:border-red-500 cursor-pointer duration-300 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm
+                      shadow-lg hover:scale-110 cursor-pointer duration-300 transform disabled:opacity-50 disabled:cursor-not-allowed ${
                         isInFavorites 
-                          ? 'bg-red-50 text-red-600 border-red-500' 
-                          : 'bg-white/90 border-gray-300 text-red-500'
+                          ? 'bg-red-500 text-white' 
+                          : 'bg-white text-red-500 hover:bg-red-50'
                       }`}
                   >
                     {addingToFavoritesProductId === product._id ? (
@@ -468,24 +467,23 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                 </div>
               </div>
             </div>
-            <hr className='my-2' />
-            <div className='px-1 xs:px-2 py-1 flex-1 flex flex-col gap-1'>
+            <div className='flex-1 flex flex-col gap-3'>
               <div>
-                <div className='flex justify-between w-full'>
-                  <p className='text-xs text-vesoko_gray_600 tracking-wide'>
+                <div className='flex justify-between items-center w-full mb-2'>
+                  <span className='text-xs text-vesoko_gray_600 tracking-wide uppercase font-medium bg-gray-100 px-2 py-1 rounded-full'>
                     {product.category}
-                  </p>
+                  </span>
                 </div>
-                <div className='flex flex-col sm:flex-row flex-wrap sm:justify-between'>
-                  <p className='text-sm sm:text-base font-medium'>
-                    {product.title}
-                  </p>
-                  <div className='flex items-center gap-1 text-right w-full sm:w-auto'>
+                <h3 className='text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 sm:mb-3 leading-tight hover:text-vesoko_dark_blue transition-colors cursor-pointer'
+                    onClick={() => router.push(`/product/${product._id}`)}>
+                  {product.title}
+                </h3>
+                <div className='flex items-center gap-1 mb-2 sm:mb-3'>
                     {[...Array(5)].map((_, index) => (
                       <Star
                         key={index}
-                        size={20}
-                        className={`${
+                        size={16}
+                        className={`sm:w-5 sm:h-5 ${
                           index < Math.floor(product.rating)
                             ? 'text-yellow-500 fill-yellow-500'
                             : index < product.rating
@@ -494,21 +492,17 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                         }`}
                       />
                     ))}
-                    <button
-                      onClick={() => handleOpenReviewModal(product._id)}
-                      className='bg-transparent text-vesoko_dark_blue hover:underline p-0 h-auto text-base'
-                    >
-                      ({product.numOfReviews || 0})
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleOpenReviewModal(product._id)}
+                    className='bg-transparent text-vesoko_gray_600 hover:text-vesoko_dark_blue p-0 h-auto text-xs sm:text-sm transition-colors'
+                  >
+                    ({product.numOfReviews || 0})
+                  </button>
                 </div>
-                <div
-                  onClick={() => {
-                    router.push(`/product/${product._id}`);
-                  }}
-                >
-                  <p className='flex items-center'>
-                    <span className='text-vesoko_dark_blue font-bold'>
+                <div className='mb-3 sm:mb-4'>
+                  <p className='flex items-center mb-2'
+                     onClick={() => router.push(`/product/${product._id}`)}>
+                    <span className='text-lg sm:text-xl lg:text-2xl font-bold text-vesoko_dark_blue'>
                       <FormattedPrice amount={product.price} />
                     </span>
                   </p>
@@ -546,49 +540,51 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                     : 'Read More'}
                 </button>
               )}
-              <Button
-                onClick={() => {
-                  product.quantity < 1
-                    ? handleAddToFavorite(product)
-                    : handleAddToCart(product);
-                }}
-                isLoading={
-                  (product.quantity < 1 &&
-                    addingToFavoritesProductId === product._id) ||
-                  (product.quantity >= 1 &&
-                    addingToCartProductId === product._id)
-                }
-                buttonTitle={
-                  product.quantity < 1 ? 'Add to Favorites' : 'Add to Cart'
-                }
-                loadingButtonTitle={
-                  product.quantity < 1
-                    ? 'Adding to Favorites...'
-                    : 'Adding to Cart...'
-                }
-                className='flex items-center justify-center h-8 sm:h-10 text-sm sm:text-base font-medium bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_dark_blue_2
-                           duration-300 mt-2 w-full'
-                disabled={
-                  addingToCartProductId === product._id ||
-                  addingToFavoritesProductId === product._id ||
-                  buyingNowProductId === product._id
-                }
-              />
-              {/* Show Buy Now only if in stock */}
-              {product.quantity > 0 && (
+              <div className='flex flex-col gap-2 sm:gap-3 mt-auto'>
                 <Button
-                  onClick={() => handleOpenQuantityModal(product)}
-                  isLoading={buyingNowProductId === product._id}
-                  buttonTitle='Buy Now'
-                  loadingButtonTitle='Processing...'
-                  className='flex items-center justify-center px-4 py-2 text-sm sm:text-base bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 hover:text-white duration-300 mt-2 w-full'
+                  onClick={() => {
+                    product.quantity < 1
+                      ? handleAddToFavorite(product)
+                      : handleAddToCart(product);
+                  }}
+                  isLoading={
+                    (product.quantity < 1 &&
+                      addingToFavoritesProductId === product._id) ||
+                    (product.quantity >= 1 &&
+                      addingToCartProductId === product._id)
+                  }
+                  buttonTitle={
+                    product.quantity < 1 ? 'Favorites' : 'Add to Cart'
+                  }
+                  loadingButtonTitle={
+                    product.quantity < 1
+                      ? 'Adding...'
+                      : 'Adding...'
+                  }
+                  className='flex items-center justify-center h-10 sm:h-12 text-xs sm:text-sm lg:text-base font-semibold bg-vesoko_dark_blue text-white rounded-lg sm:rounded-xl hover:bg-vesoko_dark_blue_2 transform hover:scale-105
+                             duration-300 w-full transition-all shadow-lg'
                   disabled={
                     addingToCartProductId === product._id ||
                     addingToFavoritesProductId === product._id ||
                     buyingNowProductId === product._id
                   }
                 />
-              )}
+                {/* Show Buy Now only if in stock */}
+                {product.quantity > 0 && (
+                  <Button
+                    onClick={() => handleOpenQuantityModal(product)}
+                    isLoading={buyingNowProductId === product._id}
+                    buttonTitle='Buy Now'
+                    loadingButtonTitle='Processing...'
+                    className='flex items-center justify-center h-10 sm:h-12 text-xs sm:text-sm lg:text-base font-semibold bg-vesoko_green_600 text-white rounded-lg sm:rounded-xl hover:bg-vesoko_green_800 transform hover:scale-105 duration-300 w-full transition-all shadow-lg'
+                    disabled={
+                      addingToCartProductId === product._id ||
+                      addingToFavoritesProductId === product._id ||
+                      buyingNowProductId === product._id
+                    }
+                  />
+                )}
+              </div>
               {product.quantity < 1 && (
                 <div className='text-xs text-center'>
                   <span className='text-vesoko_red_600'>

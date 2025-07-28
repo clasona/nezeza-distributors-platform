@@ -8,6 +8,7 @@ const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const path = require('path');
 const { checkPermissions } = require('../utils');
+const { sendStoreApplicationEmail } = require('../utils/email/storeApplicationEmailUtils');
 
 //createApplication
 /*
@@ -21,6 +22,19 @@ const createStoreApplication = async (req, res, next) => {
   try {
     // TODO: Prevent from the possibility of creating two applications for one store
     const application = await StoreApplication.create(req.body);
+    
+    // Send confirmation emails after successful creation
+    try {
+      await sendStoreApplicationEmail({
+        email: application.primaryContactInfo.email,
+        firstName: application.primaryContactInfo.firstName,
+        lastName: application.primaryContactInfo.lastName,
+      });
+    } catch (emailError) {
+      console.error('Failed to send store application emails:', emailError);
+      // Don't fail the entire request if email fails
+    }
+    
     res.status(StatusCodes.CREATED).json({ application });
   } catch (error) {
     // Pass error to the global error handler

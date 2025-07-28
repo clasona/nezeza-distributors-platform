@@ -1,25 +1,152 @@
-const PostStoreApplicationsubmission = () => {
+import Link from 'next/link';
+import { CheckCircle, Clock, Mail, FileText, Home, ArrowRight, Phone, MessageSquare } from 'lucide-react';
+
+const PostStoreApplicationSubmission = () => {
   return (
-    <div className='w-full p-6 rounded-lg '>
-      <div className='text-center mt-6'>
-        <h1 className='text-2xl font-semibold text-center text-gray-800 mb-4'>
-          Thank you for submitting your store details!
-        </h1>
-        <p className='mt-4 text-gray-600'>
-          We will review your application and get back to you within 48 hours.
-          In the meantime, you can browsing through the products on our
-          platform.
-        </p>
-        <button
-          className='mt-6 px-4 py-2 rounded-md bg-vesoko_dark_blue text-white hover:bg-vesoko_green_600 hover:text-white transition-colors duration-300'
-          onClick={() => (window.location.href = '/')}
-        >
-          Take me to home
-        </button>
+    <div className='min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50'>
+      <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+        {/* Success Header */}
+        <div className='text-center mb-12'>
+          <div className='inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6'>
+            <CheckCircle className='h-12 w-12 text-green-500' />
+          </div>
+          
+          <h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-4'>
+            Application Submitted
+            <span className='block text-vesoko_green_600'>Successfully!</span>
+          </h1>
+          
+          <p className='text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed'>
+            Thank you for your interest in joining VeSoko! Your store application has been received and is now under review.
+          </p>
+        </div>
+
+        {/* Main Content Card */}
+        <div className='bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden mb-8'>
+          {/* What Happens Next Section */}
+          <div className='bg-gradient-to-r from-vesoko_dark_blue to-vesoko_green_600 px-8 py-6'>
+            <h2 className='text-2xl font-bold text-white mb-2'>What Happens Next?</h2>
+            <p className='text-blue-100'>Here's what you can expect during our review process</p>
+          </div>
+
+          <div className='p-8'>
+            <div className='grid md:grid-cols-3 gap-8 mb-8'>
+              {/* Step 1 */}
+              <div className='text-center'>
+                <div className='inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4'>
+                  <FileText className='h-8 w-8 text-blue-600' />
+                </div>
+                <h3 className='text-lg font-semibold text-gray-900 mb-2'>Document Review</h3>
+                <p className='text-gray-600 text-sm leading-relaxed'>
+                  Our team will carefully review your business documents and verify your information
+                </p>
+                <div className='mt-3 text-sm text-blue-600 font-medium'>1-2 Business Days</div>
+              </div>
+
+              {/* Step 2 */}
+              <div className='text-center'>
+                <div className='inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-4'>
+                  <Clock className='h-8 w-8 text-yellow-600' />
+                </div>
+                <h3 className='text-lg font-semibold text-gray-900 mb-2'>Application Processing</h3>
+                <p className='text-gray-600 text-sm leading-relaxed'>
+                  We'll assess your application against our seller criteria and platform standards
+                </p>
+                <div className='mt-3 text-sm text-yellow-600 font-medium'>2-3 Business Days</div>
+              </div>
+
+              {/* Step 3 */}
+              <div className='text-center'>
+                <div className='inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4'>
+                  <Mail className='h-8 w-8 text-green-600' />
+                </div>
+                <h3 className='text-lg font-semibold text-gray-900 mb-2'>Decision Notification</h3>
+                <p className='text-gray-600 text-sm leading-relaxed'>
+                  You'll receive an email with our decision and next steps for setting up your store
+                </p>
+                <div className='mt-3 text-sm text-green-600 font-medium'>Within 48 Hours</div>
+              </div>
+            </div>
+
+            {/* Important Information */}
+            <div className='bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-8'>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>📧 Email Confirmation Sent</h3>
+              <p className='text-gray-700 mb-4'>
+                We've sent a confirmation email to your registered email address with:
+              </p>
+              <ul className='space-y-2 text-gray-600'>
+                <li className='flex items-center gap-2'>
+                  <CheckCircle className='h-4 w-4 text-green-500 flex-shrink-0' />
+                  Application reference details
+                </li>
+                <li className='flex items-center gap-2'>
+                  <CheckCircle className='h-4 w-4 text-green-500 flex-shrink-0' />
+                  Timeline for review process
+                </li>
+                <li className='flex items-center gap-2'>
+                  <CheckCircle className='h-4 w-4 text-green-500 flex-shrink-0' />
+                  Contact information for questions
+                </li>
+              </ul>
+            </div>
+
+            {/* Contact Information */}
+            <div className='bg-gray-50 rounded-xl p-6 mb-8'>
+              <h3 className='text-lg font-semibold text-gray-900 mb-4'>Need Help or Have Questions?</h3>
+              <div className='grid md:grid-cols-2 gap-4'>
+                <div className='flex items-center gap-3'>
+                  <Mail className='h-5 w-5 text-vesoko_dark_blue' />
+                  <div>
+                    <p className='font-medium text-gray-900'>Email Support</p>
+                    <a href='mailto:support@vesoko.com' className='text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors'>
+                      support@vesoko.com
+                    </a>
+                  </div>
+                </div>
+                <div className='flex items-center gap-3'>
+                  <MessageSquare className='h-5 w-5 text-vesoko_dark_blue' />
+                  <div>
+                    <p className='font-medium text-gray-900'>Live Chat</p>
+                    <p className='text-gray-600'>Available Mon-Fri, 9AM-6PM EST</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
+          <Link 
+            href='/'
+            className='inline-flex items-center gap-2 bg-vesoko_dark_blue text-white px-8 py-3 rounded-lg font-medium hover:bg-vesoko_green_600 transition-all duration-200 transform hover:scale-105 shadow-lg'
+          >
+            <Home className='h-5 w-5' />
+            Explore Marketplace
+          </Link>
+          
+          <Link 
+            href='/seller-onboarding'
+            className='inline-flex items-center gap-2 bg-white text-vesoko_dark_blue border-2 border-vesoko_dark_blue px-8 py-3 rounded-lg font-medium hover:bg-vesoko_dark_blue hover:text-white transition-all duration-200 shadow-lg'
+          >
+            Learn More About Selling
+            <ArrowRight className='h-5 w-5' />
+          </Link>
+        </div>
+
+        {/* Footer Message */}
+        <div className='text-center mt-12 p-6 bg-white/60 backdrop-blur-sm rounded-xl border border-white/20'>
+          <p className='text-gray-600'>
+            🌍 <strong>VeSoko</strong> - Connecting African businesses with global opportunities
+          </p>
+          <p className='text-sm text-gray-500 mt-2'>
+            We're committed to supporting African entrepreneurs and bringing authentic products to the world.
+          </p>
+        </div>
       </div>
     </div>
   );
 };
 
-// PostStoreApplicationsubmission.noLayout = true;
-export default PostStoreApplicationsubmission;
+PostStoreApplicationSubmission.noLayout = true;
+export default PostStoreApplicationSubmission;

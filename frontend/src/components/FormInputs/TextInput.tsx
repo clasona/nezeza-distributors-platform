@@ -31,6 +31,16 @@ const TextInput = ({
   className = '',
   value,
 }: TextInputProps) => {
+  const validationRules = {
+    required: isRequired ? `${label} is required` : false,
+    ...(type === 'email' && {
+      pattern: {
+        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+        message: 'Invalid email address',
+      },
+    }),
+  };
+
   return (
     <div className={`${className} col-span-1`}>
       <label
@@ -40,30 +50,30 @@ const TextInput = ({
         {label}
         {isRequired && <span className='text-vesoko_red_600'> *</span>}
       </label>
-      <div>
+      <div className='mt-1'>
         <input
-          {...register(name, { required: isRequired })}
+          {...register(name, validationRules)}
           id={id}
           name={name}
           type={type}
-          value={value}
           autoComplete={name}
           disabled={disabled}
-          className={`block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none ${
+          className={`block w-full px-3 py-2.5 text-sm border rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-vesoko_green_500/20 ${
             errors[name]
-              ? 'border-vesoko_red_600 text-vesoko_red_600'
-              : 'focus:border-vesoko_green_600'
+              ? 'border-red-300 focus:border-red-500 bg-red-50'
+              : 'border-gray-300 focus:border-vesoko_green_500 bg-white hover:border-gray-400'
           } ${
             disabled
-              ? 'bg-gray-200 text-vesoko_gray_600 cursor-not-allowed'
+              ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
               : ''
           }`}
-          placeholder={`Enter the ${label.toLowerCase()}`}
+          placeholder={`Enter ${label.toLowerCase()}`}
         />
         {errors[name] && (
-          <span className='text-sm text-vesoko_red_600'>
-            {label} is required
-          </span>
+          <p className='mt-1 text-sm text-red-600 flex items-center gap-1'>
+            <span className='text-red-500'>⚠</span>
+{String(errors[name]?.message) || `${label} is required`}
+          </p>
         )}
       </div>
     </div>

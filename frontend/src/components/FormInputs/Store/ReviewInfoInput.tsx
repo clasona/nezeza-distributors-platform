@@ -1,17 +1,21 @@
 import React from 'react';
 import StoreFormHeading from './StoreFormHeading';
-import { FieldValues, UseFormGetValues } from 'react-hook-form';
+import { UseFormGetValues } from 'react-hook-form';
 import ReviewInputItem from './ReviewInputItem';
+import { Eye, User, Store, FileText, CheckCircle, Edit, MapPin } from 'lucide-react';
+import { StoreApplicationFormData } from '@/types/storeApplication';
 
 interface ReviewInfoInputProps {
-  getValues: UseFormGetValues<FieldValues>;
+  getValues: UseFormGetValues<StoreApplicationFormData>;
   identityDocResource: any;
   businessDocResource: any;
+  storeLogoResource?: any;
 }
 const ReviewInfoInput = ({
   getValues,
   identityDocResource,
   businessDocResource,
+  storeLogoResource,
 }: ReviewInfoInputProps) => {
   return (
     <>
@@ -25,27 +29,27 @@ const ReviewInfoInput = ({
             <ReviewInputItem
               label='First Name'
               fieldName='firstName'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Last Name'
               fieldName='lastName'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Email'
               fieldName='email'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Phone'
               fieldName='phone'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Country of Citizenship'
               fieldName='citizenshipCountry'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             {/* <ReviewInputItem
               label='Country of Birth'
@@ -55,34 +59,34 @@ const ReviewInfoInput = ({
             <ReviewInputItem
               label='Date of Birth'
               fieldName='dob'
-              getValues={getValues}
+              getValues={getValues as any}
               className='sm:col-span-2'
             />
             <StoreFormHeading heading='Residence Address' />
             <ReviewInputItem
               label='Street Address'
               fieldName='residenceStreet'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='City'
               fieldName='residenceCity'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='State'
               fieldName='residenceState'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Country'
               fieldName='residenceCountry'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Zip Code'
               fieldName='residenceZipCode'
-              getValues={getValues}
+              getValues={getValues as any}
             />
           </div>
         </div>
@@ -93,69 +97,91 @@ const ReviewInfoInput = ({
             <ReviewInputItem
               label='Store Type'
               fieldName='storeType'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Store Registration Number'
               fieldName='storeRegistrationNumber'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Store Name'
               fieldName='storeName'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Store Category'
               fieldName='storeCategory'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Store Description'
               fieldName='storeDescription'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Store Email'
               fieldName='storeEmail'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Store Phone'
               fieldName='storePhone'
-              getValues={getValues}
+              getValues={getValues as any}
             />
-            <ReviewInputItem
-              label='Store Logo'
-              fieldName='storeLogo'
-              getValues={getValues}
-            />
+            {/* Store Logo - Show image if available */}
+            <div className='sm:col-span-2'>
+              <p className='mb-2'>
+                <span className='text-gray-500'>Store Logo:</span>
+              </p>
+              {storeLogoResource ? (
+                <div className='flex items-center gap-4 p-3 bg-gray-50 rounded-lg border'>
+                  <img 
+                    src={storeLogoResource.secure_url} 
+                    alt='Store Logo' 
+                    className='w-16 h-16 object-cover rounded-lg border border-gray-200'
+                  />
+                  <div>
+                    <p className='text-sm font-medium text-gray-900'>
+                      {storeLogoResource.original_filename || 'Store Logo'}
+                    </p>
+                    <p className='text-xs text-gray-500'>
+                      {storeLogoResource.format?.toUpperCase()} • {Math.round((storeLogoResource.bytes || 0) / 1024)} KB
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className='p-3 bg-gray-50 rounded-lg border border-dashed border-gray-300'>
+                  <p className='text-sm text-gray-500 italic'>No logo uploaded</p>
+                </div>
+              )}
+            </div>
             <StoreFormHeading heading='Store Address' />
             <ReviewInputItem
               label='Street Address'
               fieldName='storeStreet'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='City'
               fieldName='storeCity'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='State'
               fieldName='storeState'
-              getValues={getValues}
+              getValues={getValues as any}
             />
 
             <ReviewInputItem
               label='Country'
               fieldName='storeCountry'
-              getValues={getValues}
+              getValues={getValues as any}
             />
             <ReviewInputItem
               label='Zip Code'
               fieldName='storeZipCode'
-              getValues={getValues}
+              getValues={getValues as any}
             />
           </div>
         </div>
