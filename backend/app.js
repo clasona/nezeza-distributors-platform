@@ -38,12 +38,18 @@ const favoritesRouter = require('./routes/favoritesRoutes');
 const shippingRouter = require('./routes/shippingRoutes');
 const supportRouter = require('./routes/supportRoutes');
 const adminSupportRouter = require('./routes/admin/adminSupportRoutes');
+<<<<<<< HEAD
 const amdinAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
 const amdinFinancialRoutes = require('./routes/admin/adminFinancialRoutes');
 const amdinMonitoringRoutes = require('./routes/admin/adminMonitoringRoutes');
 const verificationRouter = require('./routes/verificationRoutes');
 const newsletterRouter = require('./routes/newsletterRoutes');
 const gabeRouter = require('./routes/gabeRoute');
+=======
+
+
+
+>>>>>>> 3e34526 (Complete remaining changes: update app.js, remove gabeRoute.js, and update admin support page)
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');

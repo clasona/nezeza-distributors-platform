@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SupportTicket } from '@/utils/support/createSupportTicket';
+import AdminLayout from '..';
 
 // Mock admin user data
 const mockAdminUser = {
@@ -337,6 +338,9 @@ const AdminSupportPage = () => {
   };
 
   return (
+
+    <AdminLayout>
+
     <div className="flex h-screen bg-gray-50">
       {/* Left Sidebar */}
       <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
@@ -683,6 +687,7 @@ const AdminSupportPage = () => {
         </div>
       </div>
     </div>
+  </AdminLayout>
   );
 };
 
