@@ -5,29 +5,28 @@ import { updateOrderItem } from '@/utils/order/updateOrderItem';
 import { createProduct } from '@/utils/product/createProduct';
 import { getSingleProduct } from '@/utils/product/getSingleProduct';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { OrderItemsProps, ProductProps, stateProps } from '../../../type';
 import ErrorMessageModal from '../ErrorMessageModal';
-import CloudinaryImageUpload from '../FormInputs/CloudinaryImageUpload';
 import DropdownInput from '../FormInputs/DropdownInput';
-import MultiImageInput from '../FormInputs/MultipleImageInput';
 import SubmitButton from '../FormInputs/SubmitButton';
 import TextAreaInput from '../FormInputs/TextAreaInput';
 import TextInput from '../FormInputs/TextInput';
 import SuccessMessageModal from '../SuccessMessageModal';
+import CloudinaryUploadWidget from '../Cloudinary/UploadWidget';
 
 interface NewProductFormProps {
-  onSubmitSuccess?: (data: any) => void; // Callback after successful submission
+  onSubmitSuccess?: (data: any) => void;
 }
 const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
   const router = useRouter();
   const [productData, setProductData] = useState<ProductProps | null>(null);
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [mainImageResource, setMainImageResource] = useState<any>(null);
-  const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [selectedImgIdx, setSelectedImgIdx] = useState(0);
 
   //must match with what's defined in backedn Product model
   const categoryOptions = [
@@ -38,14 +37,25 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
     { value: 'furniture', label: 'Furniture' },
     { value: 'others', label: 'Others' },
   ];
+
+  const colorOptions = [
+    '#222',
+    '#000',
+    '#fff',
+    '#f00',
+    '#0f0',
+    '#00f',
+    '#ff0',
+    '#0ff',
+    '#f0f',
+  ];
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm();
-  const [imageUrl, setImageUrl] = useState('');
-  const [additionalImages, setAdditionalImages] = useState<File[]>([]);
 
   const { userInfo, storeInfo } = useSelector(
     (state: stateProps) => state.next
@@ -57,16 +67,15 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
     if (queryProductId) {
       const fetchProductData = async () => {
         try {
-          const data = await getSingleProduct(queryProductId); // Await the promise
-          setProductData(data); // Set the fetched data
+          const data = await getSingleProduct(queryProductId);
+          setProductData(data);
 
-          // Set form values after data is fetched.  Check if data exists.
           if (data) {
             for (const key in data) {
               if (data.hasOwnProperty(key)) {
                 try {
                   if (key === 'quantity') {
-                    setValue(key, router.query.quantity); // setting the quantity to ordered product quantity
+                    setValue(key, router.query.quantity);
                   } else {
                     setValue(key, data[key]);
                   }
@@ -75,17 +84,12 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
                 }
               }
             }
-            if (data.image) {
-              setMainImageResource({ url: data.image });
-              setImagePreviewUrl(data.image);
+            if (data.images && Array.isArray(data.images)) {
+              setImageUrls(data.images);
             }
-          } else {
-            console.error('No data returned from getSingleProduct function.');
-            // Handle the case where no data is returned (e.g., show an error message)
           }
         } catch (error) {
           console.error('Error fetching product data:', error);
-          // Handle the error (e.g., display an error message)
         }
       };
 
@@ -93,33 +97,67 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
     }
   }, [router.query, setValue]);
 
+  // Color selection state for multi input
+  const [selectedColors, setSelectedColors] = useState<string[]>(['#222']);
+   const handleColorChange = (color: string) => {
+     setSelectedColors((prev) =>
+       prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
+     );
+   };
+  
+    const handleRemoveImage = useCallback(
+      (idx: number) => {
+        setImageUrls((prev) => prev.filter((_, i) => i !== idx));
+        if (selectedImgIdx === idx) {
+          setSelectedImgIdx(0);
+        } else if (selectedImgIdx > idx) {
+          setSelectedImgIdx((prev) => prev - 1);
+        }
+      },
+      [selectedImgIdx]
+    );
+
   const onSubmit = async (data: any) => {
     const slug = generateSlug(data.title);
     data.slug = slug;
 
-    // Ensure mainImageResource exists before submitting
-    if (!mainImageResource) {
-      setErrorMessage('Please upload a main image before submitting.');
-      alert('Please upload a main product image before submitting');
-      return; // Prevent form submission
+    // Required images validation
+    if (!imageUrls.length) {
+      setErrorMessage('Please upload at least one product image.');
+      return;
     }
 
+    // Required: at least one color
+    if (!selectedColors.length) {
+      setErrorMessage('Please select at least one color.');
+      return;
+    }
+    // Required numeric fields validation
+    const numericFields = [
+      'weight',
+      'height',
+      'width',
+      'length',
+      'quantity',
+      'price',
+      'taxRate',
+    ];
+    for (const field of numericFields) {
+      if (!data[field] && data[field] !== 0) {
+        setErrorMessage(`Please provide a value for ${field}.`);
+        return;
+      }
+    }
     // Prepare image URLs (main image and additional images)
-    const productData = {
+    const productData: Partial<ProductProps> = {
       ...data,
-      // imageUrl, // Main product image URL
-      image: mainImageResource?.secure_url, // Main product image URL
-      // createdAt: new Date().toISOString(),
-      // updatedAt: new Date().toISOString(),
-      owner: storeInfo._id,
-      buyerStoreId: storeInfo._id,
-      sellerStoreId: storeInfo._id,
-      productId: storeInfo._id,
-      // additionalImages: additionalImages.map((file) =>
-      //   URL.createObjectURL(file)
-      // ), // Placeholder URLs for additional images
+      images: imageUrls,
+      colors: selectedColors,
+      storeId: storeInfo?._id,
+      featured: !!data.featured,
+      freeShipping: !!data.freeShipping,
+      availability: !!data.availability,
     };
-    delete productData._id; // Delete the _id property since a new one will be generated by mongoDB
 
     try {
       const response = await createProduct(productData);
@@ -129,8 +167,8 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
       };
       if (router.query.order_id && router.query.order_item_id) {
         await updateOrderItem(
-          router.query.order_id.toString(),
-          router.query.order_item_id.toString(),
+          String(router.query.order_id),
+          String(router.query.order_item_id),
           orderItemData
         );
       }
@@ -138,21 +176,16 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
       setSuccessMessage('Product created successfully.');
       setTimeout(() => setSuccessMessage(''), 4000);
 
-      // TODO: Reset form inputs
-      setMainImageResource(null);
+      setImageUrls([]);
+      setSelectedColors(['#222']);
 
       if (onSubmitSuccess) {
-        onSubmitSuccess(response.data); // Call the callback with the response data
+        onSubmitSuccess(response.data);
       }
     } catch (error) {
       setErrorMessage('Error creating product.');
     }
   };
-
-  // if (!productData) {
-  //   // Conditionally render while data is loading
-  //   return <div>Loading product data...</div>; // Or a loading spinner
-  // }
 
   return (
     <form
@@ -160,10 +193,6 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
       className='w-full max-w-4xl p-4 bg-nezeza_light_blue border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 mx-auto my-2'
     >
       <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6'>
-        {/* 
-        title, price,  description, image, category, colors, featured,
-        weight, height, freeshipping, availability, quantity, avergaerating, 
-        numOfReviews, storeId */}
         <TextInput
           label='Product Title'
           id='title'
@@ -205,43 +234,143 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
           type='number'
         />
 
-        {/* Main product image */}
-        <CloudinaryImageUpload
-          label='Main Product Image'
-          className='sm:col-span-2' //span full row
-          onResourceChange={setMainImageResource} // Set mainImageResource on upload success
-        />
-        {/* Image Preview (Small Circle) */}
-        {imagePreviewUrl && (
-          <div className='mt-2'>
-            {' '}
-            {/* Add some margin top */}
-            <div className='overflow-hidden w-16 h-16 border border-gray-300'>
-              {' '}
-              {/* Circle styles */}
-              <img
-                src={imagePreviewUrl}
-                alt={imagePreviewUrl}
-                className='w-full h-full object-cover'
-              />
-            </div>
-          </div>
-        )}
-
-        {/* upload more product images  */}
-        <div className='col-span-2'>
-          <label className='mb-2 font-medium text-gray-700'>
-            Additional Product Images
+        {/* Images */}
+        <div className='col-span-2 mt-3 flex flex-wrap gap-2'>
+          <label className='block font-medium mb-1'>
+            Product Images <span className='text-nezeza_red_600'> *</span>
           </label>
-          <MultiImageInput onFilesChange={setAdditionalImages} />
+
+          {imageUrls.map((url, i) => (
+            <div key={i} className='relative'>
+              <img
+                src={url}
+                alt={`Product Image ${i + 1}`}
+                className='w-16 h-16 object-cover rounded border'
+              />
+              <button
+                type='button'
+                className='absolute top-0 right-0 bg-red-600 text-white rounded-full p-1 text-xs shadow'
+                onClick={() => handleRemoveImage(i)}
+                aria-label='Remove image'
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+          <CloudinaryUploadWidget
+            onUpload={(urls) => setImageUrls((prev) => [...prev, ...urls])}
+          >
+            <button
+              type='button'
+              className='w-16 h-16 flex items-center justify-center rounded border cursor-pointer bg-gray-50 hover:bg-gray-200 text-vizpac-main-orange'
+            >
+              +
+            </button>
+          </CloudinaryUploadWidget>
         </div>
+        {/* Colors */}
+        <div className='col-span-2 flex flex-wrap items-center gap-2 mt-2'>
+          <label className='block font-medium mb-1'>
+            Select Colors <span className='text-nezeza_red_600'>*</span>
+          </label>
+          {colorOptions.map((color) => (
+            <button
+              type='button'
+              key={color}
+              className={`w-7 h-7 rounded-full border-2 flex-shrink-0 mr-1 ${
+                selectedColors.includes(color)
+                  ? 'border-nezeza_green_600 ring-2 ring-nezeza_green_600'
+                  : 'border-gray-300'
+              }`}
+              style={{ background: color }}
+              onClick={() => handleColorChange(color)}
+              aria-label={`Select color ${color}`}
+            />
+          ))}
+        </div>
+        {/* Boolean fields */}
+        <div className='flex items-center gap-2 mt-2'>
+          <input
+            id='featured'
+            type='checkbox'
+            {...register('featured')}
+            className='form-checkbox accent-nezeza_green_600'
+          />
+          <label htmlFor='featured' className='font-medium'>
+            Featured
+          </label>
+        </div>
+        <div className='flex items-center gap-2 mt-2'>
+          <input
+            id='freeShipping'
+            type='checkbox'
+            {...register('freeShipping')}
+            className='form-checkbox accent-nezeza_green_600'
+          />
+          <label htmlFor='freeShipping' className='font-medium'>
+            Free Shipping
+          </label>
+        </div>
+        <div className='flex items-center gap-2 mt-2'>
+          <input
+            id='availability'
+            type='checkbox'
+            {...register('availability')}
+            className='form-checkbox accent-nezeza_green_600'
+            defaultChecked
+          />
+          <label htmlFor='availability' className='font-medium'>
+            Available for Sale
+          </label>
+        </div>
+        {/* Physical dimensions */}
+        <TextInput
+          label='Weight (lbs)'
+          id='weight'
+          name='weight'
+          register={register}
+          errors={errors}
+          type='number'
+        />
+        <TextInput
+          label='Height (inches)'
+          id='height'
+          name='height'
+          register={register}
+          errors={errors}
+          type='number'
+        />
+        <TextInput
+          label='Width (inches)'
+          id='width'
+          name='width'
+          register={register}
+          errors={errors}
+          type='number'
+        />
+        <TextInput
+          label='Length (inches)'
+          id='length'
+          name='length'
+          register={register}
+          errors={errors}
+          type='number'
+        />
+        {/* Tax rate */}
+        <TextInput
+          label='Tax Rate (%)'
+          id='taxRate'
+          name='taxRate'
+          register={register}
+          errors={errors}
+          type='number'
+        />
       </div>
       <div className='flex items-center justify-center'>
         {successMessage && (
           <SuccessMessageModal successMessage={successMessage} />
         )}
         {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
-        {/* {errorMessage && <p className='text-red-600'>{errorMessage}</p>} */}
         <SubmitButton
           isLoading={false}
           buttonTitle='Create Product'

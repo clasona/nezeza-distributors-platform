@@ -1,20 +1,9 @@
-import React from 'react';
-import axios from 'axios';
-
+import axiosInstance from '../axiosInstance';
 import { ProductProps } from '../../../type';
 
-export const createProduct = async (productData: ProductProps) => {
+export const createProduct = async (productData: Partial<ProductProps>) => {
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products`,
-      productData,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response = await axiosInstance.post('/products', productData);
 
     if (response.status === 201) {
       return response.data; // Return the response data on success
