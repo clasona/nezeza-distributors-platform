@@ -42,6 +42,7 @@ const amdinAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
 const amdinFinancialRoutes = require('./routes/admin/adminFinancialRoutes');
 const amdinMonitoringRoutes = require('./routes/admin/adminMonitoringRoutes');
 const verificationRouter = require('./routes/verificationRoutes');
+const newsletterRouter = require('./routes/newsletterRoutes');
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
@@ -120,6 +121,8 @@ app.use('/api/v1/admin/monitoring', amdinMonitoringRoutes);
 app.use('/api/v1/email-test', emailTestRouter);
 // verification routes
 app.use('/api/v1/verification', verificationRouter);
+// newsletter routes
+app.use('/api', newsletterRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
