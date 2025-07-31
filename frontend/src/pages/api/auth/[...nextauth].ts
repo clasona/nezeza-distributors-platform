@@ -1,8 +1,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
-import bcrypt from 'bcryptjs';
-import { getUserByEmail } from '@/utils/user/getUserByEmail';
+import { backendLogin } from '@/utils/auth/backendLogin';
 
 // Declare the Session interface to define the shape of the session object.
 // TypeScript will use this interface implicitly for type checking.
@@ -42,7 +41,7 @@ const authOptions = {
           placeholder: 'Enter your password',
         },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         const parsedCredentials = z
           .object({
             email: z.string().email(),
@@ -52,34 +51,20 @@ const authOptions = {
 
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
-          const response = await getUserByEmail(email);
-          // const response = await loginUser(
-          //   email,
-          //   password
-          // );
-
-          if (!response || !response.data.user) {
-            console.log('User not found');
-            return null;
-          }
-
-          const user = response.data.user;
-
-          // Check if the user has a previousPasswords array and get the first one
-          if (user.previousPasswords && user.previousPasswords.length > 0) {
-            const storedHashedPassword = user.previousPasswords[0];
-            const passwordsMatch = await bcrypt.compare(
-              password,
-              storedHashedPassword
-            );
-
-            if (passwordsMatch) {
+          
+          try {
+            // Use the backend login endpoint to authenticate and get cookies
+            const response = await backendLogin(email, password);
+            
+            if (response && response.success && response.user) {
+              // The backendLogin function should have set the JWT cookies via the backend
               // Remove sensitive information before returning
-              const { previousPasswords, ...userWithoutPasswords } = user;
+              const user = response.user;
+              const { previousPasswords, password: _, ...userWithoutPasswords } = user;
               return userWithoutPasswords;
             }
-          } else {
-            console.log('No previous passwords found for user');
+          } catch (error) {
+            console.log('Login failed:', error);
             return null;
           }
         }
@@ -117,6 +102,13 @@ const authOptions = {
         // console.log('sesss', session);
       }
       return session;
+    },
+  },
+  events: {
+    async signOut() {
+      // This will be called when NextAuth signs out
+      // The backend logout will be handled by the LogoutButton component
+      console.log('NextAuth signOut event triggered');
     },
   },
 };

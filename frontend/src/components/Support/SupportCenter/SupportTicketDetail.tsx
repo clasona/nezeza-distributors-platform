@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { SupportTicket } from '@/utils/support/createSupportTicket';
 import { getTicketDetails } from '@/utils/support/getTicketDetails';
+import { getAdminTicketDetails } from '@/utils/admin/getAdminTicketDetails';
 import { addMessageToTicket } from '@/utils/support/addMessageToTicket';
+import { adminAddMessageToTicket } from '@/utils/admin/adminAddMessageToTicket';
 import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportMetadata';
 import formatDate from '@/utils/formatDate';
 import Button from '@/components/FormInputs/Button';
@@ -13,12 +15,14 @@ interface SupportTicketDetailProps {
   ticketId: string;
   onBack?: () => void;
   onTicketUpdate?: (ticket: SupportTicket) => void;
+  isAdmin?: boolean;
 }
 
 const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
   ticketId,
   onBack,
   onTicketUpdate,
+  isAdmin = false,
 }) => {
   const [ticket, setTicket] = useState<SupportTicket | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,12 +35,14 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
   useEffect(() => {
     fetchTicketDetails();
     fetchMetadata();
-  }, [ticketId]);
+  }, [ticketId, isAdmin]);
 
   const fetchTicketDetails = async () => {
     try {
       setLoading(true);
-      const response = await getTicketDetails(ticketId);
+      const response = isAdmin 
+        ? await getAdminTicketDetails(ticketId)
+        : await getTicketDetails(ticketId);
       setTicket(response.ticket);
     } catch (error: any) {
       setError(error.message);
@@ -59,10 +65,15 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
 
     try {
       setSendingMessage(true);
-      const response = await addMessageToTicket(ticketId, {
-        message: newMessage.trim(),
-        attachments: selectedFiles,
-      });
+      const response = isAdmin
+        ? await adminAddMessageToTicket(ticketId, {
+            message: newMessage.trim(),
+            attachments: selectedFiles,
+          })
+        : await addMessageToTicket(ticketId, {
+            message: newMessage.trim(),
+            attachments: selectedFiles,
+          });
       setTicket(response.ticket);
       setNewMessage('');
       setSelectedFiles([]);

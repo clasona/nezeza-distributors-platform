@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../type';
 import { updateFavorites } from '@/utils/favorites/updateFavorites';
+import { backendLogout } from '@/utils/auth/backendLogout';
 
 interface LogoutButtonProps {
   redirectTo?: string;
@@ -29,8 +30,25 @@ export const LogoutButton = ({
     setLogoutError('');
 
     try {
-      await updateCart(cartItemsData, userInfo?._id); // Ensure cart is updated first
-      await updateFavorites(favoritesItemsData, userInfo?._id);
+      // Try to update cart and favorites, but don't fail logout if these fail
+      try {
+        if (userInfo?._id) {
+          await updateCart(cartItemsData, userInfo._id);
+          await updateFavorites(favoritesItemsData, userInfo._id);
+        }
+      } catch (updateError) {
+        console.log('Cart/favorites update failed during logout (continuing anyway):', updateError);
+        // Continue with logout even if cart/favorites update fails
+      }
+
+      // Call backend logout to clear JWT cookies
+      try {
+        await backendLogout();
+      } catch (backendLogoutError) {
+        console.log('Backend logout failed (continuing anyway):', backendLogoutError);
+        // Continue with logout even if backend logout fails
+      }
+
       // Clear Redux state
       dispatch(removeUser());
       dispatch(removeStore());
@@ -41,9 +59,18 @@ export const LogoutButton = ({
       setTimeout(() => {
         signOut({ callbackUrl: redirectTo || '/' });
       }, 100);
+      
     } catch (error) {
-      setLogoutError('Logout failed. Please try again.');
-      setIsLoggingOut(false);
+      console.error('Unexpected logout error:', error);
+      // Even if there's an unexpected error, try to complete the logout
+      dispatch(removeUser());
+      dispatch(removeStore());
+      dispatch(resetCart());
+      dispatch(resetFavorites());
+      
+      setTimeout(() => {
+        signOut({ callbackUrl: redirectTo || '/' });
+      }, 100);
     }
   };
 

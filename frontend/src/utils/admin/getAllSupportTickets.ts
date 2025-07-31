@@ -48,9 +48,18 @@ export const getAllSupportTickets = async (params: GetAllTicketsParams = {}): Pr
       }
     });
     
-    const response = await axiosInstance.get(`/admin/support/tickets?${queryParams.toString()}`);
+    const url = `/admin/support/tickets?${queryParams.toString()}`;
+    console.log('Fetching tickets from URL:', url);
+    console.log('Full URL:', `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1${url}`);
+    
+    const response = await axiosInstance.get(url);
+    console.log('Tickets response:', response.data);
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch support tickets');
+    console.error('Error fetching tickets:', error);
+    console.error('Error response:', error.response);
+    console.error('Error status:', error.response?.status);
+    console.error('Error data:', error.response?.data);
+    throw new Error(error.response?.data?.message || error.message || 'Failed to fetch support tickets');
   }
-}; 
+};

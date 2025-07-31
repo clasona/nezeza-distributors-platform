@@ -122,8 +122,21 @@ const LoginPage = () => {
       );
 
       if (updatedSession?.user) {
-        await loginUser(email, password);
-
+        // Call backend login to get JWT cookies for API authentication
+        try {
+          await fetch('/api/auth/backend-login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email, password }),
+          });
+        } catch (backendError) {
+          console.error('Failed to set backend cookies:', backendError);
+          // Continue anyway - user is logged into NextAuth
+        }
+        
         const userEmail = updatedSession?.user?.email;
         const response = await getUserByEmail(userEmail);
         if (response && response.data.user) {

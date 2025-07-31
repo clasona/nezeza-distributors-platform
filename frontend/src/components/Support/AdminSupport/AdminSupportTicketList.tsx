@@ -283,7 +283,11 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
                   <tr
                     key={ticket._id}
                     className={`hover:bg-gray-50 ${onTicketSelect ? 'cursor-pointer' : ''}`}
-                    onClick={() => onTicketSelect?.(ticket)}
+                    onClick={() => {
+                      console.log('Row clicked for ticket:', ticket._id);
+                      console.log('onTicketSelect function:', onTicketSelect);
+                      onTicketSelect?.(ticket);
+                    }}
                   >
                     <td className="px-4 py-4">
                       <input
