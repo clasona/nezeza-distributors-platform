@@ -359,9 +359,9 @@ const CustomerSupportMyTickets: React.FC = () => {
 
   if (selectedTicket) {
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-4">
             <button
               onClick={handleBackToList}
@@ -388,61 +388,61 @@ const CustomerSupportMyTickets: React.FC = () => {
         </div>
 
         {/* Ticket Info */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg shadow-sm border p-3 mb-3">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div>
-              <span className="text-sm font-medium text-gray-500">Category</span>
-              <p className="flex items-center mt-1">
-                <span className="mr-2">{getCategoryIcon(selectedTicket.category)}</span>
+              <span className="text-xs font-medium text-gray-500">Category</span>
+              <p className="flex items-center mt-0.5 text-sm">
+                <span className="mr-1">{getCategoryIcon(selectedTicket.category)}</span>
                 {selectedTicket.category.replace('_', ' ').toUpperCase()}
               </p>
             </div>
             <div>
-              <span className="text-sm font-medium text-gray-500">Created</span>
-              <p className="mt-1">{formatDate(selectedTicket.createdAt)}</p>
+              <span className="text-xs font-medium text-gray-500">Created</span>
+              <p className="mt-0.5 text-sm">{formatDate(selectedTicket.createdAt)}</p>
             </div>
             <div>
-              <span className="text-sm font-medium text-gray-500">Last Updated</span>
-              <p className="mt-1">{formatDate(selectedTicket.updatedAt)}</p>
+              <span className="text-xs font-medium text-gray-500">Last Updated</span>
+              <p className="mt-0.5 text-sm">{formatDate(selectedTicket.updatedAt)}</p>
             </div>
+            {selectedTicket.orderId && (
+              <div>
+                <span className="text-xs font-medium text-gray-500">Related Order</span>
+                <p className="mt-0.5 text-sm text-blue-600 font-medium">{selectedTicket.orderId}</p>
+              </div>
+            )}
           </div>
-          {selectedTicket.orderId && (
-            <div className="mt-4 pt-4 border-t">
-              <span className="text-sm font-medium text-gray-500">Related Order</span>
-              <p className="mt-1 text-blue-600 font-medium">{selectedTicket.orderId}</p>
-            </div>
-          )}
         </div>
 
         {/* Initial Description */}
-        <div className="bg-white rounded-lg shadow-sm border mb-6">
-          <div className="p-6 border-b">
+        <div className="bg-white rounded-lg shadow-sm border mb-4">
+          <div className="p-4 border-b">
             <h3 className="text-lg font-semibold">Original Description</h3>
           </div>
-          <div className="p-6">
-            <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+          <div className="p-4">
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
               <p className="text-gray-800 whitespace-pre-wrap">{selectedTicket.description}</p>
             </div>
           </div>
         </div>
 
         {/* Messages */}
-        <div className="bg-white rounded-lg shadow-sm border mb-6">
-          <div className="p-6 border-b">
+        <div className="bg-white rounded-lg shadow-sm border mb-4">
+          <div className="p-4 border-b">
             <h3 className="text-lg font-semibold">Conversation</h3>
             {selectedTicket.messages && selectedTicket.messages.length === 0 && (
               <p className="text-sm text-gray-500 mt-1">No replies yet</p>
             )}
           </div>
           {selectedTicket.messages && selectedTicket.messages.length > 0 && (
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-4">
             {selectedTicket.messages?.map((message) => (
               <div key={message.id} className={`flex ${message.author === 'customer' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-3xl ${
+                <div className={`max-w-4xl ${
                   message.author === 'customer' 
                     ? 'bg-nezeza_dark_blue text-white'
                     : 'bg-gray-100 text-gray-900'
-                } rounded-lg p-4`}>
+                } rounded-lg p-3`}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-sm">{message.authorName}</span>
                     <span className={`text-xs ${
@@ -453,8 +453,8 @@ const CustomerSupportMyTickets: React.FC = () => {
                   </div>
                   <p className="whitespace-pre-wrap">{message.content}</p>
                   {message.attachments.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-opacity-20">
-                      <p className="text-xs mb-2 opacity-75">Attachments:</p>
+                    <div className="mt-2 pt-2 border-t border-opacity-20">
+                      <p className="text-xs mb-1 opacity-75">Attachments:</p>
                       {message.attachments.map((attachment, idx) => (
                         <a key={idx} href={attachment.url} className="text-xs underline block hover:no-underline">
                           📎 {attachment.name}
