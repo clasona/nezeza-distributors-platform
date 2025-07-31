@@ -151,30 +151,30 @@ const ComingSoonPage = () => {
             {selectedTab === 'customers' ? (
               <>
                 <div>
-                  <h2 className="text-3xl font-extrabold text-[#3d1f00] mb-6">Shop Africa. Shop Original.</h2>
+                  <h2 className="text-3xl font-extrabold text-[#3d1f00] mb-6">Your African Fix, Delivered</h2>
                   <p className="text-lg text-[#3d1f00]/80 mb-8 font-medium">
-                    From bold flavors to stunning crafts, Vesoko brings you the best of Africa—delivered to your door. <span className="text-[#ff7a00] font-bold">No middlemen. No imitations.</span> Just pure, authentic finds you won't get anywhere else.
+                    Craving real African flavors, fashion, or crafts? Vesoko is your new go-to for all things genuinely African—delivered straight to your door.
                   </p>
                   <div className="space-y-6">
                     <div className="flex items-start space-x-4">
                       <div className="text-[#ff7a00] mt-1"><GlobeAltIcon className="w-8 h-8" /></div>
                       <div>
-                        <h3 className="font-semibold text-[#3d1f00] mb-1">Global Marketplace</h3>
-                        <p className="text-[#3d1f00]/80">Shop directly from verified African sellers—no borders, just opportunity.</p>
+                        <h3 className="font-semibold text-[#3d1f00] mb-1">No Fakes, Just Facts (and Flavor!)</h3>
+                        <p className="text-[#3d1f00]/80">Everything comes from trusted African stores in the U.S.—shop with confidence, it’s all authentic.</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-4">
                       <div className="text-[#ff7a00] mt-1"><SparklesIcon className="w-8 h-8" /></div>
                       <div>
-                        <h3 className="font-semibold text-[#3d1f00] mb-1">Curated Selection</h3>
-                        <p className="text-[#3d1f00]/80">Every product is handpicked for quality, story, and authenticity.</p>
+                        <h3 className="font-semibold text-[#3d1f00] mb-1">Your Couch, Your African Market</h3>
+                        <p className="text-[#3d1f00]/80">Groceries, rare spices, vibrant clothing, cool accessories, and handmade goods—no driving, just browsing.</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-4">
                       <div className="text-[#ff7a00] mt-1"><UserGroupIcon className="w-8 h-8" /></div>
                       <div>
-                        <h3 className="font-semibold text-[#3d1f00] mb-1">Community Powered</h3>
-                        <p className="text-[#3d1f00]/80">Join a movement that celebrates African excellence and supports real people.</p>
+                        <h3 className="font-semibold text-[#3d1f00] mb-1">More Goodies Coming Soon</h3>
+                        <p className="text-[#3d1f00]/80">Soon: direct-from-Africa treasures from artisans and manufacturers. Stay tuned!</p>
                       </div>
                     </div>
                   </div>
@@ -226,35 +226,42 @@ const ComingSoonPage = () => {
             ) : (
               <>
                 <div>
-                  <h2 className="text-3xl font-extrabold text-[#ff7a00] mb-6">Sell on Vesoko. Stand Out.</h2>
-                  <p className="text-lg text-[#3d1f00]/80 mb-8 font-medium">
-                    Ready to reach a global audience hungry for authentic African products? <span className="text-[#3d1f00] font-bold">Vesoko</span> is your launchpad.<br />
-                    <span className="text-[#3d1f00]">Apply now to join our exclusive seller community.</span>
+                  <h2 className="text-3xl font-extrabold text-[#ff7a00] mb-6">Your Business. Unlocked. Nationwide.</h2>
+                  <p className="text-lg text-[#3d1f00]/80 mb-4 font-medium">
+                    Launching first in the U.S.! Vesoko is your dedicated growth engine—connecting your African products to a broader, underserved market across America.
                   </p>
                   <div className="space-y-6 mb-8">
                     <div className="flex items-start space-x-4">
                       <div className="text-[#3d1f00] mt-1"><BuildingStorefrontIcon className="w-8 h-8" /></div>
                       <div>
-                        <h3 className="font-semibold text-[#ff7a00] mb-1">Global Reach</h3>
-                        <p className="text-[#3d1f00]/80">Showcase your products to buyers across the US and beyond.</p>
+                        <h3 className="font-semibold text-[#ff7a00] mb-1">Expand Your Reach Instantly</h3>
+                        <p className="text-[#3d1f00]/80">Multiply your customer base overnight. We connect you to Africans and culture lovers nationwide—with seamless delivery via Uber, USPS, and UPS.</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-4">
                       <div className="text-[#3d1f00] mt-1"><SparklesIcon className="w-8 h-8" /></div>
                       <div>
-                        <h3 className="font-semibold text-[#ff7a00] mb-1">Growth Tools</h3>
-                        <p className="text-[#3d1f00]/80">Get access to analytics, marketing, and seller support to grow your business.</p>
+                        <h3 className="font-semibold text-[#ff7a00] mb-1">Streamlined Selling, Maximum Profit</h3>
+                        <p className="text-[#3d1f00]/80">Easy onboarding, simple listings, automated payments, and streamlined shipping. Sell more, stress less.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-4">
+                      <div className="text-[#3d1f00] mt-1"><CheckCircleIcon className="w-8 h-8" /></div>
+                      <div>
+                        <h3 className="font-semibold text-[#ff7a00] mb-1">Future-Proof Your Business</h3>
+                        <p className="text-[#3d1f00]/80">Advanced analytics, inventory automation, and direct access to trusted African manufacturers—coming soon.</p>
                       </div>
                     </div>
                   </div>
                   <div className="bg-[#3d1f00]/5 border-l-4 border-[#ff7a00] rounded-xl p-6">
-                    <h3 className="text-xl font-bold text-[#3d1f00] mb-4 flex items-center"><CheckCircleIcon className="w-6 h-6 text-[#ff7a00] mr-2" />How to Join the Vesoko Seller Community</h3>
-                    <ol className="list-decimal list-inside text-[#3d1f00]/90 space-y-2 font-medium">
+                    <h3 className="text-xl font-bold text-[#3d1f00] mb-4 flex items-center"><CheckCircleIcon className="w-6 h-6 text-[#ff7a00] mr-2" />Ready to grow?</h3>
+                    <p className="text-[#3d1f00]/90 font-medium mb-4">Got inventory ready to move? Join Vesoko and turn your local business into a national powerhouse.</p>
+                    <ol className="list-decimal list-inside text-[#3d1f00]/90 space-y-1 font-medium mb-4">
                       <li>Request an invite by joining the waitlist below.</li>
-                      <li>Once we launch, we'll send you a link to complete your store application.</li>
-                      <li>Then, we'll get you approved and start selling to a global audience!</li>
+                      <li>Complete the store application, background check, and product review.</li>
+                      <li>Once approved, list your products and start selling across the U.S.!</li>
                     </ol>
-                    <div className="mt-6">
+                    <div className="mt-2">
                       <Link href="#seller-waitlist" className="inline-block bg-[#ff7a00] hover:bg-[#3d1f00] text-white font-bold px-6 py-3 rounded-lg shadow transition-all duration-200">Join the Seller Waitlist</Link>
                     </div>
                   </div>
