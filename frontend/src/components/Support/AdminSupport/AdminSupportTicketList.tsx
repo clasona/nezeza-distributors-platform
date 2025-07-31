@@ -6,6 +6,9 @@ import { getAllSupportTickets, GetAllTicketsParams } from '@/utils/admin/getAllS
 import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportMetadata';
 import { updateTicketAdmin } from '@/utils/admin/updateTicketAdmin';
 import { assignTicket } from '@/utils/admin/assignTicket';
+import { bulkUpdateTickets } from '@/utils/admin/bulkUpdateTickets';
+import { getAdminUsers, AdminUser } from '@/utils/admin/getAdminUsers';
+import { respondToTicket } from '@/utils/admin/respondToTicket';
 import formatDate from '@/utils/formatDate';
 import Button from '@/components/FormInputs/Button';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
@@ -37,9 +40,18 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
   });
   const [selectedTickets, setSelectedTickets] = useState<string[]>([]);
   const [bulkAction, setBulkAction] = useState<string>('');
+  const [bulkPriority, setBulkPriority] = useState<string>('');
+  const [bulkAssignee, setBulkAssignee] = useState<string>('');
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [bulkActionType, setBulkActionType] = useState<string>('');
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [editingTicket, setEditingTicket] = useState<string | null>(null);
+  const [ticketUpdates, setTicketUpdates] = useState<{ [key: string]: any }>({});
+  const [updatingTickets, setUpdatingTickets] = useState<string[]>([]);
 
   useEffect(() => {
     fetchMetadata();
+    fetchAdminUsers();
   }, []);
 
   useEffect(() => {
@@ -65,6 +77,16 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAdminUsers = async () => {
+    try {
+      const response = await getAdminUsers();
+      setAdminUsers(response.users || []);
+    } catch (error) {
+      console.error('Failed to fetch admin users:', error);
+      setAdminUsers([]); // Ensure adminUsers is always an array
     }
   };
 
@@ -100,17 +122,55 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
   };
 
   const handleBulkAction = async () => {
-    if (!bulkAction || selectedTickets.length === 0) return;
+    if ((!bulkAction && !bulkPriority && !bulkAssignee) || selectedTickets.length === 0) return;
 
     try {
-      for (const ticketId of selectedTickets) {
-        await updateTicketAdmin(ticketId, { status: bulkAction });
-      }
+      setBulkLoading(true);
+      const updates: any = {};
+      
+      if (bulkAction) updates.status = bulkAction;
+      if (bulkPriority) updates.priority = bulkPriority;
+      if (bulkAssignee) updates.assignedTo = bulkAssignee;
+
+      await bulkUpdateTickets({
+        ticketIds: selectedTickets,
+        updates
+      });
+      
       setSelectedTickets([]);
       setBulkAction('');
+      setBulkPriority('');
+      setBulkAssignee('');
+      setBulkActionType('');
       fetchTickets(); // Refresh the list
     } catch (error: any) {
       setError(error.message);
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  const handleIndividualTicketUpdate = async (ticketId: string, field: string, value: string) => {
+    try {
+      setUpdatingTickets([...updatingTickets, ticketId]);
+      await updateTicketAdmin(ticketId, { [field]: value });
+      fetchTickets(); // Refresh the list
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setUpdatingTickets(updatingTickets.filter(id => id !== ticketId));
+    }
+  };
+
+  const handleAssignTicket = async (ticketId: string, adminId: string) => {
+    try {
+      setUpdatingTickets([...updatingTickets, ticketId]);
+      await assignTicket(ticketId, { assignedTo: adminId });
+      fetchTickets(); // Refresh the list
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setUpdatingTickets(updatingTickets.filter(id => id !== ticketId));
     }
   };
 
@@ -170,11 +230,11 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
   }
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-3 ${className}`}>
       {/* Filters */}
       {metadata && (
-        <div className="bg-white p-4 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-semibold mb-4">Filters</h3>
+        <div className="bg-white p-3 rounded-lg shadow-sm border">
+          <h3 className="text-base font-semibold mb-3">Filters</h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
               type="text"
@@ -214,27 +274,80 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
       {/* Bulk Actions */}
       {selectedTickets.length > 0 && (
         <div className="bg-white p-4 rounded-lg shadow-sm border">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
-              {selectedTickets.length} ticket(s) selected
-            </span>
-            <select
-              value={bulkAction}
-              onChange={(e) => setBulkAction(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2"
-            >
-              <option value="">Select action...</option>
-              <option value="in_progress">Mark as In Progress</option>
-              <option value="waiting_customer">Mark as Waiting for Customer</option>
-              <option value="resolved">Mark as Resolved</option>
-              <option value="closed">Mark as Closed</option>
-            </select>
-            <Button
-              buttonTitle="Apply"
-              onClick={handleBulkAction}
-              disabled={!bulkAction}
-              className="bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"
-            />
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">
+                {selectedTickets.length} ticket(s) selected
+              </span>
+              <Button
+                buttonTitle="Clear Selection"
+                onClick={() => setSelectedTickets([])}
+                className="bg-gray-500 text-white hover:bg-gray-600 text-xs px-3 py-1"
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Bulk Status Update */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                <select
+                  value={bulkAction}
+                  onChange={(e) => setBulkAction(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                >
+                  <option value="">Select status...</option>
+                  <option value="open">Open</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="waiting_customer">Waiting for Customer</option>
+                  <option value="waiting_admin">Waiting for Admin</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </div>
+
+              {/* Bulk Priority Update */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Priority</label>
+                <select
+                  value={bulkPriority}
+                  onChange={(e) => setBulkPriority(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                >
+                  <option value="">Select priority...</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+
+              {/* Bulk Assignment */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Assign To</label>
+                <select
+                  value={bulkAssignee}
+                  onChange={(e) => setBulkAssignee(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                >
+                  <option value="">Select admin...</option>
+                  {adminUsers && adminUsers.map((admin) => (
+                    <option key={admin._id} value={admin._id}>
+                      {admin.firstName} {admin.lastName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Apply Button */}
+              <div className="flex items-end">
+                <Button
+                  buttonTitle={bulkLoading ? 'Applying...' : 'Apply Changes'}
+                  onClick={handleBulkAction}
+                  disabled={(!bulkAction && !bulkPriority && !bulkAssignee) || bulkLoading}
+                  className="w-full bg-nezeza_dark_blue text-white hover:bg-nezeza_dark_blue_2 disabled:bg-gray-400"
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -275,6 +388,9 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -337,6 +453,59 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-500">
                       {formatDate(ticket.createdAt)}
+                    </td>
+                    <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex flex-col gap-1">
+                        {/* Status Update */}
+                        <select
+                          className="text-xs border border-gray-300 rounded px-2 py-1"
+                          value={ticket.status}
+                          onChange={(e) => handleIndividualTicketUpdate(ticket._id, 'status', e.target.value)}
+                          disabled={updatingTickets.includes(ticket._id)}
+                        >
+                          {metadata?.statuses.map((status) => (
+                            <option key={status.value} value={status.value}>
+                              {status.label}
+                            </option>
+                          ))}
+                        </select>
+                        
+                        {/* Priority Update */}
+                        <select
+                          className="text-xs border border-gray-300 rounded px-2 py-1"
+                          value={ticket.priority}
+                          onChange={(e) => handleIndividualTicketUpdate(ticket._id, 'priority', e.target.value)}
+                          disabled={updatingTickets.includes(ticket._id)}
+                        >
+                          {metadata?.priorities.map((priority) => (
+                            <option key={priority.value} value={priority.value}>
+                              {priority.label}
+                            </option>
+                          ))}
+                        </select>
+                        
+                        {/* Assignment Update */}
+                        <select
+                          className="text-xs border border-gray-300 rounded px-2 py-1"
+                          value={ticket.assignedTo?._id || ''}
+                          onChange={(e) => handleAssignTicket(ticket._id, e.target.value)}
+                          disabled={updatingTickets.includes(ticket._id)}
+                        >
+                          <option value="">Unassigned</option>
+                          {adminUsers && adminUsers.map((admin) => (
+                            <option key={admin._id} value={admin._id}>
+                              {admin.firstName} {admin.lastName}
+                            </option>
+                          ))}
+                        </select>
+                        
+                        {updatingTickets.includes(ticket._id) && (
+                          <div className="text-xs text-gray-500 flex items-center gap-1">
+                            <div className="animate-spin rounded-full h-3 w-3 border-b border-gray-900"></div>
+                            Updating...
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

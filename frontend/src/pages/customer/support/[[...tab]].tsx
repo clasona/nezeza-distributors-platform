@@ -93,7 +93,7 @@ const CustomerSupportPage = () => {
         </Tabs>
       }
     >
-      <div className="max-w-6xl mx-auto mt-10 mb-4 px-4">
+      <div className="max-w-7xl mx-auto mt-2 mb-4 px-4">
         {tabContent}
       </div>
     </SupportCenterLayout>
