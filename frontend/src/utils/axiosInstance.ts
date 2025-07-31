@@ -10,7 +10,8 @@ const axiosInstance: AxiosInstance = axios.create({
 });
 axiosInstance.interceptors.request.use(
   (config) => {
-    if (config.method !== 'get' && config.data) {
+    if (config.method !== 'get' && config.data && !config.headers['Content-Type']) {
+      // Only set Content-Type to application/json if it's not already set
       config.headers['Content-Type'] = 'application/json';
     }
     return config;

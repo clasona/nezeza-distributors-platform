@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { SupportTicket } from '@/utils/support/createSupportTicket';
+import { getUserTickets } from '@/utils/support/getUserTickets';
+import { addMessageToTicket } from '@/utils/support/addMessageToTicket';
+import { getTicketDetails } from '@/utils/support/getTicketDetails';
 
-// Mock ticket data - replace with actual API calls
-const mockTickets: SupportTicket[] = [
+// Fallback ticket data for offline/error scenarios
+const fallbackTickets: SupportTicket[] = [
   {
     _id: '1',
     ticketNumber: 'VS-2024-001',
@@ -15,33 +18,37 @@ const mockTickets: SupportTicket[] = [
     description: 'My order was supposed to arrive yesterday but I haven\'t received it yet.',
     createdAt: '2024-01-20T10:30:00Z',
     updatedAt: '2024-01-21T14:20:00Z',
-    orderId: 'VS-ORD-2024-123',
+    orderId: { _id: 'VS-ORD-2024-123', totalAmount: 0, paymentStatus: '', fulfillmentStatus: '', createdAt: '2024-01-20T10:30:00Z' },
     messages: [
       {
-        id: '1',
-        author: 'customer',
-        authorName: 'You',
-        content: 'My order was supposed to arrive yesterday but I haven\'t received it yet. Can you please check the status?',
-        timestamp: '2024-01-20T10:30:00Z',
-        attachments: []
+        _id: '1',
+        senderId: { _id: 'user1', firstName: 'You', lastName: '' },
+        senderRole: 'customer',
+        message: 'My order was supposed to arrive yesterday but I haven\'t received it yet. Can you please check the status?',
+        attachments: [],
+        isInternal: false,
+        createdAt: '2024-01-20T10:30:00Z'
       },
       {
-        id: '2',
-        author: 'admin',
-        authorName: 'Sarah - Support Team',
-        content: 'Hi! I\'m sorry to hear about the delay. I\'ve checked with our shipping partner and your package is currently at the local distribution center. It should be delivered today before 6 PM. I\'ll send you the tracking details.',
-        timestamp: '2024-01-20T15:45:00Z',
-        attachments: []
+        _id: '2',
+        senderId: { _id: 'admin1', firstName: 'Sarah', lastName: 'Support' },
+        senderRole: 'admin',
+        message: 'Hi! I\'m sorry to hear about the delay. I\'ve checked with our shipping partner and your package is currently at the local distribution center. It should be delivered today before 6 PM. I\'ll send you the tracking details.',
+        attachments: [],
+        isInternal: false,
+        createdAt: '2024-01-20T15:45:00Z'
       },
       {
-        id: '3',
-        author: 'admin',
-        authorName: 'Sarah - Support Team',
-        content: 'Here\'s your tracking number: TRK123456789. You can also track it on our website.',
-        timestamp: '2024-01-20T15:47:00Z',
-        attachments: [{ name: 'tracking_details.pdf', url: '#' }]
+        _id: '3',
+        senderId: { _id: 'admin1', firstName: 'Sarah', lastName: 'Support' },
+        senderRole: 'admin',
+        message: 'Here\'s your tracking number: TRK123456789. You can also track it on our website.',
+        attachments: [{ filename: 'tracking_details.pdf', url: '#', fileType: 'pdf', fileSize: 1024 }],
+        isInternal: false,
+        createdAt: '2024-01-20T15:47:00Z'
       }
-    ]
+    ],
+    attachments: []
   },
   {
     _id: '2',
@@ -53,7 +60,7 @@ const mockTickets: SupportTicket[] = [
     description: 'The phone case I ordered has a scratch on the back.',
     createdAt: '2024-01-18T09:15:00Z',
     updatedAt: '2024-01-19T16:30:00Z',
-    orderId: 'VS-ORD-2024-098',
+    orderId: { _id: 'VS-ORD-2024-098', totalAmount: 0, paymentStatus: '', fulfillmentStatus: '', createdAt: '2024-01-18T09:15:00Z' },
     messages: [
       {
         id: '1',
@@ -105,6 +112,28 @@ const mockTickets: SupportTicket[] = [
   }
 ];
 
+// Real backend message structure
+interface BackendMessage {
+  _id: string;
+  senderId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+  };
+  senderRole: string;
+  message: string;
+  attachments: Array<{
+    filename: string;
+    url: string;
+    fileType: string;
+    fileSize: number;
+  }>;
+  isInternal: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Frontend display structure (converted from backend)
 interface TicketMessage {
   id: string;
   author: 'customer' | 'admin';
@@ -120,12 +149,78 @@ interface ExtendedSupportTicket extends SupportTicket {
 
 const CustomerSupportMyTickets: React.FC = () => {
   const [selectedTicket, setSelectedTicket] = useState<ExtendedSupportTicket | null>(null);
-  const [tickets, setTickets] = useState<ExtendedSupportTicket[]>(mockTickets);
+  const [tickets, setTickets] = useState<ExtendedSupportTicket[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [newMessage, setNewMessage] = useState('');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Convert backend message format to frontend format
+  const convertBackendMessages = (backendMessages: any[]): TicketMessage[] => {
+    if (!backendMessages || !Array.isArray(backendMessages)) {
+      return [];
+    }
+    
+    return backendMessages.map((msg: any) => ({
+      id: msg._id || msg.id || Date.now().toString(),
+      author: msg.senderRole === 'customer' ? 'customer' : 'admin',
+      authorName: msg.senderRole === 'customer' 
+        ? 'You' 
+        : `${msg.senderId?.firstName || 'Support'} ${msg.senderId?.lastName || 'Team'}`.trim(),
+      content: msg.message || msg.content || '',
+      timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
+      attachments: (msg.attachments || []).map((att: any) => ({
+        name: att.filename || att.name || 'Unknown file',
+        url: att.url || att.url || '#'
+      }))
+    }));
+  };
+
+  // Convert backend ticket format to frontend format
+  const convertBackendTicket = (backendTicket: any): ExtendedSupportTicket => {
+    return {
+      ...backendTicket,
+      messages: convertBackendMessages(backendTicket.messages),
+      // Ensure we have valid dates
+      createdAt: backendTicket.createdAt || new Date().toISOString(),
+      updatedAt: backendTicket.updatedAt || backendTicket.createdAt || new Date().toISOString(),
+    };
+  };
+
+  // Load tickets from backend on component mount
+  useEffect(() => {
+    const loadTickets = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        console.log('Loading user tickets from backend...');
+        
+        const response = await getUserTickets();
+        console.log('Raw backend response:', response);
+        
+        if (response.tickets && Array.isArray(response.tickets)) {
+          const convertedTickets = response.tickets.map(convertBackendTicket);
+          console.log('Converted tickets:', convertedTickets);
+          setTickets(convertedTickets);
+        } else {
+          console.warn('Invalid tickets format from backend:', response);
+          setTickets([]);
+        }
+      } catch (error: any) {
+        console.error('Failed to load tickets:', error);
+        setError(error.message);
+        // Use fallback data on error
+        setTickets(fallbackTickets);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTickets();
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -218,30 +313,38 @@ const CustomerSupportMyTickets: React.FC = () => {
 
     setIsSubmittingMessage(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      const newMsg: TicketMessage = {
-        id: Date.now().toString(),
-        author: 'customer',
-        authorName: 'You',
-        content: newMessage,
-        timestamp: new Date().toISOString(),
-        attachments: selectedFiles.map(file => ({ name: file.name, url: '#' }))
-      };
-
-      const updatedTicket = {
-        ...selectedTicket,
-        messages: [...(selectedTicket.messages || []), newMsg],
-        updatedAt: new Date().toISOString(),
-        status: selectedTicket.status === 'resolved' ? 'in_progress' : selectedTicket.status
-      };
-
+    try {
+      console.log('Sending message to ticket:', selectedTicket._id);
+      
+      // Real API call to add message
+      const response = await addMessageToTicket(selectedTicket._id, {
+        message: newMessage,
+        attachments: selectedFiles
+      });
+      
+      console.log('Message sent successfully:', response);
+      
+      // Refresh ticket details to get updated messages
+      const updatedTicketResponse = await getTicketDetails(selectedTicket._id);
+      const rawUpdatedTicket = updatedTicketResponse.ticket;
+      
+      // Convert backend response to frontend format
+      const updatedTicket = convertBackendTicket(rawUpdatedTicket);
+      
+      // Update the selected ticket and tickets list
       setSelectedTicket(updatedTicket);
       setTickets(prev => prev.map(t => t._id === selectedTicket._id ? updatedTicket : t));
+      
+      // Clear form
       setNewMessage('');
       setSelectedFiles([]);
+      
+    } catch (error: any) {
+      console.error('Failed to send message:', error);
+      alert('Failed to send message: ' + error.message);
+    } finally {
       setIsSubmittingMessage(false);
-    }, 1000);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -311,23 +414,39 @@ const CustomerSupportMyTickets: React.FC = () => {
           )}
         </div>
 
+        {/* Initial Description */}
+        <div className="bg-white rounded-lg shadow-sm border mb-6">
+          <div className="p-6 border-b">
+            <h3 className="text-lg font-semibold">Original Description</h3>
+          </div>
+          <div className="p-6">
+            <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+              <p className="text-gray-800 whitespace-pre-wrap">{selectedTicket.description}</p>
+            </div>
+          </div>
+        </div>
+
         {/* Messages */}
         <div className="bg-white rounded-lg shadow-sm border mb-6">
           <div className="p-6 border-b">
             <h3 className="text-lg font-semibold">Conversation</h3>
+            {selectedTicket.messages && selectedTicket.messages.length === 0 && (
+              <p className="text-sm text-gray-500 mt-1">No replies yet</p>
+            )}
           </div>
-          <div className="p-6 space-y-6">
+          {selectedTicket.messages && selectedTicket.messages.length > 0 && (
+            <div className="p-6 space-y-6">
             {selectedTicket.messages?.map((message) => (
               <div key={message.id} className={`flex ${message.author === 'customer' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-3xl ${
                   message.author === 'customer' 
-                    ? 'bg-blue-600 text-white' 
+                    ? 'bg-nezeza_dark_blue text-white'
                     : 'bg-gray-100 text-gray-900'
                 } rounded-lg p-4`}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-sm">{message.authorName}</span>
                     <span className={`text-xs ${
-                      message.author === 'customer' ? 'text-blue-100' : 'text-gray-500'
+                      message.author === 'customer' ? 'text-nezeza_light_blue' : 'text-gray-500'
                     }`}>
                       {formatDate(message.timestamp)}
                     </span>
@@ -347,6 +466,7 @@ const CustomerSupportMyTickets: React.FC = () => {
               </div>
             ))}
           </div>
+          )}
         </div>
 
         {/* Reply Form */}
@@ -400,7 +520,7 @@ const CustomerSupportMyTickets: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmittingMessage || !newMessage.trim()}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  className="bg-nezeza_dark_blue text-white px-6 py-2 rounded-lg hover:bg-nezeza_dark_blue_2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
                   {isSubmittingMessage ? 'Sending...' : 'Send Reply'}
                 </button>
@@ -412,8 +532,30 @@ const CustomerSupportMyTickets: React.FC = () => {
     );
   }
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading your support tickets...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto">
+      {/* Error Banner */}
+      {error && (
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded mb-6">
+          <p className="font-medium">Using offline data</p>
+          <p className="text-sm">Unable to connect to server: {error}</p>
+        </div>
+      )}
+      
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">My Support Tickets</h2>
         <div className="flex items-center space-x-4">

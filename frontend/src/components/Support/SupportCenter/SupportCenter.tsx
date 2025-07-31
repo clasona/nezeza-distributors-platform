@@ -37,25 +37,6 @@ const SupportCenterLayout: React.FC<SupportCenterLayoutProps> = ({
         </div>
       </div>
 
-      {/* Quick Stats Banner */}
-      <div className="bg-blue-600 text-white py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-2xl font-bold">24/7</div>
-              <div className="text-blue-100">Support Available</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold">&lt; 2hrs</div>
-              <div className="text-blue-100">Average Response Time</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold">98%</div>
-              <div className="text-blue-100">Customer Satisfaction</div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
