@@ -61,7 +61,6 @@ const authOptions = {
           placeholder: 'Enter your password',
         },
       },
-<<<<<<< HEAD
       async authorize(credentials) {
         try {
           const parsedCredentials = z
@@ -75,18 +74,8 @@ const authOptions = {
             console.log('Invalid credentials format');
             return null;
           }
-=======
-      async authorize(credentials, req) {
-        const parsedCredentials = z
-          .object({
-            email: z.string().email(),
-            password: z.string().min(6),
-          })
-          .safeParse(credentials);
->>>>>>> 04f1f60 (changes to the customer frontend)
 
           const { email, password } = parsedCredentials.data;
-<<<<<<< HEAD
           const response = await getUserForAuth(email);
 
           if (!response || !response.data?.data?.user) {
@@ -113,23 +102,6 @@ const authOptions = {
                 break;
               }
             }
-=======
-          
-          try {
-            // Use the backend login endpoint to authenticate and get cookies
-            const response = await backendLogin(email, password);
-            
-            if (response && response.success && response.user) {
-              // The backendLogin function should have set the JWT cookies via the backend
-              // Remove sensitive information before returning
-              const user = response.user;
-              const { previousPasswords, password: _, ...userWithoutPasswords } = user;
-              return userWithoutPasswords;
-            }
-          } catch (error) {
-            console.log('Login failed:', error);
-            return null;
->>>>>>> 04f1f60 (changes to the customer frontend)
           }
 
           if (passwordsMatch) {
