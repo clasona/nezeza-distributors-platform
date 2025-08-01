@@ -265,7 +265,6 @@ const authOptions = {
       return session;
     },
   },
-<<<<<<< HEAD
 
   // Session configuration
   session: {
@@ -299,15 +298,6 @@ const authOptions = {
 
   // Add secret for production deployments
   secret: process.env.NEXTAUTH_SECRET,
-=======
-  events: {
-    async signOut() {
-      // This will be called when NextAuth signs out
-      // The backend logout will be handled by the LogoutButton component
-      console.log('NextAuth signOut event triggered');
-    },
-  },
->>>>>>> 04f1f60 (changes to the customer frontend)
 };
 
 export default NextAuth(authOptions);
