@@ -393,8 +393,8 @@ const CustomerSupportMyTickets: React.FC = () => {
             <div>
               <span className="text-xs font-medium text-gray-500">Category</span>
               <p className="flex items-center mt-0.5 text-sm">
-                <span className="mr-1">{getCategoryIcon(selectedTicket.category)}</span>
-                {selectedTicket.category.replace('_', ' ').toUpperCase()}
+                <span className="mr-1">{getCategoryIcon(selectedTicket.category || 'other')}</span>
+                {(selectedTicket.category || 'other').replace('_', ' ').toUpperCase()}
               </p>
             </div>
             <div>
@@ -403,7 +403,7 @@ const CustomerSupportMyTickets: React.FC = () => {
             </div>
             <div>
               <span className="text-xs font-medium text-gray-500">Last Updated</span>
-              <p className="mt-0.5 text-sm">{formatDate(selectedTicket.updatedAt)}</p>
+              <p className="mt-0.5 text-sm">{formatDate(selectedTicket.updatedAt || selectedTicket.createdAt)}</p>
             </div>
             {selectedTicket.orderId && (
               <div>
@@ -422,6 +422,18 @@ const CustomerSupportMyTickets: React.FC = () => {
           <div className="p-4">
             <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
               <p className="text-gray-800 whitespace-pre-wrap">{selectedTicket.description}</p>
+              {selectedTicket.attachments && selectedTicket.attachments.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-blue-200">
+                  <p className="text-sm text-gray-600 mb-2">Original attachments:</p>
+                  <div className="space-y-1">
+                    {selectedTicket.attachments.map((attachment: any, idx: number) => (
+                      <a key={idx} href={attachment.url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:text-blue-800 underline block">
+                        📎 {attachment.filename || attachment.name || 'Unknown file'}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -614,7 +626,7 @@ const CustomerSupportMyTickets: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <span className="text-xl">{getCategoryIcon(ticket.category)}</span>
+                    <span className="text-xl">{getCategoryIcon(ticket.category || 'other')}</span>
                     <h3 className="text-lg font-semibold text-gray-900">{ticket.subject}</h3>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
                       {ticket.status.replace('_', ' ').toUpperCase()}
@@ -627,7 +639,7 @@ const CustomerSupportMyTickets: React.FC = () => {
                   <div className="flex items-center space-x-6 text-sm text-gray-500">
                     <span>#{ticket.ticketNumber}</span>
                     <span>Created {formatDate(ticket.createdAt)}</span>
-                    <span>Updated {formatDate(ticket.updatedAt)}</span>
+                    <span>Updated {formatDate(ticket.updatedAt || ticket.createdAt)}</span>
                     {ticket.orderId && <span className="text-blue-600">Order: {ticket.orderId}</span>}
                     {ticket.messages && (
                       <span>{ticket.messages.length} message{ticket.messages.length !== 1 ? 's' : ''}</span>
