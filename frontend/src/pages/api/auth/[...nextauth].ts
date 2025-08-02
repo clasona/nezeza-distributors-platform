@@ -2,10 +2,14 @@ import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { z } from 'zod';
+<<<<<<< HEAD
 import bcrypt from 'bcryptjs';
 import { getUserForAuth } from '@/utils/user/getUserForAuth';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
 import { registerUserGoogle } from '@/utils/auth/registerUser';
+=======
+import { backendLogin } from '@/utils/auth/backendLogin';
+>>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
 
 // Declare the Session interface to define the shape of the session object.
 declare module 'next-auth' {
@@ -61,6 +65,7 @@ const authOptions = {
           placeholder: 'Enter your password',
         },
       },
+<<<<<<< HEAD
       async authorize(credentials) {
         try {
           const parsedCredentials = z
@@ -74,8 +79,18 @@ const authOptions = {
             console.log('Invalid credentials format');
             return null;
           }
+=======
+      async authorize(credentials, req) {
+        const parsedCredentials = z
+          .object({
+            email: z.string().email(),
+            password: z.string().min(6),
+          })
+          .safeParse(credentials);
+>>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
 
           const { email, password } = parsedCredentials.data;
+<<<<<<< HEAD
           const response = await getUserForAuth(email);
 
           if (!response || !response.data?.data?.user) {
@@ -102,6 +117,23 @@ const authOptions = {
                 break;
               }
             }
+=======
+          
+          try {
+            // Use the backend login endpoint to authenticate and get cookies
+            const response = await backendLogin(email, password);
+            
+            if (response && response.success && response.user) {
+              // The backendLogin function should have set the JWT cookies via the backend
+              // Remove sensitive information before returning
+              const user = response.user;
+              const { previousPasswords, password: _, ...userWithoutPasswords } = user;
+              return userWithoutPasswords;
+            }
+          } catch (error) {
+            console.log('Login failed:', error);
+            return null;
+>>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
           }
 
           if (passwordsMatch) {
@@ -265,6 +297,7 @@ const authOptions = {
       return session;
     },
   },
+<<<<<<< HEAD
 
   // Session configuration
   session: {
@@ -298,6 +331,15 @@ const authOptions = {
 
   // Add secret for production deployments
   secret: process.env.NEXTAUTH_SECRET,
+=======
+  events: {
+    async signOut() {
+      // This will be called when NextAuth signs out
+      // The backend logout will be handled by the LogoutButton component
+      console.log('NextAuth signOut event triggered');
+    },
+  },
+>>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
 };
 
 export default NextAuth(authOptions);

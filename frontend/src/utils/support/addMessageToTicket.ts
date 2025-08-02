@@ -1,8 +1,15 @@
 import axiosInstance from '../axiosInstance';
-
 import { SupportTicket } from './createSupportTicket';
 
-export const addMessageToTicket = async (ticketId: string, data: { message: string; attachments?: File[] }): Promise<{ success: boolean; ticket: SupportTicket }> => {
+export interface AddMessageData {
+  message: string;
+  attachments?: File[];
+}
+
+export const addMessageToTicket = async (
+  ticketId: string, 
+  data: AddMessageData
+): Promise<{ success: boolean; ticket: SupportTicket; message: string }> => {
   try {
     const formData = new FormData();
     formData.append('message', data.message);
@@ -18,6 +25,7 @@ export const addMessageToTicket = async (ticketId: string, data: { message: stri
         'Content-Type': 'multipart/form-data',
       },
     });
+    
     return response.data;
   } catch (error: any) {
     throw new Error(error.response?.data?.message || 'Failed to add message to ticket');

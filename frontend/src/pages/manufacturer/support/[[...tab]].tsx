@@ -1,18 +1,3 @@
-// import WholesalerLayout from '../layout';
-// import UserSupport from '@/components/Support/UserSupport';
-
-// const WholesalerSupport = () => {
-//   return (
-//     <div>
-//       <WholesalerLayout>
-//         <UserSupport />
-//       </WholesalerLayout>
-//     </div>
-//   );
-// };
-
-// WholesalerSupport.noLayout = true;
-// export default WholesalerSupport;
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
@@ -33,7 +18,7 @@ const TAB_MAP = {
 
 type TabValue = 'home' | 'submit-ticket' | 'faqs' | 'my-tickets';
 
-const WholesalerSupportPage = () => {
+const ManufacturerSupportPage = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<TabValue>('home');
@@ -45,7 +30,7 @@ const WholesalerSupportPage = () => {
   }, [pathname]);
 
   const handleTabChange = (value: string) => {
-    const targetPath = `/wholesaler/support${value === 'home' ? '' : `/${value}`}`;
+    const targetPath = `/manufacturer/support${value === 'home' ? '' : `/${value}`}`;
     router.push(targetPath);
   };
 
@@ -72,11 +57,11 @@ const WholesalerSupportPage = () => {
         </Tabs>
       }
     >
-      <div className="max-w-7xl mx-auto mt-2 mb-4 px-4">
+      <div className="max-w-6xl mx-auto mt-10 mb-4 px-4">
         {tabContent}
       </div>
     </SupportCenterLayout>
   );
 };
 
-export default WholesalerSupportPage; 
+export default ManufacturerSupportPage; 
