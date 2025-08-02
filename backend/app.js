@@ -38,18 +38,11 @@ const favoritesRouter = require('./routes/favoritesRoutes');
 const shippingRouter = require('./routes/shippingRoutes');
 const supportRouter = require('./routes/supportRoutes');
 const adminSupportRouter = require('./routes/admin/adminSupportRoutes');
-<<<<<<< HEAD
 const amdinAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
 const amdinFinancialRoutes = require('./routes/admin/adminFinancialRoutes');
 const amdinMonitoringRoutes = require('./routes/admin/adminMonitoringRoutes');
 const verificationRouter = require('./routes/verificationRoutes');
 const newsletterRouter = require('./routes/newsletterRoutes');
-const gabeRouter = require('./routes/gabeRoute');
-=======
-
-
-
->>>>>>> 3e34526 (Complete remaining changes: update app.js, remove gabeRoute.js, and update admin support page)
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
@@ -57,8 +50,8 @@ const errorHandlerMiddleware = require('./middleware/error-handler');
 app.set('trust proxy', 1);
 app.use(
   rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    max: 60,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 200, // Increased from 60 to 200 for development
   })
 );
 app.use(helmet());
@@ -120,7 +113,6 @@ app.use('/api/v1/favorites', favoritesRouter);
 app.use('/api/v1/shipping', shippingRouter);
 app.use('/api/v1/support', supportRouter);
 app.use('/api/v1/admin/support', adminSupportRouter);
-app.use('/api/v1/gabee', gabeRouter);
 app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 app.use('/api/v1/admin/analytics', amdinAnalyticsRoutes);
 app.use('/api/v1/admin/financial', amdinFinancialRoutes);

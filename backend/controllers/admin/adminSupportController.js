@@ -329,7 +329,34 @@ const respondToTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const adminId = req.user.userId;
-    const { message, isInternal, attachments } = req.body;
+    const { message, isInternal } = req.body;
+    
+    // Handle file attachments for admin responses
+    let attachments = [];
+    if (req.files && req.files.attachments) {
+      const files = Array.isArray(req.files.attachments) ? req.files.attachments : [req.files.attachments];
+      
+      for (const file of files) {
+        // Generate unique filename to prevent conflicts
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 8);
+        const fileExtension = file.name.split('.').pop();
+        const uniqueFilename = `${timestamp}-${randomString}.${fileExtension}`;
+        
+        const attachment = {
+          filename: file.name, // Original filename for display
+          url: `/uploads/support/${uniqueFilename}`, // Unique filename for storage
+          fileType: file.mimetype,
+          fileSize: file.size
+        };
+        
+        attachments.push(attachment);
+        
+        // Move file to storage directory with unique name
+        const uploadPath = `./public/uploads/support/${uniqueFilename}`;
+        await file.mv(uploadPath);
+      }
+    }
 
     if (!message || message.trim().length === 0) {
       throw new CustomError.BadRequestError('Message content is required');
