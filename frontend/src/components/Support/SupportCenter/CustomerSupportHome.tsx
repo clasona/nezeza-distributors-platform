@@ -87,12 +87,14 @@ const CustomerSupportHome = () => {
           </div>
         </Link>
 
+        {/* Live Chat Support - Temporarily disabled for MVP */}
+        {/* 
         <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-lg p-6 shadow-lg">
           <div className="flex items-center mb-3">
             <div className="bg-white bg-opacity-20 p-3 rounded-full mr-4">
               <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
+              </svg>
             </div>
             <h3 className="text-xl font-semibold">Live Chat Support</h3>
           </div>
@@ -101,6 +103,7 @@ const CustomerSupportHome = () => {
             Start Live Chat
           </button>
         </div>
+        */}
       </section>
 
       {/* Popular Topics */}

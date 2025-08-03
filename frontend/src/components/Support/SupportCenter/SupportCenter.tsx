@@ -44,7 +44,7 @@ const SupportCenterLayout: React.FC<SupportCenterLayoutProps> = ({
               <div className="space-y-2 text-gray-600">
                 <p>📧 support@vesoko.com</p>
                 <p>📞 +250 788 123 456</p>
-                <p>💬 Live chat available</p>
+                {/* <p>💬 Live chat available</p> */}
               </div>
             </div>
             <div>
