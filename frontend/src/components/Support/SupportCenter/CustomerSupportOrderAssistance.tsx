@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import React from 'react'
-
-const CustomerSupportOrderAssistance = () => {
-  return (
-    <div>
-      All your order assistance coming in here
-    </div>
-  )
-}
-
-export default CustomerSupportOrderAssistance
-=======
 import React from 'react';
 
 const CustomerSupportOrderAssistance: React.FC = () => {
@@ -60,5 +47,4 @@ const CustomerSupportOrderAssistance: React.FC = () => {
   );
 };
 
-export default CustomerSupportOrderAssistance; 
->>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
+export default CustomerSupportOrderAssistance;

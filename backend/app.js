@@ -38,17 +38,11 @@ const favoritesRouter = require('./routes/favoritesRoutes');
 const shippingRouter = require('./routes/shippingRoutes');
 const supportRouter = require('./routes/supportRoutes');
 const adminSupportRouter = require('./routes/admin/adminSupportRoutes');
-<<<<<<< HEAD
 const amdinAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
 const amdinFinancialRoutes = require('./routes/admin/adminFinancialRoutes');
 const amdinMonitoringRoutes = require('./routes/admin/adminMonitoringRoutes');
 const verificationRouter = require('./routes/verificationRoutes');
 const newsletterRouter = require('./routes/newsletterRoutes');
-=======
-
-
-
->>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');

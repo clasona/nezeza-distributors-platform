@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-import React from 'react'
-
-const CustomerSupportTrackPackage = () => {
-  return (
-    <div>
-      You can track all your packages here
-    </div>
-  )
-}
-
-export default CustomerSupportTrackPackage
-=======
 import React from 'react';
 
 const CustomerSupportTrackPackage: React.FC = () => {
@@ -62,5 +49,4 @@ const CustomerSupportTrackPackage: React.FC = () => {
   );
 };
 
-export default CustomerSupportTrackPackage; 
->>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
+export default CustomerSupportTrackPackage;

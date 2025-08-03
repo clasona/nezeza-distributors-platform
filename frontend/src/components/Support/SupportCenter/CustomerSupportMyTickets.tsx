@@ -393,13 +393,8 @@ const CustomerSupportMyTickets: React.FC = () => {
             <div>
               <span className="text-xs font-medium text-gray-500">Category</span>
               <p className="flex items-center mt-0.5 text-sm">
-<<<<<<< HEAD
                 <span className="mr-1">{getCategoryIcon(selectedTicket.category || 'other')}</span>
                 {(selectedTicket.category || 'other').replace('_', ' ').toUpperCase()}
-=======
-                <span className="mr-1">{getCategoryIcon(selectedTicket.category)}</span>
-                {selectedTicket.category.replace('_', ' ').toUpperCase()}
->>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
               </p>
             </div>
             <div>
@@ -408,11 +403,7 @@ const CustomerSupportMyTickets: React.FC = () => {
             </div>
             <div>
               <span className="text-xs font-medium text-gray-500">Last Updated</span>
-<<<<<<< HEAD
               <p className="mt-0.5 text-sm">{formatDate(selectedTicket.updatedAt || selectedTicket.createdAt)}</p>
-=======
-              <p className="mt-0.5 text-sm">{formatDate(selectedTicket.updatedAt)}</p>
->>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
             </div>
             {selectedTicket.orderId && (
               <div>
@@ -431,7 +422,6 @@ const CustomerSupportMyTickets: React.FC = () => {
           <div className="p-4">
             <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
               <p className="text-gray-800 whitespace-pre-wrap">{selectedTicket.description}</p>
-<<<<<<< HEAD
               {selectedTicket.attachments && selectedTicket.attachments.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-blue-200">
                   <p className="text-sm text-gray-600 mb-2">Original attachments:</p>
@@ -444,8 +434,6 @@ const CustomerSupportMyTickets: React.FC = () => {
                   </div>
                 </div>
               )}
-=======
->>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
             </div>
           </div>
         </div>
@@ -638,11 +626,7 @@ const CustomerSupportMyTickets: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-<<<<<<< HEAD
                     <span className="text-xl">{getCategoryIcon(ticket.category || 'other')}</span>
-=======
-                    <span className="text-xl">{getCategoryIcon(ticket.category)}</span>
->>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
                     <h3 className="text-lg font-semibold text-gray-900">{ticket.subject}</h3>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
                       {ticket.status.replace('_', ' ').toUpperCase()}
@@ -655,11 +639,7 @@ const CustomerSupportMyTickets: React.FC = () => {
                   <div className="flex items-center space-x-6 text-sm text-gray-500">
                     <span>#{ticket.ticketNumber}</span>
                     <span>Created {formatDate(ticket.createdAt)}</span>
-<<<<<<< HEAD
                     <span>Updated {formatDate(ticket.updatedAt || ticket.createdAt)}</span>
-=======
-                    <span>Updated {formatDate(ticket.updatedAt)}</span>
->>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
                     {ticket.orderId && <span className="text-blue-600">Order: {ticket.orderId}</span>}
                     {ticket.messages && (
                       <span>{ticket.messages.length} message{ticket.messages.length !== 1 ? 's' : ''}</span>

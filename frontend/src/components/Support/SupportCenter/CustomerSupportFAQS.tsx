@@ -1,26 +1,3 @@
-<<<<<<< HEAD
-import React from 'react'
-
-const CustomerSupportFAQS = () => {
-  return (
-    <div>
-      <ul>
-      <li><a href='here we got'> One FAQ here</a></li>
-      <li><a href='here we got'> Another here</a></li>
-      <li><a href='here we got'> Another here</a></li>
-      <li><a href='here we got'> Another here</a></li>
-      <li><a href='here we got'> Another here</a></li>
-
-
-
-      
-      </ul>
-    </div>
-  )
-}
-
-export default CustomerSupportFAQS
-=======
 'use client';
 
 import React, { useState } from 'react';
@@ -189,5 +166,4 @@ const CustomerSupportFAQS: React.FC = () => {
   );
 };
 
-export default CustomerSupportFAQS; 
->>>>>>> e231e2f58b2b02c985f68bd4d57e4ef2bf6cabc2
+export default CustomerSupportFAQS;

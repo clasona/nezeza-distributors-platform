@@ -1,10 +1,4 @@
 import axiosInstance from '../axiosInstance';
-// <<<<<<< HEAD
-
-// export const respondToTicket = async (ticketId: string, data: { message: string }): Promise<{ success: boolean }> => {
-//   try {
-//     const response = await axiosInstance.post(`/admin/support/tickets/${ticketId}/respond`, data);
-
 import { SupportTicket } from '../support/createSupportTicket';
 
 export interface RespondToTicketData {
