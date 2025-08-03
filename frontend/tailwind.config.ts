@@ -46,6 +46,10 @@ export default withUt({
         vesoko_gray_600: '#718096', //757575
         vesoko_gray_200: '#edf2f7', //dee2e6
         vesoko_yellow_600: '#d69e2e',
+        // Nezeza brand colors
+        nezeza_dark_blue: '#1e40af', // A beautiful dark blue
+        nezeza_dark_blue_2: '#1d4ed8', // Slightly lighter variant for hover
+        nezeza_light_blue: '#dbeafe', // Light blue for accents
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',

@@ -599,6 +599,26 @@ const CustomerSupportMyTickets: React.FC = () => {
         </div>
       </div>
 
+      {/* Summary Stats */}
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
+          <div className="text-2xl font-bold text-blue-600">{tickets.length}</div>
+          <div className="text-sm text-gray-600">Total Tickets</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
+          <div className="text-2xl font-bold text-yellow-600">{tickets.filter(t => t.status === 'in_progress').length}</div>
+          <div className="text-sm text-gray-600">In Progress</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
+          <div className="text-2xl font-bold text-green-600">{tickets.filter(t => t.status === 'resolved').length}</div>
+          <div className="text-sm text-gray-600">Resolved</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
+          <div className="text-2xl font-bold text-red-600">{tickets.filter(t => t.priority === 'urgent').length}</div>
+          <div className="text-sm text-gray-600">Urgent</div>
+        </div>
+      </div>
+
       {/* Tickets List */}
       <div className="space-y-4">
         {filteredTickets.length === 0 ? (
@@ -655,26 +675,6 @@ const CustomerSupportMyTickets: React.FC = () => {
             </div>
           ))
         )}
-      </div>
-
-      {/* Summary Stats */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
-          <div className="text-2xl font-bold text-blue-600">{tickets.length}</div>
-          <div className="text-sm text-gray-600">Total Tickets</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
-          <div className="text-2xl font-bold text-yellow-600">{tickets.filter(t => t.status === 'in_progress').length}</div>
-          <div className="text-sm text-gray-600">In Progress</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
-          <div className="text-2xl font-bold text-green-600">{tickets.filter(t => t.status === 'resolved').length}</div>
-          <div className="text-sm text-gray-600">Resolved</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border p-4 text-center">
-          <div className="text-2xl font-bold text-red-600">{tickets.filter(t => t.priority === 'urgent').length}</div>
-          <div className="text-sm text-gray-600">Urgent</div>
-        </div>
       </div>
     </div>
   );

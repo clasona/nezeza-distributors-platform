@@ -10,91 +10,89 @@ const CustomerSupportFAQS: React.FC = () => {
     general: [
       {
         question: "What is Vesoko?",
-        answer: "Vesoko is a comprehensive e-commerce platform that connects manufacturers, wholesalers, retailers, and customers in a seamless marketplace. We facilitate B2B and B2C transactions with integrated logistics and payment solutions."
-      },
-      {
-        question: "How do I create an account?",
-        answer: "You can create an account by clicking the 'Sign Up' button on our homepage. Choose your user type (customer, retailer, wholesaler, or manufacturer) and follow the registration process. You'll need to provide basic information and verify your email address."
+        answer: "Vesoko is an e-commerce platform that connects U.S. customers with authentic African products from trusted African-owned retailers."
       },
       {
         question: "Is Vesoko available in my country?",
-        answer: "Vesoko currently operates in Rwanda and is expanding to other East African countries. Check our homepage for the latest information about our service areas."
+        answer: "Vesoko currently serves customers within the United States. U.S.-based retailers can join the platform, and we plan to integrate African wholesalers and manufacturers soon."
       },
       {
-        question: "How can I contact customer support?",
-        answer: "You can contact our support team through multiple channels: submit a support ticket through this portal, email us at support@vesoko.com, or call our support hotline during business hours."
+        question: "Who can shop on Vesoko?",
+        answer: "Anyone with a valid U.S. shipping address can place an order on Vesoko."
+      },
+      {
+        question: "How do I create an account?",
+        answer: "Visit www.vesoko.com, go to the homepage, and register using your email address or Google account."
+      },
+      {
+        question: "Do I need an account to place an order?",
+        answer: "Yes. Creating an account allows you to track orders and communicate directly with the VeSoko team and retailers."
+      },
+      {
+        question: "Is Vesoko a marketplace or a single store?",
+        answer: "Vesoko is a multi-vendor marketplace that features African retailers based in the United States."
+      },
+      {
+        question: "How do I contact Vesoko support?",
+        answer: "Email us at support@vesoko.com or use the live chat option on our website during business hours."
       }
     ],
     orders: [
       {
         question: "How do I place an order?",
-        answer: "Browse our product catalog, add items to your cart, and proceed to checkout. You'll need to provide shipping and payment information. Once confirmed, your order will be processed and shipped."
+        answer: "Log in to your account, browse products, add items to your cart, and proceed to checkout. You'll receive confirmation and tracking details via email."
       },
       {
-        question: "Can I cancel my order?",
-        answer: "Orders can be cancelled within 24 hours of placement, provided they haven't been shipped yet. Contact our support team immediately if you need to cancel an order."
+        question: "Can I order from multiple shops in one checkout?",
+        answer: "Yes. You can buy from multiple vendors in a single order, though items may arrive separately based on each vendor's fulfillment process."
       },
       {
         question: "How do I track my order?",
-        answer: "You can track your order through your account dashboard or by using the tracking number provided in your order confirmation email. Real-time updates are available once your order ships."
+        answer: "Once your item has shipped, you'll receive a tracking link via email. You can also track your order from the 'My Orders' section in your account profile."
       },
       {
-        question: "What if my order arrives damaged?",
-        answer: "If your order arrives damaged, please take photos and contact our support team within 48 hours of delivery. We'll arrange for a replacement or refund as appropriate."
+        question: "I didn't get a confirmation or tracking email. What should I do?",
+        answer: "First, check your spam or junk folder. If you still haven't received it, please contact Vesoko support."
+      },
+      {
+        question: "Can I cancel or change my order?",
+        answer: "You can request a cancellation or edit your order before it is processed or shipped. After that, you may need to request a return or refund if the item is eligible."
       }
     ],
     payments: [
       {
-        question: "What payment methods do you accept?",
-        answer: "We accept various payment methods including mobile money (MTN, Airtel), bank transfers, and credit/debit cards. Payment options may vary by region."
+        question: "What payment methods are accepted?",
+        answer: "We accept major credit and debit cards, Apple Pay, Cash App, and Zelle."
       },
       {
-        question: "Is it safe to pay online?",
-        answer: "Yes, all payments are processed through secure, encrypted channels. We use industry-standard security protocols to protect your financial information."
+        question: "Will I be charged sales tax?",
+        answer: "Yes. Sales tax is calculated automatically at checkout based on your shipping address and local tax laws."
       },
       {
-        question: "When will I be charged?",
-        answer: "Payment is processed when you place your order. For pre-orders or backorders, you may be charged when the item becomes available."
-      },
-      {
-        question: "How do I get a refund?",
-        answer: "Refunds are processed within 5-7 business days after we receive your returned item. The refund will be issued to your original payment method."
+        question: "I was double-charged or incorrectly charged — what should I do?",
+        answer: "Contact Vesoko support with your order number and proof of the issue. We'll resolve it as quickly as possible."
       }
     ],
     shipping: [
       {
-        question: "How long does shipping take?",
-        answer: "Shipping times vary by location and delivery method. Standard delivery typically takes 3-5 business days within Rwanda, while express delivery takes 1-2 business days."
+        question: "Where does Vesoko ship?",
+        answer: "We currently ship to customers across the United States."
       },
       {
-        question: "Do you ship internationally?",
-        answer: "Currently, we primarily serve Rwanda with plans to expand to other East African countries. International shipping options are limited."
+        question: "Where are items shipped from?",
+        answer: "During this initial phase, all products are shipped from within the U.S. by the retailer selling the product."
+      },
+      {
+        question: "How long will delivery take?",
+        answer: "Same-day delivery is available for orders placed near participating stores. Standard U.S. shipping takes 3–7 business days."
       },
       {
         question: "How much does shipping cost?",
-        answer: "Shipping costs depend on your location, order weight, and delivery method. Free shipping is available for orders above a certain threshold."
+        answer: "Shipping fees vary based on the shipping distance and item size. The final shipping cost is shown at checkout before you complete your order."
       },
       {
-        question: "Can I change my shipping address?",
-        answer: "You can change your shipping address before your order ships by contacting our support team. Once shipped, address changes may not be possible."
-      }
-    ],
-    sellers: [
-      {
-        question: "How do I become a seller on Vesoko?",
-        answer: "To become a seller, you need to apply through our seller registration process. We'll review your application and business credentials before approval."
-      },
-      {
-        question: "What are the seller fees?",
-        answer: "Seller fees vary by category and sales volume. We offer competitive commission rates and transparent fee structures. Contact our business development team for details."
-      },
-      {
-        question: "How do I manage my inventory?",
-        answer: "Sellers can manage their inventory through our seller dashboard. You can add, edit, and remove products, update stock levels, and track sales performance."
-      },
-      {
-        question: "When do I receive payments?",
-        answer: "Payments are typically processed within 7-14 days after order delivery, depending on your payment schedule and any pending returns."
+        question: "My item hasn't arrived — what should I do?",
+        answer: "Check your tracking link for updates. If the item is delayed or lost, please contact Vesoko support within 7 days of the expected delivery date."
       }
     ]
   };
@@ -103,8 +101,7 @@ const CustomerSupportFAQS: React.FC = () => {
     { id: 'general', name: 'General Questions' },
     { id: 'orders', name: 'Orders & Tracking' },
     { id: 'payments', name: 'Payments & Billing' },
-    { id: 'shipping', name: 'Shipping & Delivery' },
-    { id: 'sellers', name: 'Seller Information' }
+    { id: 'shipping', name: 'Shipping & Delivery' }
   ];
 
   return (
@@ -120,7 +117,7 @@ const CustomerSupportFAQS: React.FC = () => {
               onClick={() => setActiveCategory(category.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeCategory === category.id
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-nezeza_dark_blue text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -150,7 +147,7 @@ const CustomerSupportFAQS: React.FC = () => {
         <div className="flex flex-wrap gap-4">
           <button
             onClick={() => window.location.href = '/customer/support/submit-ticket'}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-nezeza_dark_blue text-white rounded-lg hover:bg-nezeza_dark_blue_2 transition-colors"
           >
             Submit a Ticket
           </button>
