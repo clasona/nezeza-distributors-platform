@@ -112,8 +112,9 @@ const createSupportTicket = async (req, res) => {
     ]);
 
     // Send email notifications
+    //fake ethereal password: c7m886EQ9A9yJ7uPmy
     await sendTicketCreatedEmail({
-      userEmail: 'shyanne55@ethereal.email',
+      userEmail: 'kyler.yundt@ethereal.email',
       userName: `${user.firstName} ${user.lastName}`,
       ticketNumber: ticket.ticketNumber,
       subject: ticket.subject,

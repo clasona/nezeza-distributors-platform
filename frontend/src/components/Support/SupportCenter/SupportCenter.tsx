@@ -58,9 +58,7 @@ const SupportCenterLayout: React.FC<SupportCenterLayoutProps> = ({
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Hours</h3>
               <div className="space-y-2 text-gray-600">
-                <p>Monday - Friday: 8 AM - 8 PM</p>
-                <p>Saturday: 9 AM - 5 PM</p>
-                <p>Sunday: 10 AM - 4 PM</p>
+                <p>24/7</p>
               </div>
             </div>
           </div>

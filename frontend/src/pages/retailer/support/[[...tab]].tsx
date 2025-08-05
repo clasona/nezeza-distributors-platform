@@ -1,9 +1,10 @@
 'use client';
 
 import { useRouter, usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SupportCenterLayout from '@/components/Support/SupportCenter/SupportCenter';
+import { createSupportTicket, CreateSupportTicketData } from '@/utils/support/createSupportTicket';
 
 // Mock retailer business data
 const mockRetailerBusiness = {
@@ -121,6 +122,19 @@ const RetailerSupportPage = () => {
   const [newMessage, setNewMessage] = useState('');
   const [tickets, setTickets] = useState(mockRetailerTickets);
 
+  // Form state for submit ticket
+  const [formData, setFormData] = useState({
+    subject: '',
+    requestType: '',
+    businessImpact: 'low',
+    estimatedValue: '',
+    description: '',
+    attachments: [] as File[]
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+
   useEffect(() => {
     const lastSegment = pathname?.split('/').pop() || '';
     const mappedTab = TAB_MAP[lastSegment as keyof typeof TAB_MAP] || 'dashboard';
@@ -169,6 +183,89 @@ const RetailerSupportPage = () => {
       case 'high': return 'bg-orange-50 text-orange-700';
       case 'critical': return 'bg-red-50 text-red-700';
       default: return 'bg-gray-50 text-gray-700';
+    }
+  };
+
+  // Form handlers
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setSubmitError(''); // Clear error when user starts typing
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setFormData(prev => ({ ...prev, attachments: files }));
+  };
+
+  // Map businessImpact to priority for backend compatibility
+  const mapBusinessImpactToPriority = (businessImpact: string): string => {
+    switch (businessImpact) {
+      case 'low': return 'low';
+      case 'medium': return 'medium';
+      case 'high': return 'high';
+      case 'critical': return 'urgent';
+      default: return 'medium';
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitError('');
+    setSubmitSuccess(false);
+
+    // Validate required fields
+    if (!formData.subject || !formData.requestType || !formData.description) {
+      setSubmitError('Please fill in all required fields (Subject, Request Type, and Description).');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Prepare enhanced description with business context
+      let enhancedDescription = formData.description;
+      if (formData.businessImpact && formData.businessImpact !== 'low') {
+        enhancedDescription += `\n\n[Business Impact: ${formData.businessImpact.toUpperCase()}]`;
+      }
+      if (formData.estimatedValue) {
+        enhancedDescription += `\n[Estimated Value: ${formData.estimatedValue}]`;
+      }
+
+      const ticketData: CreateSupportTicketData = {
+        subject: formData.subject,
+        description: enhancedDescription,
+        category: formData.requestType, // Map requestType to category
+        priority: mapBusinessImpactToPriority(formData.businessImpact),
+        attachments: formData.attachments.length > 0 ? formData.attachments : undefined
+      };
+
+      const result = await createSupportTicket(ticketData);
+      
+      setSubmitSuccess(true);
+      // Reset form
+      setFormData({
+        subject: '',
+        requestType: '',
+        businessImpact: 'low',
+        estimatedValue: '',
+        description: '',
+        attachments: []
+      });
+      
+      // Reset file input
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+      
+      // Show success message for 3 seconds, then redirect to my-tickets
+      setTimeout(() => {
+        setSubmitSuccess(false);
+        handleTabChange('my-tickets');
+      }, 3000);
+      
+    } catch (error: any) {
+      setSubmitError(error.message || 'Failed to submit support request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -391,15 +488,60 @@ const RetailerSupportPage = () => {
     </div>
   );
 
-  // Enhanced Submit Ticket for Retailers
-  const SubmitTicketContent = () => (
+  // Enhanced Submit Ticket for Retailers - Memoized to prevent focus loss
+  const SubmitTicketContent = useCallback(() => (
     <div className="max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold mb-6">Submit Business Support Request</h2>
       
-      <form className="space-y-6">
+      {/* Success Message */}
+      {submitSuccess && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center">
+            <svg className="h-5 w-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-green-800 font-medium">Support request submitted successfully!</span>
+          </div>
+          <p className="text-green-700 text-sm mt-1">You will be redirected to your tickets shortly...</p>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {submitError && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center">
+            <svg className="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-red-800 font-medium">Error</span>
+          </div>
+          <p className="text-red-700 text-sm mt-1">{submitError}</p>
+        </div>
+      )}
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
+          <input
+            type="text"
+            value={formData.subject}
+            onChange={(e) => handleInputChange('subject', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Brief description of your business request"
+            disabled={isSubmitting}
+            required
+          />
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Request Type *</label>
-          <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
+          <select 
+            value={formData.requestType}
+            onChange={(e) => handleInputChange('requestType', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={isSubmitting}
+            required
+          >
             <option value="">Select request type...</option>
             <option value="volume_pricing">Volume Pricing Request</option>
             <option value="shipping_issue">Shipping/Logistics Issue</option>
@@ -412,7 +554,12 @@ const RetailerSupportPage = () => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Business Impact *</label>
-          <select className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
+          <select 
+            value={formData.businessImpact}
+            onChange={(e) => handleInputChange('businessImpact', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={isSubmitting}
+          >
             <option value="low">Low - General inquiry</option>
             <option value="medium">Medium - Affects some operations</option>
             <option value="high">High - Significant business impact</option>
@@ -421,29 +568,28 @@ const RetailerSupportPage = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
-          <input
-            type="text"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            placeholder="Brief description of your business request"
-          />
-        </div>
-
-        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Value (Optional)</label>
           <input
             type="text"
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+            value={formData.estimatedValue}
+            onChange={(e) => handleInputChange('estimatedValue', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="e.g., RWF 500,000"
+            disabled={isSubmitting}
           />
+          <p className="text-xs text-gray-500 mt-1">This information helps us prioritize your request</p>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
           <textarea
             rows={6}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
+            value={formData.description}
+            onChange={(e) => handleInputChange('description', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Provide detailed information about your business request, including any relevant order numbers, customer impact, or time sensitivity..."
+            disabled={isSubmitting}
+            required
           />
         </div>
 
@@ -452,21 +598,41 @@ const RetailerSupportPage = () => {
           <input
             type="file"
             multiple
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            onChange={handleFileChange}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+            disabled={isSubmitting}
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
           />
+          {formData.attachments.length > 0 && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-600">Selected files:</p>
+              <ul className="text-xs text-gray-500">
+                {formData.attachments.map((file, index) => (
+                  <li key={index}>• {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            disabled={isSubmitting || !formData.subject || !formData.requestType || !formData.description}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
-            Submit Request
+            {isSubmitting && (
+              <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+              </svg>
+            )}
+            {isSubmitting ? 'Submitting...' : 'Submit Request'}
           </button>
         </div>
       </form>
     </div>
-  );
+  ), [formData, isSubmitting, submitError, submitSuccess, handleInputChange, handleFileChange, handleSubmit]);
 
   // Retailer-specific FAQs
   const FAQContent = () => (
