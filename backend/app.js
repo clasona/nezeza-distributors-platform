@@ -122,7 +122,7 @@ app.use('/api/v1/email-test', emailTestRouter);
 // verification routes
 app.use('/api/v1/verification', verificationRouter);
 // newsletter routes
-app.use('/api', newsletterRouter);
+app.use('/api/v1/newsletter', newsletterRouter);
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
