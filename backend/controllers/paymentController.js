@@ -759,6 +759,7 @@ const getSellerRevenue = async (req, res) => {
   }
   const sellerRevenue = await SellerBalance.findOne({ sellerId });
 
+  // Returning no revenue yet..
   if (!sellerRevenue) {
     throw new CustomError.BadRequestError('No revenue generated yet.');
   }

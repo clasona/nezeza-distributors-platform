@@ -81,6 +81,7 @@ export interface OrderProps {
   createdAt: string;
   updatedAt: string;
   paymentMethod: string;
+  paymentStatus: string;
   shippingAddress: AddressProps;
   archived: boolean;
   estimatedDeliveryDate: string;
@@ -98,6 +99,7 @@ export interface SubOrderProps {
   createdAt: string;
   updatedAt: string;
   paymentMethod: string;
+  paymentStatus: string;
   buyerId: string;
   // buyerId: UserProps;
   // buyerStoreId: StoreProps;

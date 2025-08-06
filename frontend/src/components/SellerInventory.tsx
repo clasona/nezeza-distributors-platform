@@ -1,8 +1,10 @@
 import PageHeader from '@/components/PageHeader';
 import PageHeaderLink from '@/components/PageHeaderLink';
+import MetricCard from '@/components/Charts/MetricCard';
 import DeleteRowModal from '@/components/Table/DeleteRowModal';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
 import DateFilters from '@/components/Table/Filters/DateFilters';
+import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import Pagination from '@/components/Table/Pagination';
 import RowActionDropdown from '@/components/Table/RowActionDropdown';
 import SearchField from '@/components/Table/SearchField';
@@ -26,7 +28,22 @@ import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
 import { handleError } from '@/utils/errorUtils';
-import { RotateCcw } from 'lucide-react';
+import { 
+  RotateCcw, 
+  Package, 
+  DollarSign,
+  TrendingUp,
+  AlertTriangle,
+  ShoppingBag,
+  Star,
+  Plus,
+  Edit,
+  Trash2,
+  Download,
+  BarChart3,
+  Archive,
+  Eye
+} from 'lucide-react';
 
 // interface SellerProductProps {
 //   inventoryData: ProductProps[];
@@ -82,6 +99,11 @@ const SellerInventory = () => {
   );
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false); // State for loading
+  // Metric calculations
+  const totalInventoryValue = filteredInventory.reduce((sum, product) => sum + product.price * product.quantity, 0);
+  const totalProducts = filteredInventory.length;
+  const lowStockCount = filteredInventory.filter(product => product.quantity <= 10).length; // Customizable low stock threshold
+  const averageProductPrice = totalProducts > 0 ? totalInventoryValue / filteredInventory.reduce((sum, product) => sum + product.quantity, 0) : 0;
 
   // fetch store inventory data
   const fetchData = async () => {
@@ -280,33 +302,112 @@ const SellerInventory = () => {
   };
 
   return (
-    <div>
-      <PageHeader
-        heading='Inventory'
-        actions={
-          <Button
-            isLoading={isLoading}
-            icon={RotateCcw}
-            buttonTitle='Refresh'
-            buttonTitleClassName='hidden md:inline'
-            loadingButtonTitle='Refreshing...'
-            className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
-            onClick={async () => {
-              await fetchData();
-            }}
-          />
-        }
-        extraComponent={
-          <PageHeaderLink
-            linkTitle='Create New Product'
-            href='./inventory/new-product'
-          />
-        }
-      />
-      {/* <TableActions /> */}
+    <div className='min-h-screen bg-gray-50 p-4 md:p-6'>
+      <div className='max-w-7xl mx-auto'>
+        <PageHeader
+          heading='Inventory Management'
+          actions={
+            <div className='flex flex-wrap gap-2'>
+              <Button
+                icon={Download}
+                buttonTitle='Export'
+                buttonTitleClassName='hidden md:inline'
+                className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
+                onClick={() => {
+                  // TODO: Implement export functionality
+                  console.log('Export inventory');
+                }}
+              />
+              <Button
+                isLoading={isLoading}
+                icon={RotateCcw}
+                buttonTitle='Refresh'
+                buttonTitleClassName='hidden md:inline'
+                loadingButtonTitle='Refreshing...'
+                className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
+                onClick={async () => {
+                  await fetchData();
+                }}
+              />
+              <Button
+                icon={Plus}
+                buttonTitle='Add Product'
+                buttonTitleClassName='hidden md:inline'
+                className='bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
+                onClick={() => {
+                  router.push('./inventory/new-product');
+                }}
+              />
+            </div>
+          }
+        />
 
-      {/* Table Search field and Filter Dropdown*/}
-      <TableFilters>
+        {/* Modern Inventory Metrics Overview */}
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
+          <MetricCard
+            title='Total Inventory Value'
+            value={`$${formatPrice(totalInventoryValue)}`}
+            icon={<DollarSign className='w-6 h-6' />}
+            color='green'
+            change={8}
+            changeLabel='From last month'
+          />
+          <MetricCard
+            title='Total Products'
+            value={totalProducts}
+            icon={<Package className='w-6 h-6' />}
+            color='blue'
+          />
+          <MetricCard
+            title='Low Stock Items'
+            value={lowStockCount}
+            icon={<AlertTriangle className='w-6 h-6' />}
+            color='red'
+            changeLabel='Items ≤ 10 qty'
+          />
+          <MetricCard
+            title='Average Price'
+            value={`$${formatPrice(averageProductPrice)}`}
+            icon={<BarChart3 className='w-6 h-6' />}
+            color='purple'
+          />
+        </div>
+
+        {/* Enhanced Stock Status Filters */}
+        <div className='mb-6 p-4 bg-white rounded-xl shadow-sm border border-gray-200'>
+          <h3 className='text-lg font-semibold text-gray-800 mb-3'>Quick Filters</h3>
+          <div className='flex flex-wrap gap-2'>
+            <button 
+              onClick={() => setFilteredInventory(inventoryData)}
+              className='px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200'
+            >
+              All Items ({inventoryData.length})
+            </button>
+            <button 
+              onClick={() => setFilteredInventory(inventoryData.filter(p => p.quantity <= 10))}
+              className='px-4 py-2 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors duration-200 flex items-center gap-1'
+            >
+              <AlertTriangle className='w-4 h-4' />
+              Low Stock ({lowStockCount})
+            </button>
+            <button 
+              onClick={() => setFilteredInventory(inventoryData.filter(p => p.quantity > 50))}
+              className='px-4 py-2 text-sm bg-green-100 hover:bg-green-200 text-green-700 rounded-lg transition-colors duration-200'
+            >
+              High Stock ({inventoryData.filter(p => p.quantity > 50).length})
+            </button>
+            <button 
+              onClick={() => setFilteredInventory(inventoryData.filter(p => p.featured))}
+              className='px-4 py-2 text-sm bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition-colors duration-200 flex items-center gap-1'
+            >
+              <Star className='w-4 h-4' />
+              Featured ({inventoryData.filter(p => p.featured).length})
+            </button>
+          </div>
+        </div>
+
+        {/* Table Search field and Filter Dropdown*/}
+        <TableFilters>
         <BulkDeleteButton
           onClick={() => setIsBulkDeleteModalOpen(true)}
           isDisabled={selectedRows.length === 0}
@@ -335,11 +436,13 @@ const SellerInventory = () => {
         {/* Clear Filters Button */}
         <ClearFilters clearFiltersFunction={clearFilters} />
       </TableFilters>
-      <SearchField
-        searchFieldPlaceholder='inventory products'
-        onSearchChange={handleSearchChange}
-      />
-      <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
+        <SearchField
+          searchFieldPlaceholder='inventory products'
+          onSearchChange={handleSearchChange}
+        />
+
+        {/* Enhanced Inventory Table */}
+        <div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
         <table
           id='inventory-table'
           className='w-full text-sm text-left rtl:text-right text-vesoko_gray_600 dark:text-gray-400'
@@ -448,6 +551,7 @@ const SellerInventory = () => {
         {successMessage && (
           <SuccessMessageModal successMessage={successMessage} />
         )}
+        </div>
       </div>
     </div>
   );

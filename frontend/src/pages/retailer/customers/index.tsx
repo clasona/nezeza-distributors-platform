@@ -3,11 +3,9 @@ import SellerCustomers from '@/components/SellerCustomers';
 
 const RetailerCustomers = () => {
   return (
-    <div>
-      <RetailerLayout>
-        <SellerCustomers />
-      </RetailerLayout>
-    </div>
+    <RetailerLayout>
+      <SellerCustomers />
+    </RetailerLayout>
   );
 };
 

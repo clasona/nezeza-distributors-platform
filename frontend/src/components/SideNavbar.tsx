@@ -1,6 +1,6 @@
 'use client';
 
-import logo from '@/images/soko-logo.png';
+import logo from '@/images/main.png';
 import {
   Archive,
   Bell,
@@ -48,15 +48,10 @@ const SideNavbar = ({
       icon: LayoutDashboard,
     },
     // {
-    //   title: 'Dashboard',
-    //   href: `${basePath}/dashboard`,
-    //   icon: LayoutDashboard,
+    //   title: 'My Orders',
+    //   href: `${basePath}/orders/my-orders`,
+    //   icon: ListOrdered,
     // },
-    {
-      title: 'My Orders',
-      href: `${basePath}/orders/my-orders`,
-      icon: ListOrdered,
-    },
     {
       title: 'Customer Orders',
       href: `${basePath}/orders/customer-orders`,

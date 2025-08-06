@@ -31,11 +31,9 @@ const createSubOrders = async (fullOrder, session) => {
 
     const subOrderData = Object.keys(subOrdersGrouped).map((sellerId) => {
       const subOrder = subOrdersGrouped[sellerId];
-
       // Calculate total amount including tax and shipping
       const totalAmount =
         subOrder.totalAmount + subOrder.totalTax + subOrder.totalShipping;
-
       // Add transaction fee (10% platform fee example)
       const transactionFee = subOrder.totalAmount * 0.1;
       return {
@@ -44,6 +42,7 @@ const createSubOrders = async (fullOrder, session) => {
         totalAmount,
         transactionFee,
         fullOrderId: fullOrder._id, // Add reference to the main order
+        paymentStatus: 'Paid',
       };
     });
 
@@ -227,6 +226,7 @@ const createOrderUtil = async ({
           buyerStoreId: buyerStore._id,
           subOrders: [],
           estimatedDeliveryDate,
+          paymentStatus: 'Paid',
         },
       ],
       { session }

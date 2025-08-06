@@ -7,11 +7,117 @@ const { checkPermissions } = require('../../utils');
 
 //createApplication ?
 
-//approveApplication
+// approveApplication
+const approveStoreApplication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new CustomError.BadRequestError('Invalid application ID');
+    }
+
+    const application = await StoreApplication.findById(id);
+    if (!application) {
+      throw new CustomError.NotFoundError('Store application not found');
+    }
+
+    // Update application status to approved
+    application.status = 'Approved';
+    application.updatedAt = new Date();
+    await application.save();
+
+    // TODO: Create actual store from application data
+    // TODO: Send approval email to applicant
+    // TODO: Log admin activity
+
+    res.status(StatusCodes.OK).json({
+      msg: 'Store application approved successfully',
+      application
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // declineApplication
+const declineStoreApplication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new CustomError.BadRequestError('Invalid application ID');
+    }
+
+    const application = await StoreApplication.findById(id);
+    if (!application) {
+      throw new CustomError.NotFoundError('Store application not found');
+    }
+
+    // Update application status to declined
+    application.status = 'Declined';
+    application.declineReason = reason || 'No reason provided';
+    application.updatedAt = new Date();
+    await application.save();
+
+    // TODO: Send decline email to applicant
+    // TODO: Log admin activity
+
+    res.status(StatusCodes.OK).json({
+      msg: 'Store application declined successfully',
+      application
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // getApplicationDetails
+const getStoreApplicationDetails = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new CustomError.BadRequestError('Invalid application ID');
+    }
+
+    const application = await StoreApplication.findById(id)
+      .populate('storeInfo')
+      .populate('primaryContactInfo');
+      
+    if (!application) {
+      throw new CustomError.NotFoundError('Store application not found');
+    }
+
+    res.status(StatusCodes.OK).json({ application });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// deleteApplication
+const deleteStoreApplication = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new CustomError.BadRequestError('Invalid application ID');
+    }
+
+    const application = await StoreApplication.findByIdAndDelete(id);
+    if (!application) {
+      throw new CustomError.NotFoundError('Store application not found');
+    }
+
+    // TODO: Log admin activity
+
+    res.status(StatusCodes.OK).json({
+      msg: 'Store application deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 // getApplications
 const getAllStoreApplications = async (req, res, next) => {
@@ -76,4 +182,8 @@ const getAllStoreApplications = async (req, res, next) => {
 
 module.exports = {
   getAllStoreApplications,
+  approveStoreApplication,
+  declineStoreApplication,
+  getStoreApplicationDetails,
+  deleteStoreApplication,
 };

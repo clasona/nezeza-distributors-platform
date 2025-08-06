@@ -1,5 +1,3 @@
-"use client";
-
 import PageHeader from '@/components/PageHeader';
 import Button from '@/components/FormInputs/Button';
 import { 
@@ -24,6 +22,7 @@ const DashboardPage = () => {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    // Simulate a data refresh
     setTimeout(() => {
       setIsRefreshing(false);
     }, 2000);
@@ -33,6 +32,7 @@ const DashboardPage = () => {
     router.push(path);
   };
 
+  // Dashboard cards data
   const dashboardCards = [
     {
       title: 'Store Applications',

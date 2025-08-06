@@ -1,5 +1,5 @@
 import PageHeader from '@/components/PageHeader';
-import SmallCards from '@/components/SmallCards';
+import MetricCard from '@/components/Charts/MetricCard';
 import DeleteRowModal from '@/components/Table/DeleteRowModal';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
 import DateFilters from '@/components/Table/Filters/DateFilters';
@@ -16,7 +16,26 @@ import formatPrice from '@/utils/formatPrice';
 import { fetchCustomerOrders } from '@/utils/order/fetchCustomerOrders';
 import { calculateOrderStats } from '@/utils/orderUtils';
 import { sortItems } from '@/utils/sortItems';
-import { RotateCcw } from 'lucide-react';
+import { 
+  RotateCcw, 
+  Package, 
+  Clock, 
+  CheckCircle, 
+  Truck, 
+  XCircle, 
+  DollarSign,
+  TrendingUp,
+  Users,
+  ShoppingBag,
+  Eye,
+  Edit,
+  Trash2,
+  Filter,
+  Search,
+  Calendar,
+  Download,
+  MoreHorizontal
+} from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { SubOrderProps } from '../../type';
@@ -46,8 +65,18 @@ const SellerCustomerOrders = () => {
   const [showMoreFilters, setshowMoreFilters] = useState(false);
   const toggleMoreFilters = () => setshowMoreFilters((prev) => !prev);
 
-  // for the small cards
+  // Modern metrics calculation
   const orderStats = calculateOrderStats(filteredOrders);
+  
+  // Calculate additional metrics
+  const totalRevenue = filteredOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+  const averageOrderValue = filteredOrders.length > 0 ? totalRevenue / filteredOrders.length : 0;
+  const recentOrders = filteredOrders.filter(order => {
+    const orderDate = new Date(order.createdAt);
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    return orderDate >= sevenDaysAgo;
+  }).length;
 
   //for defining what table headers needed
   const tableColumns = [
@@ -275,25 +304,66 @@ const SellerCustomerOrders = () => {
   };
 
   return (
-    <div>
-      <PageHeader
+    <div className='min-h-screen bg-gray-50 p-4 md:p-6'>
+      <div className='max-w-7xl mx-auto'>
+        <PageHeader
         heading='Customer Orders'
         actions={
-          <Button
-            isLoading={isLoading}
-            icon={RotateCcw}
-            buttonTitle='Refresh'
-            buttonTitleClassName='hidden md:inline'
-            loadingButtonTitle='Refreshing...'
-            className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
-            onClick={async () => {
-              await fetchData();
-            }}
-          />
+          <div className='flex flex-wrap gap-2'>
+            <Button
+              icon={Download}
+              buttonTitle='Export'
+              buttonTitleClassName='hidden md:inline'
+              className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
+              onClick={() => {
+                // TODO: Implement export functionality
+                console.log('Export orders');
+              }}
+            />
+            <Button
+              isLoading={isLoading}
+              icon={RotateCcw}
+              buttonTitle='Refresh'
+              buttonTitleClassName='hidden md:inline'
+              loadingButtonTitle='Refreshing...'
+              className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
+              onClick={async () => {
+                await fetchData();
+              }}
+            />
+          </div>
         }
       />
-      {/* Replacing Overview Section with SmallCards */}
-      <SmallCards orderStats={orderStats} />
+      {/* Modern Metrics Overview */}
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
+        <MetricCard
+          title='Total Revenue'
+          value={`$${formatPrice(totalRevenue)}`}
+          icon={<DollarSign className='w-6 h-6' />}
+          change={5}
+          changeLabel='From last week'
+          color='green'
+        />
+        <MetricCard
+          title='Average Order Value'
+          value={`$${formatPrice(averageOrderValue)}`}
+          icon={<TrendingUp className='w-6 h-6' />}
+          color='blue'
+        />
+        <MetricCard
+          title='Total Orders'
+          value={filteredOrders.length}
+          icon={<ShoppingBag className='w-6 h-6' />}
+          color='purple'
+        />
+        <MetricCard
+          title='Recent Orders'
+          value={recentOrders}
+          icon={<Clock className='w-6 h-6' />}
+          changeLabel='Last 7 days'
+          color='indigo'
+        />
+      </div>
 
       {/* <TableActions /> */}
 
@@ -347,7 +417,7 @@ const SellerCustomerOrders = () => {
       />
 
       {/* Customer Orders Table */}
-      <div className='relative overflow-x-auto mt-4 shadow-md sm:rounded-lg'>
+      <div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
         <table
           id='customer-orders-table'
           className='w-full text-sm text-left rtl:text-right text-vesoko_gray_600 dark:text-gray-400'
@@ -404,13 +474,17 @@ const SellerCustomerOrders = () => {
                           <RowActionDropdown
                             actions={[
                               {
-                                label: 'Update Order',
+                                label: 'View Details',
                                 onClick: () =>
                                   handleCustomerMoreOrderDetails(order),
                               },
                               {
-                                label: 'Delete', //TODO: change to archive?
-                                onClick: () => handleDeleteClick(order), //TODO:
+                                label: 'Edit Order',
+                                onClick: () => handleUpdate(order),
+                              },
+                              {
+                                label: 'Archive',
+                                onClick: () => handleDeleteClick(order),
                               },
                             ]}
                           />
@@ -500,6 +574,7 @@ const SellerCustomerOrders = () => {
         {successMessage && (
           <SuccessMessageModal successMessage={successMessage} />
         )}
+      </div>
       </div>
     </div>
   );
