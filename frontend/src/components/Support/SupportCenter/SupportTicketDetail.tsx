@@ -10,6 +10,7 @@ import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportM
 import formatDate from '@/utils/formatDate';
 import Button from '@/components/FormInputs/Button';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
+import CloudinaryTicketFileUpload from '@/components/FormInputs/CloudinaryTicketFileUpload';
 
 interface SupportTicketDetailProps {
   ticketId: string;
@@ -30,7 +31,7 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
   const [metadata, setMetadata] = useState<SupportMetadata | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [cloudinaryFiles, setCloudinaryFiles] = useState<any[]>([]);
 
   useEffect(() => {
     fetchTicketDetails();
@@ -60,36 +61,45 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
     }
   };
 
+  // Helper function to format Cloudinary files for API
+  const formatCloudinaryFiles = (cloudinaryFiles: any[]) => {
+    return cloudinaryFiles.map(file => ({
+      filename: file.filename,
+      url: file.url,
+      fileType: file.fileType,
+      fileSize: file.fileSize,
+      public_id: file.public_id
+    }));
+  };
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !ticket) return;
 
     try {
       setSendingMessage(true);
+      
+      // Use Cloudinary URLs directly instead of converting to File objects
+      const cloudinaryAttachments = cloudinaryFiles.length > 0 
+        ? formatCloudinaryFiles(cloudinaryFiles) 
+        : undefined;
+      
       const response = isAdmin
         ? await adminAddMessageToTicket(ticketId, {
             message: newMessage.trim(),
-            attachments: selectedFiles,
+            cloudinaryAttachments,
           })
         : await addMessageToTicket(ticketId, {
             message: newMessage.trim(),
-            attachments: selectedFiles,
+            cloudinaryAttachments,
           });
       setTicket(response.ticket);
       setNewMessage('');
-      setSelectedFiles([]);
+      setCloudinaryFiles([]);
       onTicketUpdate?.(response.ticket);
     } catch (error: any) {
       setError(error.message);
     } finally {
       setSendingMessage(false);
-    }
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const fileArray = Array.from(files);
-      setSelectedFiles(fileArray);
     }
   };
 
@@ -180,6 +190,35 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
                 </span>
               )}
             </div>
+            
+            {/* Initial Ticket Attachments */}
+            {ticket.attachments && ticket.attachments.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Initial Attachments:</p>
+                <div className="flex flex-wrap gap-2">
+                  {ticket.attachments.map((attachment, idx) => (
+                    <div key={idx} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded">
+                      <a
+                        href={attachment.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:text-blue-800 underline"
+                      >
+                        {attachment.filename}
+                      </a>
+                      <a
+                        href={attachment.url}
+                        download={attachment.filename}
+                        className="text-xs px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
+                        title="Download"
+                      >
+                        ↓
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           <div className="text-right text-sm text-gray-500">
             <div>Created: {formatDate(ticket.createdAt)}</div>
@@ -255,27 +294,11 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
               className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Attachments
-              </label>
-              <input
-                type="file"
-                multiple
-                onChange={handleFileChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-              {selectedFiles.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-600">Selected files:</p>
-                  <ul className="text-sm text-gray-500">
-                    {selectedFiles.map((file, index) => (
-                      <li key={index}>{file.name}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+            <CloudinaryTicketFileUpload
+              label="Attachments (optional)"
+              onFilesChange={setCloudinaryFiles}
+              maxFiles={3}
+            />
 
             <div className="flex justify-end">
               <Button

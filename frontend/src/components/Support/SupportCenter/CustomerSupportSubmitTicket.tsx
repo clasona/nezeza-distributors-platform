@@ -7,6 +7,7 @@ import { createSupportTicket, CreateSupportTicketData } from '@/utils/support/cr
 import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportMetadata';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
 import Button from '@/components/FormInputs/Button';
+import CloudinaryTicketFileUpload from '@/components/FormInputs/CloudinaryTicketFileUpload';
 
 // Enhanced metadata with ecommerce categories
 const fallbackMetadata: SupportMetadata = {
@@ -81,6 +82,7 @@ const CustomerSupportSubmitTicket: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [cloudinaryFiles, setCloudinaryFiles] = useState<any[]>([]);
   const [metadataError, setMetadataError] = useState<string | null>(null);
 
   const {
@@ -122,14 +124,6 @@ const CustomerSupportSubmitTicket: React.FC = () => {
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const fileArray = Array.from(files);
-      setSelectedFiles(fileArray);
-    }
-  };
-
   const onSubmit = async (data: CreateSupportTicketData) => {
     try {
       setLoading(true);
@@ -138,6 +132,7 @@ const CustomerSupportSubmitTicket: React.FC = () => {
       const ticketData: CreateSupportTicketData = {
         ...data,
         attachments: selectedFiles,
+        cloudinaryAttachments: cloudinaryFiles,
       };
 
       const response = await createSupportTicket(ticketData);
@@ -253,28 +248,12 @@ const CustomerSupportSubmitTicket: React.FC = () => {
           )}
         </div>
 
-        {/* Attachments */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Attachments (optional)
-          </label>
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          />
-          {selectedFiles.length > 0 && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-600">Selected files:</p>
-              <ul className="text-sm text-gray-500">
-                {selectedFiles.map((file, index) => (
-                  <li key={index}>{file.name}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+        {/* Cloudinary Attachments */}
+        <CloudinaryTicketFileUpload
+          label="Attachments (optional)"
+          onFilesChange={setCloudinaryFiles}
+          maxFiles={5}
+        />
 
         {/* Submit Button */}
         <div className="flex justify-end">

@@ -4,6 +4,13 @@ import { SupportTicket } from './createSupportTicket';
 export interface AddMessageData {
   message: string;
   attachments?: File[];
+  cloudinaryAttachments?: Array<{
+    filename: string;
+    url: string;
+    fileType: string;
+    fileSize: number;
+    public_id: string;
+  }>;
 }
 
 export const addMessageToTicket = async (
@@ -18,6 +25,11 @@ export const addMessageToTicket = async (
       data.attachments.forEach((file) => {
         formData.append('attachments', file);
       });
+    }
+    
+    // Add Cloudinary attachments if any
+    if (data.cloudinaryAttachments && data.cloudinaryAttachments.length > 0) {
+      formData.append('cloudinaryAttachments', JSON.stringify(data.cloudinaryAttachments));
     }
     
     const response = await axiosInstance.post(`/support/tickets/${ticketId}/message`, formData, {

@@ -30,6 +30,7 @@ const SupportMessageSchema = new mongoose.Schema(
         url: String,
         fileType: String,
         fileSize: Number,
+        public_id: String, // Cloudinary public_id for file management
       },
     ],
     isInternal: {
@@ -45,7 +46,7 @@ const SupportTicketSchema = new mongoose.Schema(
     ticketNumber: {
       type: String,
       unique: true,
-      required: true,
+      index: true,
     },
     subject: {
       type: String,
@@ -181,6 +182,7 @@ const SupportTicketSchema = new mongoose.Schema(
         url: String,
         fileType: String,
         fileSize: Number,
+        public_id: String, // Cloudinary public_id for file management
       },
     ],
   },
