@@ -6,6 +6,24 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SupportCenterLayout from '@/components/Support/SupportCenter/SupportCenter';
 import { createSupportTicket, CreateSupportTicketData } from '@/utils/support/createSupportTicket';
 
+// Types for SubmitTicketContent props
+interface SubmitTicketProps {
+  formData: {
+    subject: string;
+    requestType: string;
+    businessImpact: string;
+    estimatedValue: string;
+    description: string;
+    attachments: File[];
+  };
+  isSubmitting: boolean;
+  submitError: string;
+  submitSuccess: boolean;
+  handleInputChange: (field: string, value: string) => void;
+  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: (e: React.FormEvent) => void;
+}
+
 // Mock retailer business data
 const mockRetailerBusiness = {
   businessName: 'TechHub Electronics',
@@ -488,156 +506,6 @@ const RetailerSupportPage = () => {
     </div>
   );
 
-  // Enhanced Submit Ticket for Retailers - Memoized to prevent focus loss
-  const SubmitTicketContent = React.memo(() => {
-      console.log('SubmitTicketContent rendering'); // Add this to debug
-
-    return (
-      <div className="max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6">Submit Business Support Request</h2>
-        
-        {/* Success Message */}
-        {submitSuccess && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <div className="flex items-center">
-              <svg className="h-5 w-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              <span className="text-green-800 font-medium">Support request submitted successfully!</span>
-            </div>
-            <p className="text-green-700 text-sm mt-1">You will be redirected to your tickets shortly...</p>
-          </div>
-        )}
-
-        {/* Error Message */}
-        {submitError && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <div className="flex items-center">
-              <svg className="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-red-800 font-medium">Error</span>
-            </div>
-            <p className="text-red-700 text-sm mt-1">{submitError}</p>
-          </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
-            <input
-              key="subject-input"
-              type="text"
-              value={formData.subject}
-              onChange={(e) => handleInputChange('subject', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Brief description of your business request"
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Request Type *</label>
-            <select 
-              value={formData.requestType}
-              onChange={(e) => handleInputChange('requestType', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              disabled={isSubmitting}
-              required
-            >
-              <option value="">Select request type...</option>
-              <option value="volume_pricing">Volume Pricing Request</option>
-              <option value="shipping_issue">Shipping/Logistics Issue</option>
-              <option value="product_inquiry">Product Catalog Inquiry</option>
-              <option value="account_management">Account Management</option>
-              <option value="technical_support">Technical Support</option>
-              <option value="billing_inquiry">Billing Question</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Business Impact *</label>
-            <select 
-              value={formData.businessImpact}
-              onChange={(e) => handleInputChange('businessImpact', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              disabled={isSubmitting}
-            >
-              <option value="low">Low - General inquiry</option>
-              <option value="medium">Medium - Affects some operations</option>
-              <option value="high">High - Significant business impact</option>
-              <option value="critical">Critical - Revenue at risk</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Value (Optional)</label>
-            <input
-              type="text"
-              value={formData.estimatedValue}
-              onChange={(e) => handleInputChange('estimatedValue', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="e.g., RWF 500,000"
-              disabled={isSubmitting}
-            />
-            <p className="text-xs text-gray-500 mt-1">This information helps us prioritize your request</p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-            <textarea
-              rows={6}
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Provide detailed information about your business request, including any relevant order numbers, customer impact, or time sensitivity..."
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Attachments</label>
-            <input
-              type="file"
-              multiple
-              onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
-              disabled={isSubmitting}
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-            />
-            {formData.attachments.length > 0 && (
-              <div className="mt-2">
-                <p className="text-sm text-gray-600">Selected files:</p>
-                <ul className="text-xs text-gray-500">
-                  {formData.attachments.map((file, index) => (
-                    <li key={index}>• {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={isSubmitting || !formData.subject || !formData.requestType || !formData.description}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-            >
-              {isSubmitting && (
-                <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
-                  <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
-                </svg>
-              )}
-              {isSubmitting ? 'Submitting...' : 'Submit Request'}
-            </button>
-          </div>
-        </form>
-      </div>
-    );
-  });
 
   // Retailer-specific FAQs
   const FAQContent = () => (
@@ -689,7 +557,15 @@ const RetailerSupportPage = () => {
       case 'dashboard':
         return <DashboardContent />;
       case 'submit-ticket':
-        return <SubmitTicketContent />;
+        return <SubmitTicketContent 
+          formData={formData}
+          isSubmitting={isSubmitting}
+          submitError={submitError}
+          submitSuccess={submitSuccess}
+          handleInputChange={handleInputChange}
+          handleFileChange={handleFileChange}
+          handleSubmit={handleSubmit}
+        />;
       case 'my-tickets':
         return <MyTicketsContent />;
       case 'analytics':
@@ -721,5 +597,161 @@ const RetailerSupportPage = () => {
     </SupportCenterLayout>
   );
 };
+
+// Define SubmitTicketContent at module scope to prevent remount-caused focus loss
+const SubmitTicketContent = React.memo(({ 
+  formData, 
+  isSubmitting, 
+  submitError, 
+  submitSuccess, 
+  handleInputChange, 
+  handleFileChange, 
+  handleSubmit 
+}: SubmitTicketProps) => {
+  return (
+    <div className="max-w-2xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">Submit Business Support Request</h2>
+      
+      {/* Success Message */}
+      {submitSuccess && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-center">
+            <svg className="h-5 w-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="text-green-800 font-medium">Support request submitted successfully!</span>
+          </div>
+          <p className="text-green-700 text-sm mt-1">You will be redirected to your tickets shortly...</p>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {submitError && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center">
+            <svg className="h-5 w-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-red-800 font-medium">Error</span>
+          </div>
+          <p className="text-red-700 text-sm mt-1">{submitError}</p>
+        </div>
+      )}
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
+          <input
+            type="text"
+            value={formData.subject}
+            onChange={(e) => handleInputChange('subject', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Brief description of your business request"
+            disabled={isSubmitting}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Request Type *</label>
+          <select 
+            value={formData.requestType}
+            onChange={(e) => handleInputChange('requestType', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={isSubmitting}
+            required
+          >
+            <option value="">Select request type...</option>
+            <option value="volume_pricing">Volume Pricing Request</option>
+            <option value="shipping_issue">Shipping/Logistics Issue</option>
+            <option value="product_inquiry">Product Catalog Inquiry</option>
+            <option value="account_management">Account Management</option>
+            <option value="technical_support">Technical Support</option>
+            <option value="billing_inquiry">Billing Question</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Business Impact *</label>
+          <select 
+            value={formData.businessImpact}
+            onChange={(e) => handleInputChange('businessImpact', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={isSubmitting}
+          >
+            <option value="low">Low - General inquiry</option>
+            <option value="medium">Medium - Affects some operations</option>
+            <option value="high">High - Significant business impact</option>
+            <option value="critical">Critical - Revenue at risk</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Value (Optional)</label>
+          <input
+            type="text"
+            value={formData.estimatedValue}
+            onChange={(e) => handleInputChange('estimatedValue', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="e.g., RWF 500,000"
+            disabled={isSubmitting}
+          />
+          <p className="text-xs text-gray-500 mt-1">This information helps us prioritize your request</p>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+          <textarea
+            rows={6}
+            value={formData.description}
+            onChange={(e) => handleInputChange('description', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Provide detailed information about your business request, including any relevant order numbers, customer impact, or time sensitivity..."
+            disabled={isSubmitting}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Attachments</label>
+          <input
+            type="file"
+            multiple
+            onChange={handleFileChange}
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+            disabled={isSubmitting}
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+          />
+          {formData.attachments.length > 0 && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-600">Selected files:</p>
+              <ul className="text-xs text-gray-500">
+                {formData.attachments.map((file) => (
+                  <li key={file.name + file.size}>• {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isSubmitting || !formData.subject || !formData.requestType || !formData.description}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+          >
+            {isSubmitting && (
+              <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+              </svg>
+            )}
+            {isSubmitting ? 'Submitting...' : 'Submit Request'}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+});
 
 export default RetailerSupportPage;
