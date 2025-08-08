@@ -167,25 +167,45 @@ const createSupportTicket = async (req, res) => {
     ]);
 
     // Send email notifications
-    //fake ethereal password: c7m886EQ9A9yJ7uPmy
-    await sendTicketCreatedEmail({
-      userEmail: 'kyler.yundt@ethereal.email',
-      userName: `${user.firstName} ${user.lastName}`,
-      ticketNumber: ticket.ticketNumber,
-      subject: ticket.subject,
-      category: ticket.category,
-    });
+    try {
+      // Validate email before sending
+      if (user.email && user.email.includes('@') && user.email.length > 5) {
+        await sendTicketCreatedEmail({
+          userEmail: user.email,
+          userName: `${user.firstName} ${user.lastName}`,
+          ticketNumber: ticket.ticketNumber,
+          subject: ticket.subject,
+          category: ticket.category,
+        });
+        console.log(`Ticket creation email queued for ${user.email}`);
+      } else {
+        console.warn(`Invalid email address for user ${userId}: ${user.email}`);
+      }
+    } catch (emailError) {
+      console.error('Failed to send ticket creation email:', emailError);
+      console.error('Email error details:', {
+        userEmail: user.email,
+        ticketNumber: ticket.ticketNumber,
+        error: emailError.message
+      });
+      // Don't fail the ticket creation if email fails
+    }
 
     // Notify admin if high priority
     if (priority === 'high' || priority === 'urgent') {
-      await sendAdminTicketNotificationEmail({
-        ticketNumber: ticket.ticketNumber,
-        subject: ticket.subject,
-        priority: ticket.priority,
-        category: ticket.category,
-        userName: `${user.firstName} ${user.lastName}`,
-        userRole: userRole,
-      });
+      try {
+        await sendAdminTicketNotificationEmail({
+          ticketNumber: ticket.ticketNumber,
+          subject: ticket.subject,
+          priority: ticket.priority,
+          category: ticket.category,
+          userName: `${user.firstName} ${user.lastName}`,
+          userRole: userRole,
+        });
+      } catch (emailError) {
+        console.error('Failed to send admin notification email:', emailError);
+        // Don't fail the ticket creation if email fails
+      }
     }
 
     res.status(StatusCodes.CREATED).json({

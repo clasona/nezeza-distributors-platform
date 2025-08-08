@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SupportCenterLayout from '@/components/Support/SupportCenter/SupportCenter';
 import { createSupportTicket, CreateSupportTicketData } from '@/utils/support/createSupportTicket';
+import { getUserTickets } from '@/utils/support/getUserTickets';
 
 // Types for SubmitTicketContent props
 interface SubmitTicketProps {
@@ -138,7 +139,9 @@ const RetailerSupportPage = () => {
   const [selectedTab, setSelectedTab] = useState<TabValue>('dashboard');
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [newMessage, setNewMessage] = useState('');
-  const [tickets, setTickets] = useState(mockRetailerTickets);
+  const [tickets, setTickets] = useState([]);
+  const [loadingTickets, setLoadingTickets] = useState(false);
+  const [ticketError, setTicketError] = useState<string | null>(null);
 
   // Form state for submit ticket
   const [formData, setFormData] = useState({
@@ -158,6 +161,33 @@ const RetailerSupportPage = () => {
     const mappedTab = TAB_MAP[lastSegment as keyof typeof TAB_MAP] || 'dashboard';
     setSelectedTab(mappedTab as TabValue);
   }, [pathname]);
+
+  // Load tickets from API
+  const loadTickets = useCallback(async () => {
+    try {
+      setLoadingTickets(true);
+      setTicketError(null);
+      const response = await getUserTickets({
+        limit: 50, // Load more tickets for retailers
+        offset: 0,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      });
+      setTickets(response.tickets);
+    } catch (error: any) {
+      console.error('Failed to load tickets:', error);
+      setTicketError(error.message);
+      // Fallback to mock data on error
+      setTickets(mockRetailerTickets);
+    } finally {
+      setLoadingTickets(false);
+    }
+  }, []);
+
+  // Load tickets on component mount
+  useEffect(() => {
+    loadTickets();
+  }, [loadTickets]);
 
   const handleTabChange = (value: string) => {
     const targetPath = `/retailer/support${value === 'dashboard' ? '' : `/${value}`}`;
@@ -273,6 +303,9 @@ const RetailerSupportPage = () => {
       // Reset file input
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
+      
+      // Reload tickets to show the new one
+      await loadTickets();
       
       // Show success message for 3 seconds, then redirect to my-tickets
       setTimeout(() => {
