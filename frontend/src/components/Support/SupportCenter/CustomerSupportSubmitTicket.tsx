@@ -8,6 +8,7 @@ import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportM
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
 import Button from '@/components/FormInputs/Button';
 import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
+import AttachmentViewer from '@/components/Support/AttachmentViewer';
 
 // Enhanced metadata with ecommerce categories
 const fallbackMetadata: SupportMetadata = {
@@ -129,19 +130,9 @@ const CustomerSupportSubmitTicket: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Convert URLs to attachment objects for Cloudinary integration
-      const cloudinaryAttachments = attachmentUrls.map((url, index) => ({
-        filename: `attachment-${index + 1}.${url.split('.').pop() || 'file'}`,
-        url: url,
-        fileType: url.split('.').pop() || 'file',
-        fileSize: 0, // Size unknown from URL
-        public_id: url.split('/').pop()?.split('.')[0] || `attachment-${index + 1}`
-      }));
-
       const ticketData: CreateSupportTicketData = {
         ...data,
-        attachments: selectedFiles,
-        cloudinaryAttachments: cloudinaryAttachments,
+        attachments: attachmentUrls.length > 0 ? attachmentUrls : (selectedFiles.length > 0 ? selectedFiles : undefined),
       };
 
       const response = await createSupportTicket(ticketData);
@@ -266,34 +257,22 @@ const CustomerSupportSubmitTicket: React.FC = () => {
             {/* Display uploaded attachments */}
             {attachmentUrls.length > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">
-                  Uploaded Attachments ({attachmentUrls.length}/5):
-                </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                <AttachmentViewer
+                  attachments={attachmentUrls}
+                  title={`Uploaded Attachments (${attachmentUrls.length}/5)`}
+                  maxDisplay={5}
+                />
+                <div className="flex flex-wrap gap-2">
                   {attachmentUrls.map((url, index) => (
-                    <div key={index} className="relative group">
-                      <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
-                        {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                          <img
-                            src={url}
-                            alt={`Attachment ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="text-xs text-gray-500 text-center px-1">
-                            {url.split('.').pop()?.toUpperCase() || 'FILE'}
-                          </div>
-                        )}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setAttachmentUrls(prev => prev.filter((_, i) => i !== index))}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
-                        title="Remove attachment"
-                      >
-                        ×
-                      </button>
-                    </div>
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => setAttachmentUrls(prev => prev.filter((_, i) => i !== index))}
+                      className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
+                      title="Remove attachment"
+                    >
+                      Remove {url.split('/').pop()?.split('.')[0] || `File ${index + 1}`}
+                    </button>
                   ))}
                 </div>
               </div>

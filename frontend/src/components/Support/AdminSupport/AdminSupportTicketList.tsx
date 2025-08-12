@@ -12,6 +12,7 @@ import { respondToTicket } from '@/utils/admin/respondToTicket';
 import formatDate from '@/utils/formatDate';
 import Button from '@/components/FormInputs/Button';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
+import AttachmentViewer from '@/components/Support/AttachmentViewer';
 
 interface AdminSupportTicketListProps {
   onTicketSelect?: (ticket: SupportTicket) => void;
@@ -387,6 +388,9 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
                     Assigned To
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Attachments
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Created
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -450,6 +454,18 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
                           <span className="text-gray-400">Unassigned</span>
                         )}
                       </div>
+                    </td>
+                    <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
+                      {ticket.attachments && ticket.attachments.length > 0 ? (
+                        <AttachmentViewer 
+                          attachments={ticket.attachments}
+                          title=""
+                          maxDisplay={1}
+                          className="max-w-32"
+                        />
+                      ) : (
+                        <span className="text-xs text-gray-400">No files</span>
+                      )}
                     </td>
                     <td className="px-4 py-4 text-sm text-gray-500">
                       {formatDate(ticket.createdAt)}

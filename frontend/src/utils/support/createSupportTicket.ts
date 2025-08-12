@@ -4,18 +4,11 @@ export interface CreateSupportTicketData {
   subject: string;
   description: string;
   category: string;
-  priority?: string;
+  priority: string;
   orderId?: string;
   subOrderId?: string;
   productId?: string;
-  attachments?: File[];
-  cloudinaryAttachments?: Array<{
-    filename: string;
-    url: string;
-    fileType: string;
-    fileSize: number;
-    public_id: string;
-  }>;
+  attachments?: File[] | string[]; // Either File objects or Cloudinary URLs
 }
 
 export interface SupportTicket {
@@ -110,16 +103,22 @@ export const createSupportTicket = async (data: CreateSupportTicketData): Promis
       formData.append('productId', data.productId);
     }
     
-    // Add attachments if any
-    if (data.attachments && data.attachments.length > 0) {
-      data.attachments.forEach((file) => {
-        formData.append('attachments', file);
-      });
-    }
-    
-    // Add Cloudinary attachments if any
-    if (data.cloudinaryAttachments && data.cloudinaryAttachments.length > 0) {
-      formData.append('cloudinaryAttachments', JSON.stringify(data.cloudinaryAttachments));
+    // Add attachments (either as File objects for traditional upload or as URLs for Cloudinary)
+    if (data.attachments && Array.isArray(data.attachments) && data.attachments.length > 0) {
+      // Check if attachments are URLs (strings) or File objects
+      const isUrlArray = data.attachments.every(item => typeof item === 'string');
+      
+      if (isUrlArray) {
+        // Send Cloudinary URLs as attachments
+        formData.append('attachments', JSON.stringify(data.attachments));
+      } else {
+        // Send File objects for traditional upload (fallback)
+        data.attachments.forEach((file) => {
+          if (file instanceof File) {
+            formData.append('attachments', file);
+          }
+        });
+      }
     }
     
     const response = await axiosInstance.post('/support', formData, {

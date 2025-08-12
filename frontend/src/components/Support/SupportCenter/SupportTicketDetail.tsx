@@ -8,9 +8,11 @@ import { addMessageToTicket } from '@/utils/support/addMessageToTicket';
 import { adminAddMessageToTicket } from '@/utils/admin/adminAddMessageToTicket';
 import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportMetadata';
 import formatDate from '@/utils/formatDate';
+import { formatDateTimeLocale } from '@/utils/formatDateTime';
 import Button from '@/components/FormInputs/Button';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
 import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
+import AttachmentViewer from '@/components/Support/AttachmentViewer';
 
 interface SupportTicketDetailProps {
   ticketId: string;
@@ -78,9 +80,9 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
     try {
       setSendingMessage(true);
       
-      // Convert URLs to attachment objects for Cloudinary integration
+      // Convert Cloudinary URLs to cloudinaryAttachments format
       const cloudinaryAttachments = replyAttachmentUrls.length > 0 
-        ? formatUrlsToAttachments(replyAttachmentUrls) 
+        ? formatUrlsToAttachments(replyAttachmentUrls)
         : undefined;
       
       const response = isAdmin
@@ -194,29 +196,11 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
             {/* Initial Ticket Attachments */}
             {ticket.attachments && ticket.attachments.length > 0 && (
               <div className="mt-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Initial Attachments:</p>
-                <div className="flex flex-wrap gap-2">
-                  {ticket.attachments.map((attachment, idx) => (
-                    <div key={idx} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded">
-                      <a
-                        href={attachment.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:text-blue-800 underline"
-                      >
-                        {attachment.filename}
-                      </a>
-                      <a
-                        href={attachment.url}
-                        download={attachment.filename}
-                        className="text-xs px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700"
-                        title="Download"
-                      >
-                        ↓
-                      </a>
-                    </div>
-                  ))}
-                </div>
+                <AttachmentViewer 
+                  attachments={ticket.attachments}
+                  title="Initial Attachments"
+                  maxDisplay={3}
+                />
               </div>
             )}
           </div>
@@ -252,28 +236,19 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
                   )}
                 </div>
                 <span className="text-sm text-gray-500">
-                  {formatDate(message.createdAt)}
+                  {formatDateTimeLocale(message.createdAt)}
                 </span>
               </div>
               <div className="text-gray-700 whitespace-pre-wrap">
                 {message.message}
               </div>
               {message.attachments && message.attachments.length > 0 && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-500 mb-1">Attachments:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {message.attachments.map((attachment, idx) => (
-                      <a
-                        key={idx}
-                        href={attachment.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:text-blue-800 underline"
-                      >
-                        {attachment.filename}
-                      </a>
-                    ))}
-                  </div>
+                <div className="mt-3">
+                  <AttachmentViewer 
+                    attachments={message.attachments}
+                    title="Message Attachments"
+                    maxDisplay={2}
+                  />
                 </div>
               )}
             </div>

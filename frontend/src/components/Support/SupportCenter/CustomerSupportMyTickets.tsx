@@ -16,6 +16,8 @@ const fallbackTickets: SupportTicket[] = [
     priority: 'high',
     status: 'in_progress',
     description: 'My order was supposed to arrive yesterday but I haven\'t received it yet.',
+    userId: { _id: 'user1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+    userRole: 'customer',
     createdAt: '2024-01-20T10:30:00Z',
     updatedAt: '2024-01-21T14:20:00Z',
     orderId: { _id: 'VS-ORD-2024-123', totalAmount: 0, paymentStatus: '', fulfillmentStatus: '', createdAt: '2024-01-20T10:30:00Z' },
@@ -58,35 +60,41 @@ const fallbackTickets: SupportTicket[] = [
     priority: 'medium',
     status: 'resolved',
     description: 'The phone case I ordered has a scratch on the back.',
+    userId: { _id: 'user1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+    userRole: 'customer',
     createdAt: '2024-01-18T09:15:00Z',
     updatedAt: '2024-01-19T16:30:00Z',
     orderId: { _id: 'VS-ORD-2024-098', totalAmount: 0, paymentStatus: '', fulfillmentStatus: '', createdAt: '2024-01-18T09:15:00Z' },
     messages: [
       {
-        id: '1',
-        author: 'customer',
-        authorName: 'You',
-        content: 'The phone case I ordered has a scratch on the back. It looks like it was damaged during shipping.',
-        timestamp: '2024-01-18T09:15:00Z',
-        attachments: [{ name: 'case_damage.jpg', url: '#' }]
+        _id: '1',
+        senderId: { _id: 'user1', firstName: 'You', lastName: '' },
+        senderRole: 'customer',
+        message: 'The phone case I ordered has a scratch on the back. It looks like it was damaged during shipping.',
+        attachments: [{ filename: 'case_damage.jpg', url: '#', fileType: 'jpg', fileSize: 2048000 }],
+        isInternal: false,
+        createdAt: '2024-01-18T09:15:00Z'
       },
       {
-        id: '2',
-        author: 'admin',
-        authorName: 'Mike - Quality Team',
-        content: 'Thank you for reporting this issue. I can see from the photo that the case is indeed damaged. We\'ll send you a replacement immediately at no extra cost. You should receive it within 2-3 business days.',
-        timestamp: '2024-01-18T14:20:00Z',
-        attachments: []
+        _id: '2',
+        senderId: { _id: 'admin1', firstName: 'Mike', lastName: 'Quality Team' },
+        senderRole: 'admin',
+        message: 'Thank you for reporting this issue. I can see from the photo that the case is indeed damaged. We\'ll send you a replacement immediately at no extra cost. You should receive it within 2-3 business days.',
+        attachments: [],
+        isInternal: false,
+        createdAt: '2024-01-18T14:20:00Z'
       },
       {
-        id: '3',
-        author: 'customer',
-        authorName: 'You',
-        content: 'Thank you! I received the replacement and it\'s perfect. Great customer service!',
-        timestamp: '2024-01-19T16:30:00Z',
-        attachments: []
+        _id: '3',
+        senderId: { _id: 'user1', firstName: 'You', lastName: '' },
+        senderRole: 'customer',
+        message: 'Thank you! I received the replacement and it\'s perfect. Great customer service!',
+        attachments: [],
+        isInternal: false,
+        createdAt: '2024-01-19T16:30:00Z'
       }
-    ]
+    ],
+    attachments: []
   },
   {
     _id: '3',
@@ -96,19 +104,23 @@ const fallbackTickets: SupportTicket[] = [
     priority: 'urgent',
     status: 'open',
     description: 'My payment failed during checkout but the amount was deducted from my account.',
+    userId: { _id: 'user1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+    userRole: 'customer',
     createdAt: '2024-01-22T11:00:00Z',
     updatedAt: '2024-01-22T11:00:00Z',
-    orderId: null,
+    orderId: undefined,
     messages: [
       {
-        id: '1',
-        author: 'customer',
-        authorName: 'You',
-        content: 'My payment failed during checkout but the amount was deducted from my account. Please help me resolve this issue.',
-        timestamp: '2024-01-22T11:00:00Z',
-        attachments: [{ name: 'bank_statement.pdf', url: '#' }]
+        _id: '1',
+        senderId: { _id: 'user1', firstName: 'You', lastName: '' },
+        senderRole: 'customer',
+        message: 'My payment failed during checkout but the amount was deducted from my account. Please help me resolve this issue.',
+        attachments: [{ filename: 'bank_statement.pdf', url: '#', fileType: 'pdf', fileSize: 1024000 }],
+        isInternal: false,
+        createdAt: '2024-01-22T11:00:00Z'
       }
-    ]
+    ],
+    attachments: []
   }
 ];
 
@@ -143,7 +155,7 @@ interface TicketMessage {
   attachments: { name: string; url: string }[];
 }
 
-interface ExtendedSupportTicket extends SupportTicket {
+interface ExtendedSupportTicket extends Omit<SupportTicket, 'messages'> {
   messages?: TicketMessage[];
 }
 
@@ -212,8 +224,9 @@ const CustomerSupportMyTickets: React.FC = () => {
       } catch (error: any) {
         console.error('Failed to load tickets:', error);
         setError(error.message);
-        // Use fallback data on error
-        setTickets(fallbackTickets);
+        // Use fallback data on error - convert to ExtendedSupportTicket format
+        const convertedFallbackTickets = fallbackTickets.map(convertBackendTicket);
+        setTickets(convertedFallbackTickets);
       } finally {
         setIsLoading(false);
       }
@@ -408,7 +421,7 @@ const CustomerSupportMyTickets: React.FC = () => {
             {selectedTicket.orderId && (
               <div>
                 <span className="text-xs font-medium text-gray-500">Related Order</span>
-                <p className="mt-0.5 text-sm text-blue-600 font-medium">{selectedTicket.orderId}</p>
+                <p className="mt-0.5 text-sm text-blue-600 font-medium">{selectedTicket.orderId?._id || 'N/A'}</p>
               </div>
             )}
           </div>
@@ -660,7 +673,7 @@ const CustomerSupportMyTickets: React.FC = () => {
                     <span>#{ticket.ticketNumber}</span>
                     <span>Created {formatDate(ticket.createdAt)}</span>
                     <span>Updated {formatDate(ticket.updatedAt || ticket.createdAt)}</span>
-                    {ticket.orderId && <span className="text-blue-600">Order: {ticket.orderId}</span>}
+                    {ticket.orderId && <span className="text-blue-600">Order: {ticket.orderId._id || 'N/A'}</span>}
                     {ticket.messages && (
                       <span>{ticket.messages.length} message{ticket.messages.length !== 1 ? 's' : ''}</span>
                     )}

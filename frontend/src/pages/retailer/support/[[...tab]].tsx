@@ -287,22 +287,12 @@ const RetailerSupportPage = () => {
         enhancedDescription += `\n[Estimated Value: ${formData.estimatedValue}]`;
       }
 
-      // Convert URLs to attachment objects for Cloudinary integration
-      const cloudinaryAttachments = formData.attachmentUrls.map((url, index) => ({
-        filename: `retailer-attachment-${index + 1}.${url.split('.').pop() || 'file'}`,
-        url: url,
-        fileType: url.split('.').pop() || 'file',
-        fileSize: 0, // Size unknown from URL
-        public_id: url.split('/').pop()?.split('.')[0] || `retailer-attachment-${index + 1}`
-      }));
-
       const ticketData: CreateSupportTicketData = {
         subject: formData.subject,
         description: enhancedDescription,
         category: formData.requestType, // Map requestType to category
         priority: mapBusinessImpactToPriority(formData.businessImpact),
-        attachments: formData.attachments.length > 0 ? formData.attachments : undefined,
-        cloudinaryAttachments: cloudinaryAttachments.length > 0 ? cloudinaryAttachments : undefined
+        attachments: formData.attachmentUrls.length > 0 ? formData.attachmentUrls : (formData.attachments.length > 0 ? formData.attachments : undefined)
       };
 
       const result = await createSupportTicket(ticketData);

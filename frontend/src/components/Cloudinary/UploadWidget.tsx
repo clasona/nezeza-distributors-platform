@@ -73,6 +73,9 @@ export default function CloudinaryUploadWidget({
         multiple: maxFiles > 1,
         maxFiles,
         folder,
+        resourceType: 'auto', // Auto-detect resource type based on file
+        clientAllowedFormats: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif', 'txt', 'xls', 'xlsx', 'zip'],
+        maxFileSize: 10485760, // 10MB limit
       },
       (error: any, result: any) => {
         // Only handle 'queues-end' to avoid duplicate uploads for multiple files
