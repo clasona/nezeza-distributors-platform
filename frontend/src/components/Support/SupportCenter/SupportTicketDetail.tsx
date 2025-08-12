@@ -10,7 +10,7 @@ import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportM
 import formatDate from '@/utils/formatDate';
 import Button from '@/components/FormInputs/Button';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
-import CloudinaryTicketFileUpload from '@/components/FormInputs/CloudinaryTicketFileUpload';
+import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
 
 interface SupportTicketDetailProps {
   ticketId: string;
@@ -31,7 +31,7 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
   const [metadata, setMetadata] = useState<SupportMetadata | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
-  const [cloudinaryFiles, setCloudinaryFiles] = useState<any[]>([]);
+  const [replyAttachmentUrls, setReplyAttachmentUrls] = useState<string[]>([]);
 
   useEffect(() => {
     fetchTicketDetails();
@@ -61,14 +61,14 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
     }
   };
 
-  // Helper function to format Cloudinary files for API
-  const formatCloudinaryFiles = (cloudinaryFiles: any[]) => {
-    return cloudinaryFiles.map(file => ({
-      filename: file.filename,
-      url: file.url,
-      fileType: file.fileType,
-      fileSize: file.fileSize,
-      public_id: file.public_id
+  // Helper function to convert URLs to attachment objects
+  const formatUrlsToAttachments = (urls: string[]) => {
+    return urls.map((url, index) => ({
+      filename: `reply-attachment-${index + 1}.${url.split('.').pop() || 'file'}`,
+      url: url,
+      fileType: url.split('.').pop() || 'file',
+      fileSize: 0, // Size unknown from URL
+      public_id: url.split('/').pop()?.split('.')[0] || `reply-attachment-${index + 1}`
     }));
   };
 
@@ -78,9 +78,9 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
     try {
       setSendingMessage(true);
       
-      // Use Cloudinary URLs directly instead of converting to File objects
-      const cloudinaryAttachments = cloudinaryFiles.length > 0 
-        ? formatCloudinaryFiles(cloudinaryFiles) 
+      // Convert URLs to attachment objects for Cloudinary integration
+      const cloudinaryAttachments = replyAttachmentUrls.length > 0 
+        ? formatUrlsToAttachments(replyAttachmentUrls) 
         : undefined;
       
       const response = isAdmin
@@ -94,7 +94,7 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
           });
       setTicket(response.ticket);
       setNewMessage('');
-      setCloudinaryFiles([]);
+      setReplyAttachmentUrls([]);
       onTicketUpdate?.(response.ticket);
     } catch (error: any) {
       setError(error.message);
@@ -294,11 +294,75 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
               className="w-full border border-gray-300 rounded-md p-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             
-            <CloudinaryTicketFileUpload
-              label="Attachments (optional)"
-              onFilesChange={setCloudinaryFiles}
-              maxFiles={3}
-            />
+            {/* Attachments for Reply */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Attachments (optional)
+              </label>
+              <div className="space-y-3">
+                {/* Display uploaded attachments */}
+                {replyAttachmentUrls.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">
+                      Reply Attachments ({replyAttachmentUrls.length}/3):
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                      {replyAttachmentUrls.map((url, index) => (
+                        <div key={index} className="relative group">
+                          <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                            {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                              <img
+                                src={url}
+                                alt={`Reply Attachment ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="text-xs text-gray-500 text-center px-1">
+                                {url.split('.').pop()?.toUpperCase() || 'FILE'}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setReplyAttachmentUrls(prev => prev.filter((_, i) => i !== index))}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                            title="Remove attachment"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Upload widget */}
+                {replyAttachmentUrls.length < 3 && (
+                  <CloudinaryUploadWidget
+                    onUpload={(urls) => setReplyAttachmentUrls((prev) => [...prev, ...urls])}
+                    maxFiles={3 - replyAttachmentUrls.length}
+                    folder="support-tickets/replies"
+                    buttonText={`Upload Files (${replyAttachmentUrls.length}/3)`}
+                    className="w-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg py-3 px-4 text-center hover:bg-gray-100 hover:border-vesoko_dark_blue transition-all duration-200"
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <span className="text-sm font-medium text-gray-700">
+                        Add Files ({replyAttachmentUrls.length}/3)
+                      </span>
+                    </div>
+                  </CloudinaryUploadWidget>
+                )}
+                
+                <div className="text-xs text-gray-500">
+                  <p>• Supported formats: Images, PDF, DOC, DOCX, TXT, ZIP, XLS, XLSX</p>
+                  <p>• Maximum file size: 10MB per file</p>
+                  <p>• Maximum 3 files per reply</p>
+                </div>
+              </div>
+            </div>
 
             <div className="flex justify-end">
               <Button

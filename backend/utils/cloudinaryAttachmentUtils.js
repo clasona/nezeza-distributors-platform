@@ -61,13 +61,25 @@ const processCloudinaryAttachments = (cloudinaryAttachments) => {
     return [];
   }
 
-  return cloudinaryAttachments.map(attachment => ({
-    filename: attachment.filename || attachment.original_filename || 'Unknown',
-    url: attachment.url || attachment.secure_url,
-    fileType: attachment.fileType || attachment.format || 'unknown',
-    fileSize: attachment.fileSize || attachment.bytes || 0,
-    public_id: attachment.public_id
-  }));
+  return cloudinaryAttachments.map((attachment, index) => {
+    // Handle both direct URL attachments and full Cloudinary objects
+    const baseAttachment = {
+      filename: attachment.filename || attachment.original_filename || `attachment-${index + 1}.${attachment.url?.split('.').pop() || 'file'}`,
+      url: attachment.url || attachment.secure_url,
+      fileType: attachment.fileType || attachment.format || attachment.url?.split('.').pop() || 'unknown',
+      fileSize: attachment.fileSize || attachment.bytes || 0,
+      public_id: attachment.public_id
+    };
+    
+    // If public_id is missing, try to extract it from the URL
+    if (!baseAttachment.public_id && baseAttachment.url) {
+      const urlParts = baseAttachment.url.split('/');
+      const publicIdWithExtension = urlParts[urlParts.length - 1];
+      baseAttachment.public_id = publicIdWithExtension?.split('.')[0] || `attachment-${index + 1}`;
+    }
+    
+    return baseAttachment;
+  });
 };
 
 /**

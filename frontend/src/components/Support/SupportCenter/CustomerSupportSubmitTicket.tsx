@@ -7,7 +7,7 @@ import { createSupportTicket, CreateSupportTicketData } from '@/utils/support/cr
 import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportMetadata';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
 import Button from '@/components/FormInputs/Button';
-import CloudinaryTicketFileUpload from '@/components/FormInputs/CloudinaryTicketFileUpload';
+import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
 
 // Enhanced metadata with ecommerce categories
 const fallbackMetadata: SupportMetadata = {
@@ -82,7 +82,7 @@ const CustomerSupportSubmitTicket: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [cloudinaryFiles, setCloudinaryFiles] = useState<any[]>([]);
+  const [attachmentUrls, setAttachmentUrls] = useState<string[]>([]);
   const [metadataError, setMetadataError] = useState<string | null>(null);
 
   const {
@@ -129,10 +129,19 @@ const CustomerSupportSubmitTicket: React.FC = () => {
       setLoading(true);
       setError(null);
 
+      // Convert URLs to attachment objects for Cloudinary integration
+      const cloudinaryAttachments = attachmentUrls.map((url, index) => ({
+        filename: `attachment-${index + 1}.${url.split('.').pop() || 'file'}`,
+        url: url,
+        fileType: url.split('.').pop() || 'file',
+        fileSize: 0, // Size unknown from URL
+        public_id: url.split('/').pop()?.split('.')[0] || `attachment-${index + 1}`
+      }));
+
       const ticketData: CreateSupportTicketData = {
         ...data,
         attachments: selectedFiles,
-        cloudinaryAttachments: cloudinaryFiles,
+        cloudinaryAttachments: cloudinaryAttachments,
       };
 
       const response = await createSupportTicket(ticketData);
@@ -248,12 +257,75 @@ const CustomerSupportSubmitTicket: React.FC = () => {
           )}
         </div>
 
-        {/* Cloudinary Attachments */}
-        <CloudinaryTicketFileUpload
-          label="Attachments (optional)"
-          onFilesChange={setCloudinaryFiles}
-          maxFiles={5}
-        />
+        {/* Attachments */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Attachments (optional)
+          </label>
+          <div className="space-y-3">
+            {/* Display uploaded attachments */}
+            {attachmentUrls.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">
+                  Uploaded Attachments ({attachmentUrls.length}/5):
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                  {attachmentUrls.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                        {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                          <img
+                            src={url}
+                            alt={`Attachment ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="text-xs text-gray-500 text-center px-1">
+                            {url.split('.').pop()?.toUpperCase() || 'FILE'}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setAttachmentUrls(prev => prev.filter((_, i) => i !== index))}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                        title="Remove attachment"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Upload widget */}
+            {attachmentUrls.length < 5 && (
+              <CloudinaryUploadWidget
+                onUpload={(urls) => setAttachmentUrls((prev) => [...prev, ...urls])}
+                maxFiles={5 - attachmentUrls.length}
+                folder="support-tickets"
+                buttonText={`Upload Files (${attachmentUrls.length}/5)`}
+                className="w-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg py-4 px-6 text-center hover:bg-gray-100 hover:border-vesoko_dark_blue transition-all duration-200"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <span className="text-sm font-medium text-gray-700">
+                    Click to Upload Files ({attachmentUrls.length}/5)
+                  </span>
+                </div>
+              </CloudinaryUploadWidget>
+            )}
+            
+            <div className="text-xs text-gray-500">
+              <p>• Supported formats: Images, PDF, DOC, DOCX, TXT, ZIP, XLS, XLSX</p>
+              <p>• Maximum file size: 10MB per file</p>
+              <p>• Maximum 5 files allowed</p>
+            </div>
+          </div>
+        </div>
 
         {/* Submit Button */}
         <div className="flex justify-end">
