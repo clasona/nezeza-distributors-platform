@@ -154,6 +154,7 @@ const initRoles = async () => {
         'create_store_application',
         'view_store_application_details',
         'view_all_store_applications',
+        'delete_store_application',
         // Support and Communication
         'access_support_tickets',
         'view_ticket_details',

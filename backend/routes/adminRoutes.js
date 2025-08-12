@@ -14,6 +14,11 @@ const {
 
 const {
   getAllStoreApplications,
+  approveStoreApplication,
+  declineStoreApplication,
+  getStoreApplicationDetails,
+  deleteStoreApplication,
+  getStoreApplicationsAnalytics
 } = require('../controllers/admin/adminStoreApplicationController');
 
 // user management routes
@@ -40,13 +45,42 @@ router
     getAllStoreApplications
   );
 
-// router
-//   .route('/store-applications/:applicationId')
-//   .get(
-//     authenticateUser,
-//     authorizePermissions('view_store_application'),
-//     getStoreApplicationDetails
-//   );
+router
+  .route('/store-applications/:id')
+  .get(
+    authenticateUser,
+    authorizePermissions('view_store_application_details'),
+    getStoreApplicationDetails
+  ).delete(
+    authenticateUser,
+    authorizePermissions('delete_store_application'),
+    deleteStoreApplication
+  );
+
+  router
+  .route('/store-applications/:id/approve')
+  .patch(
+    // authenticateUser, //TODO: authenticate its the admin and has permissions
+    // authorizePermissions('view_store_application_details'),
+    approveStoreApplication
+  );
+
+  router
+  .route('/store-applications/:id/decline')
+  .patch(
+    // authenticateUser, //TODO: authenticate its the admin and has permissions
+    // authorizePermissions('view_store_application_details'),
+    declineStoreApplication
+  );
+
+// store applications analytics routes
+router
+  .route('/store-applications/analytics/overview')
+  .get(
+    authenticateUser,
+    authorizePermissions('view_all_store_applications'),
+    getStoreApplicationsAnalytics
+  );
 
 // inventory management routes
 

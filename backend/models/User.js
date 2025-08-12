@@ -110,7 +110,7 @@ const UserSchema = new mongoose.Schema({
   },
   provider: {
     type: String,
-    enum: ['credentials', 'google', 'facebook', 'apple'],
+    enum: ['credentials', 'google', 'facebook', 'apple', 'pending_setup'],
     default: 'credentials',
   },
 });

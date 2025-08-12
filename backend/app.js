@@ -47,6 +47,7 @@ const newsletterRouter = require('./routes/newsletterRoutes');
 const contactRouter = require('./routes/contactRoutes');
 const customerRouter = require('./routes/customerRoutes');
 const contentRouter = require('./routes/contentRoutes');
+const passwordSetupRouter = require('./routes/passwordSetupRoutes');
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
@@ -133,6 +134,8 @@ app.use('/api/v1/contact', contactRouter);
 app.use('/api/v1/customers', customerRouter);
 // content routes
 app.use('/api/v1/content', contentRouter);
+// password setup routes
+app.use('/api/v1/password-setup', passwordSetupRouter);
 // address validation routes
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

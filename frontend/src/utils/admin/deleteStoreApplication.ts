@@ -1,9 +1,9 @@
 import axiosInstance from '../axiosInstance';
 
-export const approveStoreApplication = async (id: string) => {
+export const deleteStoreApplication = async (id: string) => {
   try {
-    const response = await axiosInstance.patch(
-      `/admin/store-applications/${id}/approve`
+    const response = await axiosInstance.delete(
+      `/admin/store-applications/${id}`
     );
     return response;
   } catch (error) {

@@ -66,7 +66,7 @@ const ContentPageSchema = new mongoose.Schema({
 });
 
 // Add indexes for better performance
-ContentPageSchema.index({ slug: 1 });
+// Note: slug index is automatically created due to unique: true
 ContentPageSchema.index({ category: 1, published: 1 });
 ContentPageSchema.index({ tags: 1 });
 ContentPageSchema.index({ createdAt: -1 });

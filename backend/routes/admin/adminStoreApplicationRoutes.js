@@ -12,6 +12,7 @@ const {
   declineStoreApplication,
   getStoreApplicationDetails,
   deleteStoreApplication,
+  getStoreApplicationsAnalytics,
 } = require('../../controllers/admin/adminStoreApplicationController');
 
 // Get all store applications with filtering, sorting, and pagination
@@ -53,6 +54,15 @@ router
     authenticateUser,
     authorizePermissions('admin'), // YVES TO TAKE A LOOK - Update permissions as needed
     declineStoreApplication
+  );
+
+// Get store applications analytics
+router
+  .route('/analytics/overview')
+  .get(
+    authenticateUser,
+    authorizePermissions('admin'), // YVES TO TAKE A LOOK - Update permissions as needed
+    getStoreApplicationsAnalytics
   );
 
 module.exports = router;

@@ -20,7 +20,15 @@ const { sendStoreApplicationEmail } = require('../utils/email/storeApplicationEm
 const createStoreApplication = async (req, res, next) => {
   // await StoreApplication.collection.dropIndex('primaryContactInfo.email_1');
   try {
-    // TODO: Prevent from the possibility of creating two applications for one store
+    // Prevent creating two applications for one store (using storeInfo.email as unique identifier)
+    const existingApplication = await StoreApplication.findOne({
+      'storeInfo.email': req.body.storeInfo?.email
+    });
+
+    console.log('Checking for existing application:', existingApplication);
+    if (existingApplication) {
+      throw new CustomError.BadRequestError('An application for this store already exists. Please wait for the current application to be processed.');
+    }
     const application = await StoreApplication.create(req.body);
     
     // Send confirmation emails after successful creation
@@ -104,79 +112,6 @@ const getStoreApplicationDetails = async (req, res, next) => {
   }
 };
 
-//approve application
-const approveStoreApplication = async (req, res, next) => {
-  const { id: storeApplicationId } = req.params;
-
-  // create primary contact user and store
-  try {
-    req.skipResponse = true; // to prevent other functions in here from sening response
-    await getStoreApplicationDetails(req, res, next);
-    const application = res.locals.application;
-    if (!application) {
-      throw new CustomError.NotFoundError(
-        `Could not retrieve application details for id: ${storeApplicationId}`
-      );
-    }
-    const { primaryContactInfo, storeInfo } = application;
-
-    // Create a new request object to pass to register
-    const userReq = {
-      body: {
-        firstName: primaryContactInfo.firstName,
-        lastName: primaryContactInfo.lastName,
-        email: primaryContactInfo.email,
-        password: primaryContactInfo.email, // Using email as a temporary password - TODO: ask use to change later
-        storeType: storeInfo.storeType.toLowerCase(),
-      },
-      skipResponse: true,
-    };
-
-    await register(userReq, res, next);
-
-    const user = res.locals.user;
-    if (!user) {
-      throw new CustomError.BadRequestError('User registration failed');
-    } else {
-      // TODO: Auto verify user
-      (user.isVerified = true), (user.verified = Date.now());
-      user.verificationToken = '';
-
-      await user.save();
-    }
-
-    // Create a new request object to pass to createSrore
-    const storeReq = {
-      body: {
-        name: storeInfo.name,
-        email: storeInfo.email,
-        address: storeInfo.address,
-        description: storeInfo.description,
-        storeType: storeInfo.storeType.toLowerCase(),
-        ownerId: user._id,
-        // isActive: storeInfo.isActive, // Activated after stripe?
-      },
-      skipResponse: true,
-    };
-    await createStore(storeReq, res, next);
-
-    const store = res.locals.store;
-
-    if (!store) throw new CustomError.BadRequestError('Store creation failed');
-
-    await StoreApplication.findByIdAndUpdate(
-      storeApplicationId,
-      { status: 'Approved' },
-      { new: true }
-    );
-    res
-      .status(StatusCodes.OK)
-      .json({ msg: 'Store application approved', user, store });
-  } catch (error) {
-    next(error);
-  }
-};
-
 // updateApplication
 
 // deleteApplication
@@ -184,5 +119,4 @@ const approveStoreApplication = async (req, res, next) => {
 module.exports = {
   createStoreApplication,
   getStoreApplicationDetails,
-  approveStoreApplication,
 };

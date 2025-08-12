@@ -33,13 +33,4 @@ router
 //   )
 //   .delete(deactivateStore);
 
-router
-  .route('/:id/approve')
-  // .route('/:storeId/applications/:id')
-  .patch(
-    // authenticateUser, //TODO: authenticate its the admin and has permissions
-    // authorizePermissions('view_store_application_details'),
-    approveStoreApplication
-  );
-
 module.exports = router;
