@@ -187,10 +187,22 @@ const CustomerSupportMyTickets: React.FC = () => {
         : `${msg.senderId?.firstName || 'Support'} ${msg.senderId?.lastName || 'Team'}`.trim(),
       content: msg.message || msg.content || '',
       timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
-      attachments: (msg.attachments || []).map((att: any) => ({
-        name: att.filename || att.name || 'Unknown file',
-        url: att.url || att.url || '#'
-      }))
+      attachments: (msg.attachments || []).map((att: any) => {
+        // Handle both URL strings and attachment objects
+        if (typeof att === 'string') {
+          // If it's a URL string, extract filename from URL
+          const filename = att.split('/').pop() || 'attachment';
+          return {
+            name: filename,
+            url: att
+          };
+        }
+        // Handle attachment objects (legacy format)
+        return {
+          name: att.filename || att.name || 'Unknown file',
+          url: att.url || '#'
+        };
+      })
     }));
   };
 
@@ -324,15 +336,13 @@ const CustomerSupportMyTickets: React.FC = () => {
     }
   };
 
-  // Helper function to convert URLs to attachment objects
-  const formatUrlsToAttachments = (urls: string[]) => {
-    return urls.map((url, index) => ({
-      filename: `reply-attachment-${index + 1}.${url.split('.').pop() || 'file'}`,
-      url: url,
-      fileType: url.split('.').pop() || 'file',
-      fileSize: 0, // Size unknown from URL
-      public_id: url.split('/').pop()?.split('.')[0] || `reply-attachment-${index + 1}`
-    }));
+  // Helper function to validate Cloudinary URLs
+  const validateCloudinaryUrls = (urls: string[]) => {
+    return urls.filter(url => 
+      typeof url === 'string' && 
+      url.length > 0 && 
+      url.includes('res.cloudinary.com')
+    );
   };
 
   const handleSubmitMessage = async (e: React.FormEvent) => {
@@ -344,13 +354,15 @@ const CustomerSupportMyTickets: React.FC = () => {
     try {
       console.log('Sending message to ticket:', selectedTicket._id);
       
-      // Convert Cloudinary URLs to attachment format
-      const cloudinaryAttachments = formatUrlsToAttachments(replyAttachmentUrls);
+      // Validate and send Cloudinary URLs directly as array of strings
+      const validatedUrls = validateCloudinaryUrls(replyAttachmentUrls);
       
-      // Real API call to add message with Cloudinary attachments
+      console.log('Sending attachments:', validatedUrls);
+      
+      // Real API call to add message with Cloudinary URLs
       const response = await addMessageToTicket(selectedTicket._id, {
         message: newMessage,
-        attachments: cloudinaryAttachments
+        attachments: validatedUrls // Send URLs directly as array of strings
       });
       
       console.log('Message sent successfully:', response);
