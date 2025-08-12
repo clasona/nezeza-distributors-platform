@@ -207,9 +207,7 @@ const StoreRegistrationForm = ({
   const handleNext = async () => {
     const isStepValid = await trigger(); // triggers validation for current fields
     
-    // Additional validation for Store Info section (section 1)
-    // COMMENTED OUT FOR TESTING - UNCOMMENT WHEN READY TO ACTIVATE EMAIL/PHONE VERIFICATION
-    /*
+    // Additional validation for Store Info section (section 1)    
     if (currentSection === 1) {
       if (!emailVerified || !phoneVerified) {
         let errorMsg = 'Please verify both email and phone before proceeding.';
@@ -217,16 +215,18 @@ const StoreRegistrationForm = ({
           errorMsg = 'Please verify both email and phone before proceeding.';
         } else if (!emailVerified) {
           errorMsg = 'Please verify your store email before proceeding.';
-        } else if (!phoneVerified) {
-          errorMsg = 'Please verify your store phone before proceeding.';
-        }
+        } 
+        // COMMENTED OUT FOR TESTING - UNCOMMENT WHEN READY TO ACTIVATE PHONE VERIFICATION
+        // else if (!phoneVerified) {
+        //   errorMsg = 'Please verify your store phone before proceeding.';
+        // }
         setVerificationError(errorMsg);
         return; // Don't proceed
       } else {
         setVerificationError(''); // Clear any previous error
       }
     }
-    */
+    
 
     // Check that documents are uploaded for Docs section (section 2)
     if (currentSection === 2) {
