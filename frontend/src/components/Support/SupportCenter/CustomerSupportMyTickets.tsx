@@ -5,6 +5,8 @@ import { SupportTicket } from '@/utils/support/createSupportTicket';
 import { getUserTickets } from '@/utils/support/getUserTickets';
 import { addMessageToTicket } from '@/utils/support/addMessageToTicket';
 import { getTicketDetails } from '@/utils/support/getTicketDetails';
+import AttachmentViewer from '@/components/Support/AttachmentViewer';
+import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
 
 // Fallback ticket data for offline/error scenarios
 const fallbackTickets: SupportTicket[] = [
@@ -166,6 +168,7 @@ const CustomerSupportMyTickets: React.FC = () => {
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [newMessage, setNewMessage] = useState('');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [replyAttachmentUrls, setReplyAttachmentUrls] = useState<string[]>([]);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -311,6 +314,7 @@ const CustomerSupportMyTickets: React.FC = () => {
     setSelectedTicket(null);
     setNewMessage('');
     setSelectedFiles([]);
+    setReplyAttachmentUrls([]);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -318,6 +322,17 @@ const CustomerSupportMyTickets: React.FC = () => {
     if (files) {
       setSelectedFiles(Array.from(files));
     }
+  };
+
+  // Helper function to convert URLs to attachment objects
+  const formatUrlsToAttachments = (urls: string[]) => {
+    return urls.map((url, index) => ({
+      filename: `reply-attachment-${index + 1}.${url.split('.').pop() || 'file'}`,
+      url: url,
+      fileType: url.split('.').pop() || 'file',
+      fileSize: 0, // Size unknown from URL
+      public_id: url.split('/').pop()?.split('.')[0] || `reply-attachment-${index + 1}`
+    }));
   };
 
   const handleSubmitMessage = async (e: React.FormEvent) => {
@@ -329,10 +344,13 @@ const CustomerSupportMyTickets: React.FC = () => {
     try {
       console.log('Sending message to ticket:', selectedTicket._id);
       
-      // Real API call to add message
+      // Convert Cloudinary URLs to attachment format
+      const cloudinaryAttachments = formatUrlsToAttachments(replyAttachmentUrls);
+      
+      // Real API call to add message with Cloudinary attachments
       const response = await addMessageToTicket(selectedTicket._id, {
         message: newMessage,
-        attachments: selectedFiles
+        attachments: cloudinaryAttachments
       });
       
       console.log('Message sent successfully:', response);
@@ -351,6 +369,7 @@ const CustomerSupportMyTickets: React.FC = () => {
       // Clear form
       setNewMessage('');
       setSelectedFiles([]);
+      setReplyAttachmentUrls([]);
       
     } catch (error: any) {
       console.error('Failed to send message:', error);
@@ -436,15 +455,12 @@ const CustomerSupportMyTickets: React.FC = () => {
             <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
               <p className="text-gray-800 whitespace-pre-wrap">{selectedTicket.description}</p>
               {selectedTicket.attachments && selectedTicket.attachments.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-blue-200">
-                  <p className="text-sm text-gray-600 mb-2">Original attachments:</p>
-                  <div className="space-y-1">
-                    {selectedTicket.attachments.map((attachment: any, idx: number) => (
-                      <a key={idx} href={attachment.url} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:text-blue-800 underline block">
-                        📎 {attachment.filename || attachment.name || 'Unknown file'}
-                      </a>
-                    ))}
-                  </div>
+                <div className="mt-3">
+                  <AttachmentViewer 
+                    attachments={selectedTicket.attachments}
+                    title="Initial Attachments"
+                    maxDisplay={3}
+                  />
                 </div>
               )}
             </div>
@@ -479,12 +495,12 @@ const CustomerSupportMyTickets: React.FC = () => {
                   <p className="whitespace-pre-wrap">{message.content}</p>
                   {message.attachments.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-opacity-20">
-                      <p className="text-xs mb-1 opacity-75">Attachments:</p>
-                      {message.attachments.map((attachment, idx) => (
-                        <a key={idx} href={attachment.url} className="text-xs underline block hover:no-underline">
-                          📎 {attachment.name}
-                        </a>
-                      ))}
+                      <AttachmentViewer 
+                        attachments={message.attachments.map(att => ({ url: att.url, filename: att.name }))}
+                        title="Message Attachments"
+                        maxDisplay={2}
+                        className="mt-1"
+                      />
                     </div>
                   )}
                 </div>
@@ -514,31 +530,69 @@ const CustomerSupportMyTickets: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Attachments (optional)
                 </label>
-                <input
-                  type="file"
-                  multiple
-                  onChange={handleFileChange}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-                {selectedFiles.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-600">Selected files:</p>
-                    <ul className="text-sm text-gray-500">
-                      {selectedFiles.map((file, index) => (
-                        <li key={index} className="flex items-center mt-1">
-                          📎 {file.name}
-                          <button
-                            type="button"
-                            onClick={() => setSelectedFiles(files => files.filter((_, i) => i !== index))}
-                            className="ml-2 text-red-500 hover:text-red-700"
-                          >
-                            ✕
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
+                <div className="space-y-3">
+                  {/* Display uploaded Cloudinary attachments */}
+                  {replyAttachmentUrls.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-gray-700">
+                        Reply Attachments ({replyAttachmentUrls.length}/3):
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                        {replyAttachmentUrls.map((url, index) => (
+                          <div key={index} className="relative group">
+                            <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                              {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                                <img
+                                  src={url}
+                                  alt={`Reply Attachment ${index + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="text-xs text-gray-500 text-center px-1">
+                                  {url.split('.').pop()?.toUpperCase() || 'FILE'}
+                                </div>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setReplyAttachmentUrls(prev => prev.filter((_, i) => i !== index))}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                              title="Remove attachment"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Upload widget */}
+                  {replyAttachmentUrls.length < 3 && (
+                    <CloudinaryUploadWidget
+                      onUpload={(urls) => setReplyAttachmentUrls((prev) => [...prev, ...urls])}
+                      maxFiles={3 - replyAttachmentUrls.length}
+                      folder="support-tickets/replies"
+                      buttonText={`Upload Files (${replyAttachmentUrls.length}/3)`}
+                      className="w-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg py-3 px-4 text-center hover:bg-gray-100 hover:border-nezeza_dark_blue transition-all duration-200"
+                    >
+                      <div className="flex items-center justify-center gap-2">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <span className="text-sm font-medium text-gray-700">
+                          Add Files ({replyAttachmentUrls.length}/3)
+                        </span>
+                      </div>
+                    </CloudinaryUploadWidget>
+                  )}
+                  
+                  <div className="text-xs text-gray-500">
+                    <p>• Supported formats: Images, PDF, DOC, DOCX, TXT, ZIP, XLS, XLSX</p>
+                    <p>• Maximum file size: 10MB per file</p>
+                    <p>• Maximum 3 files per reply</p>
                   </div>
-                )}
+                </div>
               </div>
               
               <div className="flex justify-end">

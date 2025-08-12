@@ -7,6 +7,7 @@ import SupportCenterLayout from '@/components/Support/SupportCenter/SupportCente
 import { createSupportTicket, CreateSupportTicketData } from '@/utils/support/createSupportTicket';
 import { getUserTickets } from '@/utils/support/getUserTickets';
 import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
+import AttachmentViewer from '@/components/Support/AttachmentViewer';
 
 // Types for SubmitTicketContent props
 interface SubmitTicketProps {
@@ -465,12 +466,53 @@ const RetailerSupportPage = () => {
                   )}
                 </div>
                 <p className="text-gray-600 mb-3">{ticket.description}</p>
+                
+                {/* Show ticket attachments if any */}
+                {ticket.attachments && ticket.attachments.length > 0 && (
+                  <div className="mb-3">
+                    <AttachmentViewer 
+                      attachments={ticket.attachments}
+                      title="Initial Attachments"
+                      maxDisplay={2}
+                    />
+                  </div>
+                )}
+                
+                {/* Show recent messages with attachments */}
+                {ticket.messages && ticket.messages.length > 0 && (
+                  <div className="mb-3">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Messages ({ticket.messages.length})</h4>
+                    <div className="bg-gray-50 rounded-lg p-3 space-y-2 max-h-40 overflow-y-auto">
+                      {ticket.messages.slice(-2).map((message, idx) => (
+                        <div key={message.id || idx} className="text-xs">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium text-gray-800">{message.authorName}</span>
+                            <span className="text-gray-500">{formatDate(message.timestamp).split(',')[0]}</span>
+                          </div>
+                          <p className="text-gray-700 mb-1 line-clamp-2">{message.content}</p>
+                          {message.attachments && message.attachments.length > 0 && (
+                            <div className="mt-1">
+                              <AttachmentViewer 
+                                attachments={message.attachments.map(att => ({ url: att.url, filename: att.name }))}
+                                title={`Attachments (${message.attachments.length})`}
+                                maxDisplay={2}
+                                className="text-xs"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 <div className="flex items-center space-x-6 text-sm text-gray-500">
                   <span>#{ticket.ticketNumber}</span>
                   <span>Created {formatDate(ticket.createdAt)}</span>
                   <span>Updated {formatDate(ticket.updatedAt)}</span>
                   {ticket.estimatedValue && <span className="text-green-600 font-medium">Value: {ticket.estimatedValue}</span>}
                   {ticket.affectedOrders && <span className="text-red-600 font-medium">{ticket.affectedOrders} orders affected</span>}
+                  {ticket.messages && <span>💬 {ticket.messages.length} message{ticket.messages.length !== 1 ? 's' : ''}</span>}
                 </div>
               </div>
             </div>

@@ -52,6 +52,49 @@ const validateCloudinaryAttachments = (cloudinaryAttachments) => {
 };
 
 /**
+ * Fix Cloudinary URL to use correct resource type based on file extension
+ * @param {string} url - The Cloudinary URL to fix
+ * @param {string} fileType - File type/extension
+ * @returns {string} - Fixed URL with correct resource type
+ */
+const fixCloudinaryUrl = (url, fileType) => {
+  if (!url || !url.includes('res.cloudinary.com')) {
+    return url;
+  }
+
+  // Extract file type from URL if not provided
+  if (!fileType && url) {
+    const urlParts = url.split('/');
+    const filename = urlParts[urlParts.length - 1];
+    fileType = filename.split('.').pop() || '';
+  }
+
+  if (!fileType) return url;
+
+  const type = fileType.toLowerCase();
+  
+  // Determine correct resource type
+  const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'tiff'].includes(type);
+  const isVideo = ['mp4', 'avi', 'mov', 'wmv', 'flv', 'webm'].includes(type);
+  
+  let correctResourceType = 'raw'; // Default for documents, PDFs, etc.
+  
+  if (isImage) {
+    correctResourceType = 'image';
+  } else if (isVideo) {
+    correctResourceType = 'video';
+  }
+
+  // Replace incorrect resource type in URL
+  const correctedUrl = url
+    .replace('/image/upload/', `/${correctResourceType}/upload/`)
+    .replace('/video/upload/', `/${correctResourceType}/upload/`)
+    .replace('/raw/upload/', `/${correctResourceType}/upload/`);
+
+  return correctedUrl;
+};
+
+/**
  * Process and format Cloudinary attachments for database storage
  * @param {Array} cloudinaryAttachments - Raw Cloudinary attachment data
  * @returns {Array} - Formatted attachment objects
@@ -70,6 +113,11 @@ const processCloudinaryAttachments = (cloudinaryAttachments) => {
       fileSize: attachment.fileSize || attachment.bytes || 0,
       public_id: attachment.public_id
     };
+    
+    // Fix URL to use correct resource type
+    if (baseAttachment.url) {
+      baseAttachment.url = fixCloudinaryUrl(baseAttachment.url, baseAttachment.fileType);
+    }
     
     // If public_id is missing, try to extract it from the URL
     if (!baseAttachment.public_id && baseAttachment.url) {
@@ -170,5 +218,6 @@ module.exports = {
   processCloudinaryAttachments,
   combineAttachments,
   cleanupCloudinaryFiles,
-  logAttachmentProcessing
+  logAttachmentProcessing,
+  fixCloudinaryUrl
 };
