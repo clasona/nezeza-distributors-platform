@@ -7,7 +7,7 @@ import { createSupportTicket, CreateSupportTicketData } from '@/utils/support/cr
 import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportMetadata';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
 import Button from '@/components/FormInputs/Button';
-import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
+import CloudinaryUploadWidget, { CloudinaryFileInfo } from '@/components/Cloudinary/UploadWidget';
 import AttachmentViewer from '@/components/Support/AttachmentViewer';
 
 // Enhanced metadata with ecommerce categories
@@ -83,7 +83,7 @@ const CustomerSupportSubmitTicket: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [attachmentUrls, setAttachmentUrls] = useState<string[]>([]);
+  const [attachmentFiles, setAttachmentFiles] = useState<CloudinaryFileInfo[]>([]);
   const [metadataError, setMetadataError] = useState<string | null>(null);
 
   const {
@@ -130,9 +130,18 @@ const CustomerSupportSubmitTicket: React.FC = () => {
       setLoading(true);
       setError(null);
 
+      // Convert CloudinaryFileInfo to the format expected by the backend
+      const attachmentData = attachmentFiles.length > 0 ? attachmentFiles.map(file => ({
+        filename: file.original_filename || file.filename || 'unknown',
+        url: file.secure_url,
+        fileType: file.format,
+        fileSize: file.bytes,
+        public_id: file.public_id
+      })) : (selectedFiles.length > 0 ? selectedFiles : undefined);
+
       const ticketData: CreateSupportTicketData = {
         ...data,
-        attachments: attachmentUrls.length > 0 ? attachmentUrls : (selectedFiles.length > 0 ? selectedFiles : undefined),
+        attachments: attachmentData,
       };
 
       const response = await createSupportTicket(ticketData);
@@ -255,23 +264,23 @@ const CustomerSupportSubmitTicket: React.FC = () => {
           </label>
           <div className="space-y-3">
             {/* Display uploaded attachments */}
-            {attachmentUrls.length > 0 && (
+            {attachmentFiles.length > 0 && (
               <div className="space-y-2">
                 <AttachmentViewer
-                  attachments={attachmentUrls}
-                  title={`Uploaded Attachments (${attachmentUrls.length}/5)`}
+                  attachments={attachmentFiles.map(file => file.secure_url)}
+                  title={`Uploaded Attachments (${attachmentFiles.length}/5)`}
                   maxDisplay={5}
                 />
                 <div className="flex flex-wrap gap-2">
-                  {attachmentUrls.map((url, index) => (
+                  {attachmentFiles.map((file, index) => (
                     <button
                       key={index}
                       type="button"
-                      onClick={() => setAttachmentUrls(prev => prev.filter((_, i) => i !== index))}
+                      onClick={() => setAttachmentFiles(prev => prev.filter((_, i) => i !== index))}
                       className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
                       title="Remove attachment"
                     >
-                      Remove {url.split('/').pop()?.split('.')[0] || `File ${index + 1}`}
+                      Remove {file.original_filename || file.filename || `File ${index + 1}`}
                     </button>
                   ))}
                 </div>
@@ -279,12 +288,12 @@ const CustomerSupportSubmitTicket: React.FC = () => {
             )}
             
             {/* Upload widget */}
-            {attachmentUrls.length < 5 && (
+            {attachmentFiles.length < 5 && (
               <CloudinaryUploadWidget
-                onUpload={(urls) => setAttachmentUrls((prev) => [...prev, ...urls])}
-                maxFiles={5 - attachmentUrls.length}
+                onUpload={(files) => setAttachmentFiles((prev) => [...prev, ...files])}
+                maxFiles={5 - attachmentFiles.length}
                 folder="support-tickets"
-                buttonText={`Upload Files (${attachmentUrls.length}/5)`}
+                buttonText={`Upload Files (${attachmentFiles.length}/5)`}
                 className="w-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg py-4 px-6 text-center hover:bg-gray-100 hover:border-vesoko_dark_blue transition-all duration-200"
               >
                 <div className="flex items-center justify-center gap-2">
@@ -292,7 +301,7 @@ const CustomerSupportSubmitTicket: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                   <span className="text-sm font-medium text-gray-700">
-                    Click to Upload Files ({attachmentUrls.length}/5)
+                    Click to Upload Files ({attachmentFiles.length}/5)
                   </span>
                 </div>
               </CloudinaryUploadWidget>

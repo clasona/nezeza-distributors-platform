@@ -11,7 +11,7 @@ import formatDate from '@/utils/formatDate';
 import { formatDateTimeLocale } from '@/utils/formatDateTime';
 import Button from '@/components/FormInputs/Button';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
-import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
+import CloudinaryUploadWidget, { CloudinaryFileInfo } from '@/components/Cloudinary/UploadWidget';
 import AttachmentViewer from '@/components/Support/AttachmentViewer';
 
 interface SupportTicketDetailProps {
@@ -33,7 +33,7 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
   const [metadata, setMetadata] = useState<SupportMetadata | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
-  const [replyAttachmentUrls, setReplyAttachmentUrls] = useState<string[]>([]);
+  const [replyAttachmentFiles, setReplyAttachmentFiles] = useState<CloudinaryFileInfo[]>([]);
 
   useEffect(() => {
     fetchTicketDetails();
@@ -63,16 +63,6 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
     }
   };
 
-  // Helper function to convert URLs to attachment objects
-  const formatUrlsToAttachments = (urls: string[]) => {
-    return urls.map((url, index) => ({
-      filename: `reply-attachment-${index + 1}.${url.split('.').pop() || 'file'}`,
-      url: url,
-      fileType: url.split('.').pop() || 'file',
-      fileSize: 0, // Size unknown from URL
-      public_id: url.split('/').pop()?.split('.')[0] || `reply-attachment-${index + 1}`
-    }));
-  };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !ticket) return;
@@ -80,10 +70,14 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
     try {
       setSendingMessage(true);
       
-      // Convert Cloudinary URLs to cloudinaryAttachments format
-      const cloudinaryAttachments = replyAttachmentUrls.length > 0 
-        ? formatUrlsToAttachments(replyAttachmentUrls)
-        : undefined;
+      // Convert CloudinaryFileInfo to the format expected by the backend
+      const cloudinaryAttachments = replyAttachmentFiles.length > 0 ? replyAttachmentFiles.map(file => ({
+        filename: file.original_filename || file.filename || 'unknown',
+        url: file.secure_url,
+        fileType: file.format,
+        fileSize: file.bytes,
+        public_id: file.public_id
+      })) : undefined;
       
       const response = isAdmin
         ? await adminAddMessageToTicket(ticketId, {
@@ -96,7 +90,7 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
           });
       setTicket(response.ticket);
       setNewMessage('');
-      setReplyAttachmentUrls([]);
+      setReplyAttachmentFiles([]);
       onTicketUpdate?.(response.ticket);
     } catch (error: any) {
       setError(error.message);
@@ -276,35 +270,38 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
               </label>
               <div className="space-y-3">
                 {/* Display uploaded attachments */}
-                {replyAttachmentUrls.length > 0 && (
+                {replyAttachmentFiles.length > 0 && (
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-gray-700">
-                      Reply Attachments ({replyAttachmentUrls.length}/3):
+                      Reply Attachments ({replyAttachmentFiles.length}/3):
                     </p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                      {replyAttachmentUrls.map((url, index) => (
+                      {replyAttachmentFiles.map((file, index) => (
                         <div key={index} className="relative group">
                           <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
-                            {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                            {file.secure_url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
                               <img
-                                src={url}
-                                alt={`Reply Attachment ${index + 1}`}
+                                src={file.secure_url}
+                                alt={file.original_filename || file.filename || `Reply Attachment ${index + 1}`}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
                               <div className="text-xs text-gray-500 text-center px-1">
-                                {url.split('.').pop()?.toUpperCase() || 'FILE'}
+                                {file.format?.toUpperCase() || 'FILE'}
                               </div>
                             )}
                           </div>
                           <button
                             type="button"
-                            onClick={() => setReplyAttachmentUrls(prev => prev.filter((_, i) => i !== index))}
+                            onClick={() => setReplyAttachmentFiles(prev => prev.filter((_, i) => i !== index))}
                             className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
-                            title="Remove attachment"
+                            title={`Remove ${file.original_filename || file.filename || 'file'}`}
                           >
                             ×
                           </button>
+                          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg truncate">
+                            {file.original_filename || file.filename || 'Unknown'}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -312,12 +309,12 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
                 )}
                 
                 {/* Upload widget */}
-                {replyAttachmentUrls.length < 3 && (
+                {replyAttachmentFiles.length < 3 && (
                   <CloudinaryUploadWidget
-                    onUpload={(urls) => setReplyAttachmentUrls((prev) => [...prev, ...urls])}
-                    maxFiles={3 - replyAttachmentUrls.length}
+                    onUpload={(files) => setReplyAttachmentFiles((prev) => [...prev, ...files])}
+                    maxFiles={3 - replyAttachmentFiles.length}
                     folder="support-tickets/replies"
-                    buttonText={`Upload Files (${replyAttachmentUrls.length}/3)`}
+                    buttonText={`Upload Files (${replyAttachmentFiles.length}/3)`}
                     className="w-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg py-3 px-4 text-center hover:bg-gray-100 hover:border-vesoko_dark_blue transition-all duration-200"
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -325,7 +322,7 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
                       <span className="text-sm font-medium text-gray-700">
-                        Add Files ({replyAttachmentUrls.length}/3)
+                        Add Files ({replyAttachmentFiles.length}/3)
                       </span>
                     </div>
                   </CloudinaryUploadWidget>
