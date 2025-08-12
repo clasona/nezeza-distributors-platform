@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import SupportCenterLayout from '@/components/Support/SupportCenter/SupportCenter';
 import { createSupportTicket, CreateSupportTicketData } from '@/utils/support/createSupportTicket';
 import { getUserTickets } from '@/utils/support/getUserTickets';
+import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
 
 // Types for SubmitTicketContent props
 interface SubmitTicketProps {
@@ -16,12 +17,14 @@ interface SubmitTicketProps {
     estimatedValue: string;
     description: string;
     attachments: File[];
+    attachmentUrls: string[];
   };
   isSubmitting: boolean;
   submitError: string;
   submitSuccess: boolean;
   handleInputChange: (field: string, value: string) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleAttachmentUrlsChange: (urls: string[]) => void;
   handleSubmit: (e: React.FormEvent) => void;
 }
 
@@ -150,7 +153,8 @@ const RetailerSupportPage = () => {
     businessImpact: 'low',
     estimatedValue: '',
     description: '',
-    attachments: [] as File[]
+    attachments: [] as File[],
+    attachmentUrls: [] as string[]
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -245,6 +249,10 @@ const RetailerSupportPage = () => {
     setFormData(prev => ({ ...prev, attachments: files }));
   }, []);
 
+  const handleAttachmentUrlsChange = useCallback((urls: string[]) => {
+    setFormData(prev => ({ ...prev, attachmentUrls: urls }));
+  }, []);
+
   // Map businessImpact to priority for backend compatibility
   const mapBusinessImpactToPriority = (businessImpact: string): string => {
     switch (businessImpact) {
@@ -279,12 +287,22 @@ const RetailerSupportPage = () => {
         enhancedDescription += `\n[Estimated Value: ${formData.estimatedValue}]`;
       }
 
+      // Convert URLs to attachment objects for Cloudinary integration
+      const cloudinaryAttachments = formData.attachmentUrls.map((url, index) => ({
+        filename: `retailer-attachment-${index + 1}.${url.split('.').pop() || 'file'}`,
+        url: url,
+        fileType: url.split('.').pop() || 'file',
+        fileSize: 0, // Size unknown from URL
+        public_id: url.split('/').pop()?.split('.')[0] || `retailer-attachment-${index + 1}`
+      }));
+
       const ticketData: CreateSupportTicketData = {
         subject: formData.subject,
         description: enhancedDescription,
         category: formData.requestType, // Map requestType to category
         priority: mapBusinessImpactToPriority(formData.businessImpact),
-        attachments: formData.attachments.length > 0 ? formData.attachments : undefined
+        attachments: formData.attachments.length > 0 ? formData.attachments : undefined,
+        cloudinaryAttachments: cloudinaryAttachments.length > 0 ? cloudinaryAttachments : undefined
       };
 
       const result = await createSupportTicket(ticketData);
@@ -297,7 +315,8 @@ const RetailerSupportPage = () => {
         businessImpact: 'low',
         estimatedValue: '',
         description: '',
-        attachments: []
+        attachments: [],
+        attachmentUrls: []
       });
       
       // Reset file input
@@ -597,6 +616,7 @@ const RetailerSupportPage = () => {
           submitSuccess={submitSuccess}
           handleInputChange={handleInputChange}
           handleFileChange={handleFileChange}
+          handleAttachmentUrlsChange={handleAttachmentUrlsChange}
           handleSubmit={handleSubmit}
         />;
       case 'my-tickets':
@@ -639,6 +659,7 @@ const SubmitTicketContent = React.memo(({
   submitSuccess, 
   handleInputChange, 
   handleFileChange, 
+  handleAttachmentUrlsChange, 
   handleSubmit 
 }: SubmitTicketProps) => {
   return (
@@ -745,26 +766,104 @@ const SubmitTicketContent = React.memo(({
           />
         </div>
 
+        {/* Attachments */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Attachments</label>
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
-            disabled={isSubmitting}
-            accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-          />
-          {formData.attachments.length > 0 && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-600">Selected files:</p>
-              <ul className="text-xs text-gray-500">
-                {formData.attachments.map((file) => (
-                  <li key={file.name + file.size}>• {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</li>
-                ))}
-              </ul>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Attachments (optional)
+          </label>
+          <div className="space-y-3">
+            {/* Display uploaded attachments */}
+            {formData.attachmentUrls.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">
+                  Business Attachments ({formData.attachmentUrls.length}/5):
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                  {formData.attachmentUrls.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                        {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                          <img
+                            src={url}
+                            alt={`Business Attachment ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="text-xs text-gray-500 text-center px-1">
+                            {url.split('.').pop()?.toUpperCase() || 'FILE'}
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newUrls = formData.attachmentUrls.filter((_, i) => i !== index);
+                          handleAttachmentUrlsChange(newUrls);
+                        }}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                        title="Remove attachment"
+                        disabled={isSubmitting}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Upload widget */}
+            {formData.attachmentUrls.length < 5 && !isSubmitting && (
+              <CloudinaryUploadWidget
+                onUpload={(urls) => {
+                  const newUrls = [...formData.attachmentUrls, ...urls];
+                  handleAttachmentUrlsChange(newUrls.slice(0, 5)); // Limit to 5 files
+                }}
+                maxFiles={5 - formData.attachmentUrls.length}
+                folder="support-tickets/retailer"
+                buttonText={`Upload Business Files (${formData.attachmentUrls.length}/5)`}
+                className="w-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg py-4 px-6 text-center hover:bg-gray-100 hover:border-blue-500 transition-all duration-200"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <span className="text-sm font-medium text-gray-700">
+                    Upload Business Documents ({formData.attachmentUrls.length}/5)
+                  </span>
+                </div>
+              </CloudinaryUploadWidget>
+            )}
+            
+            {/* Traditional file input as fallback */}
+            <div className="border-t pt-3 mt-3">
+              <label className="block text-sm font-medium text-gray-600 mb-1">Or upload from device:</label>
+              <input
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+                disabled={isSubmitting}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+              />
+              {formData.attachments.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600">Selected device files:</p>
+                  <ul className="text-xs text-gray-500">
+                    {formData.attachments.map((file) => (
+                      <li key={file.name + file.size}>• {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
-          )}
+            
+            <div className="text-xs text-gray-500">
+              <p>• Supported formats: PDF, DOC, DOCX, XLS, XLSX, Images</p>
+              <p>• Maximum file size: 10MB per file</p>
+              <p>• Maximum 5 files via cloud upload + traditional files</p>
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-end">
