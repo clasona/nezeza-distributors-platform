@@ -6,6 +6,7 @@ import { SiMediamarkt } from 'react-icons/si';
 import { useDispatch, useSelector } from 'react-redux';
 import { OrderItemsProps, StoreProduct, stateProps } from '../../../type';
 import ErrorMessageModal from '../ErrorMessageModal';
+import SuccessMessageModal from '../SuccessMessageModal';
 import FormattedPrice from '../FormattedPrice';
 
 const CartPayment = () => {
@@ -18,6 +19,7 @@ const CartPayment = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string>('');
   // let clientSecret = '';
 
   useEffect(() => {
@@ -56,28 +58,40 @@ const CartPayment = () => {
       );
       dispatch(setCartItems(filteredCartItems));
 
-      // Check if user has an address
-      const userHasAddress =
-        userInfo &&
-        (userInfo.address ||
-          (userInfo.addresses && userInfo.addresses.length > 0));
-
       if (!userInfo) {
-        // Not logged in
+        // Not logged in - redirect to login
+        router.push('/login?redirect=/cart');
         return;
       }
 
-      if (userHasAddress) {
+      // Check if user has a complete shipping address
+      const userHasCompleteAddress =
+        userInfo &&
+        userInfo.address &&
+        userInfo.address.fullName &&
+        userInfo.address.street1 &&
+        userInfo.address.street2 && 
+        userInfo.address.city &&
+        userInfo.address.state &&
+        userInfo.address.zip &&
+        userInfo.address.country;
+
+
+      // Always redirect to shipping address page first for proper validation
+      // The shipping address page will handle existing addresses and validate them
+      if (userHasCompleteAddress) {
         dispatch(setShippingAddress(userInfo.address));
-        setTimeout(() => {
-          router.push('/checkout/review');
-        }, 1200);
-      } else {
-        router.push('/checkout/shipping-address');
+        // console the shipping address for debugging
+        console.log('Shipping Address:', userInfo.address);
       }
+      
+      setSuccessMessage('Preparing checkout...');
+      setTimeout(() => {
+        router.push('/checkout/shipping-address');
+      }, 800);
     } catch (error: any) {
       handleError(error);
-      setErrorMessage(error);
+      setErrorMessage(error?.message || 'An error occurred');
       setTimeout(() => setErrorMessage(''), 4000);
     }
   };
@@ -127,8 +141,9 @@ const CartPayment = () => {
           className={`w-full sm:w-auto p-2 text-sm font-semibold bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 hover:text-white duration-300 ${
             !userInfo ? ' cursor-not-allowed bg-vesoko_gray_600 opacity-50' : ''
           }`}
+          disabled={!userInfo}
         >
-          Proceed to Review & Checkout
+          {!userInfo ? 'Login to Continue' : 'Review & Choose Shipping'}
         </button>
 
         {!userInfo && (
@@ -138,6 +153,7 @@ const CartPayment = () => {
         )}
       </div>
       {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
+      {successMessage && <SuccessMessageModal successMessage={successMessage} />}
     </div>
   );
 };

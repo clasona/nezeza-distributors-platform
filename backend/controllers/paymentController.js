@@ -36,6 +36,7 @@ const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const TempOrderData = require('../models/TempOrderData');
 
 // Unique webhook endpoint signing secret
 // Replace this endpoint secret with your endpoint's unique secret
@@ -44,7 +45,10 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // at https://dashboard.stripe.com/webhooks
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 const webhookHandler = async (req, res) => {
-  console.log('Entering Webhook ...');
+  console.log('=== STRIPE WEBHOOK HANDLER CALLED ===');
+  console.log('Request headers:', req.headers);
+  console.log('Request method:', req.method);
+  console.log('Request path:', req.path);
   let event;
   // If endpoint secret provided, verify event signature and construct event from stripe
   if (endpointSecret) {
@@ -73,15 +77,44 @@ const webhookHandler = async (req, res) => {
         console.log('PaymentIntent was successful!.....');
         const paymentIntent = event.data.object;
         const paymentIntentId = paymentIntent.id;
-        const orderItems = JSON.parse(paymentIntent.metadata.orderItems);
-        const shippingAddress = JSON.parse(paymentIntent.metadata.shippingAddress);
-        const billingAddress = paymentIntent.metadata.billingAddress ? 
-          JSON.parse(paymentIntent.metadata.billingAddress) : null;
-        const shippingFee = parseFloat(paymentIntent.metadata.shippingFee || '0');
+        
+        // Handle both old and new metadata formats for backward compatibility
+        let orderItems, shippingAddress, selectedShippingOptions, billingAddress;
+        
+        if (paymentIntent.metadata.orderItems) {
+          // Old format - legacy support
+          console.log('Using legacy metadata format');
+          orderItems = JSON.parse(paymentIntent.metadata.orderItems);
+          shippingAddress = JSON.parse(paymentIntent.metadata.shippingAddress);
+          selectedShippingOptions = paymentIntent.metadata.selectedShippingOptions ?
+            JSON.parse(paymentIntent.metadata.selectedShippingOptions) : null;
+          billingAddress = paymentIntent.metadata.billingAddress ? 
+            JSON.parse(paymentIntent.metadata.billingAddress) : null;
+        } else if (paymentIntent.metadata.tempOrderDataId) {
+          // New format - fetch from temp collection
+          console.log('Using temp order data format');
+          const tempOrderData = await TempOrderData.findById(paymentIntent.metadata.tempOrderDataId);
+          if (!tempOrderData) {
+            throw new CustomError.BadRequestError('Temp order data not found');
+          }
+          orderItems = tempOrderData.orderItems;
+          shippingAddress = tempOrderData.shippingAddress;
+          selectedShippingOptions = tempOrderData.selectedShippingOptions;
+          billingAddress = tempOrderData.billingAddress;
+          
+          // Clean up temp data after successful retrieval
+          await TempOrderData.findByIdAndDelete(paymentIntent.metadata.tempOrderDataId);
+        } else {
+          throw new CustomError.BadRequestError('No order data found in payment intent metadata');
+        }
+        
+        const totalShipping = parseFloat(paymentIntent.metadata.totalShipping || '0');
+        const totalTax = parseFloat(paymentIntent.metadata.totalTax || '0');
+        const subtotal = parseFloat(paymentIntent.metadata.subtotal || '0');
         const buyerId = paymentIntent.metadata.buyerId;
         const customerEmail = paymentIntent.metadata.customerEmail;
         const customerFirstName = paymentIntent.metadata.customerFirstName;
-        const totalAmount = paymentIntent.metadata.totalAmount;
+        const totalAmount = parseFloat(paymentIntent.metadata.totalAmount);
         const paymentMethodId = paymentIntent.payment_method;
 
         // Handle successful payment intent
@@ -100,7 +133,8 @@ const webhookHandler = async (req, res) => {
           console.log('Creating the order....');
           const orderId = await createOrderUtil({
             cartItems: orderItems,
-            shippingFee: shippingFee,
+            shippingFee: totalShipping,
+            selectedShippingOptions: selectedShippingOptions,
             paymentMethod: 'credit_card',
             buyerId: buyerId,
             shippingAddress: shippingAddress,
@@ -111,7 +145,7 @@ const webhookHandler = async (req, res) => {
           console.log('Order found:', order ? `Order ${order._id}` : 'No order found');
           
           order.paymentStatus = 'Paid';
-          order.fulfillmentStatus = 'Confirmed'; // Update fulfillment status when payment succeeds
+          order.fulfillmentStatus = 'Placed'; // Update fulfillment status when payment succeeds
           order.paymentIntentId = paymentIntentId;
           
           console.log('About to save order with paymentIntentId:', paymentIntentId);
@@ -527,8 +561,11 @@ const activeStripeConnectAccount = async (req, res) => {
 // End Method
 // Create Payment Intent
 const createPaymentIntent = async (req, res) => {
-  const { orderItems, shippingAddress } = req.body;
+  const { orderItems, shippingAddress, selectedShippingOptions } = req.body;
   let totalAmount = 0;
+  let totalShipping = 0;
+  let totalTax = 0;
+  console.log('shipping options:', selectedShippingOptions);
 
   const metadata = {
     customerEmail: '',
@@ -539,45 +576,74 @@ const createPaymentIntent = async (req, res) => {
     throw new CustomError.BadRequestError('No order items provided');
   }
 
-  metadata.orderItems = JSON.stringify(
-    orderItems.map((item) => ({
-      productId: item.product._id || item.product,
-      title: item.title,
-      quantity: item.quantity,
-      price: item.price,
-    }))
-  );
+  if (!selectedShippingOptions || Object.keys(selectedShippingOptions).length === 0) {
+    throw new CustomError.BadRequestError('No shipping options selected');
+  }
 
-  metadata.shippingAddress = JSON.stringify(shippingAddress);
-  //calculate total amount
+  // Calculate total amount including items, tax, and shipping first
   for (const item of orderItems) {
     const price = item.price;
     const quantity = item.quantity;
-    const taxAmount = item.taxAmount || 0; // Default to 0 if not provided
-    // const shippingAmount = product.shippingAmount || 0; // Default to 0 if not provided
-    const totalItemAmount = price * quantity + taxAmount; // + shippingAmount;
-    totalAmount += totalItemAmount;
+    const itemSubtotal = price * quantity;
+    totalAmount += itemSubtotal;
+    
+    // Calculate tax for each item
+    const rawTaxRate = item.product?.taxRate || 0;
+    const itemTaxRate = rawTaxRate <= 1 ? rawTaxRate : rawTaxRate / 100;
+    const itemTax = itemSubtotal * itemTaxRate;
+    totalTax += itemTax;
   }
+  
+  // Add shipping costs from selected options
+  if (req.body.shippingTotal) {
+    totalShipping = parseFloat(req.body.shippingTotal);
+  }
+  
+  const grandTotal = totalAmount + totalTax + totalShipping;
 
-  metadata.totalAmount = totalAmount;
-
+  // Get user information
+  let user = null;
   if (req.user && req.user.userId) {
-    const user = await User.findById(req.user.userId);
+    user = await User.findById(req.user.userId);
     if (user) {
       metadata.customerFirstName = user.firstName || 'Customer';
       metadata.customerEmail = user.email;
       metadata.buyerId = user._id.toString();
     }
   }
+  
+  // Store full order data in temporary collection and reference by ID in metadata
+  // This avoids Stripe's 500-character limit per metadata value
+  const tempOrderData = await TempOrderData.create({
+    orderItems,
+    shippingAddress,
+    billingAddress: req.body.billingAddress || null,
+    selectedShippingOptions,
+    buyerId: user?._id,
+    shippingTotal: totalShipping,
+    totalTax,
+    subtotal: totalAmount,
+    totalAmount: grandTotal,
+    customerEmail: user?.email || '',
+    customerFirstName: user?.firstName || 'Customer'
+  });
+  
+  // Store only the temp order data ID in metadata
+  metadata.tempOrderDataId = tempOrderData._id.toString();
+  metadata.totalAmount = grandTotal;
+  metadata.subtotal = totalAmount;
+  metadata.totalTax = totalTax;
+  metadata.totalShipping = totalShipping;
+  
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalAmount * 100, // In cents
+      amount: Math.round(grandTotal * 100), // In cents, rounded to avoid decimal issues
       currency: 'usd',
       payment_method_types: ['card'],
       setup_future_usage: 'off_session', // This saves the card
       metadata: metadata,
     });
-    console.log('Payment intent created successfully.');
+    console.log('Payment intent created successfully with total:', grandTotal);
     res
       .status(StatusCodes.OK)
       .json({ 
@@ -1050,8 +1116,113 @@ const confirmWithSavedCard = async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.confirm(paymentIntentId, {
       payment_method: user.stripeDefaultPaymentMethodId,
     });
+    
     if (paymentIntent.status === 'succeeded') {
-      return res.json({ success: true });
+      console.log('Payment confirmed with saved card, creating order...');
+      
+      // Since we bypassed the webhook, manually create the order
+      try {
+        // Handle both old and new metadata formats for backward compatibility
+        let orderItems, shippingAddress, selectedShippingOptions, billingAddress;
+        
+        if (paymentIntent.metadata.orderItems) {
+          // Old format - legacy support
+          console.log('Using legacy metadata format');
+          orderItems = JSON.parse(paymentIntent.metadata.orderItems);
+          shippingAddress = JSON.parse(paymentIntent.metadata.shippingAddress);
+          selectedShippingOptions = paymentIntent.metadata.selectedShippingOptions ?
+            JSON.parse(paymentIntent.metadata.selectedShippingOptions) : null;
+          billingAddress = paymentIntent.metadata.billingAddress ? 
+            JSON.parse(paymentIntent.metadata.billingAddress) : null;
+        } else if (paymentIntent.metadata.tempOrderDataId) {
+          // New format - fetch from temp collection
+          console.log('Using temp order data format');
+          const tempOrderData = await TempOrderData.findById(paymentIntent.metadata.tempOrderDataId);
+          if (!tempOrderData) {
+            throw new CustomError.BadRequestError('Temp order data not found');
+          }
+          orderItems = tempOrderData.orderItems;
+          shippingAddress = tempOrderData.shippingAddress;
+          selectedShippingOptions = tempOrderData.selectedShippingOptions;
+          billingAddress = tempOrderData.billingAddress;
+          
+          // Clean up temp data after successful retrieval
+          await TempOrderData.findByIdAndDelete(paymentIntent.metadata.tempOrderDataId);
+        } else {
+          throw new CustomError.BadRequestError('No order data found in payment intent metadata');
+        }
+        
+        const totalShipping = parseFloat(paymentIntent.metadata.totalShipping || '0');
+        const totalTax = parseFloat(paymentIntent.metadata.totalTax || '0');
+        const subtotal = parseFloat(paymentIntent.metadata.subtotal || '0');
+        const buyerId = paymentIntent.metadata.buyerId;
+        const customerEmail = paymentIntent.metadata.customerEmail;
+        const customerFirstName = paymentIntent.metadata.customerFirstName;
+        const totalAmount = parseFloat(paymentIntent.metadata.totalAmount);
+        const paymentMethodId = paymentIntent.payment_method;
+
+        // Create the order
+        const orderId = await createOrderUtil({
+          cartItems: orderItems,
+          shippingFee: totalShipping,
+          selectedShippingOptions: selectedShippingOptions,
+          paymentMethod: 'credit_card',
+          buyerId: buyerId,
+          shippingAddress: shippingAddress,
+          billingAddress: billingAddress
+        });
+        
+        console.log('Order created successfully. Order ID:', orderId);
+        const order = await Order.findById(orderId).populate('subOrders');
+        
+        order.paymentStatus = 'Paid';
+        order.fulfillmentStatus = 'Placed';
+        order.paymentIntentId = paymentIntentId;
+        
+        await order.save();
+        console.log(`Order updated successfully - paymentIntentId: ${order.paymentIntentId}, status: ${order.fulfillmentStatus}`);
+        
+        // Send confirmation emails (same as webhook)
+        try {
+          await sendBuyerPaymentConfirmationEmail({
+            name: customerFirstName,
+            email: customerEmail,
+            orderId: orderId,
+          });
+          console.log('Buyer confirmation email sent successfully.');
+        } catch (emailError) {
+          console.error('Failed to send buyer confirmation email:', emailError.message);
+        }
+
+        // Send email to sellers
+        const subOrders = order.subOrders;
+        for (const subOrder of subOrders) {
+          try {
+            await sendSellerNewOrderNotificationEmail({
+              sellerStoreId: subOrder.sellerStoreId,
+              orderId: orderId,
+              sellerOrderItems: subOrder.products,
+              sellerSubtotal: subOrder.totalAmount,
+              sellerTax: subOrder.totalTax,
+              sellerShipping: subOrder.totalShipping,
+            });
+            console.log(`Seller notification email sent for store ${subOrder.sellerStoreId}`);
+          } catch (emailError) {
+            console.error(`Failed to send seller notification email for store ${subOrder.sellerStoreId}:`, emailError.message);
+          }
+        }
+        
+        return res.json({ success: true, orderId: orderId });
+        
+      } catch (orderError) {
+        console.error('Error creating order after payment confirmation:', orderError);
+        // Payment succeeded but order creation failed - this is a critical error
+        return res.status(500).json({ 
+          error: 'Payment processed but order creation failed. Please contact support.', 
+          paymentIntentId: paymentIntentId 
+        });
+      }
+      
     } else {
       return res.status(400).json({ error: 'Payment failed', status: paymentIntent.status });
     }

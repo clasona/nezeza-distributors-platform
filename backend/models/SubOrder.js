@@ -1,32 +1,50 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const addressSchema = require('./Address');
 
 const shippingSchema = new mongoose.Schema(
   {
+    rateId: {
+      type: String,
+      required: false, // Make optional since it's set when rate is selected
+    },
+    labelUrl: {
+      type: String,
+      required: false,
+      validate: {
+        validator: function (v) {
+          return !v || validator.isURL(v); // Allow empty or valid URL
+        },
+        message: (props) => `${props.value} is not a valid URL!`,
+      },
+    },
     carrier: {
       type: String,
-      required: true,
-      enum: ['DHL', 'FedEx', 'UPS', 'USPS', 'Other'], // Limit to known carriers
-      default: 'Other',
+      required: false, // Make optional until label is created
+      enum: ['DHL', 'FedEx', 'UPS', 'USPS', 'Other', 'TBD'], // Add 'TBD' as valid option
+      default: 'TBD',
     },
     trackingNumber: {
       type: String,
-      required: true,
+      required: false, // Make optional until label is created
+      default: '',
     },
     trackingUrl: {
       type: String,
       required: false,
+      default: '',
     },
-    estimatedDelivery: {
+    estimatedDeliveryDate: {
       type: Date,
       required: false,
     },
     shipmentStatus: {
       type: String,
       required: true,
-      enum: ['Pending', 'In Transit', 'Delivered', 'Exception', 'Cancelled'],
+      enum: ['Awaiting Shipment', 'Pending', 'In Transit', 'Delivered', 'Exception', 'Cancelled'],
       default: 'Pending',
     },
+    shippingAddress: addressSchema, // Add shippingAddress field
     shippingNotes: {
       type: String,
       required: false,
@@ -98,6 +116,31 @@ const SubOrderSchema = new mongoose.Schema(
         },
       },
     ],
+    fulfillmentStatus: {
+      type: String,
+      enum: [
+        'Pending',
+        'Placed',
+        'Processing',
+        'Awaiting Shipment',
+        'Partially Fulfilled',
+        'Fulfilled',
+        'Awaiting Shipment',
+        'Partially Shipped',
+        'Shipped',
+        'Partially Delivered',
+        'Delivered',
+        'Partially Cancelled',
+        'Cancelled',
+      ],
+      default: 'Pending',
+    },
+    trackingInfo: {
+      trackingNumber: String,
+      labelUrl: String,
+      carrier: String,
+      trackingUrlProvider: String // e.g., 'USPS', 'FedEx'
+    },
     // clientSecret: {
     //   type: String,
     //   required: true,
@@ -114,27 +157,17 @@ const SubOrderSchema = new mongoose.Schema(
       type: String, // Store Stripe transfer ID
       default: null,
     },
+    selectedRateId: {
+      type: String, // Store the selected shipping rate ID from Shippo
+      default: null,
+    },
     isPlatformShipping: { type: Boolean, default: false }, // True if platform handles shipping
     platformShippingFee: { type: Number, default: 0 }, // Amount collected by the platform for shipping
     sellerShippingFee: { type: Number, default: 0 }, // Shipping charged by the seller (if applicable)
     shippingFeeRefundable: { type: Boolean, default: true }, // Determines if shipping is refundable
     shippingDetails: shippingSchema, // Embed the shipping sche
 
-    fulfillmentStatus: {
-      type: String,
-      enum: [
-        'Pending',
-        'Partially Fulfilled',
-        'Fulfilled',
-        'Partially Shipped',
-        'Shipped',
-        'Partially Delivered',
-        'Delivered',
-        'Partially Cancelled',
-        'Cancelled',
-      ],
-      default: 'Pending',
-    },
+    // fulfillmentStatus duplicate removed; only the above definition remains
     refundId: {
       type: String,
     },

@@ -10,6 +10,8 @@ export const createShipping = async (cartItems: OrderItemsProps, customerAddress
       }
     );
 
+    // console.log('Shipment created successfully:', response.data);
+
     if (response.status === 200) {
       return response.data; 
     } else {

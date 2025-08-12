@@ -199,13 +199,46 @@ async function isSameDayServiceable(origin, destination) {
 
 // ---------- MAIN CONTROLLER ----------
 
+// Import address validation utility
+const { validateAddressWithShippo, normalizeAddress } = require('../utils/address/validateAddress');
+
 const getShippingOptions = async (req, res) => {
   const { cartItems, customerAddress } = req.body;
 
   try {
-    // console.log('=== SHIPPING DEBUG ===');
-    // console.log('Cart items received:', JSON.stringify(cartItems, null, 2));
-    // console.log('Customer address:', JSON.stringify(customerAddress, null, 2));
+    // Validate customerAddress has required fields
+    if (!customerAddress) {
+      console.error('ERROR: customerAddress is missing entirely');
+      return res.status(400).json({
+        success: false,
+        error: 'Customer address is required',
+        shippingGroups: [],
+      });
+    }
+    
+    // Set default country if missing
+    if (!customerAddress.country || customerAddress.country.trim() === '') {
+      console.warn('Missing or empty country in customerAddress, defaulting to US');
+      customerAddress.country = 'US';
+    }
+    
+    // STRICT ADDRESS VALIDATION: Validate customer address with Shippo
+    // This ensures we only calculate rates with complete, valid addresses
+    let validatedCustomerAddress;
+    try {
+      console.log('Validating customer address with Shippo...');
+      validatedCustomerAddress = await validateAddressWithShippo(customerAddress, 'shipping');
+      console.log('Customer address validated successfully');
+    } catch (addressError) {
+      console.error('Customer address validation failed:', addressError.message);
+      return res.status(400).json({
+        success: false,
+        error: `Invalid shipping address: ${addressError.message}`,
+        shippingGroups: [],
+        addressValidationError: true // Flag for frontend to handle appropriately
+      });
+    }
+    
     
     if (!cartItems || cartItems.length === 0) {
       return res.status(400).json({
@@ -274,11 +307,54 @@ const getShippingOptions = async (req, res) => {
         continue;
       }
 
-      // Standard Shipping (Shippo) with fallback
+      // Standard Shipping (Shippo) with fallback - use validated customer address
       try {
+        // Extract the actual address from the validation result
+        const customerAddressForShippo = validatedCustomerAddress.address || validatedCustomerAddress;
+        
+        // CRITICAL: Also validate seller address to ensure complete rate information
+        let validatedSellerAddress;
+        try {
+          console.log('Validating seller address with Shippo...');
+          validatedSellerAddress = await validateAddressWithShippo(sellerAddress, 'shipping');
+          console.log('Seller address validated successfully');
+        } catch (sellerAddressError) {
+          console.warn(`Seller address validation failed for ${sellerId}, using fallback rates:`, sellerAddressError.message);
+          // If seller address validation fails, use fallback rates
+          standardRatesObj[sellerId] = [
+            {
+              rateId: `fallback_standard_${sellerId}`,
+              seller: sellerId,
+              price: 5.99,
+              type: 'standard',
+              provider: 'Standard Shipping',
+              servicelevel: 'Ground',
+              estimatedDays: 5,
+              durationTerms: '5-7 business days',
+              deliveryTime: calculateDeliveryDate(5),
+              items
+            },
+            {
+              rateId: `fallback_fast_${sellerId}`,
+              seller: sellerId,
+              price: 12.99,
+              type: 'standard',
+              provider: 'Express Shipping',
+              servicelevel: 'Express',
+              estimatedDays: 2,
+              durationTerms: '2-3 business days',
+              deliveryTime: calculateDeliveryDate(2),
+              items
+            }
+          ];
+          continue; // Skip to next seller
+        }
+        
+        const sellerAddressForShippo = validatedSellerAddress.address || validatedSellerAddress;
+        
         standardRatesObj[sellerId] = await getStandardShippingRatesForSeller(
-          sellerAddress,
-          customerAddress,
+          sellerAddressForShippo, // Use validated seller address
+          customerAddressForShippo, // Use actual address object, not validation response
           items
         );
         
@@ -354,7 +430,9 @@ const getShippingOptions = async (req, res) => {
         ];
       }
 
-      // Same Day (Uber, if available)
+      // === UBER SAME-DAY SHIPPING (commented out) ===
+      // To enable Uber same-day shipping, UNCOMMENT the following block:
+      /*
       try {
         sameDayRatesObj[sellerId] = await getSameDayDeliveryOptionsForSeller(
           sellerAddress,
@@ -365,6 +443,7 @@ const getShippingOptions = async (req, res) => {
         console.error(`Uber API failed for seller ${sellerId}:`, error.message);
         sameDayRatesObj[sellerId] = { error: 'Same-day delivery unavailable' };
       }
+      */
     }
 
     // Compose shippingGroups array for frontend
@@ -373,6 +452,9 @@ const getShippingOptions = async (req, res) => {
       const deliveryOptions = [];
 
       // Add Uber same-day if available
+      // === UBER SAME-DAY SHIPPING (commented out) ===
+      // To enable Uber same-day shipping, UNCOMMENT the following block:
+      /*
       if (sameDayRatesObj[sellerId] && !sameDayRatesObj[sellerId].error) {
         const uber = sameDayRatesObj[sellerId];
         deliveryOptions.push({
@@ -387,6 +469,7 @@ const getShippingOptions = async (req, res) => {
           } min`,
         });
       }
+      */
 
       // Add Shippo standard options (cheapest, fastest)
       if (Array.isArray(standardRatesObj[sellerId])) {
@@ -435,6 +518,13 @@ async function getStandardShippingRatesForSeller(
   items
 ) {
   const parcel = buildParcelFromItems(items);
+  
+  // Debug logging to see the exact format being sent to Shippo
+  // console.log('=== SHIPPO SHIPMENT DEBUG ===');
+  // console.log('Seller Address:', JSON.stringify(sellerAddress, null, 2));
+  // console.log('Customer Address:', JSON.stringify(customerAddress, null, 2));
+  // console.log('Parcel:', JSON.stringify(parcel, null, 2));
+  
   try {
     const shipment = await shippo.shipments.create({
       addressFrom: sellerAddress,
@@ -498,6 +588,33 @@ async function getStandardShippingRatesForSeller(
   } catch (error) {
     console.error(`Error fetching rates for seller:`, error);
     return [];
+  }
+}
+
+//create a getStandardShippingRatesForSeller function to be used as a route
+async function getStandardShippingRatesForSellerRoute(req, res) {
+  const { sellerAddress, customerAddress, items } = req.body;
+  try {
+    if (!sellerAddress || !customerAddress || !items || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required parameters',
+        rates: [],
+      });
+    }
+    const rates = await getStandardShippingRatesForSeller(
+      sellerAddress,
+      customerAddress,
+      items
+    );
+    res.json({ success: true, rates });
+  } catch (error) {
+    console.error('Error in getStandardShippingRatesForSellerRoute:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+      rates: [],
+    });
   }
 }
 
@@ -573,6 +690,91 @@ const createShippingLabel = async (req, res) => {
   } catch (error) {
     console.error('Error creating shipping label:', error);
     res.json({ success: false, error: error.message });
+  }
+};
+
+// Import the new shipping label utilities
+const {
+  createShippingLabelForSubOrder,
+  markSubOrderAsShipped,
+  getShippingLabelForSubOrder,
+} = require('../utils/shipping/createShippingLabel');
+
+/**
+ * Create shipping label for a suborder using stored rateId
+ */
+const createSubOrderLabel = async (req, res) => {
+  const { subOrderId } = req.body;
+  
+  try {
+    if (!subOrderId) {
+      return res.status(400).json({
+        success: false,
+        error: 'SubOrder ID is required'
+      });
+    }
+    
+    const result = await createShippingLabelForSubOrder(subOrderId);
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Error creating suborder shipping label:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to create shipping label'
+    });
+  }
+};
+
+/**
+ * Mark suborder as shipped
+ */
+const markSubOrderShipped = async (req, res) => {
+  const { subOrderId, trackingNumber, carrier } = req.body;
+  
+  try {
+    if (!subOrderId || !trackingNumber || !carrier) {
+      return res.status(400).json({
+        success: false,
+        error: 'SubOrder ID, tracking number, and carrier are required'
+      });
+    }
+    
+    const result = await markSubOrderAsShipped(subOrderId, trackingNumber, carrier);
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Error marking suborder as shipped:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to update suborder status'
+    });
+  }
+};
+
+/**
+ * Get shipping label for a suborder
+ */
+const getSubOrderLabel = async (req, res) => {
+  const { subOrderId } = req.params;
+  
+  try {
+    if (!subOrderId) {
+      return res.status(400).json({
+        success: false,
+        error: 'SubOrder ID is required'
+      });
+    }
+    
+    const result = await getShippingLabelForSubOrder(subOrderId);
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Error retrieving suborder shipping label:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to retrieve shipping label'
+    });
   }
 };
 
@@ -706,6 +908,264 @@ const trackStandardShipment = async (req, res) => {
   }
 };
 
+// Import sendEmail utility
+const sendEmail = require('../utils/sendEmail');
+
+/**
+ * Email shipping label to seller
+ */
+const emailShippingLabel = async (req, res) => {
+  const { labelUrl, email, orderId, trackingNumber } = req.body;
+  
+  try {
+    if (!labelUrl || !email) {
+      return res.status(400).json({
+        success: false,
+        error: 'Label URL and email address are required'
+      });
+    }
+    
+    // Create email HTML content using the existing template structure
+    const getShippingLabelEmailTemplate = (labelUrl, orderId, trackingNumber) => {
+      const content = `
+        <div class="email-content">
+          <h2 class="email-title">Your Shipping Label is Ready</h2>
+          
+          <p class="email-text">
+            Hello,
+          </p>
+          
+          <p class="email-text">
+            Your shipping label has been generated and is ready for use. Please find the details below:
+          </p>
+          
+          ${orderId || trackingNumber ? `
+          <div class="info-box">
+            <h3>Shipment Details:</h3>
+            ${orderId ? `<div class="info-item"><strong>Order ID:</strong> ${orderId}</div>` : ''}
+            ${trackingNumber ? `<div class="info-item"><strong>Tracking Number:</strong> ${trackingNumber}</div>` : ''}
+          </div>
+          ` : ''}
+          
+          <div class="alert alert-info">
+            <strong>📦 Important Instructions:</strong><br>
+            • Print the shipping label on standard 8.5" x 11" paper or on a thermal printer<br>
+            • Ensure the barcode is clear and readable<br>
+            • Attach the label securely to your package<br>
+            • Keep a copy for your records
+          </div>
+          
+          <div class="button-container">
+            <a href="${labelUrl}" class="btn" target="_blank" rel="noopener">
+              Download Shipping Label
+            </a>
+          </div>
+          
+          <p class="email-text">
+            If you have any questions about shipping or need assistance, please don't hesitate to contact our support team.
+          </p>
+          
+          <ul class="email-list">
+            <li>Label is valid for the shipping service selected</li>
+            <li>Package your items securely before applying the label</li>
+            <li>Drop off at the designated carrier location or schedule pickup</li>
+            <li>Keep tracking number for shipment monitoring</li>
+          </ul>
+        </div>
+      `;
+      
+      // Use the existing base template (simplified version since we don't have access to the full template here)
+      return `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <title>Shipping Label Ready</title>
+          <style>
+            /* Reset and base styles */
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+              line-height: 1.6;
+              color: #333333;
+              background-color: #f5f5f5;
+              margin: 0;
+              padding: 0;
+            }
+            .email-wrapper { padding: 20px; background-color: #f5f5f5; }
+            .email-container {
+              max-width: 600px;
+              margin: 0 auto;
+              background-color: #ffffff;
+              border-radius: 8px;
+              overflow: hidden;
+              box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            .email-header {
+              background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+              padding: 30px 20px;
+              text-align: center;
+              color: white;
+            }
+            .email-header h1 {
+              font-size: 28px;
+              font-weight: 700;
+              margin: 0;
+            }
+            .email-header .tagline {
+              font-size: 14px;
+              opacity: 0.9;
+              margin-top: 5px;
+            }
+            .email-content { padding: 40px 30px; }
+            .email-title {
+              font-size: 24px;
+              font-weight: 600;
+              color: #1f2937;
+              margin-bottom: 20px;
+            }
+            .email-text {
+              font-size: 16px;
+              color: #4b5563;
+              line-height: 1.6;
+              margin-bottom: 20px;
+            }
+            .info-box {
+              background: white;
+              border-left: 4px solid #2563eb;
+              padding: 20px;
+              margin: 25px 0;
+              border-radius: 0 6px 6px 0;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+            .info-box h3 {
+              font-size: 18px;
+              font-weight: 600;
+              color: #1f2937;
+              margin-bottom: 12px;
+            }
+            .info-item {
+              margin: 8px 0;
+              font-size: 15px;
+              color: #374151;
+            }
+            .info-item strong {
+              color: #1f2937;
+              font-weight: 600;
+            }
+            .button-container {
+              text-align: center;
+              margin: 35px 0;
+            }
+            .btn {
+              display: inline-block;
+              padding: 16px 32px;
+              background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+              color: white !important;
+              text-decoration: none;
+              border-radius: 8px;
+              font-size: 16px;
+              font-weight: 600;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            }
+            .alert {
+              padding: 16px 20px;
+              border-radius: 8px;
+              margin: 20px 0;
+              border-left: 4px solid;
+            }
+            .alert-info {
+              background-color: #eff6ff;
+              border-color: #3b82f6;
+              color: #1e40af;
+            }
+            .email-list {
+              margin: 20px 0;
+              padding-left: 0;
+            }
+            .email-list li {
+              list-style: none;
+              padding: 8px 0;
+              padding-left: 25px;
+              position: relative;
+              color: #4b5563;
+            }
+            .email-list li:before {
+              content: "✓";
+              position: absolute;
+              left: 0;
+              color: #059669;
+              font-weight: bold;
+            }
+            .email-footer {
+              background-color: #f9fafb;
+              padding: 30px;
+              text-align: center;
+              border-top: 1px solid #e5e7eb;
+            }
+            .footer-text {
+              font-size: 14px;
+              color: #6b7280;
+              margin-bottom: 15px;
+            }
+            /* Responsive */
+            @media only screen and (max-width: 600px) {
+              .email-wrapper { padding: 10px !important; }
+              .email-container { width: 100% !important; border-radius: 0 !important; }
+              .email-content { padding: 25px 20px !important; }
+              .btn { padding: 14px 24px !important; width: 100% !important; max-width: 280px !important; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-wrapper">
+            <div class="email-container">
+              <div class="email-header">
+                <h1>Soko</h1>
+                <div class="tagline">Connecting Africa to America</div>
+              </div>
+              ${content}
+              <div class="email-footer">
+                <div class="footer-text">
+                  Thank you for choosing Soko Platform
+                </div>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+    };
+    
+    const emailHtml = getShippingLabelEmailTemplate(labelUrl, orderId, trackingNumber);
+    
+    // Send the email
+    await sendEmail({
+      to: email,
+      subject: orderId ? `Shipping Label Ready - Order ${orderId}` : 'Your Shipping Label is Ready',
+      html: emailHtml
+    });
+    
+    console.log(`Shipping label emailed successfully to ${email}`);
+    
+    res.json({
+      success: true,
+      message: 'Shipping label emailed successfully',
+      emailSent: true
+    });
+    
+  } catch (error) {
+    console.error('Error emailing shipping label:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to email shipping label'
+    });
+  }
+};
+
 module.exports = {
   getShippingOptions,
   listAllShipments,
@@ -713,5 +1173,10 @@ module.exports = {
   createUberDelivery,
   trackUberDelivery,
   createShippingLabel,
+  createSubOrderLabel,
+  markSubOrderShipped,
+  getSubOrderLabel,
   trackStandardShipment,
+  getStandardShippingRatesForSellerRoute,
+  emailShippingLabel,
 };

@@ -96,7 +96,7 @@ const DropdownInputSearchable = ({
         name={name} // Pass name to the Select component
         ref={register ? register(name)?.ref : null} // Register the ref
         onBlur={register ? register(name)?.onBlur : undefined} // Handle blur
-        className='border border-gray-300 rounded-md shadow-sm focus:border-vesoko_green_600 focus:ring-vesoko_green_600 focus:ring-1 text-sm font-inter'
+        className='border border-gray-300 rounded-md shadow-sm focus:border-vesoko_green_600 focus:ring-vesoko_green_600 focus:ring-1 text-sm font-inter mt-1'
       />
       {errors?.[name] && (
         <p className='mt-1 text-sm text-red-500'>{label} is required</p>

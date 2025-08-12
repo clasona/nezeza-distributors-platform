@@ -29,6 +29,16 @@ const NotificationSchema = new mongoose.Schema(
       ref: 'User', //coudl also be User for customers.
       // required: true,
     },
+    fullOrderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order',
+      required: false, // Optional - for order-related notifications
+    },
+    subOrderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'SubOrder',
+      required: false, // Optional - for suborder-related notifications
+    },
     // type: {
     //   type: String,
     //   enum: ['order', 'product', 'user', 'inventory', 'payment', 'account'],

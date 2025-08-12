@@ -151,8 +151,8 @@ const ProductDetails = () => {
 
       dispatch(setShippingAddress(shippingAddress));
 
-      // Redirect to checkout review page
-      router.push('/checkout/review');
+      // Redirect to buy now checkout page for proper address validation
+      router.push('/checkout/buy-now');
     } catch (error: any) {
       handleError(error);
       setErrorMessage(error?.message || 'Error during Buy Now process.');

@@ -11,7 +11,7 @@ const formatOrderItems = (items) => {
           item.quantity
         } &mdash; $${item.price.toFixed(2)} each
         <br/>
-        Tax: $${item.taxAmount.toFixed(2)} (${(item.taxRate * 100).toFixed(2)}%)
+        Tax: $${item.taxAmount.toFixed(2)} (${(item.taxRate).toFixed(2)}%)
       </li>
     `
       )

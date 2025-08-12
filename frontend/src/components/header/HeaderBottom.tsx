@@ -298,7 +298,7 @@ const HeaderBottom = ({
               <>
                 {!storeInfo && (
                   <Link
-                    href='/select-store-type'
+                    href='/sellers'
                     target='_blank'
                     className='flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-vesoko_green_600 hover:bg-vesoko_green_700 text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg min-h-[36px] touch-manipulation'
                   >
@@ -318,7 +318,7 @@ const HeaderBottom = ({
               </>
             ) : (
               <Link
-                href='/select-store-type'
+                href='/sellers'
                 className='flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-vesoko_green_600 hover:bg-vesoko_green_700 text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg min-h-[36px] touch-manipulation'
               >
                 <SquareArrowOutUpRight className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />

@@ -24,7 +24,7 @@ export const getOrderStatus = async (orderId: string) => {
 
 export const getOrderFulfillmentStatuses = () => [
   { value: 'pending', label: 'Pending' },
-  { value: 'confirmed', label: 'Confirmed' },
+  { value: 'placed', label: 'Placed' },
   { value: 'processing', label: 'Processing' },
   { value: 'partially_fulfilled', label: 'Partially Fulfilled' },
   { value: 'fulfilled', label: 'Fulfilled' },

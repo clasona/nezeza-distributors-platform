@@ -5,6 +5,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import defaultUserImage from '@/images/defaultUserImage.png';
 import { getSellerTypeBaseurl } from '@/lib/utils';
@@ -20,6 +25,15 @@ import {
   ListOrdered,
   ShoppingCart,
   User,
+  Menu,
+  Info,
+  Store,
+  HelpCircle,
+  MessageSquare,
+  ChevronDown,
+  ShoppingBag,
+  BookOpen,
+  FileText,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -287,6 +301,104 @@ const Header = ({
               <span className='text-xs sm:text-sm'>Sign In</span>
             </Link>
           )}
+
+          {/* Public Pages Navigation Dropdown - Always visible at the far right */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className='group relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl hover:bg-white/10 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/20 min-h-[44px] touch-manipulation'>
+              <Menu className='w-4 h-4 sm:w-5 sm:h-5 text-white group-hover:scale-110 transition-transform duration-300' />
+              <span className='hidden sm:inline text-white font-medium text-xs sm:text-sm group-hover:text-vesoko_green_200 transition-colors duration-300'>More</span>
+              <ChevronDown className='w-3 h-3 sm:w-4 sm:h-4 text-white/80 group-hover:text-white transition-colors duration-300' />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className='w-52' align='start'>
+              <DropdownMenuLabel>Explore VeSoko</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuGroup>
+                {/* For Sellers Submenu */}
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Store className='w-4 h-4 text-vesoko_green_600 mr-2' />
+                    For Sellers
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem>
+                        <Link href='/sellers' className='flex items-center w-full'>
+                          <Store className='w-4 h-4 text-vesoko_green_600 mr-2' />
+                          Become a Seller
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href='/seller-onboarding' className='flex items-center w-full'>
+                          <BookOpen className='w-4 h-4 text-vesoko_green_600 mr-2' />
+                          Seller Onboarding
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href='/select-store-type' className='flex items-center w-full'>
+                          <FileText className='w-4 h-4 text-vesoko_green_600 mr-2' />
+                          Start Application
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+                
+                {/* For Shoppers Submenu */}
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <ShoppingBag className='w-4 h-4 text-blue-600 mr-2' />
+                    For Shoppers
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      <DropdownMenuItem>
+                        <Link href='/' className='flex items-center w-full'>
+                          <ShoppingBag className='w-4 h-4 text-blue-600 mr-2' />
+                          Browse Products
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href='/favorites' className='flex items-center w-full'>
+                          <Heart className='w-4 h-4 text-blue-600 mr-2' />
+                          My Wishlist
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href='/cart' className='flex items-center w-full'>
+                          <ShoppingCart className='w-4 h-4 text-blue-600 mr-2' />
+                          Shopping Cart
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              </DropdownMenuGroup>
+              
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <Link href='/about' className='flex items-center w-full'>
+                    <Info className='w-4 h-4 text-blue-600 mr-2' />
+                    About Us
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href='/faq' className='flex items-center w-full'>
+                    <HelpCircle className='w-4 h-4 text-purple-600 mr-2' />
+                    Help & FAQ
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href='/contact' className='flex items-center w-full'>
+                    <MessageSquare className='w-4 h-4 text-orange-600 mr-2' />
+                    Contact Us
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       

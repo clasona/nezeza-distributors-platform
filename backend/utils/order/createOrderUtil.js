@@ -23,7 +23,7 @@ const calculateEstimatedDelivery = require('./calculateEstimatedDelivery');
   Create a new order, group items by seller,
   and create sub-orders for each seller
  */
-const createSubOrders = async (fullOrder, session) => {
+const createSubOrders = async (fullOrder, selectedShippingOptions, session) => {
   // console.log(fullOrder);
   // Group products by seller and prepare sub-orders data
   try {
@@ -31,18 +31,43 @@ const createSubOrders = async (fullOrder, session) => {
 
     const subOrderData = Object.keys(subOrdersGrouped).map((sellerId) => {
       const subOrder = subOrdersGrouped[sellerId];
-      // Calculate total amount including tax and shipping
-      const totalAmount =
-        subOrder.totalAmount + subOrder.totalTax + subOrder.totalShipping;
-      // Add transaction fee (10% platform fee example)
-      const transactionFee = subOrder.totalAmount * 0.1;
+      
+      // Use the calculated values from groupProductsBySeller directly
+      // These already include proper totals per seller
+      const subtotal = subOrder.totalAmount; // This is the product subtotal for this seller
+      const sellerTax = subOrder.totalTax; // Tax for this seller's products
+      const sellerShipping = subOrder.totalShipping || 0; // Shipping for this seller (if any)
+      
+      // Final total amount for this suborder (subtotal only, tax and shipping are separate fields)
+      const finalTotalAmount = subtotal;
+      
+      // Add transaction fee (10% platform fee on subtotal)
+      const transactionFee = subtotal * 0.1;
+      
+      // Get the selected shipping rate for this seller
+      const selectedRateId = selectedShippingOptions ? selectedShippingOptions[sellerId] : null;
+      
       return {
         ...subOrder,
         sellerId,
-        totalAmount,
+        totalAmount: finalTotalAmount, // Store subtotal here
+        totalTax: sellerTax, // Store tax separately
+        totalShipping: sellerShipping, // Store shipping separately
         transactionFee,
         fullOrderId: fullOrder._id, // Add reference to the main order
         paymentStatus: 'Paid',
+        fulfillmentStatus: 'Placed', // Set initial status to Placed
+        shippingDetails: {
+          rateId: selectedRateId, // Store the selected shipping rate ID
+          carrier: 'TBD', // Will be set when label is created
+          trackingNumber: '', // Will be set when label is created
+          trackingUrl: '',
+          estimatedDeliveryDate: fullOrder.estimatedDeliveryDate,
+          shipmentStatus: 'Pending',
+          shippingAddress: fullOrder.shippingAddress,
+        },
+        // Also store the rateId at the suborder level for easy access
+        selectedRateId: selectedRateId,
       };
     });
 
@@ -71,6 +96,7 @@ const createSubOrders = async (fullOrder, session) => {
 const createOrderUtil = async ({
   cartItems,
   shippingFee = 0,
+  selectedShippingOptions = {},
   paymentMethod,
   buyerId,
   shippingAddress,
@@ -243,7 +269,7 @@ const createOrderUtil = async ({
     }
 
     // Pass the created order document and session to createSubOrders
-    const updatedSubOrders = await createSubOrders(order, session);
+    const updatedSubOrders = await createSubOrders(order, selectedShippingOptions, session);
     order.subOrders = updatedSubOrders; // Assign the results back to the order document
 
     // const paymentIntent = await createPaymentIntentUtil(order);

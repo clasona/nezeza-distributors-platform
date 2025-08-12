@@ -17,6 +17,7 @@ interface TextInputProps {
   register: UseFormRegister<FieldValues>;
   isRequired?: boolean;
   disabled?: boolean;
+  placeholder?: string;
 }
 
 const TextInput = ({
@@ -30,6 +31,7 @@ const TextInput = ({
   type = 'text',
   className = '',
   value,
+  placeholder,
 }: TextInputProps) => {
   const validationRules = {
     required: isRequired ? `${label} is required` : false,
@@ -67,7 +69,7 @@ const TextInput = ({
               ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
               : ''
           }`}
-          placeholder={`Enter ${label.toLowerCase()}`}
+          placeholder={placeholder || `Enter ${label.toLowerCase()}`}
         />
         {errors[name] && (
           <p className='mt-1 text-sm text-red-600 flex items-center gap-1'>

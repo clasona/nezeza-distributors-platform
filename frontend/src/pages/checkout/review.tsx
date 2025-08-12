@@ -85,9 +85,20 @@ const CheckoutReviewPage = () => {
         });
         setSelectedOptions(defaults);
       } catch (err: any) {
-        // Even if the shipping API completely fails, we show an error
-        // but the fallback system in the backend should prevent this from happening
-        setError(err.message || 'Failed to load shipping options');
+        console.error('Shipping calculation error:', err);
+        
+        // Handle address validation errors specifically
+        if (err.response?.status === 400 && err.response?.data?.message?.includes('address')) {
+          setError(
+            `Address validation failed: ${err.response.data.message}. Please go back and verify your shipping address.`
+          );
+        } else if (err.response?.status === 400) {
+          // Other 400 errors (invalid data, etc.)
+          setError(err.response.data?.message || 'Invalid request. Please check your information.');
+        } else {
+          // Generic error fallback
+          setError(err.message || 'Failed to load shipping options');
+        }
       }
       setIsLoading(false);
     }
@@ -194,7 +205,9 @@ const CheckoutReviewPage = () => {
       // Create Payment Intent using either cart items or buy now product
       const response = await createPaymentIntent(
         itemsToProcess,
-        shippingAddress
+        shippingAddress,
+        selectedOptions,
+        shippingTotal
       );
       console.log('Payment intent response:', response);
       if (response.status !== 200 || !response.data?.clientSecret) {
@@ -260,9 +273,49 @@ const CheckoutReviewPage = () => {
     );
   }
   if (error) {
+    const isAddressError = error.includes('address') || error.includes('validation');
     return (
-      <div className='flex items-center justify-center min-h-screen text-red-600'>
-        {error}
+      <div className='bg-vesoko_powder_blue min-h-screen py-8 px-2 md:px-8'>
+        <div className='max-w-2xl mx-auto'>
+          <div className='bg-white rounded-lg shadow-lg p-6 border border-red-200'>
+            <div className='flex items-start'>
+              <div className='flex-shrink-0'>
+                <svg className='h-6 w-6 text-red-400' viewBox='0 0 20 20' fill='currentColor'>
+                  <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z' clipRule='evenodd' />
+                </svg>
+              </div>
+              <div className='ml-3 w-full'>
+                <h3 className='text-lg font-medium text-red-800 mb-2'>
+                  {isAddressError ? 'Address Validation Error' : 'Shipping Calculation Error'}
+                </h3>
+                <div className='text-sm text-red-700 mb-4'>
+                  {error}
+                </div>
+                <div className='flex flex-col sm:flex-row gap-3'>
+                  {isAddressError && (
+                    <button
+                      onClick={() => router.push('/checkout/shipping-address')}
+                      className='bg-vesoko_green_600 text-white px-4 py-2 rounded hover:bg-vesoko_green_700 transition-colors text-sm font-medium'
+                    >
+                      Update Shipping Address
+                    </button>
+                  )}
+                  <button
+                    onClick={() => router.reload()}
+                    className='bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors text-sm font-medium'
+                  >
+                    Retry
+                  </button>
+                  <Link href={buyNowProduct && buyNowProduct.isBuyNow ? '/' : '/cart'}>
+                    <span className='text-vesoko_dark_blue hover:underline text-sm'>
+                      ← {buyNowProduct && buyNowProduct.isBuyNow ? 'Back to Products' : 'Back to Cart'}
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

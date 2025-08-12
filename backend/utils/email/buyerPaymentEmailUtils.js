@@ -18,6 +18,7 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
   const orderSummary = `
     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="color: #333; margin-top: 0;">📦 Order Information</h3>
+      <p><strong>Order ID:</strong> ${order._id}</p>
       <p><strong>Order Date:</strong> ${moment(order.createdAt).format('MMMM D, YYYY')}</p>
       <p><strong>Order Status:</strong> <span style="color: #28a745;">${order.fulfillmentStatus}</span></p>
       <p><strong>Payment Method:</strong> ${order.paymentMethod.replace('_', ' ').toUpperCase()}</p>

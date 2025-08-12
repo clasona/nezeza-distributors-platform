@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { UserProps } from '../../../type';
+import axiosInstance from '../axiosInstance';
+
 
 export const updateUser = async (
   userId: string | number,
@@ -7,13 +9,11 @@ export const updateUser = async (
 ) => {
   try {
 
-    const response = await axios.patch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/${userId}`,
-      updatedUserInfo,
-      {
-        withCredentials: true, // Include credentials like cookies for authorization
-      }
+    const response = await axiosInstance.patch(
+      `/users/${userId}`,
+      updatedUserInfo
     );
+
     const userData = response.data;
     if (response.status !== 200) {
       console.log('user data not updated.');
@@ -33,12 +33,9 @@ export const updateUserByEmail = async (
   updatedUserInfo: Partial<UserProps>
 ) => {
   try {
-    const response = await axios.patch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/by/${email}`,
-        updatedUserInfo, 
-      {
-        withCredentials: true, // Include credentials like cookies for authorization
-      }
+    const response = await axiosInstance.patch(
+      `/users/by/${email}`,
+      updatedUserInfo
     );
     const userData = response.data;
     if (response.status !== 200) {

@@ -90,7 +90,7 @@ export const getOrderStatusClasses = (status: string): string => {
   switch (normalizedStatus) {
     case 'pending':
       return `${VESOKO_TAILWIND_CLASSES.BG_YELLOW} ${VESOKO_TAILWIND_CLASSES.TEXT_LIGHT}`;
-    case 'confirmed':
+    case 'placed':
       return `${VESOKO_TAILWIND_CLASSES.BG_GREEN_500} ${VESOKO_TAILWIND_CLASSES.TEXT_WHITE}`;
     case 'processing':
       return `${VESOKO_TAILWIND_CLASSES.BG_LIGHT_BLUE} ${VESOKO_TAILWIND_CLASSES.TEXT_DARK_BLUE}`;

@@ -90,6 +90,7 @@ export interface OrderProps {
 /// for sellers
 export interface SubOrderProps {
   _id: string;
+  fullOrderId: OrderProps;
   fulfillmentStatus: string;
   products: ProductProps[];
   quantity: number;
@@ -101,9 +102,19 @@ export interface SubOrderProps {
   paymentMethod: string;
   paymentStatus: string;
   buyerId: string;
-  // buyerId: UserProps;
-  // buyerStoreId: StoreProps;
-  // sellerStoreId: string;
+  sellerStoreId: StoreProps;
+  shippingAddress: AddressProps;
+  trackingInfo?: {
+    trackingNumber: string;
+    labelUrl: string;
+    carrier: string;
+  };
+  shippingDetails?: {
+    trackingNumber: string;
+    labelUrl?: string;
+    carrier?: string;
+  };
+  selectedRateId?: string; // Shipping rate ID from Shippo
 }
 
 export interface PaymentProps {
@@ -211,6 +222,9 @@ export interface UserProps {
   // birthCountry?: string;
   dob?: string;
   address?: AddressProps;
+  createdAt?: string;
+  updatedAt?: string;
+  productsOrdered?: any[];
 }
 
 export interface stateProps {
@@ -269,12 +283,12 @@ export interface StoreSetupFormData {
 
 export interface NotificationProps {
   _id: string;
-  read: bookean;
+  read: boolean;
   priority: string;
   title: string;
   body: string;
-  senderId: Userprops;
-  receipientId: Userprops;
+  senderId: UserProps;
+  receipientId: UserProps;
   // type: string;
   createdAt: string;
 }

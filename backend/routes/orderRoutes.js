@@ -160,6 +160,15 @@ router
     updateShippingInfo
   );
 
+// Suborder routes
+router
+  .route('/sub/:id/status')
+  .patch(
+    authenticateUser,
+    authorizePermissions('update_order'),
+    updateSubOrder
+  );
+
 router
   .route('/:id')
   .get(

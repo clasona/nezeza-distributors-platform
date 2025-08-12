@@ -7,7 +7,7 @@ interface StatusProps {
 const FormattedStatus = ({ status }: StatusProps) => {
   const statusColors: { [key: string]: string } = {
     Pending: 'bg-yellow-100 text-yellow-800',
-    Confirmed: 'bg-green-100 text-green-800',
+    Placed: 'bg-green-100 text-green-800',
     Processing: 'bg-blue-100 text-blue-800',
     'Partially Fulfilled': 'bg-orange-100 text-orange-800',
     Fulfilled: 'bg-purple-100 text-purple-800',

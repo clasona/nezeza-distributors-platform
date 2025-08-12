@@ -249,7 +249,7 @@ const SingleOrderDetails = () => {
 
   // Check if order can be cancelled
   const canCancelOrder = (status: string) => {
-    return ['Pending', 'Confirmed', 'Processing'].includes(status);
+    return ['Pending', 'Placed', 'Processing'].includes(status);
   };
 
   // Check if order can be archived - customers can archive any order for organization

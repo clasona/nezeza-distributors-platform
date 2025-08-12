@@ -12,7 +12,12 @@ const {
   createUberDelivery,
   trackUberDelivery,
   createShippingLabel,
+  createSubOrderLabel,
+  markSubOrderShipped,
+  getSubOrderLabel,
   trackStandardShipment,
+  getStandardShippingRatesForSellerRoute,
+  emailShippingLabel,
 } = require('../controllers/shippingController');
 
 const {
@@ -27,6 +32,15 @@ router.get('/shipments/delivery/:deliveryId', trackUberDelivery);
 router.post('/shipments/labels/', createShippingLabel);
 router.post('/shipments/tracks/', trackStandardShipment);
 router.get('/shipments', listAllShipments);
+router.post('/shipments/rates', getStandardShippingRatesForSellerRoute);
+
+// New suborder shipping label routes
+router.post('/suborder/label', createSubOrderLabel); // Create label for suborder
+router.post('/suborder/ship', markSubOrderShipped); // Mark suborder as shipped
+router.get('/suborder/:subOrderId/label', getSubOrderLabel); // Get label for suborder
+
+// Email shipping label route
+router.post('/email-label', emailShippingLabel); // Email shipping label to seller
 
 module.exports = router;
 

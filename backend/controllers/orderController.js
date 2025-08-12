@@ -127,7 +127,8 @@ const getAllOrders = async (req, res) => {
     archived: false,
   })
     .populate('buyerStoreId')
-    .populate('products.productId');
+    .populate('products.productId')
+    // .populate('fullOrderId');
 
   // const orders = await SubOrder.find({seller: req.user.userId});
   // console.log(orders)
@@ -289,7 +290,7 @@ const getSellerSingleOrder = async (req, res) => {
   if (!storeId) {
     throw new CustomError.UnauthorizedError('Not authorized to view order');
   }
-  const order = await SubOrder.findOne({ _id: orderId });
+  const order = await SubOrder.findOne({ _id: orderId }).populate('fullOrderId');
   // console.log(order);
   if (!order) {
     throw new CustomError.NotFoundError(`No order with id : ${orderId}`);
@@ -482,52 +483,112 @@ const updateOrderItem = async (req, res) => {
     .json({ orderItem: order.orderItems[orderItemIndex] });
 };
 
+/**
+ * Map carrier names to valid enum values in SubOrder schema
+ */
+const mapCarrierName = (carrierName) => {
+  if (!carrierName) return 'TBD';
+  
+  const normalizedCarrier = carrierName.toUpperCase();
+  const validCarriers = ['DHL', 'FEDEX', 'UPS', 'USPS', 'OTHER', 'TBD'];
+  
+  // Direct match
+  if (validCarriers.includes(normalizedCarrier)) {
+    // Return proper case for FedEx
+    if (normalizedCarrier === 'FEDEX') return 'FedEx';
+    return normalizedCarrier;
+  }
+  
+  // Handle common variations
+  if (normalizedCarrier.includes('FEDEX') || normalizedCarrier.includes('FEDERAL EXPRESS')) {
+    return 'FedEx';
+  }
+  
+  // Map unknown or invalid carriers to 'Other'
+  return 'Other';
+};
+
 const updateSubOrder = async (req, res) => {
   const { id: subOrderId } = req.params;
   // Extract updated fields from request body
-  const { paymentIntentId, fulfillmentStatus, shippingAddress, cancelOrder } =
-    req.body;
+  const { status, trackingInfo } = req.body;
 
-  ///const { storeId } = req.user;
+  // console.log('Update SubOrder:', subOrderId, status, trackingInfo);
+
   const userId = req.user.userId;
   const { storeId } = await User.findById(userId);
+  
+  if (!storeId) {
+    throw new CustomError.UnauthorizedError('Not authorized to update orders');
+  }
+
   // Find the suborder and ensure it belongs to the seller's store
   const subOrder = await SubOrder.findOne({
     _id: subOrderId,
     sellerStoreId: storeId,
-  });
-  //console.log(subOrderId, storeId);
+  }).populate('buyerId');
+
   if (!subOrder) {
     throw new CustomError.NotFoundError(
       'Suborder not found or you are not authorized to update it'
     );
   }
 
-  const order = await Order.findOne({ _id: subOrder.fullOrderId });
+  // Update order status
+  subOrder.fulfillmentStatus = status;
+
+  // Update tracking info if provided
+  if (trackingInfo) {
+    const mappedCarrier = trackingInfo.carrier ? mapCarrierName(trackingInfo.carrier) : undefined;
+    
+    subOrder.trackingInfo = {
+      trackingNumber: trackingInfo.trackingNumber,
+      trackingUrlProvider: trackingInfo.trackingUrlProvider,
+      labelUrl: trackingInfo.labelUrl,
+      carrier: mappedCarrier || trackingInfo.carrier
+    };
+    
+    // Also update shippingDetails to maintain consistency
+    if (subOrder.shippingDetails) {
+      if (trackingInfo.trackingNumber) {
+        subOrder.shippingDetails.trackingNumber = trackingInfo.trackingNumber;
+      }
+      if (trackingInfo.labelUrl) {
+        subOrder.shippingDetails.labelUrl = trackingInfo.labelUrl;
+      }
+      if (trackingInfo.carrier) {
+        subOrder.shippingDetails.carrier = mappedCarrier || trackingInfo.carrier;
+      }
+    }
+  }
+
+  await subOrder.save();
 
   if (
-    !['Pending', 'Shipped', 'Delivered', 'Cancelled'].includes(
-      fulfillmentStatus
+    !['Pending', 'Shipped', 'Delivered', 'Cancelled', 'Placed', 'Processing', 'Awaiting Shipment'].includes(
+      status
     )
   ) {
     throw new CustomError.BadRequestError('Invalid fulfillment status');
   }
   // Update allowed fields
-  if (fulfillmentStatus) {
-    subOrder.fulfillmentStatus = fulfillmentStatus;
-    await subOrder.save();
-    updateOrderFulfillmentStatus(res, req, subOrder, order, fulfillmentStatus);
-  }
-  //subOrder.fulfillmentStatus = fulfillmentStatus;
-  if (shippingAddress) subOrder.shippingAddress = shippingAddress;
-
-  //await subOrder.save();
+  if (status) {
+  // Send email notification
+  await sendOrderStatusUpdateEmailAndNotification({
+    buyerId: subOrder.buyerId,
+    orderId: subOrder._id,
+    fullOrderId: subOrder.fullOrderId,
+    status: status,
+    trackingInfo: subOrder.trackingInfo,
+    subOrderItems: subOrder.products || []
+  });
 
   res.status(StatusCodes.OK).json({
     success: true,
     message: 'Suborder updated successfully',
-    data: subOrder,
+    data: subOrder
   });
+};
 };
 
 const updateToFulfilled = async (req, res) => {
@@ -673,9 +734,11 @@ const updateToShipped = async (req, res) => {
       buyerId: subOrder.buyerId._id,
       buyerName: subOrder.buyerId.firstName,
       orderId: subOrder._id,
+      fullOrderId: subOrder.fullOrderId,
       status: 'Shipped',
       storeName: storeName,
       trackingNumber: subOrder.shippingDetails?.trackingNumber || null,
+      subOrderItems: subOrder.products || []
     });
   } else {
     throw new CustomError.BadRequestError(
@@ -739,18 +802,17 @@ const updateToDelivered = async (req, res) => {
     // Update the fullOrder status
     updateOrderFulfillmentStatus(order, fulfillmentStatus);
 
-    // Notify the buyer and seller that the order has been shipped
-
-    await sendNotification({
-      email: subOrder.buyerId.email,
-      firstName: subOrder.buyerId.firstName,
-      subject: `Your ${storeId} Order Delivered`,
-      message: `Your order: ${subOrder._id} from store: ${storeId} was delivered.`,
-    });
-    await sendNotification({
-      email,
-      subject: 'Your Order Delivered',
-      message: `Your order: ${subOrder._id} from your store: ${storeId} was delivered.`,
+    // Notify the buyer that the order has been delivered
+    const store = await Store.findById(storeId);
+    const storeName = store ? store.name : `Store ${storeId}`;
+    
+    await sendOrderStatusUpdateEmailAndNotification({
+      buyerId: subOrder.buyerId._id,
+      orderId: subOrder._id,
+      fullOrderId: subOrder.fullOrderId,
+      status: 'Delivered',
+      storeName: storeName,
+      subOrderItems: subOrder.products || []
     });
   } else {
     throw new CustomError.BadRequestError(
@@ -825,18 +887,17 @@ const updateToCancelled = async (req, res) => {
   // Update the fullOrder status
   updateOrderFulfillmentStatus(order, fulfillmentStatus);
 
-  // Notify the buyer and seller that the order has been shipped
-
-  await sendNotification({
-    email: subOrder.buyerId.email,
-    firstName: subOrder.buyerId.firstName,
-    subject: `Your ${storeId} Order Cancelled`,
-    message: `Your order: ${subOrder._id} from store: ${storeId} was cancelled.`,
-  });
-  await sendNotification({
-    email,
-    subject: 'Your Order Cancelled',
-    message: `Your order: ${subOrder._id} from your store: ${storeId} was cancelled.`,
+  // Notify the buyer that the order has been cancelled
+  const store = await Store.findById(storeId);
+  const storeName = store ? store.name : `Store ${storeId}`;
+  
+  await sendOrderStatusUpdateEmailAndNotification({
+    buyerId: subOrder.buyerId._id,
+    orderId: subOrder._id,
+    fullOrderId: subOrder.fullOrderId,
+    status: 'Cancelled',
+    storeName: storeName,
+    subOrderItems: subOrder.products || []
   });
   // order.shipmentTracking = generateTrackingInfo();
   res.status(StatusCodes.OK).json({
@@ -871,9 +932,12 @@ const updateShippingInfo = async (req, res) => {
     );
   }
 
+  // Map carrier to valid enum value
+  const mappedCarrier = carrier ? mapCarrierName(carrier) : carrier;
+
   // Update shipping details
   subOrder.shippingDetails = {
-    carrier,
+    carrier: mappedCarrier,
     trackingNumber,
     trackingUrl,
     estimatedDelivery,

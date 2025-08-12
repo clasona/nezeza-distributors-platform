@@ -19,9 +19,9 @@ export const calculateOrderStats = (
       className: 'bg-yellow-600',
     },
     {
-      status: 'Confirmed',
+      status: 'Placed',
       count: existingOrders.filter(
-        (order) => order.fulfillmentStatus === 'Confirmed'
+        (order) => order.fulfillmentStatus === 'Placed'
       ).length,
       className: 'bg-green-600',
     },

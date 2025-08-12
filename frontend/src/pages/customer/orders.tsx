@@ -198,7 +198,7 @@ const Orders = () => {
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'pending': return <AlertCircle className='w-4 h-4 text-yellow-600' />;
-      case 'confirmed': return <CheckCircle className='w-4 h-4 text-green-600' />;
+      case 'placed': return <CheckCircle className='w-4 h-4 text-green-600' />;
       case 'processing': return <Package className='w-4 h-4 text-vesoko_dark_blue' />;
       case 'shipped': return <Truck className='w-4 h-4 text-vesoko_dark_blue' />;
       case 'delivered': return <CheckCircle className='w-4 h-4 text-green-600' />;
@@ -209,7 +209,7 @@ const Orders = () => {
 
   // Check if order can be cancelled
   const canCancelOrder = (status: string) => {
-    return ['Pending', 'Confirmed', 'Processing'].includes(status);
+    return ['Pending', 'Placed', 'Processing'].includes(status);
   };
 
   // Check if order can be archived - customers can archive any order for organization
@@ -332,9 +332,9 @@ const Orders = () => {
                   className={`px-3 py-1 rounded ${filter === 'Pending' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}
                 >Pending</button>
                 <button 
-                  onClick={() => handleFilter('Confirmed')} 
-                  className={`px-3 py-1 rounded ${filter === 'Confirmed' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}
-                >Confirmed</button>
+                  onClick={() => handleFilter('Placed')} 
+                  className={`px-3 py-1 rounded ${filter === 'Placed' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}
+                >Placed</button>
                 <button 
                   onClick={() => handleFilter('Processing')} 
                   className={`px-3 py-1 rounded ${filter === 'Processing' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}

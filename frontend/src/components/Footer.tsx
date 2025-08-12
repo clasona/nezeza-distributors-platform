@@ -5,7 +5,7 @@ import Link from 'next/link';
 import logo from '../images/main.png';
 import Image from 'next/image';
 import {
-  MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Heart, ExternalLink, Home, ShoppingCart, Star, Users, MessageSquareMore, MessageCircle
+  MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Heart, ExternalLink, Home, ShoppingCart, Star, Users, MessageSquareMore, MessageCircle, Store, MessageSquare
 } from 'lucide-react';
 import { FaTiktok } from 'react-icons/fa';
 // import { subscribeToNewsletter } from '@/lib/newsletter'; // Uncomment and implement if needed
@@ -46,8 +46,10 @@ const Footer = () => {
 
   const quickLinks = [
     { label: 'Home', href: '/', icon: <Home className='h-4 w-4' /> },
-    { label: 'Shop', href: '/shop', icon: <ShoppingCart className='h-4 w-4' /> },
-    { label: 'Contact', href: '/contact', icon: <MessageSquareMore className='h-4 w-4' /> },
+    { label: 'About', href: '/about', icon: <Users className='h-4 w-4' /> },
+    { label: 'Sell', href: '/sellers', icon: <Store className='h-4 w-4' /> },
+    { label: 'FAQ', href: '/faq', icon: <MessageSquareMore className='h-4 w-4' /> },
+    { label: 'Contact', href: '/contact', icon: <MessageSquare className='h-4 w-4' /> },
   ];
 
   const socialLinks = [

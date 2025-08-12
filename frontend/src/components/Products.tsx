@@ -183,6 +183,12 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
         return;
       }
 
+      console.log('Setting buy now product:', {
+        product: selectedProductForBuyNow,
+        quantity,
+        isBuyNow: true,
+      });
+
       // Set the buy now product in Redux
       dispatch(
         setBuyNowProduct({
@@ -205,11 +211,18 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
         email: userInfo.email,
       };
 
+      console.log('Setting shipping address:', shippingAddress);
       dispatch(setShippingAddress(shippingAddress));
 
-      // Redirect to checkout review page
-      router.push('/checkout/review');
+      // Give Redux time to persist the state before navigation
+      console.log('Waiting for Redux state to persist...');
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      console.log('Navigating to /checkout/buy-now');
+      // Redirect to buy now checkout page for proper address validation
+      router.push('/checkout/buy-now');
     } catch (error: any) {
+      console.error('Error in handleConfirmBuyNow:', error);
       handleError(error);
       setErrorMessage(
         error?.message || 'Error during Buy Now process. Please try again.'

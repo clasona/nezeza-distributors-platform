@@ -38,7 +38,7 @@
   { "name": "Burundi", "code": "BI" },
   { "name": "Cambodia", "code": "KH" },
   { "name": "Cameroon", "code": "CM" },
-  { "name": "Canada", "code": "CA" },
+  { "name": "Canada", "code": "CA", "states": "canadian_provinces" },
   { "name": "Cape Verde", "code": "CV" },
   { "name": "Cayman Islands", "code": "KY" },
   { "name": "Central African Republic", "code": "CF" },

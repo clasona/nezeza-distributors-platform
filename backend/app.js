@@ -36,6 +36,7 @@ const notificationRouter = require('./routes/notificationRoutes');
 const cartRouter = require('./routes/cartRoutes');
 const favoritesRouter = require('./routes/favoritesRoutes');
 const shippingRouter = require('./routes/shippingRoutes');
+const addressRouter = require('./routes/addressRoutes');
 const supportRouter = require('./routes/supportRoutes');
 const adminSupportRouter = require('./routes/admin/adminSupportRoutes');
 const amdinAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
@@ -43,6 +44,8 @@ const amdinFinancialRoutes = require('./routes/admin/adminFinancialRoutes');
 const amdinMonitoringRoutes = require('./routes/admin/adminMonitoringRoutes');
 const verificationRouter = require('./routes/verificationRoutes');
 const newsletterRouter = require('./routes/newsletterRoutes');
+const customerRouter = require('./routes/customerRoutes');
+const contentRouter = require('./routes/contentRoutes');
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
@@ -111,6 +114,7 @@ app.use('/api/v1/notifications', notificationRouter);
 app.use('/api/v1/cart', cartRouter);
 app.use('/api/v1/favorites', favoritesRouter);
 app.use('/api/v1/shipping', shippingRouter);
+app.use('/api/v1/address', addressRouter);
 app.use('/api/v1/support', supportRouter);
 app.use('/api/v1/admin/support', adminSupportRouter);
 app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
@@ -122,7 +126,11 @@ app.use('/api/v1/email-test', emailTestRouter);
 // verification routes
 app.use('/api/v1/verification', verificationRouter);
 // newsletter routes
-app.use('/api', newsletterRouter);
+app.use('/api/v1/newsletter', newsletterRouter);
+app.use('/api/v1/customers', customerRouter);
+// content routes
+app.use('/api/v1/content', contentRouter);
+// address validation routes
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 

@@ -1,3 +1,4 @@
+import { clearCart } from '@/utils/cart/clearCart';
 import { clearBuyNowProduct, resetCart } from '@/redux/nextSlice';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -7,6 +8,8 @@ import { getOrderByPaymentIntentId } from '@/utils/order/getOrderByPaymentIntent
 import { stateProps, OrderProps } from '../../type';
 import { useSession } from 'next-auth/react';
 import { getSellerTypeBaseurl } from '@/lib/utils';
+import { CheckCircle, Package, Truck, Calendar } from 'lucide-react';
+import Loading from '@/components/Loaders/Loading';
 
 const SuccessPage = () => {
   const dispatch = useDispatch();
@@ -46,8 +49,20 @@ const SuccessPage = () => {
   };
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
+    const processSuccessfulPayment = async () => {
       const { payment_intent_id } = router.query;
+      
+      // Clear cart/buy-now state immediately
+      try {
+        await clearCart();
+        if (buyNowProduct?.isBuyNow) {
+          dispatch(clearBuyNowProduct());
+        } else {
+          dispatch(resetCart());
+        }
+      } catch (error) {
+        console.error('Error clearing cart:', error);
+      }
       
       if (payment_intent_id && typeof payment_intent_id === 'string') {
         const maxRetries = 6;
@@ -92,8 +107,8 @@ const SuccessPage = () => {
               setError('Unable to load order details after multiple attempts. The order may still be processing.');
               
               // Fallback to generated order number if all retries fail
-              const orderNum = `VK-${Date.now().toString().slice(-8)}`;
-              setOrderNumber(orderNum);
+              const orderRef = payment_intent_id.split('_')[1] || payment_intent_id.substring(3, 13);
+              setOrderNumber(`VK-${orderRef.toUpperCase()}`);
               
               const deliveryDate = new Date();
               deliveryDate.setDate(deliveryDate.getDate() + 5);
@@ -128,25 +143,17 @@ const SuccessPage = () => {
       }
     };
 
-    fetchOrderDetails();
-
-    // Clean up Redux state
-    if (buyNowProduct?.isBuyNow) {
-      dispatch(clearBuyNowProduct());
-    } else {
-      dispatch(resetCart());
+    if (router.isReady) {
+      processSuccessfulPayment();
     }
-  }, [dispatch, buyNowProduct, router.query]);
+  }, [dispatch, buyNowProduct, router.query, router.isReady]);
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-white to-vesoko_light_blue flex items-center justify-center px-4 py-8'>
-        <div className='max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden p-8'>
-          <div className='text-center'>
-            <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-vesoko_dark_blue mx-auto mb-4'></div>
-            <p className='text-lg font-medium text-gray-700'>{loadingMessage}</p>
-            <p className='text-sm text-gray-500 mt-2'>This may take a few moments...</p>
-          </div>
+      <div className='min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center'>
+        <div className='text-center'>
+          <Loading message={loadingMessage} />
+          <p className='mt-4 text-gray-600'>Please wait while we confirm your payment</p>
         </div>
       </div>
     );
@@ -154,7 +161,7 @@ const SuccessPage = () => {
 
   if (error) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-white to-vesoko_light_blue flex items-center justify-center px-4 py-8'>
+      <div className='min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center px-4 py-8'>
         <div className='max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden p-8'>
           <div className='text-center'>
             <div className='text-red-500 text-6xl mb-4'>⚠️</div>
@@ -181,85 +188,126 @@ const SuccessPage = () => {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-white to-vesoko_light_blue flex items-center justify-center px-4 py-8'>
-      <div className='max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden'>
-        <div className='bg-gradient-to-r from-vesoko_green_600 to-green-500 px-8 py-12 text-center text-white relative'>
-          <div className='mb-6'>
-            <div className='inline-flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full backdrop-blur-sm'>
-              <svg className='w-12 h-12 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M5 13l4 4L19 7' />
-              </svg>
+    <div className='min-h-screen bg-gradient-to-br from-green-50 to-green-100 py-12 px-4 sm:px-6 lg:px-8'>
+      <div className='max-w-3xl mx-auto'>
+        {/* Success Header */}
+        <div className='text-center mb-8'>
+          <div className='flex justify-center mb-4'>
+            <div className='rounded-full bg-green-100 p-3'>
+              <CheckCircle className='h-16 w-16 text-green-600' />
             </div>
           </div>
-          <h1 className='text-4xl font-bold mb-4'>Payment Successful!</h1>
-          <p className='text-xl opacity-90'>Your order has been confirmed and is being processed.</p>
-          <div className='absolute top-4 left-4 w-12 h-12 border-2 border-white border-opacity-20 rounded-full'></div>
-          <div className='absolute bottom-4 right-4 w-8 h-8 border-2 border-white border-opacity-20 rounded-full'></div>
+          <h1 className='text-4xl font-bold text-gray-900 mb-2'>
+            Payment Successful!
+          </h1>
+          <p className='text-xl text-gray-600'>
+            Thank you for your order. We're processing it now.
+          </p>
         </div>
-        
-        <div className='px-8 py-8'>
-          <div className='mb-8'>
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div className='bg-gray-50 rounded-lg p-4'>
-                <h3 className='text-sm font-medium text-gray-500 mb-1'>Order Number</h3>
-                <p className='text-xl font-bold text-vesoko_dark_blue'>{orderNumber}</p>
+
+        {/* Order Details Card */}
+        <div className='bg-white rounded-2xl shadow-lg p-8 mb-8'>
+          <div className='border-b border-gray-200 pb-6 mb-6'>
+            <h2 className='text-2xl font-semibold text-gray-900 mb-4'>Order Confirmation</h2>
+            {orderNumber && (
+              <div className='bg-gray-50 rounded-lg p-4 mb-4'>
+                <p className='text-sm text-gray-600'>Order Reference</p>
+                <p className='text-2xl font-bold text-vesoko_dark_blue'>#{orderNumber}</p>
               </div>
-              <div className='bg-gray-50 rounded-lg p-4'>
-                <h3 className='text-sm font-medium text-gray-500 mb-1'>Estimated Delivery</h3>
+            )}
+            {estimatedDelivery && (
+              <div className='bg-gray-50 rounded-lg p-4 mb-4'>
+                <p className='text-sm text-gray-600'>Estimated Delivery</p>
                 <p className='text-lg font-semibold text-gray-800'>{estimatedDelivery}</p>
               </div>
+            )}
+            <p className='text-gray-600'>
+              Your order has been successfully placed and is being processed. 
+              You'll receive a confirmation email shortly with all the details.
+            </p>
+          </div>
+
+          {/* Next Steps */}
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
+            <div className='text-center p-4'>
+              <div className='bg-blue-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center'>
+                <Package className='h-8 w-8 text-blue-600' />
+              </div>
+              <h3 className='font-semibold text-gray-900 mb-2'>Order Processing</h3>
+              <p className='text-sm text-gray-600'>
+                Your order is being prepared for shipment
+              </p>
+            </div>
+            <div className='text-center p-4'>
+              <div className='bg-orange-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center'>
+                <Truck className='h-8 w-8 text-orange-600' />
+              </div>
+              <h3 className='font-semibold text-gray-900 mb-2'>Shipping</h3>
+              <p className='text-sm text-gray-600'>
+                You'll get tracking info once it ships
+              </p>
+            </div>
+            <div className='text-center p-4'>
+              <div className='bg-green-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center'>
+                <Calendar className='h-8 w-8 text-green-600' />
+              </div>
+              <h3 className='font-semibold text-gray-900 mb-2'>Delivery</h3>
+              <p className='text-sm text-gray-600'>
+                Expected by {estimatedDelivery || 'within 5 business days'}
+              </p>
             </div>
           </div>
 
-          <div className='mb-8 p-6 bg-blue-50 rounded-lg border border-blue-100'>
-            <h3 className='text-lg font-semibold text-vesoko_dark_blue mb-4 flex items-center'>
-              <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-              </svg>
-              What happens next?
-            </h3>
-            <ul className='space-y-3 text-gray-700'>
-              <li className='flex items-start'>
-                <span className='flex-shrink-0 w-6 h-6 bg-vesoko_green_600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5'>1</span>
-                <span>You'll receive an email confirmation with your order details</span>
-              </li>
-              <li className='flex items-start'>
-                <span className='flex-shrink-0 w-6 h-6 bg-vesoko_green_600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5'>2</span>
-                <span>We'll notify you when your order is being prepared</span>
-              </li>
-              <li className='flex items-start'>
-                <span className='flex-shrink-0 w-6 h-6 bg-vesoko_green_600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5'>3</span>
-                <span>Track your package with the tracking number we'll send you</span>
-              </li>
-            </ul>
+          {/* Email Confirmation Notice */}
+          <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6'>
+            <div className='flex'>
+              <div className='flex-shrink-0'>
+                <CheckCircle className='h-5 w-5 text-blue-400' />
+              </div>
+              <div className='ml-3'>
+                <p className='text-sm text-blue-700'>
+                  <strong>Confirmation email sent!</strong> Check your inbox for order details and tracking information.
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
 
-          <div className='text-center mb-8'>
-            <h2 className='text-2xl font-bold text-gray-800 mb-2'>
-              Thank you for choosing <span className='text-vesoko_dark_blue'>VeSoko</span>
-            </h2>
-            <p className='text-gray-600'>We appreciate your business and hope you love your purchase.</p>
-          </div>
+        {/* Action Buttons */}
+        <div className='flex flex-col sm:flex-row gap-4 justify-center'>
+          <Link
+            href={getOrderDetailsUrl()}
+            className='inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-vesoko_dark_blue hover:bg-vesoko_green_600 transition-colors duration-200 shadow-lg hover:shadow-xl'
+          >
+            View My Orders
+          </Link>
+          <Link
+            href='/'
+            className='inline-flex items-center justify-center px-8 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl'
+          >
+            Continue Shopping
+          </Link>
+        </div>
 
-          <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-            <Link
-              href={getOrderDetailsUrl()}
-              className='flex items-center justify-center px-6 py-3 bg-vesoko_dark_blue text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 shadow-md'
+        {/* Support Section */}
+        <div className='mt-12 text-center'>
+          <p className='text-gray-600 mb-4'>
+            Need help with your order?
+          </p>
+          <div className='flex flex-col sm:flex-row gap-4 justify-center text-sm'>
+            <a
+              href='mailto:support@vesoko.com'
+              className='text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium'
             >
-              <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-              </svg>
-              View Order Details
-            </Link>
-            <Link
-              href='/'
-              className='flex items-center justify-center px-6 py-3 bg-white text-vesoko_dark_blue border-2 border-vesoko_dark_blue font-semibold rounded-lg hover:bg-vesoko_dark_blue hover:text-white transition duration-300'
+              📧 support@vesoko.com
+            </a>
+            <span className='hidden sm:inline text-gray-400'>|</span>
+            <a
+              href='tel:+1234567890'
+              className='text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium'
             >
-              <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' />
-              </svg>
-              Continue Shopping
-            </Link>
+              📞 (123) 456-7890
+            </a>
           </div>
         </div>
       </div>
@@ -267,4 +315,5 @@ const SuccessPage = () => {
   );
 };
 
+SuccessPage.noLayout = true;
 export default SuccessPage;
