@@ -13,6 +13,7 @@ import SubmitButton from '@/components/FormInputs/SubmitButton';
 const Contact = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
 
   const inquiryTypes = [
     { value: 'general', label: 'General Inquiry' },
@@ -28,13 +29,28 @@ const Contact = () => {
 
   const onSubmit = async (data: any) => {
     setIsLoading(true);
+    setSuccessMessage(null);
     try {
-      // YVES TO TAKE A LOOK - Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success("Thank you! Your message has been sent successfully. We'll get back to you within 24 hours.");
-      reset();
+      const response = await fetch('http://localhost:8000/api/v1/contact/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      if (response.ok && result.success) {
+        toast.success(result.message || "Thank you! Your message has been sent successfully. We'll get back to you within 24 hours.");
+        setSuccessMessage(result.message || "Your message was sent successfully! We'll get back to you within 24 hours.");
+        reset();
+      } else {
+        toast.error(result.message || 'Failed to send message. Please try again.');
+        setSuccessMessage(null);
+      }
     } catch (error) {
+      console.error('Contact form error:', error);
       toast.error('Failed to send message. Please try again.');
+      setSuccessMessage(null);
     } finally {
       setIsLoading(false);
     }
@@ -44,25 +60,25 @@ const Contact = () => {
     {
       icon: <Mail className="w-6 h-6" />,
       title: "Email Us",
-      details: ["hello@vesoko.com", "support@vesoko.com"],
+      details: ["marketplace@vesoko.com", "support@vesoko.com"],
       description: "We typically respond within 24 hours"
     },
     {
       icon: <Phone className="w-6 h-6" />,
       title: "Call Us",
-      details: ["+1 (555) 123-4567", "+1 (555) 987-6543"],
+      details: ["+1 (959) 999-0661", "+1 (270) 363-7134"],
       description: "Monday - Friday, 9 AM - 6 PM EST"
     },
-    {
-      icon: <MapPin className="w-6 h-6" />,
-      title: "Visit Us",
-      details: ["123 Business District", "New York, NY 10001"],
-      description: "By appointment only"
-    },
+    // {
+    //   icon: <MapPin className="w-6 h-6" />,
+    //   title: "Visit Us",
+    //   details: ["123 Business District", "New York, NY 10001"],
+    //   description: "By appointment only"
+    // },
     {
       icon: <Clock className="w-6 h-6" />,
       title: "Business Hours",
-      details: ["Monday - Friday: 9 AM - 6 PM EST", "Weekend: Emergency only"],
+      details: ["Monday - Friday: 8 AM - 6 PM EST", "Weekend: Emergency only"],
       description: "We're here to help!"
     }
   ];
@@ -72,7 +88,7 @@ const Contact = () => {
       icon: <Users className="w-8 h-8" />,
       title: "Sales & Partnerships",
       description: "Interested in joining VeSoko as a seller or exploring partnership opportunities?",
-      email: "partnerships@vesoko.com",
+      email: "marketplace@vesoko.com",
       color: "from-vesoko_green_600 to-green-500"
     },
     {
@@ -86,14 +102,14 @@ const Contact = () => {
       icon: <Building className="w-8 h-8" />,
       title: "Business Development",
       description: "Enterprise solutions, wholesale inquiries, and strategic partnerships.",
-      email: "business@vesoko.com",
+      email: "marketplace@vesoko.com",
       color: "from-purple-600 to-purple-500"
     },
     {
       icon: <Globe className="w-8 h-8" />,
       title: "Press & Media",
       description: "Media inquiries, press releases, and brand collaboration requests.",
-      email: "press@vesoko.com",
+      email: "marketplace@vesoko.com",
       color: "from-orange-600 to-orange-500"
     }
   ];
@@ -253,6 +269,11 @@ const Contact = () => {
                       isLoading={isLoading}
                       className="w-full bg-gradient-to-r from-vesoko_green_600 to-vesoko_dark_blue text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-shadow duration-300"
                     />
+                    {successMessage && (
+                      <div className="mt-4 text-green-600 text-center text-base font-medium animate-fade-in">
+                        {successMessage}
+                      </div>
+                    )}
                   </form>
                 </div>
 

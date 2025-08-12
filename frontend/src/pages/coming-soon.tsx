@@ -24,7 +24,7 @@ const ComingSoonPage = () => {
     
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/subscribe', {
+      const response = await fetch('http://localhost:8000/api/v1/newsletter/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -319,8 +319,8 @@ const ComingSoonPage = () => {
           <footer className="text-center py-12 mt-16">
             <p className="text-[#3d1f00]/80 font-medium">
               Questions? Contact us at{' '}
-              <Link href="mailto:hello@clasona.com" className="text-[#ff7a00] hover:underline font-bold">
-                hello@clasona.com
+              <Link href="mailto:marketplace@vesoko.com" className="text-[#ff7a00] hover:underline font-bold">
+                marketplace@vesoko.com
               </Link>
             </p>
             <div className="mt-10 flex flex-col items-center gap-2">

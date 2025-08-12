@@ -1,20 +1,27 @@
 import { Upload, FileText, Check } from 'lucide-react';
 import { CldUploadWidget } from 'next-cloudinary';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface CloudinaryFileUploadProps {
   label?: string;
   className?: string;
   onResourceChange: (resource: any) => void; // Required: Callback to send resource to parent
+  initialResource?: any; // Optional: Initial resource to display
 }
 const CloudinaryFileUpload = ({
   label,
   className = '',
   onResourceChange,
+  initialResource,
 }: CloudinaryFileUploadProps) => {
-  const [resource, setResource] = useState<any>(null);
+  const [resource, setResource] = useState<any>(initialResource || null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Sync internal resource state with external initialResource prop
+  useEffect(() => {
+    setResource(initialResource || null);
+  }, [initialResource]);
 
   return (
     <div className={`w-full ${className}`}>

@@ -44,6 +44,7 @@ const amdinFinancialRoutes = require('./routes/admin/adminFinancialRoutes');
 const amdinMonitoringRoutes = require('./routes/admin/adminMonitoringRoutes');
 const verificationRouter = require('./routes/verificationRoutes');
 const newsletterRouter = require('./routes/newsletterRoutes');
+const contactRouter = require('./routes/contactRoutes');
 const customerRouter = require('./routes/customerRoutes');
 const contentRouter = require('./routes/contentRoutes');
 // middleware
@@ -102,7 +103,7 @@ app.use('/api/v1/admin/notifications', adminNotificationRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/store', storeRouter);
-app.use('/api/v1/admin/store-application', storeApplicationRouter);
+app.use('/api/v1/store-application', storeApplicationRouter);
 app.use('/api/v1/manufacturers', productRouter);
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/marketplace/products', wholesalerRouter);
@@ -127,6 +128,8 @@ app.use('/api/v1/email-test', emailTestRouter);
 app.use('/api/v1/verification', verificationRouter);
 // newsletter routes
 app.use('/api/v1/newsletter', newsletterRouter);
+// contact routes
+app.use('/api/v1/contact', contactRouter);
 app.use('/api/v1/customers', customerRouter);
 // content routes
 app.use('/api/v1/content', contentRouter);

@@ -64,7 +64,7 @@ const SelectStoreType = () => {
         {/* Header */}
         <div className='text-center mb-12'>
           <Link 
-            href='/seller-onboarding'
+            href='/sellers'
             className='inline-flex items-center gap-2 text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium mb-8 transition-colors duration-200'
           >
             <ArrowLeft className='h-5 w-5' />

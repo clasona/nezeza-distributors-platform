@@ -17,6 +17,7 @@ import { StoreApplicationFormData } from '@/types/storeApplication';
 import { useCallback } from 'react';
 import AutoSaveIndicator from '@/components/AutoSaveIndicator';
 import RestoreDataModal from '@/components/RestoreDataModal';
+import { validateShippingAddress, AddressData } from '@/utils/address/validateAddress';
 
 interface StoreRegistrationFormProps {
   onSubmitSuccess?: (data: any) => void; // Callback after successful submission
@@ -35,6 +36,7 @@ const StoreRegistrationForm = ({
       citizenshipCountry: '',
       dob: '',
       residenceStreet: '',
+      residenceStreet2: '',
       residenceCity: '',
       residenceState: '',
       residenceCountry: '',
@@ -47,6 +49,7 @@ const StoreRegistrationForm = ({
       storeEmail: '',
       storePhone: '',
       storeStreet: '',
+      storeStreet2: '',
       storeCity: '',
       storeState: '',
       storeCountry: '',
@@ -263,10 +266,13 @@ const StoreRegistrationForm = ({
         dob: data.dob,
         residenceAddress: {
           street: data.residenceStreet,
+          street1: data.residenceStreet, // For Shippo API compatibility
+          street2: data.residenceStreet2 || '', // Optional second address line
           city: data.residenceCity,
           state: data.residenceState,
           zip: data.residenceZipCode,
           country: data.residenceCountry,
+          phone: data.phone, // For Shippo API compatibility
         },
       },
       storeInfo: {
@@ -279,8 +285,9 @@ const StoreRegistrationForm = ({
         phone: data.storePhone,
         logo: data.storeLogo || (storeLogoResource ? storeLogoResource.secure_url : ''),
         address: {
-          street1: data.storeStreet,
-          street2: '',
+          street: data.storeStreet,
+          street1: data.storeStreet, // For Shippo compatibility
+          street2: data.storeStreet2 || '', // Optional second address line
           city: data.storeCity,
           state: data.storeState,
           zip: data.storeZipCode,
@@ -468,6 +475,8 @@ const StoreRegistrationForm = ({
                 errors={errors}
                 setIdentityDocResource={setIdentityDocResource}
                 setBusinessDocResource={setBusinessDocResource}
+                identityDocResource={identityDocResource}
+                businessDocResource={businessDocResource}
               />
               {/* Documents Error Message */}
               {documentsError && (

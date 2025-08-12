@@ -184,7 +184,7 @@ const About = () => {
 
                     {phase.status === 'current' && (
                       <div className="mt-8">
-                        <Link href="/seller-onboarding" className="inline-flex items-center gap-2 bg-vesoko_green_600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-vesoko_green_700 transition-colors duration-300">
+                        <Link href="/sellers" className="inline-flex items-center gap-2 bg-vesoko_green_600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-vesoko_green_700 transition-colors duration-300">
                           Join as Seller
                           <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -249,7 +249,7 @@ const About = () => {
                 we'd love to hear from you.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/seller-onboarding" className="inline-flex items-center justify-center gap-2 bg-white text-vesoko_dark_blue px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
+                <Link href="/sellers" className="inline-flex items-center justify-center gap-2 bg-white text-vesoko_dark_blue px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
                   Become a Seller
                   <ArrowRight className="w-5 h-5" />
                 </Link>

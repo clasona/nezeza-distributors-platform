@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CloudinaryFileUpload from '../../FormInputs/CloudinaryFileUpload';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import StoreFormHeading from './StoreFormHeading';
@@ -11,6 +11,8 @@ interface VerificationDocsInputProps {
   register: UseFormRegister<StoreApplicationFormData>;
   setIdentityDocResource: (resource: any) => void;
   setBusinessDocResource: (resource: any) => void;
+  identityDocResource?: any; // Optional: Current identity document resource
+  businessDocResource?: any; // Optional: Current business document resource
 }
 
 const VerificationDocsInput = ({
@@ -18,11 +20,22 @@ const VerificationDocsInput = ({
   errors,
   setIdentityDocResource,
   setBusinessDocResource,
+  identityDocResource,
+  businessDocResource,
 }: VerificationDocsInputProps) => {
   const [localIdentityDocResource, setLocalIdentityDocResource] =
-    useState<any>(null);
+    useState<any>(identityDocResource || null);
   const [localBusinessDocResource, setLocalBusinessDocResource] =
-    useState<any>(null);
+    useState<any>(businessDocResource || null);
+
+  // Sync internal state with external props
+  useEffect(() => {
+    setLocalIdentityDocResource(identityDocResource || null);
+  }, [identityDocResource]);
+
+  useEffect(() => {
+    setLocalBusinessDocResource(businessDocResource || null);
+  }, [businessDocResource]);
 
   const handleIdentityDocChange = (resource: any) => {
     setLocalIdentityDocResource(resource);
@@ -115,6 +128,7 @@ const VerificationDocsInput = ({
               label='Upload Identity Document'
               className='w-full'
               onResourceChange={handleIdentityDocChange}
+              initialResource={localIdentityDocResource}
             />
             {localIdentityDocResource ? (
               <div className='flex items-center gap-2 text-green-600 text-sm'>
@@ -167,6 +181,7 @@ const VerificationDocsInput = ({
               label='Upload Business Document'
               className='w-full'
               onResourceChange={handleBusinessDocChange}
+              initialResource={localBusinessDocResource}
             />
             {localBusinessDocResource ? (
               <div className='flex items-center gap-2 text-green-600 text-sm'>

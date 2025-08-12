@@ -76,7 +76,7 @@ const SellersHub = () => {
     {
       step: 1,
       title: "Apply to Sell",
-      description: "Submit your application with business details and product information. We'll review it within 2-3 business days.",
+      description: "Submit your application with business details and product information. Our team will review your application and notify you within 48 hours.",
       icon: <Store className="w-6 h-6" />
     },
     {
@@ -157,17 +157,19 @@ const SellersHub = () => {
                       <Store className="w-4 h-4" />
                       <span>For African Sellers</span>
                     </div>
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                      Sell Your African Products <span className="text-vesoko_yellow">Globally</span>
-                    </h1>
-                    <p className="text-xl sm:text-2xl text-white/90 leading-relaxed">
-                      Join VeSoko and connect your authentic African products with customers worldwide. 
-                      Start with the US market and expand globally.
-                    </p>
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+                    Sell Your African Products <span className="text-vesoko_yellow">Globally</span>
+                  </h1>
+                  <p className="text-xl sm:text-2xl text-white/90 leading-relaxed">
+                    Join VeSoko and connect your authentic African products with customers worldwide.<br />
+                    <span className="font-semibold text-vesoko_yellow">Store application review and approval takes just <span className="text-vesoko_green_200">48 hours</span>!</span><br />
+                    Start with the US market and expand globally.
+                  </p>
                   </div>
                   
+
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Link href="/seller-onboarding" className="inline-flex items-center justify-center gap-2 bg-vesoko_yellow text-vesoko_dark_blue px-8 py-4 rounded-xl font-semibold hover:bg-yellow-300 transition-colors duration-300 text-lg">
+                    <Link href="/select-store-type" className="inline-flex items-center justify-center gap-2 bg-vesoko_yellow text-vesoko_dark_blue px-8 py-4 rounded-xl font-semibold hover:bg-yellow-300 transition-colors duration-300 text-lg">
                       Start Selling Now
                       <ArrowRight className="w-5 h-5" />
                     </Link>
@@ -175,6 +177,11 @@ const SellersHub = () => {
                       Seller Guide
                       <BookOpen className="w-5 h-5" />
                     </Link>
+                  </div>
+
+                  <div className="mt-4">
+                    <span className="text-white/80 text-base">Already a seller? </span>
+                    <Link href="/login" className="text-vesoko_yellow font-semibold hover:underline ml-1">Sign In</Link>
                   </div>
 
                   {/* Quick Stats */}
@@ -223,7 +230,7 @@ const SellersHub = () => {
                     </div>
 
                     <div className="pt-4 border-t border-white/20">
-                      <Link href="/seller-onboarding" className="block w-full text-center bg-white text-vesoko_dark_blue py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
+                      <Link href="/select-store-type" className="block w-full text-center bg-white text-vesoko_dark_blue py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
                         Apply Now - It's Free!
                       </Link>
                     </div>
@@ -281,8 +288,10 @@ const SellersHub = () => {
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-3">{process.title}</h3>
                       <p className="text-gray-600 leading-relaxed">{process.description}</p>
+                      {process.step === 1 && (
+                        <div className="mt-4 text-sm text-vesoko_green_600 font-semibold">Review & approval in 48 hours</div>
+                      )}
                     </div>
-                    
                     {index < sellingProcess.length - 1 && (
                       <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
                         <ArrowRight className="w-6 h-6 text-vesoko_green_600" />
@@ -333,7 +342,7 @@ const SellersHub = () => {
 
                     {req.status === 'active' && (
                       <div className="mt-6 pt-6 border-t border-gray-200">
-                        <Link href="/seller-onboarding" className="inline-flex items-center gap-2 bg-vesoko_green_600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-vesoko_green_700 transition-colors duration-300">
+                        <Link href="/select-store-type" className="inline-flex items-center gap-2 bg-vesoko_green_600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-vesoko_green_700 transition-colors duration-300">
                           Apply Now
                           <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -423,7 +432,7 @@ const SellersHub = () => {
                 Phase 1 is active now for US-based African sellers!
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/seller-onboarding" className="inline-flex items-center justify-center gap-2 bg-vesoko_yellow text-vesoko_dark_blue px-8 py-4 rounded-xl font-semibold hover:bg-yellow-300 transition-colors duration-300">
+                <Link href="/select-store-type" className="inline-flex items-center justify-center gap-2 bg-vesoko_yellow text-vesoko_dark_blue px-8 py-4 rounded-xl font-semibold hover:bg-yellow-300 transition-colors duration-300">
                   Apply to Sell Now
                   <ArrowRight className="w-5 h-5" />
                 </Link>

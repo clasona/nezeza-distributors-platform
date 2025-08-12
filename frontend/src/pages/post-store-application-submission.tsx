@@ -15,9 +15,9 @@ const PostStoreApplicationSubmission = () => {
             Application Submitted
             <span className='block text-vesoko_green_600'>Successfully!</span>
           </h1>
-          
           <p className='text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed'>
-            Thank you for your interest in joining VeSoko! Your store application has been received and is now under review.
+            Thank you for your interest in joining VeSoko! Your store application has been received and is now under review.<br />
+            <span className='font-semibold text-vesoko_dark_blue'>Our team will review your application and notify you within <span className='text-vesoko_green_600'>48 hours</span>.</span>
           </p>
         </div>
 
@@ -38,9 +38,9 @@ const PostStoreApplicationSubmission = () => {
                 </div>
                 <h3 className='text-lg font-semibold text-gray-900 mb-2'>Document Review</h3>
                 <p className='text-gray-600 text-sm leading-relaxed'>
-                  Our team will carefully review your business documents and verify your information
+                  Our team will carefully review your business documents and verify your information.
                 </p>
-                <div className='mt-3 text-sm text-blue-600 font-medium'>1-2 Business Days</div>
+                <div className='mt-3 text-sm text-blue-600 font-medium'>Part of 48-Hour Review</div>
               </div>
 
               {/* Step 2 */}
@@ -50,9 +50,9 @@ const PostStoreApplicationSubmission = () => {
                 </div>
                 <h3 className='text-lg font-semibold text-gray-900 mb-2'>Application Processing</h3>
                 <p className='text-gray-600 text-sm leading-relaxed'>
-                  We'll assess your application against our seller criteria and platform standards
+                  We'll assess your application against our seller criteria and platform standards.
                 </p>
-                <div className='mt-3 text-sm text-yellow-600 font-medium'>2-3 Business Days</div>
+                <div className='mt-3 text-sm text-yellow-600 font-medium'>Part of 48-Hour Review</div>
               </div>
 
               {/* Step 3 */}
@@ -62,7 +62,7 @@ const PostStoreApplicationSubmission = () => {
                 </div>
                 <h3 className='text-lg font-semibold text-gray-900 mb-2'>Decision Notification</h3>
                 <p className='text-gray-600 text-sm leading-relaxed'>
-                  You'll receive an email with our decision and next steps for setting up your store
+                  You'll receive an email with our decision and next steps for setting up your store.
                 </p>
                 <div className='mt-3 text-sm text-green-600 font-medium'>Within 48 Hours</div>
               </div>
@@ -81,7 +81,9 @@ const PostStoreApplicationSubmission = () => {
                 </li>
                 <li className='flex items-center gap-2'>
                   <CheckCircle className='h-4 w-4 text-green-500 flex-shrink-0' />
-                  Timeline for review process
+                  <span>
+                    <span className='font-semibold text-vesoko_dark_blue'>Review Timeline:</span> Most applications are reviewed within <span className='text-vesoko_green_600'>48 hours</span>.
+                  </span>
                 </li>
                 <li className='flex items-center gap-2'>
                   <CheckCircle className='h-4 w-4 text-green-500 flex-shrink-0' />
@@ -104,10 +106,17 @@ const PostStoreApplicationSubmission = () => {
                   </div>
                 </div>
                 <div className='flex items-center gap-3'>
-                  <MessageSquare className='h-5 w-5 text-vesoko_dark_blue' />
+                  <Phone className='h-5 w-5 text-vesoko_dark_blue' />
                   <div>
-                    <p className='font-medium text-gray-900'>Live Chat</p>
-                    <p className='text-gray-600'>Available Mon-Fri, 9AM-6PM EST</p>
+                    <p className='font-medium text-gray-900'>Call Us</p>
+                    <a href='tel:+15551234567' className='text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors'>+1 (959) 999-0661</a>
+                  </div>
+                </div>
+                <div className='flex items-center gap-3'>
+                  <MessageSquare className='h-5 w-5 text-vesoko_dark_green' />
+                  <div>
+                    <p className='font-medium text-gray-900'>WhatsApp</p>
+                    <a href='https://wa.me/18608169330' target='_blank' rel='noopener noreferrer' className='text-vesoko_dark_green hover:text-vesoko_green_600 transition-colors'>+1 (860) 816-9330</a>
                   </div>
                 </div>
               </div>
@@ -126,7 +135,7 @@ const PostStoreApplicationSubmission = () => {
           </Link>
           
           <Link 
-            href='/seller-onboarding'
+            href='/sellers'
             className='inline-flex items-center gap-2 bg-white text-vesoko_dark_blue border-2 border-vesoko_dark_blue px-8 py-3 rounded-lg font-medium hover:bg-vesoko_dark_blue hover:text-white transition-all duration-200 shadow-lg'
           >
             Learn More About Selling

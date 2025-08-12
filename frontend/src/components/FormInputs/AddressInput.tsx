@@ -29,6 +29,7 @@ interface CountryOption {
 
 interface AddressInputProps {
   streetFieldName?: string;
+  street2FieldName?: string;
   cityFieldName?: string;
   stateFieldName?: string;
   countryFieldName?: string;
@@ -41,6 +42,7 @@ interface AddressInputProps {
 }
 const AddressInput = ({
   streetFieldName = 'street',
+  street2FieldName = 'street2',
   cityFieldName = 'city',
   stateFieldName = 'state',
   countryFieldName = 'country',
@@ -173,6 +175,15 @@ const AddressInput = ({
         register={register}
         errors={errors}
         type='text'
+      />
+      <TextInput
+        label='Address Line 2 (Apartment, Suite, Unit, etc.)'
+        id={street2FieldName}
+        name={street2FieldName}
+        register={register}
+        errors={errors}
+        type='text'
+        placeholder='Apartment, suite, unit, building, floor, etc.'
       />
       <TextInput
         label='City/District'

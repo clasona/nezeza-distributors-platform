@@ -46,6 +46,23 @@ const StoreInfoInput = ({
   const [phoneVerificationCode, setPhoneVerificationCode] = useState('');
   const [verificationErrors, setVerificationErrors] = useState({ email: '', phone: '' });
 
+  // Check for existing store logo resource from parent on mount
+  // This can happen when navigating back to this section after auto-save restoration
+  useEffect(() => {
+    const formData = getValues();
+    if (formData.storeLogo && !storeLogoResource) {
+      // Try to reconstruct resource from URL if we have the logo URL but no resource
+      // This typically happens after localStorage restoration
+      const reconstructedResource = {
+        secure_url: formData.storeLogo,
+        original_filename: 'Store Logo',
+        format: 'image',
+        bytes: 0
+      };
+      setStoreLogoResource(reconstructedResource);
+    }
+  }, [getValues, storeLogoResource]);
+
   // Notify parent component when verification status changes
   useEffect(() => {
     if (onVerificationStatusChange) {
@@ -185,6 +202,7 @@ const StoreInfoInput = ({
               setValue('storeEmail', values.email);
               setValue('storePhone', values.phone);
               setValue('storeStreet', values.residenceStreet);
+              setValue('storeStreet2', values.residenceStreet2 || '');
               setValue('storeCity', values.residenceCity);
               setValue('storeState', values.residenceState);
               setValue('storeCountry', values.residenceCountry);
@@ -410,10 +428,12 @@ const StoreInfoInput = ({
           label='Store Logo'
           className='sm:col-span-2' //span full row
           onResourceChange={handleLogoUpload} // Set mainImageResource on upload success
+          initialResource={storeLogoResource} // Pass current resource for preview restoration
         />
         <StoreFormHeading heading='Store Address' />
         <AddressInput
           streetFieldName='storeStreet'
+          street2FieldName='storeStreet2'
           cityFieldName='storeCity'
           stateFieldName='storeState'
           countryFieldName='storeCountry'

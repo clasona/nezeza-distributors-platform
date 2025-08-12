@@ -20,7 +20,7 @@ const subscribeToNewsletter = async (req, res) => {
       });
     }
 
-    // Send notification email to hello@clasona.com
+    // Send notification email to marketplace@vesoko.com
     const emailContent = `
       <html>
         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -59,7 +59,7 @@ const subscribeToNewsletter = async (req, res) => {
     `;
 
     await sendEmail({
-      to: 'clasona.us@gmail.com',
+      to: 'marketplace@vesoko.com',
       subject: `New Newsletter Subscription - ${email}`,
       html: emailContent,
     });

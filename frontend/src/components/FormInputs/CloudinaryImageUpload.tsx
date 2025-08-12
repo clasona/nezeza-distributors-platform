@@ -1,19 +1,26 @@
 import { CldUploadWidget, CloudinaryUploadWidgetInfo } from 'next-cloudinary';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload, X, RefreshCw, Image as ImageIcon } from 'lucide-react';
 
 interface CloudinaryImageUploadProps {
   label?: string;
   className?: string;
   onResourceChange: (resource: any) => void; // Required: Callback to send resource to parent
+  initialResource?: any; // Optional: Initial resource to display
 }
 const CloudinaryImageUpload = ({
   label,
   className = '',
   onResourceChange,
+  initialResource,
 }: CloudinaryImageUploadProps) => {
-  const [resource, setResource] = useState<any>(null);
+  const [resource, setResource] = useState<any>(initialResource || null);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Sync internal resource state with external initialResource prop
+  useEffect(() => {
+    setResource(initialResource || null);
+  }, [initialResource]);
 
   const handleRemoveImage = () => {
     setResource(null);

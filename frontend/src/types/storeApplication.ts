@@ -7,6 +7,7 @@ export type StoreApplicationFormData = {
   citizenshipCountry: string;
   dob: string;
   residenceStreet: string;
+  residenceStreet2?: string;
   residenceCity: string;
   residenceState: string;
   residenceCountry: string;
@@ -20,6 +21,7 @@ export type StoreApplicationFormData = {
   storePhone: string;
   storeLogo?: string;
   storeStreet: string;
+  storeStreet2?: string;
   storeCity: string;
   storeState: string;
   storeCountry: string;

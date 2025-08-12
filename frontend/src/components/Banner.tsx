@@ -114,7 +114,7 @@ const Banner = ({ onBuyClick }: BannerProps) => {
                 <ArrowRight className='w-4 h-4 sm:w-5 sm:h-5 ml-2 transition-transform group-hover:translate-x-1' />
               </button>
               <Link
-                href='/seller-onboarding'
+                href='/sellers'
                 className='group flex items-center justify-center bg-vesoko_green_600 hover:bg-vesoko_green_700 text-white font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-full text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg w-full sm:w-auto min-w-[160px] sm:min-w-[200px]'
               >
                 <Store className='w-4 h-4 sm:w-5 sm:h-5 mr-2' />

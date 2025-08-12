@@ -113,6 +113,7 @@ const PrimaryContactInput = ({
       <StoreFormHeading heading='Residence Address' />
       <AddressInput
         streetFieldName='residenceStreet'
+        street2FieldName='residenceStreet2'
         cityFieldName='residenceCity'
         stateFieldName='residenceState'
         countryFieldName='residenceCountry'

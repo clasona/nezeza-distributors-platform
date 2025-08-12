@@ -40,10 +40,13 @@ const PrimaryContactInfoSchema = new mongoose.Schema({
   // In PrimaryContactInfoSchema
   residenceAddress: {
     street: { type: String, required: true },
+    street1: { type: String }, // For Shippo API compatibility
+    street2: { type: String }, // For Shippo API compatibility
     city: { type: String, required: true },
     state: { type: String, required: true },
     zip: { type: String, required: true },
     country: { type: String, required: true },
+    phone: { type: String }, // For Shippo API compatibility
   },
 });
 
@@ -88,10 +91,13 @@ const StoreInfoSchema = new mongoose.Schema({
   // In PrimaryContactInfoSchema
   address: {
     street: { type: String, required: true },
+    street1: { type: String }, // For Shippo API compatibility
+    street2: { type: String }, // For Shippo API compatibility
     city: { type: String, required: true },
     state: { type: String, required: true },
     zip: { type: String, required: true },
     country: { type: String, required: true },
+    phone: { type: String }, // For Shippo API compatibility
   },
 
   isActive: {

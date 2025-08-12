@@ -329,12 +329,6 @@ const Header = ({
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <Link href='/seller-onboarding' className='flex items-center w-full'>
-                          <BookOpen className='w-4 h-4 text-vesoko_green_600 mr-2' />
-                          Seller Onboarding
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
                         <Link href='/select-store-type' className='flex items-center w-full'>
                           <FileText className='w-4 h-4 text-vesoko_green_600 mr-2' />
                           Start Application
