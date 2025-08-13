@@ -5,7 +5,6 @@ const nodemailerConfig = require('./nodemailerConfig');
 sgMail.setApiKey(process.env.SEND_GRID_API_KEY);
 // for production
 const sendEmail = async ({ to, subject, html }) => {
-  console.log(to);
   const message = {
     to: to,
     from: {

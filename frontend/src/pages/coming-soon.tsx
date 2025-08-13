@@ -4,6 +4,7 @@ import { PlayIcon } from '@heroicons/react/24/solid';
 import logo from '../images/main.png';
 import Image from 'next/image';
 import Link from 'next/link';
+import { subscribeToNewsletter } from '@/utils/newsletter/email';
 
 const ComingSoonPage = () => {
   const [selectedTab, setSelectedTab] = useState('customers');
@@ -24,15 +25,8 @@ const ComingSoonPage = () => {
     
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/api/v1/newsletter/subscribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-      const data = await response.json();
-      setMessage(data.message || 'Thank you for subscribing!');
+      await subscribeToNewsletter(email);
+      setMessage('Thank you for subscribing!');
       setEmail('');
     } catch (error) {
       console.error('Error subscribing:', error);

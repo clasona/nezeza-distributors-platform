@@ -8,6 +8,7 @@ import {
   MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Heart, ExternalLink, Home, ShoppingCart, Star, Users, MessageSquareMore, MessageCircle, Store, MessageSquare
 } from 'lucide-react';
 import { FaTiktok } from 'react-icons/fa';
+import { subscribeToNewsletter } from '@/utils/newsletter/email';
 // import { subscribeToNewsletter } from '@/lib/newsletter'; // Uncomment and implement if needed
 
 const Footer = () => {
@@ -31,7 +32,7 @@ const Footer = () => {
     setIsLoading(true);
     setMessage('');
     try {
-      // await subscribeToNewsletter(email);
+      await subscribeToNewsletter(email);
       setMessage('Successfully subscribed! Check your email for confirmation.');
       setIsSuccess(true);
       setEmail('');
@@ -143,3 +144,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

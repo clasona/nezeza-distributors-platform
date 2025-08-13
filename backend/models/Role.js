@@ -264,6 +264,6 @@ const initRoles = async () => {
   }
 };
 
-//initRoles();
+// initRoles();
 
 module.exports = Role;
