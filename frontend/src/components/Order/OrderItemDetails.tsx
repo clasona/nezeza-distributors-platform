@@ -2,6 +2,7 @@ import { cancelSingleOrderProduct } from '@/utils/order/cancelSingleOrderProduct
 import { getSingleProduct } from '@/utils/product/getSingleProduct';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { OrderItemsProps, ProductProps } from '../../../type';
 import CancelItemModal from './CancelItemModal';
 
@@ -57,9 +58,11 @@ export const OrderItemDetails = ({ item, orderId }: OrderItemDetailsProps) => {
     <div className='bg-white text-black p-2 border border-gray-300 rounded-lg shadow group overflow-hidden'>
       <div className='flex items-center gap-4'>
         <div>
-          <img
-            src={product.image}
+          <Image
+            src={product.image || '/placeholder-image.png'}
             alt={product.title}
+            width={96}
+            height={96}
             className='w-24 h-24 object-cover rounded-md'
           />
         </div>

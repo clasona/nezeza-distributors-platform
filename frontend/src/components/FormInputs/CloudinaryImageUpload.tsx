@@ -1,6 +1,7 @@
-import { CldUploadWidget, CloudinaryUploadWidgetInfo } from 'next-cloudinary';
+import { CldUploadWidget } from 'next-cloudinary';
 import React, { useState, useEffect } from 'react';
-import { Upload, X, RefreshCw, Image as ImageIcon } from 'lucide-react';
+import Image from 'next/image';
+import { X, RefreshCw, Image as ImageIcon } from 'lucide-react';
 
 interface CloudinaryImageUploadProps {
   label?: string;
@@ -106,9 +107,11 @@ const CloudinaryImageUpload = ({
                   <div className='flex items-start gap-4'>
                     {/* Image Preview */}
                     <div className='flex-shrink-0'>
-                      <img 
+                      <Image 
                         src={resource.secure_url} 
                         alt='Store Logo Preview' 
+                        width={96}
+                        height={96}
                         className='w-24 h-24 object-cover rounded-lg border border-gray-200'
                       />
                     </div>

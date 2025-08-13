@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { SiMediamarkt } from 'react-icons/si';
 import { useDispatch, useSelector } from 'react-redux';
-import { OrderItemsProps, StoreProduct, stateProps } from '../../../type';
+import { OrderItemsProps, stateProps } from '../../../type';
 import ErrorMessageModal from '../ErrorMessageModal';
 import SuccessMessageModal from '../SuccessMessageModal';
 import FormattedPrice from '../FormattedPrice';

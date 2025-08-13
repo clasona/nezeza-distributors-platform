@@ -17,6 +17,7 @@ import rwandanProvinces from '@/pages/data/rwandan_provinces.json';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
 import TextInput from '@/components/FormInputs/TextInput';
 import { useForm } from 'react-hook-form';
+import Link from 'next/link';
 
 const CheckoutAddressPage = () => {
   const router = useRouter();
@@ -562,12 +563,12 @@ const CheckoutAddressPage = () => {
 
           {/* Back to cart/products link */}
           <div className='mt-4 text-center'>
-            <a 
+            <Link 
               href={buyNowProduct && buyNowProduct.isBuyNow ? '/' : '/cart'}
               className='text-vesoko_dark_blue hover:underline text-sm'
             >
               ← {buyNowProduct && buyNowProduct.isBuyNow ? 'Back to Products' : 'Back to Cart'}
-            </a>
+            </Link>
           </div>
 
           {successMessage && (

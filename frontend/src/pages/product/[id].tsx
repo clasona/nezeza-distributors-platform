@@ -19,6 +19,7 @@ import {
   Award,
 } from 'lucide-react';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ProductProps, stateProps, AddressProps } from '../../../type';
@@ -243,9 +244,11 @@ const ProductDetails = () => {
                 </button>
               )}
               {imagesArr.length > 0 ? (
-                <img
+                <Image
                   src={imagesArr[activeImage]}
                   alt={product.title}
+                  width={350}
+                  height={350}
                   className='w-full h-full object-contain rounded-lg max-h-[350px]'
                 />
               ) : (

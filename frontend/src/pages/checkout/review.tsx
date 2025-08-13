@@ -9,6 +9,7 @@ import { createShipping } from '@/utils/shipping/createShipping';
 import { useSelector } from 'react-redux';
 import { AddressProps, stateProps } from '../../../type';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const CheckoutReviewPage = () => {
   const { cartItemsData, userInfo, shippingAddress, buyNowProduct } = useSelector(
@@ -348,9 +349,11 @@ const CheckoutReviewPage = () => {
                     className='flex items-center gap-3 bg-gray-50 p-3 rounded shadow-sm'
                   >
                     {item.image && (
-                      <img
+                      <Image
                         src={item.product.images[0]}
                         alt={item.product.name}
+                        width={56}
+                        height={56}
                         className='w-14 h-14 object-cover rounded'
                       />
                     )}

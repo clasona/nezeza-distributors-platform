@@ -20,6 +20,7 @@ import { getFavorites } from '@/utils/favorites/getFavorites';
 import { mergeFavoritesItems } from '@/utils/favorites/mergeFavoritesItems';
 import { hasActiveStripeConnectAccount as checkActiveStripeAccountApi } from '@/utils/stripe/hasStripeConnectAccount';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
+import Link from 'next/link';
 
 // Types for better type safety
 interface LoginFormData {
@@ -439,12 +440,12 @@ const LoginPage = () => {
 
             {/* Forgot Password Link */}
             <div className='text-right'>
-              <a
+              <Link
                 href='/forgot-password'
                 className='text-sm text-vesoko_dark_blue hover:text-vesoko_yellow transition-colors duration-200'
               >
                 Forgot Password?
-              </a>
+              </Link>
             </div>
 
             {/* Login Button */}
@@ -508,12 +509,12 @@ const LoginPage = () => {
           <div className='mt-8 text-center'>
             <p className='text-gray-600'>
               New to VeSoko?{' '}
-              <a
+              <Link
                 className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
                 href='/register'
               >
                 Create an account
-              </a>
+              </Link>
             </p>
           </div>
         </div>

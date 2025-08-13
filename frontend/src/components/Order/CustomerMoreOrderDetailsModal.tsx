@@ -22,6 +22,7 @@ import {
   XCircle,
   AlertCircle
 } from 'lucide-react';
+import Image from 'next/image';
 
 interface CustomerMoreOrderDetailsModalProps {
   isOpen: boolean;
@@ -42,8 +43,6 @@ const CustomerMoreOrderDetailsModal = ({
   onViewInvoice,
   onUpdateOrder,
 }: CustomerMoreOrderDetailsModalProps) => {
-  if (!isOpen) return null;
-
   const {
     register,
     handleSubmit,
@@ -54,15 +53,17 @@ const CustomerMoreOrderDetailsModal = ({
 
   const [orderData, setOrderData] = useState<SubOrderProps>(rowData);
 
-  const isOrderProps = (data: any): data is SubOrderProps =>
-    'fulfillmentStatus' in data;
-
   useEffect(() => {
     console.log('Received rowData:', rowData);
     if (isOpen) {
       setOrderData(rowData);
     }
   }, [isOpen, rowData, setValue]);
+
+  const isOrderProps = (data: any): data is SubOrderProps =>
+    'fulfillmentStatus' in data;
+
+  if (!isOpen) return null;
 
   const handleUpdateOrder = () => {
     const newStatus = getValues('fulfillmentStatus');
@@ -342,9 +343,11 @@ const CustomerMoreOrderDetailsModal = ({
               <div className='space-y-4'>
                 {orderData.products.map((product, index) => (
                   <div key={product._id} className='flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors'>
-                    <img
+                    <Image
                       src={product.image || '/placeholder.png'}
                       alt={product.title}
+                      width={64}
+                      height={64}
                       className='w-16 h-16 rounded-lg object-cover border border-gray-200'
                     />
                     <div className='flex-1 min-w-0'>

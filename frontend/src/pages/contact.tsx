@@ -9,6 +9,7 @@ import TextInput from '@/components/FormInputs/TextInput';
 import TextAreaInput from '@/components/FormInputs/TextAreaInput';
 import DropdownInput from '@/components/FormInputs/DropdownInput';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
+import Link from 'next/link';
 
 const Contact = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm();
@@ -159,12 +160,12 @@ const Contact = () => {
                     <h3 className="text-xl font-semibold text-gray-900 mb-3 text-center">{dept.title}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed mb-4 text-center">{dept.description}</p>
                     <div className="text-center">
-                      <a 
+                      <Link 
                         href={`mailto:${dept.email}`}
                         className="text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium text-sm transition-colors duration-300"
                       >
                         {dept.email}
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 ))}
@@ -312,13 +313,13 @@ const Contact = () => {
                     <p className="text-white/90 mb-4">
                       Check out our FAQ section for immediate answers to common questions.
                     </p>
-                    <a 
+                    <Link
                       href="/faq"
                       className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-colors duration-300"
                     >
                       <MessageSquare className="w-4 h-4" />
                       Visit FAQ
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>

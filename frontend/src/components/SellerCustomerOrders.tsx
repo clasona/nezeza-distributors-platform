@@ -70,6 +70,7 @@ import { useSelector } from 'react-redux';
 import { get } from 'http';
 import { getStore } from '@/utils/store/getStore';
 import { store } from '@/redux/store';
+import Image from 'next/image';
 
 const SellerCustomerOrders = () => {
   const [customerOrders, setCustomerOrders] = useState<SubOrderProps[]>([]);
@@ -935,8 +936,8 @@ const SellerCustomerOrders = () => {
                 key={item._id}
                 className="flex items-center gap-3 bg-gray-50 rounded-lg p-3 min-w-64"
               >
-                <img
-                  src={item.image}
+                <Image
+                  src={item.image ?? '/placeholder.png'}
                   alt={item.description || item.title}
                   className="w-12 h-12 object-cover rounded"
                 />

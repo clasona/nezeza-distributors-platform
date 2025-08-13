@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, SaveIcon } from 'lucide-react';
 
 interface AutoSaveIndicatorProps {
   isAutoSaving?: boolean;
@@ -51,7 +51,7 @@ const AutoSaveIndicator: React.FC<AutoSaveIndicatorProps> = ({
         <>
           <div className="flex items-center gap-2 text-blue-600">
             <div className="animate-spin">
-              <Save className="h-4 w-4" />
+              <SaveIcon className="h-4 w-4" />
             </div>
             <span>Saving...</span>
           </div>

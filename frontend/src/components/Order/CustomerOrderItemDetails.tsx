@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { OrderItemsProps, ProductProps } from '../../../type';
 import { useRouter } from 'next/router';
 import { getSingleProduct } from '@/utils/product/getSingleProduct';
@@ -20,9 +21,11 @@ export const CustomerOrderItemDetails = ({ item }: { item: ProductProps }) => {
     <div className='bg-white text-black p-2 border border-gray-300 rounded-lg shadow group overflow-hidden'>
       <div className='flex items-center gap-4'>
         <div>
-          <img
-            src={item.image}
+          <Image
+            src={item.image || '/placeholder-image.png'}
             alt={item.title}
+            width={96}
+            height={96}
             className='w-24 h-24 object-cover rounded-md'
           />
         </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { InventoryProps, OrderProps, stateProps } from '../../../type';
+import { stateProps } from '../../../type';
 import { useSelector } from 'react-redux';
 
 interface ConfirmResetCartModalProps<T extends object> {
@@ -13,9 +13,9 @@ const ConfirmResetCartModal = <T extends { _id: number | string }>({
   onClose,
   onConfirmResetCart,
 }: ConfirmResetCartModalProps<T>) => {
-  if (!isOpen) return null;
-
   const { userInfo } = useSelector((state: stateProps) => state.next);
+
+  if (!isOpen) return null;
 
   const handleConfirmResetCart = async () => {
     onConfirmResetCart();

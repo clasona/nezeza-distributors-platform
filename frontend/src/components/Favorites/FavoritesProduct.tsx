@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import FormattedPrice from '../FormattedPrice';
-import { LuMinus, LuPlus } from 'react-icons/lu';
 import { IoMdClose } from 'react-icons/io';
 import { useDispatch } from 'react-redux';
 import {
   addToCart,
-  decreaseQuantity,
   deleteFavoritesProduct,
-  increaseQuantity,
 } from '@/redux/nextSlice';
 import { OrderItemsProps } from '../../../type';
 import { ShoppingCart } from 'lucide-react';

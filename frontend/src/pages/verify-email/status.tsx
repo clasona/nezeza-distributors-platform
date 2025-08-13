@@ -3,6 +3,7 @@ import { verifyEmail } from '@/utils/auth/verifyEmail';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { CheckCircle2, XCircle, Loader2, ArrowRight, RefreshCw } from 'lucide-react';
+import Link from 'next/link';
 
 const VerifyEmailStatusPage = () => {
   const router = useRouter();
@@ -61,9 +62,9 @@ const VerifyEmailStatusPage = () => {
               </button>
               <p className='text-sm text-gray-500'>
                 Need help? Contact us at{' '}
-                <a href='mailto:support@vesoko.com' className='text-vesoko_dark_blue hover:underline'>
+                <Link href='mailto:support@vesoko.com' className='text-vesoko_dark_blue hover:underline'>
                   support@vesoko.com
-                </a>
+                </Link>
               </p>
             </div>
           </div>
@@ -175,12 +176,12 @@ const VerifyEmailStatusPage = () => {
                 </div>
                 <p className='text-sm text-gray-500 mt-4'>
                   Still having trouble?{' '}
-                  <a
+                  <Link
                     href='mailto:support@vesoko.com'
                     className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
                   >
                     Contact Support
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>

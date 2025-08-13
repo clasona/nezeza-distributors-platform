@@ -5,7 +5,6 @@ import {
   UseFormRegister,
   UseFormSetValue,
   useWatch,
-  useFormState,
   UseFormGetValues,
 } from 'react-hook-form';
 import AddressInput from '../AddressInput';
@@ -14,7 +13,7 @@ import DropdownInput from '../DropdownInput';
 import TextAreaInput from '../TextAreaInput';
 import TextInput from '../TextInput';
 import StoreFormHeading from './StoreFormHeading';
-import { Store, Mail, Phone, ClipboardList, Type, Image, CheckCircle, AlertCircle, Copy, MessageSquare } from 'lucide-react';
+import { CheckCircle, AlertCircle, Copy, MessageSquare, Mail } from 'lucide-react';
 import { StoreApplicationFormData } from '@/types/storeApplication';
 import { sendEmailVerification, verifyEmailCode } from '@/utils/verification/sendEmailVerification';
 import { sendSMSVerification, verifySMSCode } from '@/utils/verification/sendSMSVerification';

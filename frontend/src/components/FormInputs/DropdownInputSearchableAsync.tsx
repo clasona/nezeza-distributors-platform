@@ -1,7 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { UseFormRegister, FieldValues, FieldErrors } from 'react-hook-form';
-import Select, { StylesConfig } from 'react-select'; // Import react-select
 import AsyncSelect from 'react-select/async';
 import { ProductProps } from '../../../type';
 import { getAllProducts } from '@/utils/product/getAllProducts';

@@ -17,6 +17,7 @@ import { getMyArchivedOrders } from '@/utils/order/getMyArchivedOrders';
 import { calculateOrderStats } from '@/utils/orderUtils';
 import { sortItems } from '@/utils/sortItems';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { OrderProps } from '../../type';
 import ErrorMessageModal from './ErrorMessageModal';
@@ -359,9 +360,11 @@ const SellerMyOrders = () => {
                             key={item._id}
                             className='flex items-center px-20 gap-4 border-b border-vesoko_light_blue pb-2'
                           >
-                            <img
+                            <Image
                               src={item.image}
                               alt={item.description}
+                              width={48}
+                              height={48}
                               className='w-12 h-12 object-cover'
                             />
                             <div className=''>

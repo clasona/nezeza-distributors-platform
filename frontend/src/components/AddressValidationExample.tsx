@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { validateShippingAddress, isAddressComplete, AddressData } from '@/utils/address/validateAddress';
 
 interface AddressFormProps {
@@ -35,7 +35,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
   // Real-time field validation
-  const validateFields = () => {
+  const validateFields = useCallback(() => {
     const { valid, missingFields } = isAddressComplete(address, 'shipping');
     
     if (!valid) {
@@ -47,7 +47,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
     
     setFieldErrors({});
     return true;
-  };
+  }, [address]);
 
   // Validate with server (Shippo API)
   const handleValidateAddress = async () => {
@@ -109,7 +109,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
     }, 1000); // Wait 1 second after user stops typing
 
     return () => clearTimeout(timeoutId);
-  }, [address]);
+  }, [address, validateFields]);
 
   const handleInputChange = (field: keyof AddressData) => (
     e: React.ChangeEvent<HTMLInputElement>

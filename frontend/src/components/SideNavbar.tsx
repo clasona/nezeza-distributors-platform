@@ -288,9 +288,11 @@ const SideNavbar = ({
           <div className='flex items-center space-x-3'>
             <div className='relative'>
               {storeInfo?.logo ? (
-                <img
+                <Image
                   src={storeInfo.logo}
                   alt='Store logo'
+                  width={48}
+                  height={48}
                   className='w-12 h-12 rounded-lg object-cover border-2 border-white shadow-sm'
                 />
               ) : (

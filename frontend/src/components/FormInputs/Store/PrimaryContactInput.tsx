@@ -6,13 +6,11 @@ import countries from '@/pages/data/countries.json';
 import {
   Control,
   FieldErrors,
-  useForm,
   UseFormRegister,
 } from 'react-hook-form';
 import StoreFormHeading from './StoreFormHeading';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../../../type';
-import { User, Mail, Phone, MapPin, Calendar, Globe } from 'lucide-react';
 import { StoreApplicationFormData } from '@/types/storeApplication';
 
 interface PrimaryContactInputProps {

@@ -100,23 +100,23 @@ const PostStoreApplicationSubmission = () => {
                   <Mail className='h-5 w-5 text-vesoko_dark_blue' />
                   <div>
                     <p className='font-medium text-gray-900'>Email Support</p>
-                    <a href='mailto:support@vesoko.com' className='text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors'>
+                    <Link href='mailto:support@vesoko.com' className='text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors'>
                       support@vesoko.com
-                    </a>
+                    </Link>
                   </div>
                 </div>
                 <div className='flex items-center gap-3'>
                   <Phone className='h-5 w-5 text-vesoko_dark_blue' />
                   <div>
                     <p className='font-medium text-gray-900'>Call Us</p>
-                    <a href='tel:+15551234567' className='text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors'>+1 (959) 999-0661</a>
+                    <Link href='tel:+15551234567' className='text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors'>+1 (959) 999-0661</Link>
                   </div>
                 </div>
                 <div className='flex items-center gap-3'>
                   <MessageSquare className='h-5 w-5 text-vesoko_dark_green' />
                   <div>
                     <p className='font-medium text-gray-900'>WhatsApp</p>
-                    <a href='https://wa.me/18608169330' target='_blank' rel='noopener noreferrer' className='text-vesoko_dark_green hover:text-vesoko_green_600 transition-colors'>+1 (860) 816-9330</a>
+                    <Link href='https://wa.me/18608169330' target='_blank' rel='noopener noreferrer' className='text-vesoko_dark_green hover:text-vesoko_green_600 transition-colors'>+1 (860) 816-9330</Link>
                   </div>
                 </div>
               </div>

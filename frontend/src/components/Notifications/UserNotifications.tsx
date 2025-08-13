@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Bell,
   Trash2,
   Eye,
-  XCircle,
-  Filter,
-  Search,
   RotateCcw,
   BellRing,
   CheckCircle,
@@ -14,12 +10,10 @@ import {
   Calendar,
   Clock,
   X,
+  Filter,
 } from 'lucide-react';
 import SearchField from '@/components/Table/SearchField';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
-import ClearFilters from '@/components/Table/Filters/ClearFilters';
-import TableFilters from '@/components/Table/TableFilters';
-import DateFilters from '@/components/Table/Filters/DateFilters';
 import { NotificationProps } from '../../../type';
 import {
   getAllNotifications,
@@ -27,8 +21,6 @@ import {
 } from '@/utils/notificationUtils';
 import SuccessMessageModal from '@/components/SuccessMessageModal';
 import Button from '@/components/FormInputs/Button';
-import PageHeader from '@/components/PageHeader';
-import { stateProps, UserProps } from '../../../type';
 import Loading from '../Loaders/Loading';
 
 const UserNotifications = () => {

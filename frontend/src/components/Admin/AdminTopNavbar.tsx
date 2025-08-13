@@ -1,4 +1,6 @@
 import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 const AdminTopNavbar: React.FC = () => {
   return (
@@ -24,9 +26,9 @@ const AdminTopNavbar: React.FC = () => {
         </button>
         {/* Quick Links */}
         <div className="hidden md:flex gap-4">
-          <a href="/admin/store-applications" className="text-vesoko_yellow hover:text-white font-medium">Applications</a>
-          <a href="/admin/orders" className="text-vesoko_yellow hover:text-white font-medium">Orders</a>
-          <a href="/admin/support" className="text-vesoko_yellow hover:text-white font-medium">Support</a>
+          <Link href="/admin/store-applications" className="text-vesoko_yellow hover:text-white font-medium">Applications</Link>
+          <Link href="/admin/orders" className="text-vesoko_yellow hover:text-white font-medium">Orders</Link>
+          <Link href="/admin/support" className="text-vesoko_yellow hover:text-white font-medium">Support</Link>
         </div>
         {/* Theme Toggle */}
         <button className="text-white hover:text-vesoko_yellow focus:outline-none" aria-label="Toggle theme" onClick={() => {
@@ -37,7 +39,7 @@ const AdminTopNavbar: React.FC = () => {
         {/* Profile */}
         <div className="flex items-center gap-2">
           <span className="text-vesoko_yellow font-semibold text-sm">Admin</span>
-          <img src="/admin-avatar.png" alt="Admin Avatar" className="w-8 h-8 rounded-full border-2 border-vesoko_yellow" />
+          <Image src="/admin-avatar.png" alt="Admin Avatar" width={32} height={32} className="w-8 h-8 rounded-full border-2 border-vesoko_yellow" />
         </div>
       </div>
     </header>

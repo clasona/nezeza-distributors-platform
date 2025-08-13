@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
 
 interface MultiImageInputProps {
@@ -57,10 +58,12 @@ const MultiImageInput: React.FC<MultiImageInputProps> = ({ onFilesChange }) => {
       <em>(Only *.jpg, *.jpeg and *.png images will be accepted)</em>
       <div className='mt-4 grid grid-cols-3 gap-2'>
         {previews.map((src, index) => (
-          <img
+          <Image
             key={index}
             src={src}
             alt={`Preview ${index + 1}`}
+            width={80}
+            height={80}
             className='w-20 h-20 object-cover rounded-md'
           />
         ))}

@@ -519,24 +519,24 @@ const SellersGuide = () => {
               <Mail className='h-12 w-12 text-vesoko_dark_blue mx-auto mb-6' />
               <h3 className='text-xl font-semibold text-gray-900 mb-4'>Email Support</h3>
               <p className='text-gray-600 mb-6'>Get detailed answers to your questions</p>
-              <a 
+              <Link 
                 href='mailto:support@vesoko.com' 
                 className='inline-flex items-center gap-2 bg-vesoko_dark_blue text-white px-6 py-3 rounded-lg font-medium hover:bg-vesoko_green_600 transition-colors'
               >
                 <Mail className='h-5 w-5' />
                 support@vesoko.com
-              </a>
+              </Link>
             </div>
 
             <div className='bg-white rounded-2xl p-8 shadow-lg border border-gray-200'>
               <Phone className='h-12 w-12 text-vesoko_dark_blue mx-auto mb-6' />
               <h3 className='text-xl font-semibold text-gray-900 mb-4'>Call Us</h3>
               <p className='text-gray-600 mb-2'>Speak directly with our support team</p>
-              <a href='tel:+19599990661' className='text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium text-lg transition-colors block mb-4'>+1 (959) 999-0661</a>
+              <Link href='tel:+19599990661' className='text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium text-lg transition-colors block mb-4'>+1 (959) 999-0661</Link>
               <MessageSquare className='h-12 w-12 text-vesoko_dark_green mx-auto mb-6' />
               <h3 className='text-xl font-semibold text-gray-900 mb-4'>WhatsApp</h3>
               <p className='text-gray-600 mb-2'>Chat with us on WhatsApp</p>
-              <a href='https://wa.me/18608169330' target='_blank' rel='noopener noreferrer' className='text-vesoko_dark_green hover:text-vesoko_green_600 font-medium text-lg transition-colors block'>+1 (860) 816-9330</a>
+              <Link href='https://wa.me/18608169330' target='_blank' rel='noopener noreferrer' className='text-vesoko_dark_green hover:text-vesoko_green_600 font-medium text-lg transition-colors block'>+1 (860) 816-9330</Link>
             </div>
           </div>
 

@@ -211,7 +211,7 @@ const ReviewsModal: React.FC<ReviewsModalProps> = ({
 
         {/* Image carousel */}
         {/* <div className='relative h-64 md:h-96 mb-4 md:mb-6 mt-6'>
-          <img
+          <Image
             src={product.images[imageIndices[product._id]]}
             alt={product.name}
             className='w-full h-full object-cover'

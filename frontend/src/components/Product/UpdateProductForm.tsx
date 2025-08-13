@@ -16,7 +16,8 @@ import { getSingleProduct } from '@/utils/product/getSingleProduct';
 import { updateOrderItem } from '@/utils/order/updateOrderItem';
 import CloudinaryUploadWidget from '../Cloudinary/UploadWidget';
 import DropdownInputSearchable from '../FormInputs/DropdownInputSearchable';
-import { ArrowLeft, Package, DollarSign, Image, Ruler, Settings, Palette, Check } from 'lucide-react';
+import { ArrowLeft, Package, DollarSign, Ruler, Settings, Palette, Check, Images } from 'lucide-react';
+import Image from 'next/image';
 
 interface UpdateProductFormProps {
   onSubmitSuccess?: (data: any) => void;
@@ -348,7 +349,8 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-purple-100 rounded-lg">
-                <Image className="w-5 h-5 text-purple-600" />
+                {/* use different image icon to not conflict with nextjs image*/}
+                <Images className="w-5 h-5 text-purple-600" />
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">Product Media</h2>
@@ -364,7 +366,7 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
                 {imageUrls.map((url, i) => (
                   <div key={i} className="relative group">
-                    <img
+                    <Image
                       src={url}
                       alt={`Product ${i + 1}`}
                       className="w-full h-24 object-cover rounded-lg border border-gray-200 shadow-sm"

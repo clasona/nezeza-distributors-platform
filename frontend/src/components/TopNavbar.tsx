@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { getAllNotifications } from '@/utils/notificationUtils';
+import Image from 'next/image';
 import {
   Archive,
   Bell,
@@ -113,9 +114,11 @@ const TopNavbar = ({
           {/* Store Logo */}
           <div className='relative'>
             {storeInfo?.logo ? (
-              <img
+              <Image
                 src={storeInfo.logo}
                 alt={`${storeName} logo`}
+                width={40}
+                height={40}
                 className='w-10 h-10 rounded-lg object-cover border-2 border-vesoko_green_200'
               />
             ) : (
@@ -208,9 +211,11 @@ const TopNavbar = ({
           <DropdownMenuTrigger asChild>
             <button className='flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors duration-200 border border-gray-200'>
               {storeInfo?.logo ? (
-                <img
+                <Image
                   src={storeInfo.logo}
                   alt='User avatar'
+                  width={32}
+                  height={32}
                   className='w-8 h-8 rounded-full object-cover'
                 />
               ) : (
@@ -226,9 +231,11 @@ const TopNavbar = ({
             <div className='flex items-center space-x-3 pb-3 border-b border-gray-200'>
               <div className='relative'>
                 {storeInfo?.logo ? (
-                  <img
+                  <Image
                     src={storeInfo.logo}
                     alt={`${storeName} logo`}
+                    width={48}
+                    height={48}
                     className='w-12 h-12 rounded-lg object-cover border-2 border-vesoko_green_200'
                   />
                 ) : (

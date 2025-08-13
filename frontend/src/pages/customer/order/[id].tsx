@@ -29,6 +29,7 @@ import {
   X,
   Clock
 } from 'lucide-react';
+import Image from 'next/image';
 
 const SingleOrderDetails = () => {
   const router = useRouter();
@@ -59,7 +60,6 @@ const SingleOrderDetails = () => {
 
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleOpenFullCancelModal = () => setIsFullCancelModalOpen(true);
@@ -427,7 +427,7 @@ const SingleOrderDetails = () => {
                   <div className='space-y-4'>
                     {order.orderItems.map((item) => (
                       <div key={item._id} className='flex items-center space-x-4 p-4 bg-gray-50 rounded-lg'>
-                        <img
+                        <Image
                           src={item.image}
                           alt={item.title}
                           className='w-16 h-16 object-cover rounded-lg'

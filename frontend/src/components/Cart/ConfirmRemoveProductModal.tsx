@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { OrderItemsProps } from '../../../type';
 
 interface ConfirmRemoveProductModalProps {
@@ -29,9 +30,11 @@ const ConfirmRemoveProductModal = ({
           <p className='text-gray-700 mb-3'>Are you sure you want to remove this item from your cart?</p>
           <div className='bg-gray-50 p-4 rounded-lg'>
             <div className='flex items-center gap-3'>
-              <img 
+              <Image 
                 src={product.product.images[0]} 
                 alt={product.title}
+                width={48}
+                height={48}
                 className='w-12 h-12 object-cover rounded-md'
               />
               <div className='flex-1'>

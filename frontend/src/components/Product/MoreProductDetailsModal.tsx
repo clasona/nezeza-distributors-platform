@@ -1,6 +1,7 @@
 import { addToCart, addToFavorites } from '@/redux/nextSlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
+import Image from 'next/image';
 import { useDispatch } from 'react-redux';
 import { ProductProps } from '../../../type';
 
@@ -60,9 +61,11 @@ ProductMoreInfoModalProps) => {
             >
               <ChevronLeft size={24} />
             </button>
-            <img
+            <Image
               src={images[currentImageIndex]}
               alt={product.title}
+              width={192}
+              height={256}
               className='w-full h-64 object-cover rounded-md'
             />
             <button

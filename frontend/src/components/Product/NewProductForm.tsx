@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
+import Image from 'next/image';
 import { OrderItemsProps, ProductProps, stateProps } from '../../../type';
 import ErrorMessageModal from '../ErrorMessageModal';
 import DropdownInput from '../FormInputs/DropdownInput';
@@ -356,9 +357,11 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
             <div className='grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-4'>
               {imageUrls.map((url, i) => (
                 <div key={i} className='relative group'>
-                  <img
+                  <Image
                     src={url}
                     alt={`Product Image ${i + 1}`}
+                    width={80}
+                    height={80}
                     className='w-full h-20 object-cover rounded-lg border border-gray-200 shadow-sm group-hover:shadow-md transition-shadow duration-200'
                   />
                   <button

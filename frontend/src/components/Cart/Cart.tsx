@@ -2,7 +2,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import React from 'react';
 import { stateProps } from '../../../type';
-import { ShoppingCart } from 'lucide-react';
 import cartIcon from '@/images/cart.png';
 
 interface CartProps {

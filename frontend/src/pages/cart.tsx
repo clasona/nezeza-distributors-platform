@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { ShoppingCart, ArrowLeft, Package } from 'lucide-react';
 import { OrderItemsProps, stateProps } from '../../type';
 
-const cartPage = () => {
+const CartPage = () => {
   const { cartItemsData } = useSelector((state: stateProps) => state.next);
 
   return (
@@ -90,4 +90,4 @@ const cartPage = () => {
   );
 };
 
-export default cartPage;
+export default CartPage;

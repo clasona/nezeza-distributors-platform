@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import CloudinaryFileUpload from '../../FormInputs/CloudinaryFileUpload';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
-import StoreFormHeading from './StoreFormHeading';
-import { FileText, Shield, AlertCircle, CheckCircle2, Upload } from 'lucide-react';
+import { FileText, Shield, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { StoreApplicationFormData } from '@/types/storeApplication';
+import Link from 'next/link';
 
 interface VerificationDocsInputProps {
   errors: FieldErrors<StoreApplicationFormData>;
@@ -200,7 +200,7 @@ const VerificationDocsInput = ({
       
       {/* Help Text */}
       <div className='text-center text-sm text-gray-500'>
-        <p>Having trouble uploading documents? <a href='/contact' className='text-vesoko_green_600 hover:text-vesoko_green_700 font-medium'>Contact our support team</a> for assistance.</p>
+        <p>Having trouble uploading documents? <Link href='/contact' className='text-vesoko_green_600 hover:text-vesoko_green_700 font-medium'>Contact our support team</Link> for assistance.</p>
       </div>
     </div>
   );

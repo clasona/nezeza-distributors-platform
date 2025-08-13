@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import { Eye, EyeOff, User, Mail, Lock, Store, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 
 const RegisterPage = () => {
   // State hooks
@@ -322,23 +323,23 @@ const RegisterPage = () => {
               <div className='ml-3'>
                 <label htmlFor='terms' className='text-sm text-gray-600'>
                   I agree to the{' '}
-                  <a
+                  <Link
                     href='/terms'
                     target='_blank'
                     rel='noopener noreferrer'
                     className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
                   >
                     Terms of Service
-                  </a>{' '}
+                  </Link>{' '}
                   and{' '}
-                  <a
+                  <Link
                     href='/privacy'
                     target='_blank'
                     rel='noopener noreferrer'
                     className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
                   >
                     Privacy Policy
-                  </a>
+                  </Link>
                 </label>
               </div>
             </div>
@@ -417,12 +418,12 @@ const RegisterPage = () => {
           <div className='mt-8 text-center'>
             <p className='text-gray-600'>
               Already have an account?{' '}
-              <a
+              <Link
                 href='/login'
                 className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
               >
                 Sign in
-              </a>
+              </Link>
             </p>
           </div>
         </div>

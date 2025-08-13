@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { calculateOrderItemsSubtotal } from '@/utils/order/calculateOrderItemsSubtotal';
 import { OrderProps } from '../../../type';
@@ -11,9 +12,9 @@ interface OrderDetailsWithImagesProps {
 }
 const OrderDetailsWithImages = ({ order }: OrderDetailsWithImagesProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  // Get unique images from order items
+  // Get unique images from order items (filter out undefined)
   const uniqueImages = Array.from(
-    new Set(order.orderItems.map((item) => item.product.image))
+    new Set(order.orderItems.map((item) => item.product.image).filter(Boolean))
   );
 
   // Handle navigation
@@ -67,10 +68,12 @@ const OrderDetailsWithImages = ({ order }: OrderDetailsWithImagesProps) => {
               {uniqueImages
                 .slice(currentIndex, currentIndex + 3)
                 .map((img, index) => (
-                  <img
+                  <Image
                     key={index}
-                    src={img}
+                    src={img || '/placeholder-image.png'}
                     alt={`Product ${index}`}
+                    width={96}
+                    height={96}
                     className='w-24 h-24 object-cover rounded-md'
                   />
                 ))}

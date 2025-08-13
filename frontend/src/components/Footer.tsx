@@ -5,7 +5,7 @@ import Link from 'next/link';
 import logo from '../images/main.png';
 import Image from 'next/image';
 import {
-  MapPin, Phone, Mail, Facebook, Twitter, Instagram, Linkedin, Heart, ExternalLink, Home, ShoppingCart, Star, Users, MessageSquareMore, MessageCircle, Store, MessageSquare
+  Facebook, Twitter, Instagram, Heart, ExternalLink, Home, Users, MessageSquareMore, Store, MessageSquare
 } from 'lucide-react';
 import { FaTiktok } from 'react-icons/fa';
 import { subscribeToNewsletter } from '@/utils/newsletter/email';

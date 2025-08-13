@@ -41,6 +41,7 @@ import {
   Truck
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { OrderItemsProps, OrderProps } from '../../type';
 import ErrorMessageModal from './ErrorMessageModal';
@@ -477,9 +478,11 @@ const SellerMyOrders = () => {
                 key={item._id}
                 className="flex items-center gap-3 bg-gray-50 rounded-lg p-3 min-w-64"
               >
-                <img
+                <Image
                   src={item.image}
                   alt={item.description || item.product?.title}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 object-cover rounded"
                 />
                 <div className="flex-1">

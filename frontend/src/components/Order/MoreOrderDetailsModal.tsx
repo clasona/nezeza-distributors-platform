@@ -23,16 +23,17 @@ const MoreOrderDetailsModal = <T,>({
   onArchiveOrder,
   onViewInvoice,
 }: MoreOrderDetailsModalProps<T>) => {
-  if (!isOpen) return null;
-
   const [orderData, setOrderData] = useState<T>(rowData);
-  console.log('MoreOrderDetailsModal orderData', orderData);
 
   useEffect(() => {
     if (isOpen) {
       setOrderData(rowData);
     }
   }, [isOpen, rowData]); // This effect runs whenever `isOpen` or `rowData` changes
+
+  console.log('MoreOrderDetailsModal orderData', orderData);
+
+  if (!isOpen) return null;
 
   const isOrderProps = (data: any): data is OrderProps =>
     'fulfillmentStatus' in data;

@@ -1,5 +1,6 @@
-import { Upload, FileText, Check } from 'lucide-react';
+import { Upload, Check } from 'lucide-react';
 import { CldUploadWidget } from 'next-cloudinary';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 interface CloudinaryFileUploadProps {
@@ -119,14 +120,14 @@ const CloudinaryFileUpload = ({
             File uploaded successfully: {resource.original_filename}
           </p>
           <p>
-            <a
+            <Link
               href={resource.secure_url}
               target='_blank'
               rel='noopener noreferrer'
               className='text-vesoko_dark_blue underline'
             >
               Download File
-            </a>
+            </Link>
           </p>
         </div>
       )}

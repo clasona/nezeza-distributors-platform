@@ -8,7 +8,7 @@ import { Heart, ArrowLeft, ShoppingCart, Star } from 'lucide-react';
 import { addAllFavoritesToCart } from '@/redux/nextSlice';
 import { OrderItemsProps, stateProps } from '../../type';
 
-const favoritesPage = () => {
+const FavoritesPage = () => {
   const { favoritesItemsData } = useSelector((state: stateProps) => state.next);
   const dispatch = useDispatch();
   const [isConfirmAddAllModalOpen, setIsConfirmAddAllModalOpen] = useState(false);
@@ -149,4 +149,4 @@ const favoritesPage = () => {
   );
 };
 
-export default favoritesPage;
+export default FavoritesPage;

@@ -295,19 +295,19 @@ const SuccessPage = () => {
             Need help with your order?
           </p>
           <div className='flex flex-col sm:flex-row gap-4 justify-center text-sm'>
-            <a
+            <Link
               href='mailto:support@vesoko.com'
               className='text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium'
             >
               📧 support@vesoko.com
-            </a>
+            </Link>
             <span className='hidden sm:inline text-gray-400'>|</span>
-            <a
+            <Link
               href='tel:+1234567890'
               className='text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium'
             >
               📞 (123) 456-7890
-            </a>
+            </Link>
           </div>
         </div>
       </div>

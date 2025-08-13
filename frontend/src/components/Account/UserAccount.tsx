@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import TextInput from '@/components/FormInputs/TextInput';
 import { useForm } from 'react-hook-form';
 import defaultUserImage from '@/images/defaultUserImage.png';
@@ -7,7 +7,6 @@ import Image from 'next/image';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
 import { updateUser } from '@/utils/user/updateUser';
 import { forgotPassword } from '@/utils/auth/forgotPassword';
-import { useRouter } from 'next/router';
 import { updateUserPassword } from '@/utils/user/updatePassword';
 import SuccessMessageModal from '@/components/SuccessMessageModal';
 import ErrorMessageModal from '@/components/ErrorMessageModal';
@@ -29,7 +28,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
     setValue,
     getValues,
   } = useForm();
-  const router = useRouter();
+  // const router = useRouter();
   const [isSendingReset, setIsSendingReset] = useState(false);
   const handleSendResetPasswordEmail = async () => {
     setIsSendingReset(true);
@@ -60,7 +59,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
         dispatch(addUser(updatedUserInfo));
         setSuccessMessage('Profile picture uploaded successfully!');
         setTimeout(() => setSuccessMessage(''), 3000);
-      } catch (error) {
+      } catch {
         setErrorMessage('Failed to upload profile picture. Please try again.');
         setTimeout(() => setErrorMessage(''), 3000);
       }
@@ -78,7 +77,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
       dispatch(addUser(updatedUserInfo));
       setSuccessMessage('Profile picture removed successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (error) {
+    } catch {
       setErrorMessage('Failed to remove profile picture. Please try again.');
       setTimeout(() => setErrorMessage(''), 3000);
     }
@@ -87,7 +86,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
   const [currentUserData, setCurrentUserData] = useState<any>(null);
   const dispatch = useDispatch();
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (!userInfo?._id) return; // Ensure userId exists before fetching
     try {
       const userData = await getUserById(userInfo._id);
@@ -109,11 +108,11 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
     } catch (error) {
       console.error('Failed to fetch user data', error);
     }
-  };
+  }, [userInfo?._id, setValue]);
 
   useEffect(() => {
     fetchUserData();
-  }, [userInfo?._id]);
+  }, [fetchUserData]);
 
   const handlePasswordChange = async () => {
     const currentPassword = getValues('currentPassword');
@@ -150,7 +149,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
       setValue('currentPassword', '');
       setValue('newPassword', '');
       setValue('confirmPassword', '');
-    } catch (error) {
+    } catch {
       setErrorMessage('Error changing password.');
     }
   };
@@ -170,7 +169,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
     };
 
     // Remove address fields from main data and create structured data
-    const { street1, street2, city, state, zip, country, ...otherData } = data;
+    const { street1: _street1, street2: _street2, city: _city, state: _state, zip: _zip, country: _country, ...otherData } = data;
     
     const newUserData = {
       ...otherData,
@@ -224,7 +223,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
       setErrorMessage('');
       setSuccessMessage(`Account data updated successfully!`);
       setTimeout(() => setSuccessMessage(''), 4000);
-    } catch (error) {
+    } catch {
       setErrorMessage('Error updating account data.');
     } finally {
       setSaving(false);
@@ -447,7 +446,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
               >
                 {isSendingReset ? 'Sending Link...' : 'Send Password Reset Link'}
               </button>
-              <p className="text-sm text-gray-600 mt-2 text-center">We'll send a password reset link to your email.</p>
+              <p className="text-sm text-gray-600 mt-2 text-center">We&apos;ll send a password reset link to your email.</p>
             </div>
           </div>
 

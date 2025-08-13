@@ -21,7 +21,7 @@
 //     <div className='container mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6'>
 //       {/* Product Images */}
 //       <div className='flex flex-col items-center'>
-//         <img
+//         <Image
 //           src={product.image}
 //           alt={product.title}
 //           className='w-96 h-96 object-cover'

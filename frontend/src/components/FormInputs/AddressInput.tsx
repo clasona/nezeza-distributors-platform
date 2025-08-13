@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import TextInput from './TextInput';
 import {
-  useForm,
   useWatch,
   UseFormRegister,
   FieldValues,
   FieldErrors,
   Control,
-  useFormContext,
   UseFormSetValue,
 } from 'react-hook-form';
-import DropdownInput from './DropdownInput';
 import countriesWeOperateIn from '@/pages/data/countriesWeOperateIn.json';
 import DropdownInputSearchable from './DropdownInputSearchable';
 

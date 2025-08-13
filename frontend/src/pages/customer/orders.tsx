@@ -34,6 +34,7 @@ import {
   ShoppingBag,
   Clock
 } from 'lucide-react';
+import Image from 'next/image';
 
 const Orders = () => {
   const [orders, setOrders] = useState<OrderProps[]>([]); // All orders
@@ -465,7 +466,7 @@ const Orders = () => {
                       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
                         {order.orderItems.slice(0, 3).map((item, index) => (
                           <div key={index} className='flex items-center space-x-3 bg-white rounded-lg p-3'>
-                            <img
+                            <Image
                               src={item.product.images[0]}
                               alt={item.title}
                               className='w-12 h-12 object-cover rounded-lg'

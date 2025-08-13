@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { useSelector } from 'react-redux';
 import { Carousel } from 'react-responsive-carousel';
-import { ArrowRight, ShoppingBag, Store, Star, TrendingUp } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Store, TrendingUp } from 'lucide-react';
 import sliderImg_1 from '../images/slider/slide1.png';
 import sliderImg_2 from '../images/slider/slide2.jpeg';
 import sliderImg_3 from '../images/slider/slide3.jpg';

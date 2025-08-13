@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import TextInput from '@/components/FormInputs/TextInput';
 import { useForm } from 'react-hook-form';
 import defaultStoreImage from '@/images/defaultUserImage.png';
@@ -22,7 +22,7 @@ const StoreAccount = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-    getValues,
+    // getValues,
   } = useForm();
 
   const [successMessage, setSuccessMessage] = useState<string>('');
@@ -97,16 +97,16 @@ const StoreAccount = () => {
   );
 
   // Store category options
-  const storeCategoryOptions = [
+  const storeCategoryOptions = useMemo(() => [
     { value: 'food', label: 'Food & Beverage' },
     { value: 'clothing', label: 'Clothing' },
     { value: 'furniture', label: 'Furniture' },
     { value: 'electronics', label: 'Electronics' },
     { value: 'services', label: 'Professional Services' },
     { value: 'other', label: 'Other' },
-  ];
+  ], []);
 
-  const fetchStoreData = async () => {
+  const fetchStoreData = useCallback(async () => {
     if (!storeInfo?._id) {
       setLoading(false);
       return;
@@ -149,11 +149,11 @@ const StoreAccount = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [storeInfo?._id, setValue, storeCategoryOptions]);
 
   useEffect(() => {
     fetchStoreData();
-  }, [storeInfo?._id]);
+  }, [storeInfo?._id, fetchStoreData]);
 
   const onSubmit = async (data: any) => {
     if (!storeInfo?._id) {
@@ -177,7 +177,7 @@ const StoreAccount = () => {
     };
 
     // Remove address fields from main data and create structured data
-    const { street1, street2, city, state, zip, country, addressPhone, ...otherData } = data;
+    const { street1: _street1, street2: _street2, city: _city, state: _state, zip: _zip, country: _country, addressPhone: _addressPhone, ...otherData } = data;
     
     const newStoreData = {
       ...otherData,
@@ -215,7 +215,7 @@ const StoreAccount = () => {
     console.log('Sending updatedFields to backend:', updatedFields);
 
     try {
-      const updatedStore = await updateStore(storeInfo._id, updatedFields);
+      const _updatedStore = await updateStore(storeInfo._id, updatedFields);
       
       // Update Redux state with new store data
       const updatedStoreInfo = {
@@ -513,7 +513,7 @@ const StoreAccount = () => {
               </div>
               {!currentStoreData?.isActive && (
                 <p className="mt-2 text-sm text-gray-600">
-                  Your store is pending admin approval. You'll be notified once it's activated.
+                  Your store is pending admin approval. You&apos;ll be notified once it&apos;s activated.
                 </p>
               )}
             </div>

@@ -129,7 +129,7 @@ const PremiumFeatureComingSoon: React.FC<PremiumFeatureComingSoonProps> = ({
           <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center'>
             <Sparkles className='w-5 h-5 text-white' />
           </div>
-          <h3 className='text-2xl font-bold text-gray-900'>What's Coming</h3>
+          <h3 className='text-2xl font-bold text-gray-900'>What&apos;s Coming</h3>
         </div>
         
         <div className='grid md:grid-cols-2 gap-6'>
@@ -212,7 +212,7 @@ const PremiumFeatureComingSoon: React.FC<PremiumFeatureComingSoonProps> = ({
           <div className='flex items-center justify-between'>
             <div>
               <h4 className='font-semibold text-gray-900 mb-2'>Contact Support</h4>
-              <p className='text-sm text-gray-600'>Have questions? We're here to help!</p>
+              <p className='text-sm text-gray-600'>Have questions? We&apos;re here to help!</p>
             </div>
             <ExternalLink className='w-5 h-5 text-gray-400 group-hover:text-gray-600' />
           </div>

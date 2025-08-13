@@ -1,5 +1,5 @@
 import React from 'react';
-import { InventoryProps, OrderProps, stateProps } from '../../../type';
+import { stateProps } from '../../../type';
 import { useSelector } from 'react-redux';
 
 interface ConfirmResetFavoritesModalProps<T extends object> {
@@ -13,9 +13,9 @@ const ConfirmResetFavoritesModal = <T extends { _id: number | string }>({
   onClose,
   onConfirmResetFavorites,
 }: ConfirmResetFavoritesModalProps<T>) => {
-  if (!isOpen) return null;
-
   const { userInfo } = useSelector((state: stateProps) => state.next);
+
+  if (!isOpen) return null;
 
   const handleConfirmResetFavorites = async () => {
     onConfirmResetFavorites();

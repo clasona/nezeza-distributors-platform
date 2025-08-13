@@ -60,14 +60,6 @@ const ImageInput: React.FC<ImageInputProps> = ({
           onChange={handleFileChange}
           className='block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none'
         />
-        {/* For if we want ro see preivew */}
-        {/* {preview && (
-          <img
-            src={preview}
-            alt='Preview'
-            className='mt-2 max-w-full h-auto rounded-md'
-          />
-        )} */}
         {errors[name] && (
           <span className='text-sm text-vesoko_red_600'>
             {label} is required

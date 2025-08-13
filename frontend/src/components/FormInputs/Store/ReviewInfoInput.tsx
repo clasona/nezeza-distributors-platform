@@ -1,9 +1,10 @@
 import React from 'react';
+import Image from 'next/image';
 import StoreFormHeading from './StoreFormHeading';
 import { UseFormGetValues } from 'react-hook-form';
 import ReviewInputItem from './ReviewInputItem';
-import { Eye, User, Store, FileText, CheckCircle, Edit, MapPin } from 'lucide-react';
 import { StoreApplicationFormData } from '@/types/storeApplication';
+import Link from 'next/link';
 
 interface ReviewInfoInputProps {
   getValues: UseFormGetValues<StoreApplicationFormData>;
@@ -136,9 +137,11 @@ const ReviewInfoInput = ({
               </p>
               {storeLogoResource ? (
                 <div className='flex items-center gap-4 p-3 bg-gray-50 rounded-lg border'>
-                  <img 
+                  <Image 
                     src={storeLogoResource.secure_url} 
                     alt='Store Logo' 
+                    width={64}
+                    height={64}
                     className='w-16 h-16 object-cover rounded-lg border border-gray-200'
                   />
                   <div>
@@ -198,14 +201,14 @@ const ReviewInfoInput = ({
                   File Name: {identityDocResource.original_filename}
                 </p>
                 <p className='text-sm'>
-                  <a
+                  <Link
                     href={identityDocResource.secure_url}
                     target='_blank'
                     rel='noopener noreferrer'
                     className='text-blue-600 underline'
                   >
                     Download
-                  </a>
+                  </Link>
                 </p>
               </div>
             )}
@@ -216,14 +219,14 @@ const ReviewInfoInput = ({
                   File Name: {businessDocResource.original_filename}
                 </p>
                 <p className='text-sm'>
-                  <a
+                  <Link
                     href={businessDocResource.secure_url}
                     target='_blank'
                     rel='noopener noreferrer'
                     className='text-blue-600 underline'
                   >
                     Download
-                  </a>
+                  </Link>
                 </p>
               </div>
             )}
