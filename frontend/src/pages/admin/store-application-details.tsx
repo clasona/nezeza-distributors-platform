@@ -68,8 +68,8 @@ const StoreApplicationDetails = () => {
                 <div><span className="font-semibold">Updated:</span> {formatDate(application.updatedAt)}</div>
               </div>
               <div className="space-y-2 text-base">
-                <div><span className="font-semibold">Business Document:</span> <Link href={application.verificationDocs?.businessDocument} target="_blank" rel="noopener noreferrer" className="text-vesoko_green_600 underline">View</Link></div>
-                <div><span className="font-semibold">Identity Document:</span> <Link href={application.verificationDocs?.primaryContactIdentityDocument} target="_blank" rel="noopener noreferrer" className="text-vesoko_green_600 underline">View</Link></div>
+                <div><span className="font-semibold">Business Document:</span> {application.verificationDocs?.businessDocument ? <Link href={application.verificationDocs.businessDocument.replace('/upload/', '/upload/f_jpg/')} target="_blank" rel="noopener noreferrer" className="text-vesoko_green_600 underline">View</Link> : 'Not provided'}</div>
+                <div><span className="font-semibold">Identity Document:</span> {application.verificationDocs?.primaryContactIdentityDocument ? <Link href={application.verificationDocs.primaryContactIdentityDocument.replace('/upload/', '/upload/f_jpg/')} target="_blank" rel="noopener noreferrer" className="text-vesoko_green_600 underline">View</Link> : 'Not provided'}</div>
                 <div><span className="font-semibold">Store Description:</span> {application.storeInfo?.description}</div>
                 <div><span className="font-semibold">Store Email:</span> {application.storeInfo?.email}</div>
                 <div><span className="font-semibold">Store Phone:</span> {application.storeInfo?.phone}</div>
