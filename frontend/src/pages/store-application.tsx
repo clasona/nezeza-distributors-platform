@@ -208,24 +208,24 @@ const StoreRegistrationForm = ({
     const isStepValid = await trigger(); // triggers validation for current fields
     
     // Additional validation for Store Info section (section 1)    
-    if (currentSection === 1) {
-      if (!emailVerified || !phoneVerified) {
-        let errorMsg = 'Please verify both email and phone before proceeding.';
-        if (!emailVerified && !phoneVerified) {
-          errorMsg = 'Please verify both email and phone before proceeding.';
-        } else if (!emailVerified) {
-          errorMsg = 'Please verify your store email before proceeding.';
-        } 
+    // if (currentSection === 1) {
+    //   if (!emailVerified || !phoneVerified) {
+    //     let errorMsg = 'Please verify both email and phone before proceeding.';
+    //     if (!emailVerified && !phoneVerified) {
+    //       errorMsg = 'Please verify both email and phone before proceeding.';
+    //     } else if (!emailVerified) {
+    //       errorMsg = 'Please verify your store email before proceeding.';
+    //     } 
         // COMMENTED OUT FOR TESTING - UNCOMMENT WHEN READY TO ACTIVATE PHONE VERIFICATION
         // else if (!phoneVerified) {
         //   errorMsg = 'Please verify your store phone before proceeding.';
         // }
-        setVerificationError(errorMsg);
-        return; // Don't proceed
-      } else {
-        setVerificationError(''); // Clear any previous error
-      }
-    }
+    //     setVerificationError(errorMsg);
+    //     return; // Don't proceed
+    //   } else {
+    //     setVerificationError(''); // Clear any previous error
+    //   }
+    // }
     
 
     // Check that documents are uploaded for Docs section (section 2)
