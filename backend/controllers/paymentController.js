@@ -521,10 +521,11 @@ const hasActiveStripeAccount = async (req, res) => {
       }
     }
 
-    // Return the status
+    // Return the status with account ID if available
     res.status(StatusCodes.OK).json({
       hasStripeAccount: hasStripeAccount,
       isActive: isActive,
+      stripeAccountId: user.stripeAccountId || null,
       msg: isActive
         ? 'User has a linked and active Stripe account.'
         : hasStripeAccount
@@ -790,24 +791,77 @@ const confirmPayment = async (req, res) => {
   }
 };
 const sellerRequestPayOut = async (req, res) => {
-  const { sellerId, amount } = req.body;
+  try {
+    const { sellerId, amount } = req.body;
 
-  // Check seller balance
-  const balance = await SellerBalance.findOne({ sellerId });
-  console.log(balance);
-  if (!balance || balance.availableBalance < amount) {
-    return res
-      .status(400)
-      .json({ msg: 'Insufficient balance for withdrawal.' });
+    if (!sellerId || !amount) {
+      return res
+        .status(400)
+        .json({ msg: 'Seller ID and amount are required.' });
+    }
+
+    if (amount <= 0) {
+      return res
+        .status(400)
+        .json({ msg: 'Amount must be greater than 0.' });
+    }
+
+    // Check seller balance
+    const balance = await SellerBalance.findOne({ sellerId });
+    console.log('Current balance:', balance);
+    
+    if (!balance) {
+      return res
+        .status(400)
+        .json({ msg: 'No balance found for this seller.' });
+    }
+
+    if (balance.availableBalance < amount) {
+      return res
+        .status(400)
+        .json({ msg: 'Insufficient balance for withdrawal.' });
+    }
+
+    // Create payout request record
+    const payoutRequest = {
+      amount: amount,
+      requestedAt: new Date(),
+      status: 'pending',
+      requestId: `payout_${Date.now()}_${sellerId}`
+    };
+
+    // Update seller balance - move from available to pending and add to payouts array
+    const updatedBalance = await SellerBalance.findOneAndUpdate(
+      { sellerId },
+      {
+        $inc: {
+          availableBalance: -amount,
+          pendingBalance: amount
+        },
+        $push: {
+          payouts: payoutRequest
+        }
+      },
+      { new: true }
+    );
+
+    console.log('Updated balance:', updatedBalance);
+
+    res.status(200).json({ 
+      msg: 'Payout request sent. Awaiting admin approval.',
+      success: true,
+      data: {
+        requestId: payoutRequest.requestId,
+        amount: amount,
+        remainingAvailableBalance: updatedBalance.availableBalance
+      }
+    });
+  } catch (error) {
+    console.error('Error processing payout request:', error);
+    res
+      .status(500)
+      .json({ msg: 'Internal server error while processing payout request.' });
   }
-
-  // Create payout request (for admin to approve later)
-  await SellerBalance.findOneAndUpdate(
-    { sellerId },
-    { $inc: { availableBalance: -amount }, $inc: { pendingBalance: amount } }
-  );
-
-  res.json({ msg: 'Payout request sent. Awaiting admin approval.' });
 };
 
 const getSellerRevenue = async (req, res) => {
@@ -816,8 +870,6 @@ const getSellerRevenue = async (req, res) => {
   if (!sellerStore) {
     throw new CustomError.BadRequestError('No store found for this seller');
   }
-  console.log(req.user.userId);
-  console.log(sellerStore.ownerId);
   if (sellerStore.ownerId.toString() !== req.user.userId) {
     throw new CustomError.UnauthorizedError(
       'Not  authorized to view the dashboard'

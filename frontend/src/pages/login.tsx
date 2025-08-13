@@ -131,27 +131,47 @@ const LoginPage = () => {
 
         const userData = response.data.user;
 
-        // Dispatch user data to Redux
+        // Dispatch comprehensive user data to Redux
         dispatch(
           addUser({
             _id: userData._id,
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
+            roles: userData.roles || [],
             image: userData.image || null,
+            isVerified: userData.isVerified || false,
+            verifiedAt: userData.verifiedAt || null,
+            storeId: userData.storeId?._id || null,
+            citizenshipCountry: userData.citizenshipCountry || null,
+            dob: userData.dob || null,
             address: userData.address || null,
-            storeId: userData.storeId || null,
+            createdAt: userData.createdAt || null,
+            updatedAt: userData.updatedAt || null,
+            productsOrdered: userData.productsOrdered || [],
           })
         );
 
-        // Dispatch store data if user has a store
+        // Dispatch comprehensive store data if user has a store
         if (userData.storeId) {
+          const storeData = userData.storeId;
           dispatch(
             addStore({
-              _id: userData.storeId._id,
-              name: userData.storeId.name,
-              email: userData.storeId.email,
-              storeType: userData.storeId.storeType,
+              _id: storeData._id,
+              storeType: storeData.storeType,
+              registrationNumber: storeData.registrationNumber || null,
+              name: storeData.name,
+              storeName: storeData.name, // Also save as storeName for sidebar compatibility
+              category: storeData.category || null,
+              description: storeData.description || null,
+              email: storeData.email,
+              phone: storeData.phone || null,
+              logo: storeData.logo || null, // Important for navbar/sidebar
+              ownerId: storeData.ownerId || userData._id,
+              address: storeData.address || null,
+              isActive: storeData.isActive !== false, // Default to true if not specified
+              createdAt: storeData.createdAt || null,
+              updatedAt: storeData.updatedAt || null,
             })
           );
         }

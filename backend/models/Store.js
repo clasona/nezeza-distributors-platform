@@ -41,6 +41,21 @@ const storeSchema = new mongoose.Schema(
       enum: ['individual', 'company'],
       // required: true,
     },
+    category: {
+      type: String,
+      enum: ['food', 'clothing', 'furniture', 'electronics', 'services', 'other'],
+    },
+    logo: {
+      type: String, // URL to store logo image
+    },
+    phone: {
+      type: String,
+      maxlength: 20,
+    },
+    registrationNumber: {
+      type: String,
+      maxlength: 50,
+    },
 
     address: addressSchema,
     members: [

@@ -1,14 +1,14 @@
 import { clearCart } from '@/utils/cart/clearCart';
 import { clearFavorites } from '@/utils/favorites/clearFavorites';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AddressProps, OrderItemsProps, PaymentProps, ProductProps, StoreProps } from '../../type';
+import { AddressProps, OrderItemsProps, PaymentProps, ProductProps, StoreProps, UserProps } from '../../type';
 
 interface NextState {
   productData: OrderItemsProps[];
   favoritesItemsData: OrderItemsProps[];
   cartItemsData: OrderItemsProps[];
   allProducts: OrderItemsProps[];
-  userInfo: null | string;
+  userInfo: null | UserProps;
   storeInfo: null | StoreProps;
   paymentInfo: null | PaymentProps;
   buyNowProduct: {

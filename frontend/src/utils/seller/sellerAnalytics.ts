@@ -76,16 +76,15 @@ export const fetchSellerAnalytics = async (period: '7d' | '30d' | '90d' = '30d',
     const safeOrders = Array.isArray(orders) ? orders : [];
     const safeProducts = Array.isArray(products) ? products : [];
 
-    // Fetch real payment metrics if sellerStoreId is provided
-    let paymentMetrics = null;
-    console.log('Fetching payment metrics for sellerStoreId:', sellerStoreId);
-    if (sellerStoreId) {
-      try {
-        paymentMetrics = await fetchSellerBalance(sellerStoreId);
-      } catch (error) {
-        console.warn('Failed to fetch seller balance, using calculated metrics');
-      }
+  // Fetch real payment metrics if sellerStoreId is provided
+  let paymentMetrics = null;
+  if (sellerStoreId) {
+    try {
+      paymentMetrics = await fetchSellerBalance(sellerStoreId);
+    } catch (error) {
+      console.warn('Failed to fetch seller balance, using calculated metrics');
     }
+  }
 
     // Process the data to create analytics
     const analytics = processSellerAnalytics(safeOrders, safeProducts, period, paymentMetrics);
@@ -198,7 +197,6 @@ const processSellerAnalytics = (orders: SubOrderProps[], products: ProductProps[
 
   // Use real payment metrics if available, otherwise use calculated/mock data
   let finalPaymentMetrics;
-  console.log('Payment Metrics from API:', paymentMetrics);
   if (paymentMetrics) {
     // Use real data from SellerBalance model
     finalPaymentMetrics = {
@@ -301,13 +299,7 @@ export const fetchSellerBalance = async (sellerStoreId: string) => {
     const response = await axiosInstance.get(`/payment/seller-revenue/${sellerStoreId}`);
 
     if (response.status !== 200) {
-      console.warn('Failed to fetch seller balance, returning mock data');
-      return {
-        pendingBalance: 1289,
-        availableBalance: 8450,
-        totalSales: 12890,
-        commissionDeducted: 644,
-      };
+      throw new Error('Failed to fetch seller balance');
     }
 
     const {
@@ -324,13 +316,7 @@ export const fetchSellerBalance = async (sellerStoreId: string) => {
       commissionRate: commissionDeducted,
     };
   } catch (error: any) {
-    console.warn('Error fetching balance, returning mock data:', error);
-    // Return mock data if API fails
-    return {
-      pendingBalance: 1289,
-      availableBalance: 8450,
-      totalSales: 12890,
-      commissionDeducted: 644,
-    };
+    console.warn('Error fetching seller balance:', error.response?.data || error.message);
+    throw error; // Re-throw to be caught by the calling function
   }
 };

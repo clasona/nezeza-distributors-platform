@@ -5,7 +5,7 @@ import {
   resetFavorites,
 } from '@/redux/nextSlice';
 import { updateCart } from '@/utils/cart/updateCart';
-import { LogOut } from 'lucide-react';
+import { LogOut, Loader2 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -58,25 +58,61 @@ export const LogoutButton = ({
   };
 
   return (
-    <div>
+    <>
       <button
-        className={`${className} flex items-center space-x-2 rounded-lg px-2 py-1 text-white bg-vesoko_red_600 hover:bg-vesoko_red_700`}
+        disabled={isLoggingOut}
+        className={`${className || ''} group relative flex items-center justify-center space-x-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-75 ${
+          className?.includes('w-full')
+            ? 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2'
+            : 'text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-sm'
+        }`}
         onClick={handleLogOutClick}
       >
-        <LogOut />
+        {isLoggingOut ? (
+          <Loader2 className='w-4 h-4 animate-spin' />
+        ) : (
+          <LogOut className='w-4 h-4' />
+        )}
         {!noLogoutLabel && (
-          <span>{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
+          <span className='ml-2'>
+            {isLoggingOut ? 'Signing out...' : 'Sign out'}
+          </span>
         )}
       </button>
 
+      {/* Modern Loading Overlay */}
       {isLoggingOut && (
-        <div className='fixed flex top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 justify-center items-center z-50'>
-          <div className='text-vesoko_red_600 bg-vesoko_light_blue p-6 rounded-lg shadow-md'>
-            <p>Logging you out...</p>
-            {logoutError && <p className='text-red-500 mt-2'>{logoutError}</p>}
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm'>
+          <div className='bg-white rounded-2xl p-8 shadow-2xl max-w-sm mx-4 transform transition-all'>
+            <div className='flex flex-col items-center text-center'>
+              <div className='w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4'>
+                <Loader2 className='w-8 h-8 text-red-600 animate-spin' />
+              </div>
+              <h3 className='text-lg font-semibold text-gray-900 mb-2'>
+                Signing you out
+              </h3>
+              <p className='text-sm text-gray-600 mb-4'>
+                Please wait while we securely sign you out...
+              </p>
+              {logoutError && (
+                <div className='w-full p-3 bg-red-50 border border-red-200 rounded-lg'>
+                  <p className='text-sm text-red-700 font-medium'>Error</p>
+                  <p className='text-xs text-red-600 mt-1'>{logoutError}</p>
+                  <button
+                    onClick={() => {
+                      setLogoutError('');
+                      setIsLoggingOut(false);
+                    }}
+                    className='mt-2 text-xs text-red-600 underline hover:text-red-800'
+                  >
+                    Try again
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };

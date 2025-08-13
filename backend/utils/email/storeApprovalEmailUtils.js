@@ -157,7 +157,7 @@ const sendStoreDeclineEmail = async ({
             <li>Review the feedback provided above</li>
             <li>Make the necessary corrections to your application</li>
             <li>Submit a new application with the updated information</li>
-            <li>Our team will review your resubmission within 2-3 business days</li>
+            <li>Our team will review your resubmission within 48 hours</li>
           </ol>
         </div>
         

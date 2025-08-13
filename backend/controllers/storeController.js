@@ -72,10 +72,18 @@ const getStoreDetails = async (req, res) => {
 
 const updateStoreDetails = async (req, res) => {
   const user = await User.findById(req.user.userId);
-  const { email, storeName, address, description } = req.body;
-  // if (!email || !storeName || !address || !description) {
-  //   throw new CustomError.BadRequestError('Please provide all values');
-  // }
+  const { 
+    email, 
+    name, 
+    address, 
+    description, 
+    category, 
+    logo, 
+    phone, 
+    registrationNumber, 
+    storeType 
+  } = req.body;
+  
   const store = await Store.findById(req.params.id).select('-password');
   if (!store) {
     throw new CustomError.NotFoundError(`No store with id : ${req.params.id}`);
@@ -86,10 +94,16 @@ const updateStoreDetails = async (req, res) => {
     );
   }
 
-  if (storeName) store.email = email;
-  if (address) store.address = address;
-  if (description) store.description = description;
-  if (email) store.storeName = storeName;
+  // Update fields only if they are provided
+  if (email !== undefined) store.email = email;
+  if (name !== undefined) store.name = name;
+  if (address !== undefined) store.address = address;
+  if (description !== undefined) store.description = description;
+  if (category !== undefined) store.category = category;
+  if (logo !== undefined) store.logo = logo;
+  if (phone !== undefined) store.phone = phone;
+  if (registrationNumber !== undefined) store.registrationNumber = registrationNumber;
+  if (storeType !== undefined) store.storeType = storeType;
 
   await store.save();
 

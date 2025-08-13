@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import TextInput from '@/components/FormInputs/TextInput';
 import { useForm } from 'react-hook-form';
@@ -5,11 +6,13 @@ import defaultUserImage from '@/images/defaultUserImage.png';
 import Image from 'next/image';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
 import { updateUser } from '@/utils/user/updateUser';
+import { forgotPassword } from '@/utils/auth/forgotPassword';
+import { useRouter } from 'next/router';
 import { updateUserPassword } from '@/utils/user/updatePassword';
 import SuccessMessageModal from '@/components/SuccessMessageModal';
 import ErrorMessageModal from '@/components/ErrorMessageModal';
 import { getUserById } from '@/utils/user/getUserById';
-import CloudinaryImageUpload from '../FormInputs/CloudinaryImageUpload';
+import UploadWidget from '../Cloudinary/UploadWidget';
 import PageHeader from '../PageHeader';
 import { UserProps } from '../../../type';
 import { useDispatch } from 'react-redux';
@@ -26,10 +29,60 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
     setValue,
     getValues,
   } = useForm();
+  const router = useRouter();
+  const [isSendingReset, setIsSendingReset] = useState(false);
+  const handleSendResetPasswordEmail = async () => {
+    setIsSendingReset(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+    try {
+      await forgotPassword(userInfo?.email || '');
+      setSuccessMessage('A password reset link has been sent to your email. Please check your inbox.');
+    } catch (err: any) {
+      setErrorMessage(err?.msg || err?.message || 'Failed to send reset link.');
+    } finally {
+      setIsSendingReset(false);
+    }
+  };
 
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [userProfilePicture, setUserProfilePicture] = useState<any>(null);
+  const [userProfilePicture, setUserProfilePicture] = useState<string | null>(null);
+  // Handle profile picture upload
+  const handleProfilePictureUpload = async (urls: string[]) => {
+    if (urls.length > 0 && userInfo?._id) {
+      const imageUrl = urls[0];
+      try {
+        await updateUser(userInfo._id, { image: imageUrl });
+        setUserProfilePicture(imageUrl);
+        setCurrentUserData((prev: any) => ({ ...prev, image: imageUrl }));
+        const updatedUserInfo = { ...userInfo, image: imageUrl };
+        dispatch(addUser(updatedUserInfo));
+        setSuccessMessage('Profile picture uploaded successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } catch (error) {
+        setErrorMessage('Failed to upload profile picture. Please try again.');
+        setTimeout(() => setErrorMessage(''), 3000);
+      }
+    }
+  };
+
+  // Handle profile picture removal
+  const handleProfilePictureRemove = async () => {
+    if (!userInfo?._id) return;
+    try {
+      await updateUser(userInfo._id, { image: '' });
+      setUserProfilePicture(null);
+      setCurrentUserData((prev: any) => ({ ...prev, image: '' }));
+      const updatedUserInfo = { ...userInfo, image: '' };
+      dispatch(addUser(updatedUserInfo));
+      setSuccessMessage('Profile picture removed successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      setErrorMessage('Failed to remove profile picture. Please try again.');
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  };
   const [isSaving, setSaving] = useState<boolean>(false);
   const [currentUserData, setCurrentUserData] = useState<any>(null);
   const dispatch = useDispatch();
@@ -121,7 +174,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
     
     const newUserData = {
       ...otherData,
-      image: userProfilePicture?.secure_url,
+      image: userProfilePicture || currentUserData?.image,
       address: addressFields,
     };
 
@@ -188,24 +241,71 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
         >
           {/* Profile Picture Section */}
           <div className="flex flex-col items-center mb-6">
-            <div className="relative w-32 h-32 mb-4">
-              <Image
-                src={userProfilePicture?.secure_url || currentUserData?.image || defaultUserImage}
-                alt="Profile Picture"
-                width={128} 
-                height={128}
-                className="w-full h-full rounded-full object-cover border-4 border-gray-200 shadow-lg"
-                unoptimized
-              />
+            <div className="relative group">
+              <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 shadow-lg">
+                <Image
+                  src={userProfilePicture || currentUserData?.image || defaultUserImage}
+                  alt="Profile Picture"
+                  width={128}
+                  height={128}
+                  className="w-full h-full object-cover"
+                  unoptimized
+                />
+              </div>
+              
+              {/* Action buttons overlay */}
+              {(userProfilePicture || currentUserData?.image) ? (
+                <div className="absolute -bottom-2 -right-2 flex space-x-1">
+                  {/* Update Profile Picture Button */}
+                  <UploadWidget
+                    onUpload={handleProfilePictureUpload}
+                    maxFiles={1}
+                    folder="user-profile-pictures"
+                  >
+                    <div className="w-10 h-10 bg-vesoko_green_600 hover:bg-vesoko_green_700 rounded-full flex items-center justify-center shadow-lg cursor-pointer transition-all duration-200 group/update">
+                      <svg className="w-4 h-4 text-white group-hover/update:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                  </UploadWidget>
+                  {/* Remove Profile Picture Button */}
+                  <button
+                    type="button"
+                    onClick={handleProfilePictureRemove}
+                    className="w-10 h-10 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 group/delete"
+                  >
+                    <svg className="w-4 h-4 text-white group-hover/delete:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              ) : (
+                /* Upload Profile Picture Button - Centered over placeholder */
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <UploadWidget
+                    onUpload={handleProfilePictureUpload}
+                    maxFiles={1}
+                    folder="user-profile-pictures"
+                  >
+                    <div className="w-16 h-16 bg-vesoko_green_600 hover:bg-vesoko_green_700 rounded-full flex items-center justify-center shadow-lg cursor-pointer transition-all duration-200 group/upload">
+                      <svg className="w-6 h-6 text-white group-hover/upload:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </div>
+                  </UploadWidget>
+                </div>
+              )}
+              
+              {/* Tooltip on hover */}
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                {(userProfilePicture || currentUserData?.image) ? 'Update or remove profile picture' : 'Upload profile picture'}
+              </div>
             </div>
-            <div className="flex flex-col items-center space-y-2">
-              <p className="text-sm text-gray-600 font-medium">
-                Profile Picture
-              </p>
-              <CloudinaryImageUpload
-                onResourceChange={setUserProfilePicture}
-              />
-            </div>
+            
+            <p className="text-sm text-gray-600 font-medium mt-3">
+              Profile Picture
+            </p>
           </div>
           {/* Personal Information Section */}
           <div className="mb-6">
@@ -335,39 +435,19 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
             </div>
           </div>
 
-          {/* Change Password Section */}
+          {/* Change Password Section (send reset link to email) */}
           <div className="mb-6">
-            <h2 className="text-lg font-bold">Change Password</h2>
-            <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-8">
-              <TextInput
-                label="Current Password"
-                id="currentPassword"
-                name="currentPassword"
-                register={register}
-                errors={errors}
-                type="password"
-                isRequired={false}
-              />
-
-              <TextInput
-                label="New Password"
-                id="newPassword"
-                name="newPassword"
-                register={register}
-                errors={errors}
-                type="password"
-                isRequired={false}
-              />
-
-              <TextInput
-                label="Confirm New Password"
-                id="confirmPassword"
-                name="confirmPassword"
-                register={register}
-                errors={errors}
-                type="password"
-                isRequired={false}
-              />
+            <h2 className="text-lg font-bold mb-4">Change Password</h2>
+            <div className="flex flex-col items-center justify-center">
+              <button
+                type="button"
+                onClick={handleSendResetPasswordEmail}
+                disabled={isSendingReset}
+                className={`w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center ${isSendingReset ? 'opacity-70 cursor-not-allowed' : ''}`}
+              >
+                {isSendingReset ? 'Sending Link...' : 'Send Password Reset Link'}
+              </button>
+              <p className="text-sm text-gray-600 mt-2 text-center">We'll send a password reset link to your email.</p>
             </div>
           </div>
 

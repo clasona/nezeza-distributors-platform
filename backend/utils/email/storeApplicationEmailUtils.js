@@ -23,7 +23,7 @@ const sendStoreApplicationEmail = async ({ email, firstName, lastName }) => {
         <div style="background-color: #ffffff; padding: 20px; border-radius: 6px; margin: 20px 0;">
           <h3 style="color: #2c5282; margin-top: 0;">What happens next?</h3>
           <ul style="color: #4a5568; line-height: 1.8;">
-            <li>Our team will review your application within 2-3 business days</li>
+            <li>Our team will review your application within 48 hours</li>
             <li>We'll verify your documents and business information</li>
             <li>You'll receive an email with the application status</li>
             <li>If approved, we'll help you set up your store and start selling</li>

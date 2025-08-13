@@ -956,8 +956,7 @@ const SellerCustomerOrders = () => {
     }));
 
   return (
-    <div className='min-h-screen bg-gray-50 p-4 md:p-6'>
-      <div className='max-w-7xl mx-auto'>
+      <div className='p-4 sm:p-6 space-y-4 sm:space-y-6'>
         <PageHeader
         heading='Customer Orders'
         actions={
@@ -966,7 +965,10 @@ const SellerCustomerOrders = () => {
               icon={Download}
               buttonTitle='Export'
               buttonTitleClassName='hidden md:inline'
-              className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
+              className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2 disabled:opacity-50'
+              disabled={true} // TODO: Implement export functionality
+              // loadingButtonTitle='Exporting...'
+              // isLoading={isLoading}
               onClick={() => {
                 // TODO: Implement export functionality
                 console.log('Export orders');
@@ -1229,7 +1231,6 @@ const SellerCustomerOrders = () => {
         {successMessage && (
           <SuccessMessageModal successMessage={successMessage} />
         )}
-      </div>
       </div>
 
   );

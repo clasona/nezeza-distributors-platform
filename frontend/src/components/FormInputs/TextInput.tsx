@@ -18,6 +18,7 @@ interface TextInputProps {
   isRequired?: boolean;
   disabled?: boolean;
   placeholder?: string;
+  step?: string;
 }
 
 const TextInput = ({
@@ -32,6 +33,7 @@ const TextInput = ({
   className = '',
   value,
   placeholder,
+  step,
 }: TextInputProps) => {
   const validationRules = {
     required: isRequired ? `${label} is required` : false,
@@ -60,6 +62,7 @@ const TextInput = ({
           type={type}
           autoComplete={name}
           disabled={disabled}
+          step={step}
           className={`block w-full px-3 py-2.5 text-sm border rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-vesoko_green_500/20 ${
             errors[name]
               ? 'border-red-300 focus:border-red-500 bg-red-50'

@@ -230,6 +230,7 @@ const StoreInfoInput = ({
           register={register as any}
           errors={errors as any}
           type='number'
+          placeholder='EIN or equivalent'
         />
         <TextInput
           label='Store Name'

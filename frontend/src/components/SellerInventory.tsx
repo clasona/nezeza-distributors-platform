@@ -1,10 +1,6 @@
-import PageHeader from '@/components/PageHeader';
-import PageHeaderLink from '@/components/PageHeaderLink';
-import MetricCard from '@/components/Charts/MetricCard';
 import DeleteRowModal from '@/components/Table/DeleteRowModal';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
 import DateFilters from '@/components/Table/Filters/DateFilters';
-import StatusFilters from '@/components/Table/Filters/StatusFilters';
 import Pagination from '@/components/Table/Pagination';
 import RowActionDropdown from '@/components/Table/RowActionDropdown';
 import SearchField from '@/components/Table/SearchField';
@@ -12,38 +8,35 @@ import TableFilters from '@/components/Table/TableFilters';
 import TableHead from '@/components/Table/TableHead';
 import TableRow from '@/components/Table/TableRow';
 import UpdateRowModal from '@/components/Table/UpdateRowModal';
+import { handleError } from '@/utils/errorUtils';
 import formatDate from '@/utils/formatDate';
 import formatPrice from '@/utils/formatPrice';
 import { deleteProduct } from '@/utils/product/deleteProduct';
 import { getAllProducts } from '@/utils/product/getAllProducts';
 import { sortItems } from '@/utils/sortItems';
+import { fetchSellerAnalytics, SellerAnalyticsData } from '@/utils/seller/sellerAnalytics';
+import {
+  AlertTriangle,
+  BarChart3,
+  DollarSign,
+  Download,
+  Package,
+  Plus,
+  RotateCcw,
+  ShoppingBag,
+  Star,
+  TrendingUp,
+  Upload
+} from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ProductProps, stateProps } from '../../type';
-import Button from './FormInputs/Button';
 import Loading from './Loaders/Loading';
 import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
-import { handleError } from '@/utils/errorUtils';
-import { 
-  RotateCcw, 
-  Package, 
-  DollarSign,
-  TrendingUp,
-  AlertTriangle,
-  ShoppingBag,
-  Star,
-  Plus,
-  Edit,
-  Trash2,
-  Download,
-  BarChart3,
-  Archive,
-  Eye
-} from 'lucide-react';
 
 // interface SellerProductProps {
 //   inventoryData: ProductProps[];
@@ -85,7 +78,7 @@ const SellerInventory = () => {
 
   //for pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 5; // Adjust the page size as needed. useState() instead??
+  const PAGE_SIZE = 10; // Increased from 5 to 10 for better space utilization
 
   //for bulk deleting
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -99,6 +92,10 @@ const SellerInventory = () => {
   );
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false); // State for loading
+  
+  // Analytics data for top products
+  const [analyticsData, setAnalyticsData] = useState<SellerAnalyticsData | null>(null);
+  const { userInfo, storeInfo } = useSelector((state: stateProps) => state.next);
   // Metric calculations
   const totalInventoryValue = filteredInventory.reduce((sum, product) => sum + product.price * product.quantity, 0);
   const totalProducts = filteredInventory.length;
@@ -119,9 +116,21 @@ const SellerInventory = () => {
     }
   };
 
+  // Fetch analytics data
+  const fetchAnalyticsData = async () => {
+    try {
+      const sellerStoreId = storeInfo?._id || userInfo?.storeId?._id;
+      const analytics = await fetchSellerAnalytics('30d', sellerStoreId);
+      setAnalyticsData(analytics);
+    } catch (error) {
+      console.error('Failed to fetch analytics:', error);
+    }
+  };
+
   useEffect(() => {
     fetchData();
-  }, []);
+    fetchAnalyticsData();
+  }, [userInfo?._id, storeInfo?._id]);
 
   // Filter Inventory based on search query and selected status
   useEffect(() => {
@@ -302,109 +311,242 @@ const SellerInventory = () => {
   };
 
   return (
-    <div className='min-h-screen bg-gray-50 p-4 md:p-6'>
-      <div className='max-w-7xl mx-auto'>
-        <PageHeader
-          heading='Inventory Management'
-          actions={
+    <div className='space-y-4'>
+        {/* Compact Header */}
+        <div className='bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4 border border-white/20'>
+          <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3'>
+            <div>
+              <h1 className='text-2xl sm:text-3xl font-bold text-vesoko_dark_blue mb-1'>
+                📦 Inventory Management
+              </h1>
+              <p className='text-sm text-gray-600'>
+                Manage your products and track stock levels
+              </p>
+            </div>
+            
             <div className='flex flex-wrap gap-2'>
-              <Button
-                icon={Download}
-                buttonTitle='Export'
-                buttonTitleClassName='hidden md:inline'
-                className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
+              <button
                 onClick={() => {
-                  // TODO: Implement export functionality
                   console.log('Export inventory');
                 }}
-              />
-              <Button
-                isLoading={isLoading}
-                icon={RotateCcw}
-                buttonTitle='Refresh'
-                buttonTitleClassName='hidden md:inline'
-                loadingButtonTitle='Refreshing...'
-                className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
-                onClick={async () => {
-                  await fetchData();
-                }}
-              />
-              <Button
-                icon={Plus}
-                buttonTitle='Add Product'
-                buttonTitleClassName='hidden md:inline'
-                className='bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
-                onClick={() => {
-                  router.push('./inventory/new-product');
-                }}
-              />
+                className='inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-md disabled:opacity-50'
+              disabled={true} // Disable until export functionality is implemented
+              >
+                <Upload className='w-4 h-4' />
+                <span className='hidden sm:inline'>Export</span>
+              </button>
+              
+              <button
+                onClick={async () => await fetchData()}
+                disabled={isLoading}
+                className='inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-md disabled:opacity-50'
+              >
+                <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                <span className='hidden sm:inline'>{isLoading ? 'Refreshing...' : 'Refresh'}</span>
+              </button>
+              
+              <button
+                onClick={() => router.push('./inventory/new-product')}
+                className='inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-vesoko_dark_blue to-blue-600 hover:from-vesoko_dark_blue_2 hover:to-blue-700 text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-md'
+              >
+                <Plus className='w-4 h-4' />
+                <span className='hidden sm:inline'>Add Product</span>
+              </button>
             </div>
-          }
-        />
-
-        {/* Modern Inventory Metrics Overview */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
-          <MetricCard
-            title='Total Inventory Value'
-            value={`$${formatPrice(totalInventoryValue)}`}
-            icon={<DollarSign className='w-6 h-6' />}
-            color='green'
-            change={8}
-            changeLabel='From last month'
-          />
-          <MetricCard
-            title='Total Products'
-            value={totalProducts}
-            icon={<Package className='w-6 h-6' />}
-            color='blue'
-          />
-          <MetricCard
-            title='Low Stock Items'
-            value={lowStockCount}
-            icon={<AlertTriangle className='w-6 h-6' />}
-            color='red'
-            changeLabel='Items ≤ 10 qty'
-          />
-          <MetricCard
-            title='Average Price'
-            value={`$${formatPrice(averageProductPrice)}`}
-            icon={<BarChart3 className='w-6 h-6' />}
-            color='purple'
-          />
-        </div>
-
-        {/* Enhanced Stock Status Filters */}
-        <div className='mb-6 p-4 bg-white rounded-xl shadow-sm border border-gray-200'>
-          <h3 className='text-lg font-semibold text-gray-800 mb-3'>Quick Filters</h3>
-          <div className='flex flex-wrap gap-2'>
-            <button 
-              onClick={() => setFilteredInventory(inventoryData)}
-              className='px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors duration-200'
-            >
-              All Items ({inventoryData.length})
-            </button>
-            <button 
-              onClick={() => setFilteredInventory(inventoryData.filter(p => p.quantity <= 10))}
-              className='px-4 py-2 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors duration-200 flex items-center gap-1'
-            >
-              <AlertTriangle className='w-4 h-4' />
-              Low Stock ({lowStockCount})
-            </button>
-            <button 
-              onClick={() => setFilteredInventory(inventoryData.filter(p => p.quantity > 50))}
-              className='px-4 py-2 text-sm bg-green-100 hover:bg-green-200 text-green-700 rounded-lg transition-colors duration-200'
-            >
-              High Stock ({inventoryData.filter(p => p.quantity > 50).length})
-            </button>
-            <button 
-              onClick={() => setFilteredInventory(inventoryData.filter(p => p.featured))}
-              className='px-4 py-2 text-sm bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition-colors duration-200 flex items-center gap-1'
-            >
-              <Star className='w-4 h-4' />
-              Featured ({inventoryData.filter(p => p.featured).length})
-            </button>
           </div>
         </div>
+
+        {/* Compact Inventory Metrics Overview */}
+        <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
+          {[
+            {
+              title: 'Total Value',
+              value: `$${formatPrice(totalInventoryValue)}`,
+              icon: <DollarSign className='w-5 h-5' />,
+              gradient: 'from-green-400 to-green-600',
+              bgGradient: 'from-green-50 to-emerald-50',
+              borderColor: 'border-green-200'
+            },
+            {
+              title: 'Total Products',
+              value: totalProducts,
+              icon: <Package className='w-5 h-5' />,
+              gradient: 'from-blue-400 to-blue-600',
+              bgGradient: 'from-blue-50 to-cyan-50',
+              borderColor: 'border-blue-200'
+            },
+            {
+              title: 'Low Stock',
+              value: lowStockCount,
+              icon: <AlertTriangle className='w-5 h-5' />,
+              gradient: 'from-red-400 to-red-600',
+              bgGradient: 'from-red-50 to-orange-50',
+              borderColor: 'border-red-200'
+            },
+            {
+              title: 'Avg Price',
+              value: `$${formatPrice(averageProductPrice)}`,
+              icon: <BarChart3 className='w-5 h-5' />,
+              gradient: 'from-purple-400 to-purple-600',
+              bgGradient: 'from-purple-50 to-indigo-50',
+              borderColor: 'border-purple-200'
+            }
+          ].map((metric, index) => (
+            <div
+              key={metric.title}
+              className={`bg-gradient-to-r ${metric.bgGradient} border ${metric.borderColor} rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-200`}
+            >
+              <div className='flex items-center justify-between mb-2'>
+                <div className={`w-8 h-8 rounded-xl bg-gradient-to-r ${metric.gradient} flex items-center justify-center text-white shadow-md`}>
+                  {metric.icon}
+                </div>
+                {metric.title === 'Total Value' && (
+                  <div className='flex items-center gap-1 text-xs font-medium text-green-600'>
+                    <TrendingUp className='w-3 h-3' />
+                    +8%
+                  </div>
+                )}
+              </div>
+              <div>
+                <div className='text-lg font-bold text-gray-900 mb-1'>
+                  {metric.value}
+                </div>
+                <div className='text-xs font-medium text-gray-600'>
+                  {metric.title}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Compact Quick Filters */}
+        <div className='bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4 border border-white/20'>
+          <div className='flex items-center gap-2 mb-3'>
+            <div className='w-8 h-8 rounded-lg bg-gradient-to-br from-vesoko_dark_blue to-blue-600 flex items-center justify-center'>
+              <ShoppingBag className='w-4 h-4 text-white' />
+            </div>
+            <h3 className='text-lg font-semibold text-gray-900'>Quick Filters</h3>
+          </div>
+          
+          <div className='grid grid-cols-2 sm:grid-cols-5 gap-2'>
+            {[
+              {
+                label: 'All Items',
+                count: inventoryData.length,
+                onClick: () => setFilteredInventory(inventoryData),
+                gradient: 'from-gray-400 to-gray-500',
+                hoverGradient: 'hover:from-gray-500 hover:to-gray-600',
+                icon: <Package className='w-4 h-4' />
+              },
+              {
+                label: 'Low Stock',
+                count: lowStockCount,
+                onClick: () => setFilteredInventory(inventoryData.filter(p => p.quantity <= 10)),
+                gradient: 'from-red-400 to-red-500',
+                hoverGradient: 'hover:from-red-500 hover:to-red-600',
+                icon: <AlertTriangle className='w-4 h-4' />
+              },
+              {
+                label: 'High Stock',
+                count: inventoryData.filter(p => p.quantity > 50).length,
+                onClick: () => setFilteredInventory(inventoryData.filter(p => p.quantity > 50)),
+                gradient: 'from-green-400 to-green-500',
+                hoverGradient: 'hover:from-green-500 hover:to-green-600',
+                icon: <TrendingUp className='w-4 h-4' />
+              },
+              {
+                label: 'Top Products',
+                count: analyticsData?.topProducts?.length || 0,
+                onClick: () => {
+                  if (analyticsData?.topProducts) {
+                    const topProductIds = analyticsData.topProducts.map(p => p.id);
+                    setFilteredInventory(inventoryData.filter(p => topProductIds.includes(p._id)));
+                  }
+                },
+                gradient: 'from-purple-400 to-purple-500',
+                hoverGradient: 'hover:from-purple-500 hover:to-purple-600',
+                icon: <Star className='w-4 h-4' />
+              },
+              {
+                label: 'Featured',
+                count: inventoryData.filter(p => p.featured).length,
+                onClick: () => setFilteredInventory(inventoryData.filter(p => p.featured)),
+                gradient: 'from-yellow-400 to-orange-500',
+                hoverGradient: 'hover:from-yellow-500 hover:to-orange-600',
+                icon: <Star className='w-4 h-4' />
+              }
+            ].map((filter, index) => (
+              <button
+                key={filter.label}
+                onClick={filter.onClick}
+                className={`group bg-gradient-to-r ${filter.gradient} ${filter.hoverGradient} text-white rounded-lg p-3 transition-all duration-200 hover:shadow-md`}
+              >
+                <div className='flex flex-col items-center space-y-1'>
+                  <div className='w-6 h-6 bg-white/20 rounded-md flex items-center justify-center group-hover:bg-white/30 transition-colors duration-200'>
+                    {filter.icon}
+                  </div>
+                  <div className='text-center'>
+                    <div className='text-sm font-bold'>{filter.count}</div>
+                    <div className='text-xs font-medium opacity-90'>{filter.label}</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Top Products Section */}
+        {analyticsData?.topProducts && analyticsData.topProducts.length > 0 && (
+          <div className='bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4 border border-white/20'>
+            <div className='flex items-center gap-2 mb-3'>
+              <div className='w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center'>
+                <Star className='w-4 h-4 text-white' />
+              </div>
+              <h3 className='text-lg font-semibold text-gray-900'>🏆 Top Selling Products</h3>
+              <div className='ml-auto text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full'>
+                Last 30 days
+              </div>
+            </div>
+            
+            <div className='space-y-3'>
+              {analyticsData.topProducts.slice(0, 5).map((product, index) => (
+                <div key={product.id} className='group flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:border-vesoko_dark_blue hover:shadow-md transition-all duration-200'>
+                  <div className='flex items-center gap-3'>
+                    <div className='relative'>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm ${
+                        index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-500' :
+                        index === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-400' :
+                        index === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-500' :
+                        'bg-gradient-to-br from-blue-400 to-blue-500'
+                      }`}>
+                        {index + 1}
+                      </div>
+                      {index < 3 && (
+                        <div className='absolute -top-1 -right-1 w-3 h-3 bg-vesoko_green_600 rounded-full flex items-center justify-center'>
+                          <Star className='w-1.5 h-1.5 text-white' />
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <p className='font-semibold text-gray-900 group-hover:text-vesoko_dark_blue transition-colors text-sm'>
+                        {product.name}
+                      </p>
+                      <p className='text-xs text-gray-600'>
+                        {product.quantity} units sold
+                      </p>
+                    </div>
+                  </div>
+                  <div className='text-right'>
+                    <p className='font-bold text-vesoko_green_600'>
+                      ${product.revenue.toFixed(2)}
+                    </p>
+                    <p className='text-xs text-gray-500'>revenue</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Table Search field and Filter Dropdown*/}
         <TableFilters>
@@ -441,8 +583,8 @@ const SellerInventory = () => {
           onSearchChange={handleSearchChange}
         />
 
-        {/* Enhanced Inventory Table */}
-        <div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
+        {/* Modern Inventory Table */}
+        <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden animate-slide-up' style={{animationDelay: '600ms'}}>
         <table
           id='inventory-table'
           className='w-full text-sm text-left rtl:text-right text-vesoko_gray_600 dark:text-gray-400'
@@ -552,7 +694,7 @@ const SellerInventory = () => {
           <SuccessMessageModal successMessage={successMessage} />
         )}
         </div>
-      </div>
+ 
     </div>
   );
 };

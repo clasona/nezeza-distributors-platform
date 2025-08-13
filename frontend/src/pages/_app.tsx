@@ -1,4 +1,5 @@
 import RootLayout from '@/components/RootLayout';
+import SessionBridge from '@/components/SessionBridge';
 import { persistor, store } from '@/redux/store';
 import '@/styles/globals.css';
 import { SessionProvider } from 'next-auth/react';
@@ -24,6 +25,7 @@ export default function App({
         {/* for persisting redux store state data when refreshed */}
         <PersistGate loading={<p>Loading...</p>} persistor={persistor}>
           <SessionProvider session={session}>
+            <SessionBridge />
             <div className='bg-gray-300'>
               {/* <RootLayout>
                 <Component {...pageProps} />

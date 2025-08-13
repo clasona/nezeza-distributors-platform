@@ -16,6 +16,7 @@ import { getSingleProduct } from '@/utils/product/getSingleProduct';
 import { updateOrderItem } from '@/utils/order/updateOrderItem';
 import CloudinaryUploadWidget from '../Cloudinary/UploadWidget';
 import DropdownInputSearchable from '../FormInputs/DropdownInputSearchable';
+import { ArrowLeft, Package, DollarSign, Image, Ruler, Settings, Palette, Check } from 'lucide-react';
 
 interface UpdateProductFormProps {
   onSubmitSuccess?: (data: any) => void;
@@ -40,17 +41,20 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
     { value: 'furniture', label: 'Furniture' },
     { value: 'others', label: 'Others' },
   ];
-  const colorOptions = [
-    '#222',
-    '#000',
-    '#fff',
-    '#f00',
-    '#0f0',
-    '#00f',
-    '#ff0',
-    '#0ff',
-    '#f0f',
+  const presetColors = [
+    { name: 'Black', value: '#000000' },
+    { name: 'White', value: '#FFFFFF' },
+    { name: 'Red', value: '#DC2626' },
+    { name: 'Blue', value: '#2563EB' },
+    { name: 'Green', value: '#059669' },
+    { name: 'Yellow', value: '#D97706' },
+    { name: 'Purple', value: '#7C3AED' },
+    { name: 'Pink', value: '#DB2777' },
+    { name: 'Gray', value: '#6B7280' },
   ];
+
+  const [customColor, setCustomColor] = useState('');
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
 
   const {
     register,
@@ -184,217 +188,482 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
     }
   };
 
+  const addCustomColor = () => {
+    if (customColor && !selectedColors.includes(customColor)) {
+      setSelectedColors(prev => [...prev, customColor]);
+      setCustomColor('');
+      setIsColorPickerOpen(false);
+    }
+  };
+
+  const removeColor = (colorToRemove: string) => {
+    setSelectedColors(prev => prev.filter(color => color !== colorToRemove));
+  };
+
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className='w-full max-w-4xl p-4 bg-vesoko_light_blue border border-gray-200 rounded-lg shadow sm:p-6 md:p-8 mx-auto my-2'
-    >
-      <TextInput
-        label='Product ID'
-        id='productId'
-        name='productId'
-        register={register}
-        errors={errors}
-        disabled
-        type='text'
-      />
-      <div className='grid grid-cols-1 gap-y-2 sm:grid-cols-2 sm:gap-x-6'>
-        <TextInput
-          label='Product Title'
-          id='title'
-          name='title'
-          register={register}
-          errors={errors}
-          type='text'
-        />
-        <DropdownInputSearchable
-          label='Category'
-          id='category'
-          name='category'
-          options={categoryOptions}
-          register={register}
-          errors={errors}
-          value={
-            productData?.category
-              ? {
-                  label: productData?.category,
-                  value: productData?.category,
-                }
-              : {
-                  label: '',
-                  value: '',
-                }
-          }
-        />
-        <TextAreaInput
-          label='Product Description'
-          id='description'
-          name='description'
-          register={register}
-          errors={errors}
-          className='sm:col-span-2'
-        />
-        <TextInput
-          label='Quantity'
-          id='quantity'
-          name='quantity'
-          register={register}
-          errors={errors}
-          type='number'
-        />
-        <TextInput
-          label='Unit Price'
-          id='price'
-          name='price'
-          register={register}
-          errors={errors}
-          type='number'
-        />
-
-        {/* Images */}
-        <div className='col-span-2 mt-3 flex flex-wrap gap-2'>
-          <label className='block font-medium mb-1'>
-            Product Images <span className='text-vesoko_red_600'> *</span>
-          </label>
-          {imageUrls.map((url, i) => (
-            <div key={i} className='relative'>
-              <img
-                src={url}
-                alt={`Product Image ${i + 1}`}
-                className='w-16 h-16 object-cover rounded border'
-              />
-              <button
-                type='button'
-                className='absolute top-0 right-0 bg-red-600 text-white rounded-full p-1 text-xs shadow'
-                onClick={() => handleRemoveImage(i)}
-                aria-label='Remove image'
-              >
-                &times;
-              </button>
-            </div>
-          ))}
-          <CloudinaryUploadWidget
-            onUpload={(urls) => setImageUrls((prev) => [...prev, ...urls])}
+    <div className="min-h-screen bg-gray-50 py-8">
+      {/* Header Section */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="flex items-center gap-4 mb-6">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
-            <button
-              type='button'
-              className='w-16 h-16 flex items-center justify-center rounded border cursor-pointer bg-gray-50 hover:bg-gray-200 text-vizpac-main-orange'
-            >
-              +
-            </button>
-          </CloudinaryUploadWidget>
+            <ArrowLeft size={20} />
+            Back
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Update Product</h1>
+            <p className="text-gray-600 mt-1">Modify your product details and inventory</p>
+          </div>
+        </div>
+        
+        {/* Status indicator */}
+        {productData && (
+          <div className="flex items-center gap-4 p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div className="flex items-center gap-2">
+              <div className={`w-3 h-3 rounded-full ${
+                productData.availability ? 'bg-green-500' : 'bg-red-500'
+              }`} />
+              <span className="font-medium">
+                {productData.availability ? 'Available' : 'Unavailable'}
+              </span>
+            </div>
+            <div className="text-gray-400">|</div>
+            <div className="text-sm text-gray-600">
+              Last updated: {new Date().toLocaleDateString()}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        {/* Hidden Product ID */}
+        <input type="hidden" {...register('productId')} />
+        
+        {/* Product Information Section */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Package className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Product Information</h2>
+                <p className="text-sm text-gray-600">Basic details about your product</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <TextInput
+                label="Product Title"
+                id="title"
+                name="title"
+                register={register}
+                errors={errors}
+                type="text"
+                className="col-span-1"
+              />
+              <DropdownInputSearchable
+                label="Category"
+                id="category"
+                name="category"
+                options={categoryOptions}
+                register={register}
+                errors={errors}
+                value={
+                  productData?.category
+                    ? {
+                        label: productData?.category,
+                        value: productData?.category,
+                      }
+                    : {
+                        label: '',
+                        value: '',
+                      }
+                }
+              />
+              <div className="md:col-span-2">
+                <TextAreaInput
+                  label="Product Description"
+                  id="description"
+                  name="description"
+                  register={register}
+                  errors={errors}
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Colors */}
-        <div className='col-span-2 flex flex-wrap items-center gap-2 mt-2'>
-          <label className='block font-medium mb-1'>
-            Select Colors <span className='text-vesoko_red_600'>*</span>
-          </label>
-          {colorOptions.map((color) => (
-            <button
-              type='button'
-              key={color}
-              className={`w-7 h-7 rounded-full border-2 flex-shrink-0 mr-1 ${
-                selectedColors.includes(color)
-                  ? 'border-vesoko_green_600 ring-2 ring-vesoko_green_600'
-                  : 'border-gray-300'
-              }`}
-              style={{ background: color }}
-              onClick={() => handleColorChange(color)}
-              aria-label={`Select color ${color}`}
-            />
-          ))}
+        {/* Pricing & Inventory Section */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <DollarSign className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Pricing & Inventory</h2>
+                <p className="text-sm text-gray-600">Set your pricing and track inventory</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <TextInput
+                label="Unit Price ($)"
+                id="price"
+                name="price"
+                register={register}
+                errors={errors}
+                type="number"
+                step="0.01"
+              />
+              <TextInput
+                label="Quantity in Stock"
+                id="quantity"
+                name="quantity"
+                register={register}
+                errors={errors}
+                type="number"
+              />
+              <TextInput
+                label="Tax Rate (%)"
+                id="taxRate"
+                name="taxRate"
+                register={register}
+                errors={errors}
+                type="number"
+                step="0.01"
+              />
+            </div>
+          </div>
         </div>
-        {/* Boolean fields */}
-        <div className='flex items-center gap-2 mt-2'>
-          <input
-            id='featured'
-            type='checkbox'
-            {...register('featured')}
-            className='form-checkbox accent-vesoko_green_600'
-          />
-          <label htmlFor='featured' className='font-medium'>
-            Featured
-          </label>
+
+        {/* Media Section */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Image className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Product Media</h2>
+                <p className="text-sm text-gray-600">Upload images to showcase your product</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="space-y-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Product Images <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                {imageUrls.map((url, i) => (
+                  <div key={i} className="relative group">
+                    <img
+                      src={url}
+                      alt={`Product ${i + 1}`}
+                      className="w-full h-24 object-cover rounded-lg border border-gray-200 shadow-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(i)}
+                      className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                    >
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+                <CloudinaryUploadWidget
+                  onUpload={(urls) => setImageUrls((prev) => [...prev, ...urls])}
+                >
+                  <div className="w-full h-24 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer group">
+                    <div className="text-center">
+                      <svg className="mx-auto h-6 w-6 text-gray-400 group-hover:text-blue-500" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      <span className="text-xs text-gray-500 group-hover:text-blue-500 mt-1">Add Image</span>
+                    </div>
+                  </div>
+                </CloudinaryUploadWidget>
+              </div>
+              {imageUrls.length === 0 && (
+                <p className="text-sm text-red-500 mt-1">Please upload at least one product image</p>
+              )}
+            </div>
+          </div>
         </div>
-        <div className='flex items-center gap-2 mt-2'>
-          <input
-            id='freeShipping'
-            type='checkbox'
-            {...register('freeShipping')}
-            className='form-checkbox accent-vesoko_green_600'
-          />
-          <label htmlFor='freeShipping' className='font-medium'>
-            Free Shipping
-          </label>
+
+        {/* Color Options Section */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-pink-100 rounded-lg">
+                <Palette className="w-5 h-5 text-pink-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Color Options</h2>
+                <p className="text-sm text-gray-600">Choose available colors for your product</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="space-y-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Available Colors <span className="text-red-500">*</span>
+              </label>
+              
+              {/* Preset Colors */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-600 mb-3">Preset Colors</h4>
+                <div className="flex flex-wrap gap-3">
+                  {presetColors.map((color) => (
+                    <button
+                      key={color.value}
+                      type="button"
+                      onClick={() => handleColorChange(color.value)}
+                      className={`relative group flex flex-col items-center p-2 rounded-lg border-2 transition-all ${
+                        selectedColors.includes(color.value)
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div
+                        className="w-8 h-8 rounded-full shadow-sm border border-gray-200"
+                        style={{ backgroundColor: color.value }}
+                      />
+                      <span className="text-xs text-gray-600 mt-1">{color.name}</span>
+                      {selectedColors.includes(color.value) && (
+                        <div className="absolute -top-1 -right-1 bg-blue-500 text-white rounded-full p-0.5">
+                          <Check size={12} />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Custom Color Picker */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-600 mb-3">Custom Color</h4>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={customColor}
+                      onChange={(e) => setCustomColor(e.target.value)}
+                      className="w-10 h-10 rounded border border-gray-300 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={customColor}
+                      onChange={(e) => setCustomColor(e.target.value)}
+                      placeholder="#000000"
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={addCustomColor}
+                    disabled={!customColor || selectedColors.includes(customColor)}
+                    className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Add Color
+                  </button>
+                </div>
+              </div>
+              
+              {/* Selected Colors */}
+              {selectedColors.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-600 mb-3">Selected Colors ({selectedColors.length})</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedColors.map((color) => (
+                      <div key={color} className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+                        <div
+                          className="w-4 h-4 rounded-full border border-gray-300"
+                          style={{ backgroundColor: color }}
+                        />
+                        <span className="text-sm text-gray-700">{color}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeColor(color)}
+                          className="text-gray-400 hover:text-red-500 transition-colors"
+                        >
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {selectedColors.length === 0 && (
+                <p className="text-sm text-red-500">Please select at least one color</p>
+              )}
+            </div>
+          </div>
         </div>
-        <div className='flex items-center gap-2 mt-2'>
-          <input
-            id='availability'
-            type='checkbox'
-            {...register('availability')}
-            className='form-checkbox accent-vesoko_green_600'
-            defaultChecked
-          />
-          <label htmlFor='availability' className='font-medium'>
-            Available for Sale
-          </label>
+
+        {/* Product Dimensions Section */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <Ruler className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Product Dimensions</h2>
+                <p className="text-sm text-gray-600">Physical specifications for shipping calculations</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <TextInput
+                label="Weight (lbs)"
+                id="weight"
+                name="weight"
+                register={register}
+                errors={errors}
+                type="number"
+                step="0.01"
+              />
+              <TextInput
+                label="Length (inches)"
+                id="length"
+                name="length"
+                register={register}
+                errors={errors}
+                type="number"
+                step="0.01"
+              />
+              <TextInput
+                label="Width (inches)"
+                id="width"
+                name="width"
+                register={register}
+                errors={errors}
+                type="number"
+                step="0.01"
+              />
+              <TextInput
+                label="Height (inches)"
+                id="height"
+                name="height"
+                register={register}
+                errors={errors}
+                type="number"
+                step="0.01"
+              />
+            </div>
+          </div>
         </div>
-        {/* Physical dimensions */}
-        <TextInput
-          label='Weight (lbs)'
-          id='weight'
-          name='weight'
-          register={register}
-          errors={errors}
-          type='number'
-        />
-        <TextInput
-          label='Height (inches)'
-          id='height'
-          name='height'
-          register={register}
-          errors={errors}
-          type='number'
-        />
-        <TextInput
-          label='Width (inches)'
-          id='width'
-          name='width'
-          register={register}
-          errors={errors}
-          type='number'
-        />
-        <TextInput
-          label='Length (inches)'
-          id='length'
-          name='length'
-          register={register}
-          errors={errors}
-          type='number'
-        />
-        {/* Tax rate */}
-        <TextInput
-          label='Tax Rate (%)'
-          id='taxRate'
-          name='taxRate'
-          register={register}
-          errors={errors}
-          type='number'
-        />
-      </div>
-      <div className='flex items-center justify-center'>
-        {successMessage && (
-          <SuccessMessageModal successMessage={successMessage} />
-        )}
-        {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
-        <SubmitButton
-          isLoading={false}
-          buttonTitle='Update Product'
-          loadingButtonTitle='Updating inventory product...'
-        />
-      </div>
-    </form>
+
+        {/* Additional Settings Section */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 rounded-lg">
+                <Settings className="w-5 h-5 text-gray-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Additional Settings</h2>
+                <p className="text-sm text-gray-600">Configure product visibility and shipping options</p>
+              </div>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="space-y-4">
+              {/* TODO: PREMIUM FEATURE */}
+              {/* <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div>
+                  <h3 className="font-medium text-gray-900">Featured Product</h3>
+                  <p className="text-sm text-gray-600">Show this product prominently on your store</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    {...register('featured')}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div> */}
+              
+              <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div>
+                  <h3 className="font-medium text-gray-900">Free Shipping</h3>
+                  <p className="text-sm text-gray-600">Offer free shipping for this product</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    {...register('freeShipping')}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+              
+              <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div>
+                  <h3 className="font-medium text-gray-900">Available for Sale</h3>
+                  <p className="text-sm text-gray-600">Make this product available for customers to purchase</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    {...register('availability')}
+                    defaultChecked
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Submit Section */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                <p>Ready to update your product? Review all sections before submitting.</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => router.back()}
+                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <SubmitButton
+                  isLoading={false}
+                  buttonTitle="Update Product"
+                  loadingButtonTitle="Updating Product..."
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      {/* Success/Error Modals */}
+      {successMessage && <SuccessMessageModal successMessage={successMessage} />}
+      {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
+    </div>
   );
 };
 

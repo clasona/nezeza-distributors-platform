@@ -155,18 +155,19 @@ export interface StoreProduct {
 export interface StoreProps {
   _id: string;
   storeType: string;
-  registrationNumber: number;
+  registrationNumber?: number;
   name: string;
-  category: string;
-  description: string;
+  storeName?: string; // Additional field for compatibility
+  category?: string;
+  description?: string;
   email: string;
-  phone: string;
-  ownerId: number;
-  // storeLogo: File;
+  phone?: string;
+  logo?: string; // Store logo URL
+  ownerId?: string | number;
   address?: AddressProps;
   isActive?: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // When creating a new store, omit these since MongoDB will generate them
@@ -212,14 +213,13 @@ export interface UserProps {
   firstName: string;
   lastName: string;
   email: string;
-  roles: string[];
-  image: string;
-  password: string;
-  isVerified: boolean;
-  verifiedAt: string;
-  storeId: string;
+  roles?: string[];
+  image?: string;
+  password?: string;
+  isVerified?: boolean;
+  verifiedAt?: string;
+  storeId?: string;
   citizenshipCountry?: string;
-  // birthCountry?: string;
   dob?: string;
   address?: AddressProps;
   createdAt?: string;

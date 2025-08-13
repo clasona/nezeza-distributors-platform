@@ -121,36 +121,84 @@ const SellerCustomers = () => {
     return 0;
   });
   return (
-    <div className='p-4'>
-      <PageHeader heading='Customers Overview' />
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
-        <MetricCard
-          title='Total Customers'
-          value={totalCustomers}
-          icon={<Users className='w-6 h-6' />}
-          color='purple'
-        />
-        <MetricCard
-          title='New Customers'
-          value={newCustomers}
-          icon={<TrendingUp className='w-6 h-6' />}
-          color='green'
-        />
-        <MetricCard
-          title='Verified Customers'
-          value={activeCustomers}
-          icon={<UserCheck className='w-6 h-6' />}
-          color='blue'
-        />
-        <MetricCard
-          title='Unverified Customers'
-          value={inactiveCustomers}
-          icon={<UserX className='w-6 h-6' />}
-          color='red'
-        />
+      <div className='space-y-8'>
+        {/* Modern Header */}
+        <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 border border-white/20 animate-fade-in'>
+          <div>
+            <h1 className='text-3xl sm:text-4xl font-bold text-vesoko_dark_blue mb-2'>
+              👥 Customers Overview
+            </h1>
+            <p className='text-lg text-gray-600'>
+              Track and analyze your customer base and engagement
+            </p>
+          </div>
+        </div>
+        
+        {/* Modern Customer Metrics */}
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+          {[
+            {
+              title: 'Total Customers',
+              value: totalCustomers,
+              icon: <Users className='w-6 h-6' />,
+              gradient: 'from-purple-400 to-purple-600',
+              bgGradient: 'from-purple-50 to-indigo-50',
+              borderColor: 'border-purple-200'
+            },
+            {
+              title: 'New Customers',
+              value: newCustomers,
+              icon: <TrendingUp className='w-6 h-6' />,
+              gradient: 'from-green-400 to-green-600',
+              bgGradient: 'from-green-50 to-emerald-50',
+              borderColor: 'border-green-200',
+              subtitle: 'Last 30 days'
+            },
+            {
+              title: 'Verified Customers',
+              value: activeCustomers,
+              icon: <UserCheck className='w-6 h-6' />,
+              gradient: 'from-blue-400 to-blue-600',
+              bgGradient: 'from-blue-50 to-cyan-50',
+              borderColor: 'border-blue-200'
+            },
+            {
+              title: 'Unverified Customers',
+              value: inactiveCustomers,
+              icon: <UserX className='w-6 h-6' />,
+              gradient: 'from-red-400 to-red-600',
+              bgGradient: 'from-red-50 to-orange-50',
+              borderColor: 'border-red-200'
+            }
+          ].map((metric, index) => (
+            <div
+              key={metric.title}
+              className={`bg-gradient-to-r ${metric.bgGradient} border ${metric.borderColor} rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 animate-slide-up`}
+              style={{animationDelay: `${index * 100}ms`}}
+            >
+              <div className='flex items-center justify-between mb-4'>
+                <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${metric.gradient} flex items-center justify-center text-white shadow-lg`}>
+                  {metric.icon}
+                </div>
+              </div>
+              <div>
+                <div className='text-2xl font-bold text-gray-900 mb-1'>
+                  {metric.value}
+                </div>
+                <div className='text-sm font-medium text-gray-600'>
+                  {metric.title}
+                </div>
+                {metric.subtitle && (
+                  <div className='text-xs text-gray-500 mt-1'>
+                    {metric.subtitle}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
       </div>
-      {/* Customer Table */}
-      <div className='bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
+      {/* Modern Customer Table */}
+      <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden animate-slide-up' style={{animationDelay: '400ms'}}>
         <table className='w-full text-sm text-left text-vesoko_gray_600'>
           <TableHead
             checked={selectedRows.length === customers.length}
@@ -161,7 +209,8 @@ const SellerCustomers = () => {
               { title: 'Name', id: 'name' },
               { title: 'Email', id: 'email' },
               { title: 'Verified', id: 'isVerified' },
-              { title: 'Join Date', id: 'createdAt' }
+              { title: 'Join Date', id: 'createdAt' },
+              { title: 'Actions', id: 'actions' }
             ]}
           />
           {isLoading ? (
