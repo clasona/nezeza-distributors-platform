@@ -91,14 +91,14 @@ const Banner = ({ onBuyClick }: BannerProps) => {
                 <div className='flex items-center justify-center mb-1 sm:mb-2'>
                   <ShoppingBag className='w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6' />
                 </div>
-                <div className='text-lg sm:text-xl md:text-2xl font-bold'>5K+</div>
+                <div className='text-lg sm:text-xl md:text-2xl font-bold'>3K+</div>
                 <div className='text-xs sm:text-sm opacity-80'>Products</div>
               </div>
               <div className='bg-white/10 backdrop-blur-sm rounded-lg p-2 sm:p-3 md:p-4 min-w-[80px] sm:min-w-[100px] md:min-w-[120px]'>
                 <div className='flex items-center justify-center mb-1 sm:mb-2'>
                   <Store className='w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6' />
                 </div>
-                <div className='text-lg sm:text-xl md:text-2xl font-bold'>200+</div>
+                <div className='text-lg sm:text-xl md:text-2xl font-bold'>20+</div>
                 <div className='text-xs sm:text-sm opacity-80'>Sellers</div>
               </div>
             </div>

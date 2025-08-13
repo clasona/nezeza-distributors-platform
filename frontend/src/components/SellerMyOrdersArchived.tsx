@@ -17,7 +17,6 @@ import { getMyArchivedOrders } from '@/utils/order/getMyArchivedOrders';
 import { calculateOrderStats } from '@/utils/orderUtils';
 import { sortItems } from '@/utils/sortItems';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { OrderProps } from '../../type';
 import ErrorMessageModal from './ErrorMessageModal';
@@ -27,6 +26,7 @@ import SuccessMessageModal from './SuccessMessageModal';
 import BulkDeleteButton from './Table/BulkDeleteButton';
 import BulkDeleteModal from './Table/BulkDeleteModal';
 import { RotateCcw } from 'lucide-react';
+import Image from 'next/image';
 
 const SellerMyOrders = () => {
   const [myOrders, setMyOrders] = useState<OrderProps[]>([]);
@@ -363,8 +363,6 @@ const SellerMyOrders = () => {
                             <Image
                               src={item.image}
                               alt={item.description}
-                              width={48}
-                              height={48}
                               className='w-12 h-12 object-cover'
                             />
                             <div className=''>

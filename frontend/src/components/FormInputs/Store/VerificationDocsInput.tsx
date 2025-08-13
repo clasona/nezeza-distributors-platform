@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import CloudinaryFileUpload from '../../FormInputs/CloudinaryFileUpload';
+import DocumentUploadWidget from '../../Cloudinary/DocumentUploadWidget';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { FileText, Shield, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { StoreApplicationFormData } from '@/types/storeApplication';
@@ -37,14 +37,32 @@ const VerificationDocsInput = ({
     setLocalBusinessDocResource(businessDocResource || null);
   }, [businessDocResource]);
 
-  const handleIdentityDocChange = (resource: any) => {
+  const handleIdentityDocUpload = (url: string, info: any) => {
+    const resource = {
+      secure_url: url,
+      original_filename: info.original_filename || info.display_name,
+      format: info.format,
+      resource_type: info.resource_type,
+      bytes: info.bytes,
+      public_id: info.public_id,
+      ...info
+    };
     setLocalIdentityDocResource(resource);
-    setIdentityDocResource(resource); // Update parent state
+    setIdentityDocResource(resource);
   };
 
-  const handleBusinessDocChange = (resource: any) => {
+  const handleBusinessDocUpload = (url: string, info: any) => {
+    const resource = {
+      secure_url: url,
+      original_filename: info.original_filename || info.display_name,
+      format: info.format,
+      resource_type: info.resource_type,
+      bytes: info.bytes,
+      public_id: info.public_id,
+      ...info
+    };
     setLocalBusinessDocResource(resource);
-    setBusinessDocResource(resource); // Update parent state
+    setBusinessDocResource(resource);
   };
 
   return (
@@ -124,23 +142,22 @@ const VerificationDocsInput = ({
           </div>
           
           <div className='space-y-3'>
-            <CloudinaryFileUpload
-              label='Upload Identity Document'
-              className='w-full'
-              onResourceChange={handleIdentityDocChange}
-              initialResource={localIdentityDocResource}
+            <DocumentUploadWidget
+              label=''
+              onUpload={handleIdentityDocUpload}
+              currentFile={localIdentityDocResource ? {
+                url: localIdentityDocResource.secure_url,
+                name: localIdentityDocResource.original_filename
+              } : null}
+              onRemove={() => {
+                setLocalIdentityDocResource(null);
+                setIdentityDocResource(null);
+              }}
+              accept='pdf,jpg,jpeg,png'
+              maxFileSize={10}
+              buttonText='Upload Identity Document'
+              folder='identity-docs'
             />
-            {localIdentityDocResource ? (
-              <div className='flex items-center gap-2 text-green-600 text-sm'>
-                <CheckCircle2 className='h-4 w-4' />
-                Document uploaded successfully
-              </div>
-            ) : (
-              <div className='flex items-center gap-2 text-red-500 text-sm'>
-                <AlertCircle className='h-4 w-4' />
-                Identity document is required
-              </div>
-            )}
           </div>
         </div>
 
@@ -177,23 +194,22 @@ const VerificationDocsInput = ({
           </div>
           
           <div className='space-y-3'>
-            <CloudinaryFileUpload
-              label='Upload Business Document'
-              className='w-full'
-              onResourceChange={handleBusinessDocChange}
-              initialResource={localBusinessDocResource}
+            <DocumentUploadWidget
+              label=''
+              onUpload={handleBusinessDocUpload}
+              currentFile={localBusinessDocResource ? {
+                url: localBusinessDocResource.secure_url,
+                name: localBusinessDocResource.original_filename
+              } : null}
+              onRemove={() => {
+                setLocalBusinessDocResource(null);
+                setBusinessDocResource(null);
+              }}
+              accept='pdf,doc,docx'
+              maxFileSize={10}
+              buttonText='Upload Business Document'
+              folder='business-docs'
             />
-            {localBusinessDocResource ? (
-              <div className='flex items-center gap-2 text-green-600 text-sm'>
-                <CheckCircle2 className='h-4 w-4' />
-                Document uploaded successfully
-              </div>
-            ) : (
-              <div className='flex items-center gap-2 text-red-500 text-sm'>
-                <AlertCircle className='h-4 w-4' />
-                Business document is required
-              </div>
-            )}
           </div>
         </div>
       </div>
