@@ -31,8 +31,8 @@ const AdminSupportPage = () => {
   };
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'tickets', label: 'All Tickets', icon: '🎫' },
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'tickets', label: 'All Tickets' },
   ];
 
   return (
@@ -60,7 +60,7 @@ const AdminSupportPage = () => {
                     }
                   `}
                 >
-                  <span>{tab.icon}</span>
+                  
                   {tab.label}
                 </button>
               ))}

@@ -543,6 +543,16 @@ const CustomerSupportMyTickets: React.FC = () => {
                   Attachments (optional)
                 </label>
                 <div className="space-y-3">
+                  {/* Debug info for reply attachments */}
+                  <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+                    Debug: replyAttachmentUrls.length = {replyAttachmentUrls.length}
+                    {replyAttachmentUrls.length > 0 && (
+                      <div className="mt-1">
+                        URLs: {JSON.stringify(replyAttachmentUrls, null, 2)}
+                      </div>
+                    )}
+                  </div>
+                  
                   {/* Display uploaded Cloudinary attachments */}
                   {replyAttachmentUrls.length > 0 && (
                     <div className="space-y-2">
@@ -553,17 +563,80 @@ const CustomerSupportMyTickets: React.FC = () => {
                         {replyAttachmentUrls.map((url, index) => (
                           <div key={index} className="relative group">
                             <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
-                              {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
-                                <img
-                                  src={url}
-                                  alt={`Reply Attachment ${index + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="text-xs text-gray-500 text-center px-1">
-                                  {url.split('.').pop()?.toUpperCase() || 'FILE'}
-                                </div>
-                              )}
+                              {(() => {
+                                if (!url || typeof url !== 'string') {
+                                  return (
+                                    <div className="text-xs text-gray-500 text-center px-1">
+                                      INVALID
+                                    </div>
+                                  );
+                                }
+                                
+                                // Enhanced file type detection for Cloudinary URLs
+                                const getFileTypeFromUrl = (urlString: string) => {
+                                  // Check for format parameter in Cloudinary URLs (e.g., f_auto,q_auto)
+                                  const formatMatch = urlString.match(/f_([^,]+)/);
+                                  if (formatMatch) {
+                                    return formatMatch[1].toUpperCase();
+                                  }
+                                  
+                                  // Check for resource_type in Cloudinary URLs
+                                  if (urlString.includes('/image/')) {
+                                    return 'IMAGE';
+                                  }
+                                  if (urlString.includes('/raw/')) {
+                                    return 'FILE';
+                                  }
+                                  if (urlString.includes('/video/')) {
+                                    return 'VIDEO';
+                                  }
+                                  
+                                  // Fallback to file extension
+                                  const extension = urlString.split('.').pop()?.toLowerCase();
+                                  if (extension) {
+                                    return extension.toUpperCase();
+                                  }
+                                  
+                                  return 'FILE';
+                                };
+                                
+                                const fileType = getFileTypeFromUrl(url);
+                                
+                                // Check if it's likely an image (either by extension or Cloudinary indicators)
+                                const isImage = url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || 
+                                               url.includes('/image/') ||
+                                               ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP'].includes(fileType);
+                                
+                                if (isImage) {
+                                  return (
+                                    <img
+                                      src={url}
+                                      alt={`Reply Attachment ${index + 1}`}
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        // Fallback to file icon if image fails to load
+                                        const target = e.target as HTMLImageElement;
+                                        target.style.display = 'none';
+                                        const fallback = document.createElement('div');
+                                        fallback.className = 'text-xs text-gray-500 text-center px-1';
+                                        fallback.textContent = fileType;
+                                        target.parentNode?.appendChild(fallback);
+                                      }}
+                                    />
+                                  );
+                                } else {
+                                  // Show file type for non-images
+                                  return (
+                                    <div className="text-xs text-gray-500 text-center px-1 flex flex-col items-center">
+                                      {/* File icon */}
+                                      <svg className="w-6 h-6 mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                      <span className="text-xs">{fileType}</span>
+                                    </div>
+                                  );
+                                }
+                              })()}
                             </div>
                             <button
                               type="button"
@@ -582,7 +655,16 @@ const CustomerSupportMyTickets: React.FC = () => {
                   {/* Upload widget */}
                   {replyAttachmentUrls.length < 3 && (
                     <CloudinaryUploadWidget
-                      onUpload={(urls) => setReplyAttachmentUrls((prev) => [...prev, ...urls])}
+                      onUpload={(files) => {
+                        console.log('Reply upload - files received:', files);
+                        const newUrls = files.map(file => file.secure_url).filter(url => url);
+                        console.log('Reply upload - extracted URLs:', newUrls);
+                        setReplyAttachmentUrls((prev) => {
+                          const updated = [...prev, ...newUrls];
+                          console.log('Reply upload - updated URLs:', updated);
+                          return updated;
+                        });
+                      }}
                       maxFiles={3 - replyAttachmentUrls.length}
                       folder="support-tickets/replies"
                       buttonText={`Upload Files (${replyAttachmentUrls.length}/3)`}

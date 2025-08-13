@@ -82,8 +82,7 @@ const CustomerSupportSubmitTicket: React.FC = () => {
   const [metadata, setMetadata] = useState<SupportMetadata>(fallbackMetadata);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [attachmentFiles, setAttachmentFiles] = useState<CloudinaryFileInfo[]>([]);
+  const [attachmentUrls, setAttachmentUrls] = useState<string[]>([]);
   const [metadataError, setMetadataError] = useState<string | null>(null);
 
   const {
@@ -125,31 +124,73 @@ const CustomerSupportSubmitTicket: React.FC = () => {
     }
   };
 
+  const handleFileUpload = useCallback((files: CloudinaryFileInfo[]) => {
+    console.log('handleFileUpload called with files:', files);
+    console.log('Files length:', files.length);
+    
+    if (!files || files.length === 0) {
+      console.log('No files received in callback');
+      return;
+    }
+    
+    const newUrls = files.map(file => {
+      console.log('Processing file:', file);
+      return file.secure_url;
+    }).filter(url => url); // Filter out any undefined URLs
+    
+    console.log('Extracted URLs:', newUrls);
+    
+    setAttachmentUrls((prev) => {
+      // Prevent duplicates and enforce 5-file limit
+      const uniqueNewUrls = newUrls.filter(url => !prev.includes(url));
+      const totalUrls = [...prev, ...uniqueNewUrls];
+      const limitedUrls = totalUrls.slice(0, 5); // Enforce 5-file limit
+      
+      console.log('Previous URLs:', prev.length);
+      console.log('New unique URLs:', uniqueNewUrls.length);
+      console.log('Updated attachment URLs:', limitedUrls);
+      
+      return limitedUrls;
+    });
+  }, []);
+
+  const handleRemoveAttachment = useCallback((index: number) => {
+    setAttachmentUrls(prev => {
+      const newUrls = prev.filter((_, i) => i !== index);
+      console.log('Attachment removed, remaining URLs:', newUrls.length);
+      return newUrls;
+    });
+  }, []);
+
   const onSubmit = async (data: CreateSupportTicketData) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Convert CloudinaryFileInfo to the format expected by the backend
-      const attachmentData = attachmentFiles.length > 0 ? attachmentFiles.map(file => ({
-        filename: file.original_filename || file.filename || 'unknown',
-        url: file.secure_url,
-        fileType: file.format,
-        fileSize: file.bytes,
-        public_id: file.public_id
-      })) : (selectedFiles.length > 0 ? selectedFiles : undefined);
+      console.log('Submitting ticket with attachment URLs:', attachmentUrls);
+
+      // Create simple attachment data from URLs
+      const attachmentData = attachmentUrls.length > 0 ? attachmentUrls.map((url, index) => ({
+        filename: `attachment-${index + 1}`,
+        url: url,
+        fileType: 'unknown',
+        fileSize: 0,
+        public_id: ''
+      })) : undefined;
 
       const ticketData: CreateSupportTicketData = {
         ...data,
         attachments: attachmentData,
       };
 
+      console.log('Final ticket data:', ticketData);
       const response = await createSupportTicket(ticketData);
       
       // Redirect to the ticket detail page or show success message
       alert(`Support ticket created successfully! Ticket number: ${response.ticket.ticketNumber}`);
       router.push('/customer/support/my-tickets');
     } catch (error: any) {
+      console.error('Error creating support ticket:', error);
       setError(error.message);
     } finally {
       setLoading(false);
@@ -263,37 +304,51 @@ const CustomerSupportSubmitTicket: React.FC = () => {
             Attachments (optional)
           </label>
           <div className="space-y-3">
+            {/* Debug info */}
+            <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
+              Debug: attachmentUrls.length = {attachmentUrls.length}
+              {attachmentUrls.length > 0 && (
+                <div className="mt-1">
+                  URLs: {JSON.stringify(attachmentUrls, null, 2)}
+                </div>
+              )}
+            </div>
+            
             {/* Display uploaded attachments */}
-            {attachmentFiles.length > 0 && (
+            {attachmentUrls.length > 0 ? (
               <div className="space-y-2">
                 <AttachmentViewer
-                  attachments={attachmentFiles.map(file => file.secure_url)}
-                  title={`Uploaded Attachments (${attachmentFiles.length}/5)`}
+                  attachments={attachmentUrls}
+                  title={`Uploaded Attachments (${attachmentUrls.length}/5)`}
                   maxDisplay={5}
                 />
                 <div className="flex flex-wrap gap-2">
-                  {attachmentFiles.map((file, index) => (
+                  {attachmentUrls.map((url, index) => (
                     <button
                       key={index}
                       type="button"
-                      onClick={() => setAttachmentFiles(prev => prev.filter((_, i) => i !== index))}
+                      onClick={() => handleRemoveAttachment(index)}
                       className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200 transition-colors"
                       title="Remove attachment"
                     >
-                      Remove {file.original_filename || file.filename || `File ${index + 1}`}
+                      Remove File {index + 1}
                     </button>
                   ))}
                 </div>
               </div>
+            ) : (
+              <div className="text-sm text-gray-500 italic">
+                No files uploaded yet
+              </div>
             )}
             
             {/* Upload widget */}
-            {attachmentFiles.length < 5 && (
+            {attachmentUrls.length < 5 && (
               <CloudinaryUploadWidget
-                onUpload={(files) => setAttachmentFiles((prev) => [...prev, ...files])}
-                maxFiles={5 - attachmentFiles.length}
+                onUpload={handleFileUpload}
+                maxFiles={5}
                 folder="support-tickets"
-                buttonText={`Upload Files (${attachmentFiles.length}/5)`}
+                buttonText={`Upload Files (${attachmentUrls.length}/5)`}
                 className="w-full bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg py-4 px-6 text-center hover:bg-gray-100 hover:border-vesoko_dark_blue transition-all duration-200"
               >
                 <div className="flex items-center justify-center gap-2">
@@ -301,7 +356,7 @@ const CustomerSupportSubmitTicket: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                   <span className="text-sm font-medium text-gray-700">
-                    Click to Upload Files ({attachmentFiles.length}/5)
+                    Click to Upload Files ({attachmentUrls.length}/5)
                   </span>
                 </div>
               </CloudinaryUploadWidget>

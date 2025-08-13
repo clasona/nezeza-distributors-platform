@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { SupportTicket } from '@/utils/support/createSupportTicket';
 import { getAllSupportTickets, GetAllTicketsParams } from '@/utils/admin/getAllSupportTickets';
 import { getSupportMetadata, SupportMetadata } from '@/utils/support/getSupportMetadata';
@@ -50,6 +50,43 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
   const [editingTicket, setEditingTicket] = useState<string | null>(null);
   const [ticketUpdates, setTicketUpdates] = useState<{ [key: string]: any }>({});
   const [updatingTickets, setUpdatingTickets] = useState<string[]>([]);
+  
+  // Separate state for search input to prevent focus loss
+  const [searchInput, setSearchInput] = useState<string>('');
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Debounced search handler
+  const handleSearchInputChange = useCallback((value: string) => {
+    setSearchInput(value);
+    
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    // Set new timeout to update filters after 500ms of no typing
+    searchTimeoutRef.current = setTimeout(() => {
+      setFilters(prev => ({
+        ...prev,
+        search: value,
+        offset: 0, // Reset pagination when filters change
+      }));
+    }, 500);
+  }, []);
+  
+  // Initialize search input from filters
+  useEffect(() => {
+    setSearchInput(filters.search || '');
+  }, [filters.search]);
+  
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     fetchMetadata();
@@ -242,8 +279,8 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
             <input
               type="text"
               placeholder="Search tickets..."
-              value={filters.search || ''}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
+              value={searchInput}
+              onChange={(e) => handleSearchInputChange(e.target.value)}
               className="border border-gray-300 rounded-md px-3 py-2"
             />
             <DropdownInputSearchable

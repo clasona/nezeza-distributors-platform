@@ -95,29 +95,45 @@ export default function CloudinaryUploadWidget({
           return;
         }
 
+        console.log('Cloudinary upload result:', result);
+        console.log('Event type:', result?.event);
+        console.log('MaxFiles setting:', maxFiles);
+
         // Only handle 'queues-end' to avoid duplicate uploads for multiple files
         if (result && result.event === 'queues-end') {
-          const files: CloudinaryFileInfo[] = result.info.files?.map((f: any) => ({
-            url: f.uploadInfo?.secure_url || f.uploadInfo?.url,
-            secure_url: f.uploadInfo?.secure_url,
-            public_id: f.uploadInfo?.public_id,
-            original_filename: f.uploadInfo?.original_filename || f.name || 'unknown',
-            filename: f.uploadInfo?.display_name || f.uploadInfo?.original_filename || f.name,
-            format: f.uploadInfo?.format,
-            resource_type: f.uploadInfo?.resource_type,
-            bytes: f.uploadInfo?.bytes || 0,
-            // Include all other properties for compatibility
-            ...f.uploadInfo
-          })) || [];
+          console.log('Processing queues-end event');
+          console.log('Result info:', result.info);
+          
+          const files: CloudinaryFileInfo[] = result.info.files?.map((f: any) => {
+            console.log('Processing file in queues-end:', f);
+            return {
+              url: f.uploadInfo?.secure_url || f.uploadInfo?.url,
+              secure_url: f.uploadInfo?.secure_url,
+              public_id: f.uploadInfo?.public_id,
+              original_filename: f.uploadInfo?.original_filename || f.name || 'unknown',
+              filename: f.uploadInfo?.display_name || f.uploadInfo?.original_filename || f.name,
+              format: f.uploadInfo?.format,
+              resource_type: f.uploadInfo?.resource_type,
+              bytes: f.uploadInfo?.bytes || 0,
+              // Include all other properties for compatibility
+              ...f.uploadInfo
+            };
+          }) || [];
+          
+          console.log('Processed files from queues-end:', files);
           
           if (files.length > 0) {
-            console.log('Uploaded files with metadata:', files);
+            console.log('Calling onUpload with files:', files);
             onUpload(files);
+          } else {
+            console.warn('No files processed from queues-end event');
           }
         }
         
         // For single upload mode (maxFiles === 1), handle 'success'
         if (result && result.event === 'success' && maxFiles === 1) {
+          console.log('Processing success event for single file');
+          
           const file: CloudinaryFileInfo = {
             url: result.info?.secure_url || result.info?.url,
             secure_url: result.info?.secure_url,
@@ -131,7 +147,29 @@ export default function CloudinaryUploadWidget({
             ...result.info
           };
           
-          console.log('Uploaded single file with metadata:', file);
+          console.log('Calling onUpload with single file:', [file]);
+          onUpload([file]);
+        }
+        
+        // Let's also handle individual 'success' events for multiple files
+        if (result && result.event === 'success' && maxFiles > 1) {
+          console.log('Processing individual success event in multi-file mode');
+          console.log('Individual file result:', result.info);
+          
+          const file: CloudinaryFileInfo = {
+            url: result.info?.secure_url || result.info?.url,
+            secure_url: result.info?.secure_url,
+            public_id: result.info?.public_id,
+            original_filename: result.info?.original_filename || 'unknown',
+            filename: result.info?.display_name || result.info?.original_filename,
+            format: result.info?.format,
+            resource_type: result.info?.resource_type,
+            bytes: result.info?.bytes || 0,
+            // Include all other properties for compatibility
+            ...result.info
+          };
+          
+          console.log('Calling onUpload with individual file:', [file]);
           onUpload([file]);
         }
       }

@@ -3,7 +3,7 @@ const sendEmail = require('../sendEmail');
 /**
  * Base responsive email template with mobile optimization
  */
-const getBaseEmailTemplate = (content, title = 'Soko Support') => {
+const getBaseEmailTemplate = (content, title = 'VeSoko Support') => {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -347,13 +347,13 @@ const getBaseEmailTemplate = (content, title = 'Soko Support') => {
       <div class="email-wrapper">
         <div class="email-container">
           <div class="email-header">
-            <h1>Soko Support</h1>
+            <h1>VeSoko Support</h1>
             <div class="tagline">Connecting Africa to America</div>
           </div>
           ${content}
           <div class="email-footer">
             <div class="footer-text">
-              Thank you for choosing Soko Platform
+              Thank you for choosing VeSoko Platform
             </div>
             <div class="footer-links">
               <a href="${process.env.CLIENT_URL}/support">Support Center</a> | 
@@ -387,7 +387,7 @@ const sendTicketCreatedEmail = async ({
       </p>
       
       <p class="email-text">
-        Thank you for contacting Soko Support. We have received your support request and created a ticket for you.
+        Thank you for contacting VeSoko Support. We have received your support request and created a ticket for you.
       </p>
       
       <div class="info-box">
@@ -419,7 +419,7 @@ const sendTicketCreatedEmail = async ({
       </div>
       
       <p class="email-text">
-        You can track the status of your ticket by logging into your Soko account and visiting the Support section.
+        You can track the status of your ticket by logging into your VeSoko account and visiting the Support section.
       </p>
     </div>
   `;
