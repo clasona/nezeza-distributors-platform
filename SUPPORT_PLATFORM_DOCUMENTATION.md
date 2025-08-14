@@ -21,6 +21,41 @@ The Vesoko Support Platform is a comprehensive customer support system designed 
 
 ## Recent Improvements
 
+### ✅ Image Attachment Display in Conversations (January 2025)
+
+#### Problem Resolved
+- **Image Accessibility in Conversations**: Fixed issue where uploaded images in conversation messages showed as text references instead of viewable previews
+- **Missing AttachmentViewer Integration**: Message display was using basic text rendering rather than the proper AttachmentViewer component
+- **Poor User Experience**: Users could upload images but couldn't actually see or interact with them in conversation threads
+
+#### Key Improvements
+1. **Enhanced Message Attachment Display**
+   - Replaced basic text attachment references with full AttachmentViewer component integration
+   - Added actual image previews in conversation messages instead of just filenames
+   - Implemented click-to-view functionality for full-size image viewing with modal
+
+2. **Interactive Attachment Features**
+   - **Image Preview Thumbnails**: Uploaded images now show as clickable thumbnails in messages
+   - **Download Functionality**: Added download buttons for all message attachments
+   - **File Type Recognition**: Proper icons and handling for different file types (images, PDFs, documents)
+   - **Responsive Layout**: Grid-based attachment display that works on all screen sizes
+
+3. **User Experience Enhancements**
+   - **Modal Viewer**: Full-screen image viewing with proper scaling and navigation
+   - **Attachment Management**: Clear visual indicators for attachment count and types
+   - **Error Handling**: Graceful fallbacks when images fail to load
+   - **Mobile Optimization**: Touch-friendly attachment interaction on mobile devices
+
+#### Files Modified
+- `frontend/src/pages/retailer/support/[[...tab]].tsx` - Updated TicketDetailView message display to use AttachmentViewer component
+
+#### Impact
+- ✅ **Conversation Image Display**: Images uploaded in messages now appear as proper previews
+- ✅ **Click-to-View**: Users can click on images to view them in full size
+- ✅ **Download Access**: All attachments now have functional download buttons
+- ✅ **Professional UI**: Consistent attachment display across the platform
+- ✅ **Better Engagement**: Users can now properly share and view visual content in support conversations
+
 ### ✅ Cloudinary File Attachment System (January 2025): These changes optimized for image upload not pdfs
 
 #### Problem Resolved
@@ -834,6 +869,7 @@ The platform has recently undergone significant improvements including:
 
 ### System Status
 - **File Attachments**: ✅ Fully functional with PDF, image, and document support
+- **Image Display in Conversations**: ✅ Complete with clickable previews and modal viewing
 - **Email Notifications**: ✅ Complete with updated branding and templates
 - **User Interface**: ✅ Responsive design with proper file preview capabilities
 - **API Endpoints**: ✅ All endpoints tested and operational
