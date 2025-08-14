@@ -21,7 +21,7 @@ The Vesoko Support Platform is a comprehensive customer support system designed 
 
 ## Recent Improvements
 
-### ✅ Cloudinary File Attachment System (January 2025)
+### ✅ Cloudinary File Attachment System (January 2025): These changes optimized for image upload not pdfs
 
 #### Problem Resolved
 - **File Type Detection Issues**: Fixed "INVALID" display for PDFs and JPEGs due to overly simplistic URL regex matching
