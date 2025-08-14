@@ -8,6 +8,8 @@ import { createSupportTicket, CreateSupportTicketData } from '@/utils/support/cr
 import { getUserTickets } from '@/utils/support/getUserTickets';
 import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
 import AttachmentViewer from '@/components/Support/AttachmentViewer';
+import { addMessageToTicket } from '@/utils/support/addMessageToTicket';
+import { getTicketDetails } from '@/utils/support/getTicketDetails';
 
 // Types for SubmitTicketContent props
 interface SubmitTicketProps {
@@ -385,6 +387,7 @@ const MyTicketsContent = React.memo(({
   selectedTicket: any;
   setSelectedTicket: (ticket: any) => void;
   tickets: any[];
+  setTickets: (tickets: any[] | ((prev: any[]) => any[])) => void;
   handleTabChange: (value: string) => void;
   formatDate: (dateString: string) => string | null;
   getStatusColor: (status: string) => string;
@@ -403,6 +406,8 @@ const MyTicketsContent = React.memo(({
     return <TicketDetailView 
       selectedTicket={selectedTicket}
       setSelectedTicket={setSelectedTicket}
+      tickets={tickets}
+      setTickets={setTickets}
       newMessage={newMessage}
       setNewMessage={setNewMessage}
       messageAttachments={messageAttachments}
@@ -762,6 +767,7 @@ const RetailerSupportPage = () => {
           selectedTicket={selectedTicket}
           setSelectedTicket={setSelectedTicket}
           tickets={tickets}
+          setTickets={setTickets}
           handleTabChange={handleTabChange}
           formatDate={formatDate}
           getStatusColor={getStatusColor}
@@ -818,6 +824,8 @@ const RetailerSupportPage = () => {
 const TicketDetailView = React.memo(({ 
   selectedTicket, 
   setSelectedTicket,
+  tickets,
+  setTickets,
   newMessage,
   setNewMessage,
   messageAttachments,
@@ -833,6 +841,8 @@ const TicketDetailView = React.memo(({
 }: {
   selectedTicket: any;
   setSelectedTicket: (ticket: any) => void;
+  tickets: any[];
+  setTickets: (tickets: any[] | ((prev: any[]) => any[])) => void;
   newMessage: string;
   setNewMessage: (message: string) => void;
   messageAttachments: string[];
@@ -846,6 +856,107 @@ const TicketDetailView = React.memo(({
   getPriorityColor: (priority: string) => string;
   getBusinessImpactColor: (impact: string) => string;
 }) => {
+  // Helper function to validate Cloudinary URLs
+  const validateCloudinaryUrls = (urls: string[]) => {
+    return urls.filter(url => 
+      typeof url === 'string' && 
+      url.length > 0 && 
+      url.includes('res.cloudinary.com')
+    );
+  };
+
+  // Helper function to transform Cloudinary URL strings to structured objects
+  const transformUrlsToStructuredAttachments = (urls: string[]) => {
+    return urls.map(url => {
+      // Extract public_id from Cloudinary URL
+      // URL format: https://res.cloudinary.com/{cloud_name}/{resource_type}/upload/{version?}/{public_id}.{format}
+      const extractPublicId = (cloudinaryUrl: string): string => {
+        try {
+          const urlParts = cloudinaryUrl.split('/');
+          const uploadIndex = urlParts.findIndex(part => part === 'upload');
+          if (uploadIndex !== -1 && uploadIndex < urlParts.length - 1) {
+            // Get everything after 'upload/' and remove file extension
+            const pathAfterUpload = urlParts.slice(uploadIndex + 1).join('/');
+            // Remove version if present (starts with 'v' followed by numbers)
+            const versionRegex = /^v\d+\//;
+            const pathWithoutVersion = pathAfterUpload.replace(versionRegex, '');
+            // Remove file extension
+            const lastDotIndex = pathWithoutVersion.lastIndexOf('.');
+            return lastDotIndex > 0 ? pathWithoutVersion.substring(0, lastDotIndex) : pathWithoutVersion;
+          }
+        } catch (error) {
+          console.error('Error extracting public_id from URL:', error);
+        }
+        return 'unknown';
+      };
+
+      // Extract file format from URL
+      const extractFormat = (url: string): string => {
+        const lastDotIndex = url.lastIndexOf('.');
+        if (lastDotIndex > 0 && lastDotIndex < url.length - 1) {
+          return url.substring(lastDotIndex + 1).toLowerCase();
+        }
+        return 'unknown';
+      };
+
+      const public_id = extractPublicId(url);
+      const format = extractFormat(url);
+      const filename = `${public_id.split('/').pop() || 'attachment'}.${format}`;
+
+      return {
+        filename,
+        url,
+        fileType: format,
+        fileSize: 0, // Size not available from URL, backend should handle this
+        public_id
+      };
+    });
+  };
+
+  // Convert backend message format to frontend format
+  const convertBackendMessages = (backendMessages: any[]): any[] => {
+    if (!backendMessages || !Array.isArray(backendMessages)) {
+      return [];
+    }
+    
+    return backendMessages.map((msg: any) => ({
+      id: msg._id || msg.id || Date.now().toString(),
+      author: msg.senderRole === 'retailer' ? 'retailer' : 'admin',
+      authorName: msg.senderRole === 'retailer' 
+        ? 'You' 
+        : `${msg.senderId?.firstName || 'Support'} ${msg.senderId?.lastName || 'Team'}`.trim(),
+      content: msg.message || msg.content || '',
+      timestamp: msg.createdAt || msg.timestamp || new Date().toISOString(),
+      attachments: (msg.attachments || []).map((att: any) => {
+        // Handle both URL strings and attachment objects
+        if (typeof att === 'string') {
+          // If it's a URL string, extract filename from URL
+          const filename = att.split('/').pop() || 'attachment';
+          return {
+            name: filename,
+            url: att
+          };
+        }
+        // Handle attachment objects (legacy format)
+        return {
+          name: att.filename || att.name || 'Unknown file',
+          url: att.url || '#'
+        };
+      })
+    }));
+  };
+
+  // Convert backend ticket format to frontend format
+  const convertBackendTicket = (backendTicket: any): any => {
+    return {
+      ...backendTicket,
+      messages: convertBackendMessages(backendTicket.messages),
+      // Ensure we have valid dates
+      createdAt: backendTicket.createdAt || new Date().toISOString(),
+      updatedAt: backendTicket.updatedAt || backendTicket.createdAt || new Date().toISOString(),
+    };
+  };
+
   const handleMessageSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -854,22 +965,54 @@ const TicketDetailView = React.memo(({
     setMessageError('');
 
     try {
-      // Here you would call the API to send the message
-      // For now, we'll just simulate it
-      console.log('Sending message:', { 
-        ticketId: selectedTicket._id, 
+      console.log('Sending message to ticket:', selectedTicket._id);
+      
+      // Validate Cloudinary URLs and transform to structured objects
+      const validatedUrls = validateCloudinaryUrls(messageAttachments);
+      const structuredAttachments = transformUrlsToStructuredAttachments(validatedUrls);
+      
+      console.log('Sending attachments as structured objects:', structuredAttachments);
+      
+      // Real API call to add message with structured Cloudinary attachments
+      const response = await addMessageToTicket(selectedTicket._id, {
         message: newMessage,
-        attachments: messageAttachments
+        cloudinaryAttachments: structuredAttachments // Send as structured objects
       });
       
-      // Simulate success
+      console.log('Message sent successfully:', response);
+      console.log('Response ticket messages:', response.ticket?.messages);
+      
+      // Use the updated ticket from the response directly (it should include the new message)
+      if (response.ticket) {
+        console.log('Using ticket from addMessage response:', response.ticket);
+        const updatedTicket = convertBackendTicket(response.ticket);
+        console.log('Converted ticket messages:', updatedTicket.messages);
+        
+        // Update the selected ticket and tickets list
+        setSelectedTicket(updatedTicket);
+        setTickets(prev => prev.map(t => t._id === selectedTicket._id ? updatedTicket : t));
+      } else {
+        // Fallback: Refresh ticket details if response doesn't include ticket
+        console.log('No ticket in response, fetching fresh data...');
+        const updatedTicketResponse = await getTicketDetails(selectedTicket._id);
+        const rawUpdatedTicket = updatedTicketResponse.ticket;
+        console.log('Fresh ticket data:', rawUpdatedTicket);
+        
+        // Convert backend response to frontend format
+        const updatedTicket = convertBackendTicket(rawUpdatedTicket);
+        console.log('Fresh converted ticket messages:', updatedTicket.messages);
+        
+        // Update the selected ticket and tickets list
+        setSelectedTicket(updatedTicket);
+        setTickets(prev => prev.map(t => t._id === selectedTicket._id ? updatedTicket : t));
+      }
+      
+      // Clear form
       setNewMessage('');
       setMessageAttachments([]);
       
-      // In a real implementation, you would refresh the ticket data
-      // await loadTickets();
-      
     } catch (error: any) {
+      console.error('Failed to send message:', error);
       setMessageError(error.message || 'Failed to send message. Please try again.');
     } finally {
       setIsSubmittingMessage(false);
