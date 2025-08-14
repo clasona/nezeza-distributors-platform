@@ -6,7 +6,7 @@ interface TableFiltersProps {
 
 const TableFilters: React.FC<TableFiltersProps> = ({ children }) => {
   return (
-    <div className='flex justify-center py-2 px-4 sm:px-6 bg-vesoko_light_blue rounded-lg items-center gap-2 sm:gap-4 mb-4'>
+    <div className='flex justify-center py-2 px-4 sm:px-6 bg-vesoko_background rounded-lg items-center gap-2 sm:gap-4 mb-4'>
       {children}
       {/* <SlidersHorizontal /> */}
     </div>

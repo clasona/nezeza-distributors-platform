@@ -61,7 +61,7 @@ const RetailerLayout = ({ children }: PropsWithChildren<{}>) => {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-blue-50 to-white'>
+    <div className='min-h-screen bg-gradient-to-br from-vesoko_primary via-vesoko_background_light to-white'>
       {/* Overlay for mobile sidebar */}
       {showSidebar && (
         <div 

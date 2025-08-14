@@ -113,7 +113,7 @@ export default function CloudinaryUploadWidget({
       onClick={openWidget}
       className={
         className ||
-        'bg-vesoko_dark_blue text-white px-4 py-1.5 rounded hover:bg-vesoko_dark_blue_2 shadow transition'
+        'bg-vesoko_primary text-white px-4 py-1.5 rounded hover:bg-vesoko_primary_2 shadow transition'
       }
       disabled={!cloudinaryLoaded}
     >

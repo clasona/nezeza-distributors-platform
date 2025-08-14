@@ -22,12 +22,12 @@ const ApproveRowModal = <T extends { _id: number | string }>({
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
-      <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-96'>
+      <div className='bg-vesoko_background p-6 rounded-lg shadow-lg w-96'>
         <h3 className='text-lg font-semibold mb-4'>Confirm Approve</h3>
         {/* {isOrderProps(rowData) && ( */}
         <p className='mb-4'>
           Are you sure you want to approve the application with ID #{' '}
-          <span className='font-bold text-vesoko_dark_blue'>{rowData._id}</span>
+          <span className='font-bold text-vesoko_primary'>{rowData._id}</span>
           ? <br />
           This action cannot be undone.
         </p>
@@ -40,7 +40,7 @@ const ApproveRowModal = <T extends { _id: number | string }>({
           </button>
           <button
             onClick={handleApprove}
-            className='px-2 sm:px-4 py-2 text-white bg-vesoko_green_600 rounded-md hover:bg-vesoko_green_800'
+            className='px-2 sm:px-4 py-2 text-white bg-vesoko_primary rounded-md hover:bg-vesoko_secondary'
           >
             Approve
           </button>

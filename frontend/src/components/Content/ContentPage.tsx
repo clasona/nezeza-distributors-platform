@@ -43,13 +43,13 @@ const ContentPageComponent: React.FC<ContentPageProps> = ({
         <meta name="twitter:description" content={page.seoDescription || page.excerpt || page.title} />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-blue-50 to-white">
+      <div className="min-h-screen bg-gradient-to-br from-vesoko_primary via-vesoko_background_light to-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {/* Back Navigation */}
           <div className="mb-6">
             <Link 
               href={backUrl}
-              className="inline-flex items-center gap-2 text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors duration-300 group"
+              className="inline-flex items-center gap-2 text-vesoko_primary hover:text-vesoko_primary transition-colors duration-300 group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-300" />
               <span className="text-sm font-medium">{backLabel}</span>
@@ -58,7 +58,7 @@ const ContentPageComponent: React.FC<ContentPageProps> = ({
 
           {/* Article Header */}
           <article className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            <header className="p-6 sm:p-8 lg:p-12 bg-gradient-to-r from-vesoko_dark_blue to-vesoko_green_600 text-white">
+            <header className="p-6 sm:p-8 lg:p-12 bg-gradient-to-r from-vesoko_primary to-vesoko_primary text-white">
               <div className="space-y-4">
                 {/* Category Badge */}
                 <div className="inline-flex items-center">
@@ -118,7 +118,7 @@ const ContentPageComponent: React.FC<ContentPageProps> = ({
                     {page.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 text-xs font-medium bg-vesoko_light_blue text-vesoko_dark_blue rounded-full"
+                        className="px-3 py-1 text-xs font-medium bg-vesoko_background text-vesoko_primary rounded-full"
                       >
                         #{tag}
                       </span>

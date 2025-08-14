@@ -29,7 +29,7 @@ const NewProduct = () => {
               </button>
               
               <div className='flex items-center gap-3'>
-                <div className='w-12 h-12 rounded-xl bg-gradient-to-br from-vesoko_dark_blue to-blue-600 flex items-center justify-center'>
+                <div className='w-12 h-12 rounded-xl bg-gradient-to-br from-vesoko_primary to-vesoko_primary_dark flex items-center justify-center'>
                   <Plus className='w-6 h-6 text-white' />
                 </div>
                 <div>
@@ -39,8 +39,8 @@ const NewProduct = () => {
               </div>
             </div>
             
-            <div className='hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-vesoko_green_50 to-emerald-50 border border-vesoko_green_200 rounded-lg'>
-              <Package className='w-4 h-4 text-vesoko_green_600' />
+            <div className='hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-vesoko_background to-emerald-50 border border-vesoko_background rounded-lg'>
+              <Package className='w-4 h-4 text-vesoko_primary' />
               <span className='text-sm font-medium text-vesoko_green_700'>New Product</span>
             </div>
           </div>

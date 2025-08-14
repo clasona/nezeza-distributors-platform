@@ -87,7 +87,7 @@ const TopNavbar = ({
           <button
             className={`flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 ${
               showSidebar
-                ? 'bg-vesoko_green_100 text-vesoko_green_700 hover:bg-vesoko_green_200 shadow-md border border-vesoko_green_200'
+                ? 'bg-vesoko_green_100 text-vesoko_green_700 hover:bg-vesoko_green_200 shadow-md border border-vesoko_background'
                 : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200 hover:shadow-md'
             }`}
             onClick={() => setShowSidebar(!showSidebar)}
@@ -119,10 +119,10 @@ const TopNavbar = ({
                 alt={`${storeName} logo`}
                 width={40}
                 height={40}
-                className='w-10 h-10 rounded-lg object-cover border-2 border-vesoko_green_200'
+                className='w-10 h-10 rounded-lg object-cover border-2 border-vesoko_background'
               />
             ) : (
-              <div className='w-10 h-10 rounded-lg bg-gradient-to-br from-vesoko_green_500 to-vesoko_green_600 flex items-center justify-center'>
+              <div className='w-10 h-10 rounded-lg bg-gradient-to-br from-vesoko_primary to-vesoko_primary flex items-center justify-center'>
                 <Store className='w-5 h-5 text-white' />
               </div>
             )}
@@ -219,7 +219,7 @@ const TopNavbar = ({
                   className='w-8 h-8 rounded-full object-cover'
                 />
               ) : (
-                <div className='w-8 h-8 rounded-full bg-gradient-to-br from-vesoko_green_500 to-vesoko_green_600 flex items-center justify-center'>
+                <div className='w-8 h-8 rounded-full bg-gradient-to-br from-vesoko_primary to-vesoko_primary flex items-center justify-center'>
                   <CircleUserRound className='w-4 h-4 text-white' />
                 </div>
               )}
@@ -236,10 +236,10 @@ const TopNavbar = ({
                     alt={`${storeName} logo`}
                     width={48}
                     height={48}
-                    className='w-12 h-12 rounded-lg object-cover border-2 border-vesoko_green_200'
+                    className='w-12 h-12 rounded-lg object-cover border-2 border-vesoko_background'
                   />
                 ) : (
-                  <div className='w-12 h-12 rounded-lg bg-gradient-to-br from-vesoko_green_500 to-vesoko_green_600 flex items-center justify-center'>
+                  <div className='w-12 h-12 rounded-lg bg-gradient-to-br from-vesoko_primary to-vesoko_primary flex items-center justify-center'>
                     <Store className='w-6 h-6 text-white' />
                   </div>
                 )}

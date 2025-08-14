@@ -63,7 +63,7 @@ const FavoritesProduct = ({ item }: FavoritesProductProps) => {
               {product.description.length > 80 && (
                 <button
                   onClick={toggleDescription}
-                  className='text-sm text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium transition-colors duration-200 mt-1'
+                  className='text-sm text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200 mt-1'
                 >
                   {showFullDescription ? 'Show Less' : 'Read More'}
                 </button>
@@ -91,7 +91,7 @@ const FavoritesProduct = ({ item }: FavoritesProductProps) => {
                     setSuccessMessage('Moved to cart successfully!');
                     dispatch(deleteFavoritesProduct(product._id));
                   }}
-                  className='flex items-center gap-2 px-4 py-2 bg-vesoko_green_600 text-white text-sm font-medium rounded-lg hover:bg-vesoko_green_700 transition-colors duration-200'
+                  className='flex items-center gap-2 px-4 py-2 bg-vesoko_primary text-white text-sm font-medium rounded-lg hover:bg-vesoko_primary_dark transition-colors duration-200'
                   aria-label='Move to Cart'
                 >
                   <ShoppingCart className='h-4 w-4' />

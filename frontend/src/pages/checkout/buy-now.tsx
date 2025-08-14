@@ -50,7 +50,7 @@ const CheckoutBuyNowPage = () => {
 
   // Show loading while redirecting
   return (
-    <div className='bg-vesoko_powder_blue min-h-screen flex items-center justify-center'>
+    <div className='bg-vesoko_primary min-h-screen flex items-center justify-center'>
       <div className='text-center'>
         <Loading message='Setting up your purchase...' />
         <p className='mt-4 text-gray-600'>Preparing your buy now checkout</p>

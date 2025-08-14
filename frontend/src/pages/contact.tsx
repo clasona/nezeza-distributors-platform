@@ -90,14 +90,14 @@ const Contact = () => {
       title: "Sales & Partnerships",
       description: "Interested in joining VeSoko as a seller or exploring partnership opportunities?",
       email: "marketplace@vesoko.com",
-      color: "from-vesoko_green_600 to-green-500"
+      color: "from-vesoko_primary to-green-500"
     },
     {
       icon: <MessageSquare className="w-8 h-8" />,
       title: "Customer Support",
       description: "Need help with your account, orders, or have technical questions?",
       email: "support@vesoko.com",
-      color: "from-vesoko_dark_blue to-blue-600"
+      color: "from-vesoko_primary to-vesoko_primary_dark"
     },
     {
       icon: <Building className="w-8 h-8" />,
@@ -125,14 +125,14 @@ const Contact = () => {
         <meta property="og:type" content="website" />
       </Head>
 
-      <div className="flex flex-col min-h-screen bg-vesoko_powder_blue">        
+      <div className="flex flex-col min-h-screen bg-vesoko_primary">        
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="relative bg-gradient-to-br from-vesoko_dark_blue via-blue-700 to-vesoko_green_600 text-white py-16 sm:py-24">
+          <section className="relative bg-gradient-to-br from-vesoko_primary via-vesoko_secondary to-vesoko_primary text-white py-16 sm:py-24">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-                Get in <span className="text-vesoko_yellow">Touch</span>
+                Get in <span className="text-vesoko_primary">Touch</span>
               </h1>
               <p className="text-xl sm:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
                 We'd love to hear from you. Whether you're interested in selling, partnerships, 
@@ -162,7 +162,7 @@ const Contact = () => {
                     <div className="text-center">
                       <Link 
                         href={`mailto:${dept.email}`}
-                        className="text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium text-sm transition-colors duration-300"
+                        className="text-vesoko_primary hover:text-vesoko_primary font-medium text-sm transition-colors duration-300"
                       >
                         {dept.email}
                       </Link>
@@ -174,7 +174,7 @@ const Contact = () => {
           </section>
 
           {/* Contact Form & Info */}
-          <section className="py-16 sm:py-24 bg-gradient-to-br from-vesoko_light_blue via-blue-50 to-white">
+          <section className="py-16 sm:py-24 bg-gradient-to-br from-vesoko_background via-vesoko_background_light to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid lg:grid-cols-2 gap-12">
                 {/* Contact Form */}
@@ -268,7 +268,7 @@ const Contact = () => {
                       buttonTitle={isLoading ? 'Sending...' : 'Send Message'}
                       loadingButtonTitle="Sending..."
                       isLoading={isLoading}
-                      className="w-full bg-gradient-to-r from-vesoko_green_600 to-vesoko_dark_blue text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-shadow duration-300"
+                      className="w-full bg-gradient-to-r from-vesoko_primary to-vesoko_primary text-white py-4 rounded-xl font-semibold hover:shadow-lg transition-shadow duration-300"
                     />
                     {successMessage && (
                       <div className="mt-4 text-green-600 text-center text-base font-medium animate-fade-in">
@@ -292,7 +292,7 @@ const Contact = () => {
                     {contactInfo.map((info, index) => (
                       <div key={index} className="bg-white rounded-xl p-6 shadow-md">
                         <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-vesoko_green_600 to-vesoko_dark_blue rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                          <div className="w-12 h-12 bg-gradient-to-br from-vesoko_primary to-vesoko_primary rounded-xl flex items-center justify-center text-white flex-shrink-0">
                             {info.icon}
                           </div>
                           <div>
@@ -308,7 +308,7 @@ const Contact = () => {
                   </div>
 
                   {/* FAQ Link */}
-                  <div className="bg-gradient-to-r from-vesoko_dark_blue to-vesoko_green_600 text-white rounded-xl p-6">
+                  <div className="bg-gradient-to-r from-vesoko_primary to-vesoko_primary text-white rounded-xl p-6">
                     <h4 className="font-semibold mb-3">Need Quick Answers?</h4>
                     <p className="text-white/90 mb-4">
                       Check out our FAQ section for immediate answers to common questions.

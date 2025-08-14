@@ -64,10 +64,10 @@ const ResetPasswordPage = () => {
 
   if (!router.isReady) {
     return (
-      <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+      <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
         <div className='w-full max-w-md'>
           <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 text-center'>
-            <div className='animate-spin h-8 w-8 border-2 border-vesoko_dark_blue border-t-transparent rounded-full mx-auto mb-4'></div>
+            <div className='animate-spin h-8 w-8 border-2 border-vesoko_primary border-t-transparent rounded-full mx-auto mb-4'></div>
             <p className='text-gray-600'>Loading...</p>
           </div>
         </div>
@@ -77,7 +77,7 @@ const ResetPasswordPage = () => {
 
   if (!token || !email) {
     return (
-      <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+      <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
         <div className='w-full max-w-md'>
           <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 text-center'>
             <AlertCircle className='w-16 h-16 text-red-500 mx-auto mb-4' />
@@ -88,7 +88,7 @@ const ResetPasswordPage = () => {
             <div className='space-y-3'>
               <Link
                 href='/forgot-password'
-                className='block w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center'
+                className='block w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center'
               >
                 Request New Reset Link
               </Link>
@@ -107,10 +107,10 @@ const ResetPasswordPage = () => {
 
   if (isSuccess) {
     return (
-      <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+      <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
         <div className='w-full max-w-md'>
           <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 text-center'>
-            <div className='w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6'>
+            <div className='w-20 h-20 bg-vesoko_green_100 rounded-full flex items-center justify-center mx-auto mb-6'>
               <CheckCircle2 className='w-12 h-12 text-green-600' />
             </div>
             <h1 className='text-3xl font-bold text-green-600 mb-4'>
@@ -129,7 +129,7 @@ const ResetPasswordPage = () => {
             </div>
             <button
               onClick={goToLogin}
-              className='w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2'
+              className='w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2'
             >
               Continue to Login
               <ArrowRight className='w-4 h-4' />
@@ -141,20 +141,20 @@ const ResetPasswordPage = () => {
   }
 
   return (
-    <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+    <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100'>
           <div className='text-center mb-8'>
-            <div className='w-20 h-20 bg-vesoko_yellow/20 rounded-full flex items-center justify-center mx-auto mb-4'>
-              <Lock className='w-10 h-10 text-vesoko_dark_blue' />
+            <div className='w-20 h-20 bg-vesoko_primary/20 rounded-full flex items-center justify-center mx-auto mb-4'>
+              <Lock className='w-10 h-10 text-vesoko_primary' />
             </div>
-            <h1 className='text-3xl font-bold text-vesoko_dark_blue mb-2'>
+            <h1 className='text-3xl font-bold text-vesoko_primary mb-2'>
               Reset Your Password
             </h1>
             <p className='text-gray-600'>
               Enter your new password below
             </p>
-            <p className='text-sm text-vesoko_dark_blue font-semibold break-all mt-2'>
+            <p className='text-sm text-vesoko_primary font-semibold break-all mt-2'>
               {email}
             </p>
           </div>
@@ -169,7 +169,7 @@ const ResetPasswordPage = () => {
                 <Lock className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' size={20} />
                 <input
                   id='password'
-                  className='w-full pl-12 pr-12 py-3 rounded-lg border border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20 focus:outline-none transition-all duration-200'
+                  className='w-full pl-12 pr-12 py-3 rounded-lg border border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20 focus:outline-none transition-all duration-200'
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Enter new password'
                   value={password}
@@ -181,7 +181,7 @@ const ResetPasswordPage = () => {
                 <button
                   type='button'
                   onClick={() => setShowPassword(!showPassword)}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_dark_blue transition-colors duration-200'
+                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_primary transition-colors duration-200'
                   disabled={isLoading}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -199,7 +199,7 @@ const ResetPasswordPage = () => {
                 <Lock className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' size={20} />
                 <input
                   id='confirmPassword'
-                  className='w-full pl-12 pr-12 py-3 rounded-lg border border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20 focus:outline-none transition-all duration-200'
+                  className='w-full pl-12 pr-12 py-3 rounded-lg border border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20 focus:outline-none transition-all duration-200'
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder='Confirm new password'
                   value={confirmPassword}
@@ -211,7 +211,7 @@ const ResetPasswordPage = () => {
                 <button
                   type='button'
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_dark_blue transition-colors duration-200'
+                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_primary transition-colors duration-200'
                   disabled={isLoading}
                 >
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -243,7 +243,7 @@ const ResetPasswordPage = () => {
             <button
               type='submit'
               disabled={isLoading}
-              className={`w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200 ${
+              className={`w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 ${
                 isLoading ? 'opacity-70 cursor-not-allowed' : ''
               }`}
             >
@@ -265,7 +265,7 @@ const ResetPasswordPage = () => {
             </p>
             <Link
               href='/login'
-              className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
+              className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
             >
               Back to Login
             </Link>

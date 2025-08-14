@@ -436,7 +436,7 @@ const SellerMyOrders = () => {
         },
         {
           content: (
-            <Link href="#" className="text-vesoko_dark_blue hover:underline">
+            <Link href="#" className="text-vesoko_primary hover:underline">
               {order.orderItems.length} {order.orderItems.length === 1 ? 'item' : 'items'}
             </Link>
           ),
@@ -507,7 +507,7 @@ const SellerMyOrders = () => {
               <Button
                 buttonTitle='Update Existing'
                 icon={RotateCw}
-                className='px-3 py-2 outline text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue text-sm'
+                className='px-3 py-2 outline text-vesoko_primary hover:text-white hover:bg-vesoko_primary text-sm'
                 onClick={async () => {
                   const status = await getOrderStatus(order._id);
                   if (status === 'Delivered') {
@@ -523,7 +523,7 @@ const SellerMyOrders = () => {
               <Button
                 buttonTitle='Create New Products'
                 icon={Plus}
-                className='px-3 py-2 outline text-vesoko_green_600 hover:text-white hover:bg-vesoko_green_600 text-sm'
+                className='px-3 py-2 outline text-vesoko_primary hover:text-white hover:bg-vesoko_primary text-sm'
                 onClick={async () => {
                   const status = await getOrderStatus(order._id);
                   if (status === 'Delivered') {
@@ -547,11 +547,11 @@ const SellerMyOrders = () => {
     <div className='max-w-4xl mx-auto'>
       {/* Header */}
       <div className='text-center mb-12'>
-        <div className='inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-4'>
+        <div className='inline-flex items-center px-4 py-2 bg-vesoko_background text-vesoko_secondary rounded-full text-sm font-medium mb-4'>
           <Clock className='w-4 h-4 mr-2' />
           Coming Soon - Phase 2
         </div>
-        <h1 className='text-4xl sm:text-5xl font-bold text-vesoko_dark_blue mb-4'>
+        <h1 className='text-4xl sm:text-5xl font-bold text-vesoko_primary mb-4'>
           🚀 My Orders - Direct Sourcing from Africa
         </h1>
         <p className='text-xl text-gray-600 leading-relaxed'>
@@ -560,11 +560,11 @@ const SellerMyOrders = () => {
       </div>
 
       {/* Main Feature Card */}
-      <div className='bg-gradient-to-br from-vesoko_dark_blue via-blue-600 to-vesoko_dark_blue_2 rounded-3xl p-8 sm:p-12 text-white shadow-2xl mb-12'>
+      <div className='bg-gradient-to-br from-vesoko_primary via-vesoko_primary_dark to-vesoko_primary_2 rounded-3xl p-8 sm:p-12 text-white shadow-2xl mb-12'>
         <div className='grid lg:grid-cols-2 gap-8 items-center'>
           <div>
             <h2 className='text-3xl font-bold mb-6'>Direct Sourcing from Africa</h2>
-            <p className='text-blue-100 text-lg leading-relaxed mb-8'>
+            <p className='text-white text-lg leading-relaxed mb-8'>
               Soon, retailers will be able to source and buy their products/inventory directly from Africa 
               within the same Vesoko platform. We'll handle most of the workload on this end, making 
               international sourcing as easy as local purchasing.
@@ -591,7 +591,7 @@ const SellerMyOrders = () => {
             <div className='bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20'>
               <Package className='w-16 h-16 text-blue-200 mx-auto mb-4' />
               <h3 className='text-xl font-semibold mb-2'>What to Expect</h3>
-              <p className='text-blue-100 text-sm leading-relaxed'>
+              <p className='text-white text-sm leading-relaxed'>
                 A seamless ordering experience that connects you directly with African suppliers, 
                 complete with inventory management, order tracking, and automated workflows.
               </p>
@@ -613,7 +613,7 @@ const SellerMyOrders = () => {
             icon: <Truck className='w-8 h-8' />,
             title: 'End-to-End Logistics',
             description: 'We handle shipping, customs, and delivery tracking for you',
-            gradient: 'from-blue-400 to-blue-600'
+            gradient: 'from-vesoko_primary400 to-vesoko_primary_dark'
           },
           {
             icon: <Clock className='w-8 h-8' />,
@@ -640,7 +640,7 @@ const SellerMyOrders = () => {
         <p className='text-gray-600 mb-6'>
           We're working hard to bring this feature to you as part of our Phase 2 expansion.
         </p>
-        <div className='inline-flex items-center gap-2 px-6 py-3 bg-vesoko_dark_blue text-white rounded-xl font-medium'>
+        <div className='inline-flex items-center gap-2 px-6 py-3 bg-vesoko_primary text-white rounded-xl font-medium'>
           <TrendingUp className='w-5 h-5' />
           Stay tuned for updates!
         </div>
@@ -658,7 +658,7 @@ const SellerMyOrders = () => {
           <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 border border-white/20 animate-fade-in'>
             <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
               <div>
-                <h1 className='text-3xl sm:text-4xl font-bold text-vesoko_dark_blue mb-2'>
+                <h1 className='text-3xl sm:text-4xl font-bold text-vesoko_primary mb-2'>
                   📋 My Orders
                 </h1>
                 <p className='text-lg text-gray-600'>
@@ -670,7 +670,7 @@ const SellerMyOrders = () => {
                 <button
                   onClick={async () => await fetchData()}
                   disabled={isLoading}
-                  className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 text-sm font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed'
+                  className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-vesoko_primary500 to-vesoko_primary_dark hover:from-vesoko_primary600 hover:to-vesoko_secondary text-white rounded-lg transition-all duration-300 transform hover:scale-105 text-sm font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed'
                 >
                   <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
                   <span className='hidden sm:inline'>{isLoading ? 'Refreshing...' : 'Refresh'}</span>
@@ -678,7 +678,7 @@ const SellerMyOrders = () => {
                 
                 <Link
                   href='/retailer/orders/new'
-                  className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-vesoko_dark_blue to-blue-600 hover:from-vesoko_dark_blue_2 hover:to-blue-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 text-sm font-medium shadow-lg'
+                  className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_2 hover:to-vesoko_secondary text-white rounded-lg transition-all duration-300 transform hover:scale-105 text-sm font-medium shadow-lg'
                 >
                   <Plus className='w-4 h-4' />
                   <span className='hidden sm:inline'>Create Order</span>
@@ -690,7 +690,7 @@ const SellerMyOrders = () => {
       {/* Modern Order Stats */}
       <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4'>
         {[
-          { label: 'Total Orders', status: 'All', gradient: 'from-blue-400 to-blue-600' },
+          { label: 'Total Orders', status: 'All', gradient: 'from-vesoko_primary400 to-vesoko_primary_dark' },
           { label: 'Pending', status: 'Pending', gradient: 'from-yellow-400 to-orange-500' },
           { label: 'Processing', status: 'Processing', gradient: 'from-purple-400 to-purple-600' },
           { label: 'Shipped', status: 'Shipped', gradient: 'from-indigo-400 to-indigo-600' },
@@ -757,7 +757,7 @@ const SellerMyOrders = () => {
          Filter by dates (always on large, conditional on small) */}
         {/* <button
           onClick={toggleMoreFilters}
-          className='hidden sm:inline text-sm text-vesoko_dark_blue underline'
+          className='hidden sm:inline text-sm text-vesoko_primary underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
         </button> */}

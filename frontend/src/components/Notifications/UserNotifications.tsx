@@ -205,7 +205,7 @@ const UserNotifications = () => {
       case 'medium':
         return `${baseClasses} bg-yellow-100 text-yellow-700 border border-yellow-200`;
       case 'low':
-        return `${baseClasses} bg-green-100 text-green-700 border border-green-200`;
+        return `${baseClasses} bg-vesoko_green_100 text-green-700 border border-green-200`;
       default:
         return `${baseClasses} bg-gray-100 text-gray-700 border border-gray-200`;
     }
@@ -242,7 +242,7 @@ const UserNotifications = () => {
           <div className='flex items-center justify-between'>
             <div className='flex items-center space-x-4'>
               <div className='relative'>
-                <BellRing className='w-8 h-8 text-vesoko_dark_blue' />
+                <BellRing className='w-8 h-8 text-vesoko_primary' />
                 {unreadCount > 0 && (
                   <span className='absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-semibold'>
                     {unreadCount > 99 ? '99+' : unreadCount}
@@ -263,7 +263,7 @@ const UserNotifications = () => {
                 buttonTitle='Refresh'
                 buttonTitleClassName='hidden md:inline'
                 loadingButtonTitle='Refreshing...'
-                className='bg-vesoko_dark_blue text-white hover:bg-vesoko_dark_blue/90 border-0'
+                className='bg-vesoko_primary text-white hover:bg-vesoko_primary/90 border-0'
                 onClick={async () => {
                   await fetchData();
                 }}
@@ -511,7 +511,7 @@ const UserNotifications = () => {
               
               <button
                 onClick={closeModal}
-                className='px-6 py-2 bg-vesoko_dark_blue text-white rounded-lg hover:bg-vesoko_dark_blue/90 font-medium transition-colors'
+                className='px-6 py-2 bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_primary/90 font-medium transition-colors'
               >
                 Close
               </button>

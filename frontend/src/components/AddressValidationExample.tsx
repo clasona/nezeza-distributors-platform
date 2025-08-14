@@ -172,7 +172,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
             type="text"
             value={address.fullName || ''}
             onChange={handleInputChange('fullName')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary"
             placeholder="John Doe"
           />
         </div>
@@ -185,7 +185,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
             type="text"
             value={address.street1 || ''}
             onChange={handleInputChange('street1')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary"
             placeholder="123 Main St"
           />
         </div>
@@ -198,7 +198,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
             type="text"
             value={address.street2 || ''}
             onChange={handleInputChange('street2')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary"
             placeholder="Apt 4B"
           />
         </div>
@@ -212,7 +212,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
               type="text"
               value={address.city || ''}
               onChange={handleInputChange('city')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary"
               placeholder="New York"
             />
           </div>
@@ -225,7 +225,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
               type="text"
               value={address.state || ''}
               onChange={handleInputChange('state')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary"
               placeholder="NY"
               maxLength={2}
             />
@@ -241,7 +241,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
               type="text"
               value={address.zip || ''}
               onChange={handleInputChange('zip')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary"
               placeholder="10001"
             />
           </div>
@@ -253,7 +253,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
             <select
               value={address.country || 'US'}
               onChange={(e) => setAddress(prev => ({ ...prev, country: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary"
             >
               <option value="US">United States</option>
               <option value="CA">Canada</option>
@@ -270,7 +270,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
             type="tel"
             value={address.phone || ''}
             onChange={handleInputChange('phone')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary"
             placeholder="(555) 123-4567"
           />
         </div>

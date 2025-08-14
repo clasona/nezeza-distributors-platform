@@ -133,7 +133,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
         onSubmit={handleSubmit}
         className='bg-white shadow-lg rounded-lg p-4 w-full max-w-md '
       >
-        <h2 className='text-lg text-center font-bold mb-4 text-vesoko_dark_blue'>
+        <h2 className='text-lg text-center font-bold mb-4 text-vesoko_primary'>
           NEZEZA
         </h2>
         {/* <h2 className='text-lg font-semibold mb-4 text-gray-700'>Checkout</h2> */}

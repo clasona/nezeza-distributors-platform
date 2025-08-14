@@ -40,7 +40,7 @@ const RetailerStoreAccount = () => {
               </p>
               <Link
                 href="/store-application"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-vesoko_green_600 hover:bg-vesoko_green_700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_green_500"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-vesoko_primary hover:bg-vesoko_primary_dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_primary"
               >
                 Complete Store Application
               </Link>

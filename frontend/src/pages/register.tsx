@@ -114,11 +114,11 @@ const RegisterPage = () => {
   const isAnyLoading = isLoading || isGoogleLoading;
 
   return (
-    <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+    <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
       <div className='w-full max-w-lg'>
         <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100'>
           <div className='text-center mb-8'>
-            <h1 className='text-3xl font-bold text-vesoko_dark_blue mb-2'>
+            <h1 className='text-3xl font-bold text-vesoko_primary mb-2'>
               Join VeSoko
             </h1>
             <p className='text-gray-600'>Create your account and start exploring</p>
@@ -139,7 +139,7 @@ const RegisterPage = () => {
                     className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-all duration-200 ${
                       errors.firstName
                         ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
-                        : 'border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20'
+                        : 'border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20'
                     } focus:outline-none`}
                     type='text'
                     placeholder='First name'
@@ -163,7 +163,7 @@ const RegisterPage = () => {
                     className={`w-full pl-10 pr-4 py-3 rounded-lg border transition-all duration-200 ${
                       errors.lastName
                         ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
-                        : 'border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20'
+                        : 'border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20'
                     } focus:outline-none`}
                     type='text'
                     placeholder='Last name'
@@ -189,7 +189,7 @@ const RegisterPage = () => {
                   className={`w-full pl-12 pr-4 py-3 rounded-lg border transition-all duration-200 ${
                     errors.email
                       ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
-                      : 'border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20'
+                      : 'border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20'
                   } focus:outline-none`}
                   type='email'
                   placeholder='Enter your email'
@@ -214,7 +214,7 @@ const RegisterPage = () => {
                   className={`w-full pl-12 pr-12 py-3 rounded-lg border transition-all duration-200 ${
                     errors.password
                       ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
-                      : 'border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20'
+                      : 'border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20'
                   } focus:outline-none`}
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Enter your password'
@@ -223,7 +223,7 @@ const RegisterPage = () => {
                 <button
                   type='button'
                   onClick={() => setShowPassword(!showPassword)}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_dark_blue transition-colors duration-200'
+                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_primary transition-colors duration-200'
                   disabled={isAnyLoading}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -247,7 +247,7 @@ const RegisterPage = () => {
                   className={`w-full pl-12 pr-12 py-3 rounded-lg border transition-all duration-200 ${
                     errors.repeatPassword
                       ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
-                      : 'border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20'
+                      : 'border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20'
                   } focus:outline-none`}
                   type={showRepeatPassword ? 'text' : 'password'}
                   placeholder='Confirm your password'
@@ -257,7 +257,7 @@ const RegisterPage = () => {
                 <button
                   type='button'
                   onClick={() => setShowRepeatPassword(!showRepeatPassword)}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_dark_blue transition-colors duration-200'
+                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_primary transition-colors duration-200'
                   disabled={isAnyLoading}
                 >
                   {showRepeatPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -276,13 +276,13 @@ const RegisterPage = () => {
                     type='checkbox'
                     checked={isSeller}
                     onChange={handleSellerChange}
-                    className='w-4 h-4 text-vesoko_dark_blue bg-gray-100 border-gray-300 rounded focus:ring-vesoko_yellow focus:ring-2'
+                    className='w-4 h-4 text-vesoko_primary bg-gray-100 border-gray-300 rounded focus:ring-vesoko_primary focus:ring-2'
                     disabled={isAnyLoading}
                   />
                 </div>
                 <div className='ml-3'>
                   <div className='flex items-center'>
-                    <Store className='w-4 h-4 text-vesoko_dark_blue mr-2' />
+                    <Store className='w-4 h-4 text-vesoko_primary mr-2' />
                     <span className='text-sm font-medium text-gray-900'>Join as a Seller</span>
                   </div>
                   <p className='text-sm text-gray-600 mt-1'>
@@ -316,7 +316,7 @@ const RegisterPage = () => {
                   id='terms'
                   checked={termsAccepted}
                   onChange={(e) => setTermsAccepted(e.target.checked)}
-                  className='w-4 h-4 text-vesoko_dark_blue bg-gray-100 border-gray-300 rounded focus:ring-vesoko_yellow focus:ring-2'
+                  className='w-4 h-4 text-vesoko_primary bg-gray-100 border-gray-300 rounded focus:ring-vesoko_primary focus:ring-2'
                   disabled={isAnyLoading}
                 />
               </div>
@@ -327,7 +327,7 @@ const RegisterPage = () => {
                     href='/terms'
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
+                    className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
                   >
                     Terms of Service
                   </Link>{' '}
@@ -336,7 +336,7 @@ const RegisterPage = () => {
                     href='/privacy'
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
+                    className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
                   >
                     Privacy Policy
                   </Link>
@@ -357,7 +357,7 @@ const RegisterPage = () => {
             <button
               type='submit'
               disabled={isAnyLoading}
-              className={`w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200 ${
+              className={`w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 ${
                 isLoading ? 'opacity-70 cursor-not-allowed' : ''
               }`}
             >
@@ -394,7 +394,7 @@ const RegisterPage = () => {
                 }`}
               >
                 {isGoogleLoading ? (
-                  <div className='animate-spin h-5 w-5 border-2 border-gray-300 border-t-vesoko_dark_blue rounded-full'></div>
+                  <div className='animate-spin h-5 w-5 border-2 border-gray-300 border-t-vesoko_primary rounded-full'></div>
                 ) : (
                   <FcGoogle className='w-5 h-5' />
                 )}
@@ -420,7 +420,7 @@ const RegisterPage = () => {
               Already have an account?{' '}
               <Link
                 href='/login'
-                className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
+                className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
               >
                 Sign in
               </Link>

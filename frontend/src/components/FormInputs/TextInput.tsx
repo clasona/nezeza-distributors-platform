@@ -63,10 +63,10 @@ const TextInput = ({
           autoComplete={name}
           disabled={disabled}
           step={step}
-          className={`block w-full px-3 py-2.5 text-sm border rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-vesoko_green_500/20 ${
+          className={`block w-full px-3 py-2.5 text-sm border rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-vesoko_primary/20 ${
             errors[name]
               ? 'border-red-300 focus:border-red-500 bg-red-50'
-              : 'border-gray-300 focus:border-vesoko_green_500 bg-white hover:border-gray-400'
+              : 'border-gray-300 focus:border-vesoko_primary bg-white hover:border-gray-400'
           } ${
             disabled
               ? 'bg-gray-100 text-gray-500 cursor-not-allowed'

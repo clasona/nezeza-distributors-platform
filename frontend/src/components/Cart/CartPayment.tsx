@@ -101,7 +101,7 @@ const CartPayment = () => {
       {qualifiesForFreeShipping && (
         <div className='flex gap-2 items-start'>
           <span
-            className='bg-vesoko_green_600 rounded-full p-1 h-6 w-6 text-sm
+            className='bg-vesoko_primary rounded-full p-1 h-6 w-6 text-sm
                    text-white flex items-center justify-center mt-1'
           >
             <SiMediamarkt />
@@ -123,7 +123,7 @@ const CartPayment = () => {
           <p className='text-xs sm:text-sm text-gray-600'>
             Add <FormattedPrice amount={freeShippingThreshold - totalAmount} /> more to qualify for FREE shipping
             {totalAmount < freeShippingThreshold && (
-              <span className='text-vesoko_green_600 font-semibold'> (${freeShippingThreshold} minimum)</span>
+              <span className='text-vesoko_primary font-semibold'> (${freeShippingThreshold} minimum)</span>
             )}
           </p>
         </div>
@@ -138,7 +138,7 @@ const CartPayment = () => {
       <div className='flex flex-col items-center text-center justify-center'>
         <button
           onClick={handleCheckout}
-          className={`w-full sm:w-auto p-2 text-sm font-semibold bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 hover:text-white duration-300 ${
+          className={`w-full sm:w-auto p-2 text-sm font-semibold bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_secondary hover:text-white duration-300 ${
             !userInfo ? ' cursor-not-allowed bg-vesoko_gray_600 opacity-50' : ''
           }`}
           disabled={!userInfo}

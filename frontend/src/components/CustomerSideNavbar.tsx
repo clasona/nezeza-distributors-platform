@@ -71,8 +71,8 @@ const CustomerSideNavbar = ({
       className={`${
         // TODO: add some styling for the sidebar side scroll at some point?
         showSidebar
-          ? 'sm:block bg-vesoko_dark_blue space-y-6 w-20 h-screen text-slate-50 fixed left-0 top-16 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
-          : ' sm:block bg-vesoko_dark_blue space-y-6 w-12 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll' // add hidden to hide it
+          ? 'sm:block bg-vesoko_primary space-y-6 w-20 h-screen text-slate-50 fixed left-0 top-16 shadow-md mt-20 sm:mt-0 overflow-y-scroll'
+          : ' sm:block bg-vesoko_primary space-y-6 w-12 h-screen text-slate-50 fixed -left-60 top-0 shadow-md mt-20 sm:mt-0 overflow-y-scroll' // add hidden to hide it
       }`}
     >
       <div className='flex flex-col space-y-2 mt-16'>
@@ -83,7 +83,7 @@ const CustomerSideNavbar = ({
             href={item.href}
             className={`${
               item.href == pathname
-                ? 'flex items-center space-x-3 px-4 py-1 bg-vesoko_green_600 rounded-md border-l-4 border-white'
+                ? 'flex items-center space-x-3 px-4 py-1 bg-vesoko_primary rounded-md border-l-4 border-white'
                 : 'flex items-center space-x-3 px-4 py-1 rounded-md'
             }`}
           >

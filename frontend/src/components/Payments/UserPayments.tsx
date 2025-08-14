@@ -156,7 +156,7 @@ const UserPayments = () => {
       title: 'Status',
       render: (transaction: Transaction) => (
         <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-          transaction.status === 'Completed' ? 'bg-green-100 text-green-800' :
+          transaction.status === 'Completed' ? 'bg-vesoko_green_100 text-green-800' :
           transaction.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
           'bg-red-100 text-red-800'
         }`}>
@@ -179,7 +179,7 @@ const UserPayments = () => {
         <Heading title='Payments Overview' />
         <div className='p-4 sm:p-6 space-y-4 sm:space-y-6'>
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-vesoko_green_600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-vesoko_primary"></div>
           </div>
         </div>
       </div>
@@ -192,7 +192,7 @@ const UserPayments = () => {
       <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 border border-white/20 animate-fade-in'>
         <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
           <div>
-            <h1 className='text-3xl sm:text-4xl font-bold text-vesoko_dark_blue mb-2'>
+            <h1 className='text-3xl sm:text-4xl font-bold text-vesoko_primary mb-2'>
               💰 Payments & Earnings
             </h1>
             <p className='text-lg text-gray-600'>
@@ -204,7 +204,7 @@ const UserPayments = () => {
             <button
               onClick={() => setShowPayoutModal(true)}
               disabled={!hasStripeActiveAccount || (sellerBalance?.availableBalance || 0) <= 0}
-              className='inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-vesoko_green_600 to-green-700 hover:from-green-700 hover:to-green-800 text-white rounded-lg transition-all duration-300 transform hover:scale-105 text-sm font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed'
+              className='inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_dark hover:to-vesoko_secondary text-white rounded-lg transition-all duration-300 transform hover:scale-105 text-sm font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed'
             >
               <DollarIcon />
               Request Payout
@@ -217,7 +217,7 @@ const UserPayments = () => {
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-4'>
               <div className={`p-3 rounded-xl ${
-                hasStripeActiveAccount ? 'bg-green-100' : 'bg-orange-100'
+                hasStripeActiveAccount ? 'bg-vesoko_green_100' : 'bg-orange-100'
               }`}>
                 <CreditCardIcon />
               </div>
@@ -244,7 +244,7 @@ const UserPayments = () => {
               </div>
             </div>
             <div className={`px-4 py-2 rounded-xl text-sm font-semibold ${
-              hasStripeActiveAccount ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-orange-100 text-orange-800 border border-orange-200'
+              hasStripeActiveAccount ? 'bg-vesoko_green_100 text-green-800 border border-green-200' : 'bg-orange-100 text-orange-800 border border-orange-200'
             }`}>
               {hasStripeActiveAccount ? '✅ Active' : '⚠️ Setup Required'}
             </div>
@@ -262,7 +262,7 @@ const UserPayments = () => {
                 </div>
                 <Link
                   href='/sellers/stripe/setup'
-                  className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-vesoko_dark_blue to-blue-600 hover:from-vesoko_dark_blue_2 hover:to-blue-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 text-sm font-medium shadow-lg whitespace-nowrap'
+                  className='inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_2 hover:to-vesoko_secondary text-white rounded-lg transition-all duration-300 transform hover:scale-105 text-sm font-medium shadow-lg whitespace-nowrap'
                 >
                   <CreditCardIcon />
                   Setup Now
@@ -279,8 +279,8 @@ const UserPayments = () => {
               title: 'Total Earnings',
               value: formatPrice(sellerBalance?.totalSales || 0),
               icon: <DollarIcon />,
-              gradient: 'from-blue-400 to-blue-600',
-              bgGradient: 'from-blue-50 to-cyan-50',
+              gradient: 'from-vesoko_primary400 to-vesoko_primary_dark',
+              bgGradient: 'from-vesoko_primary50 to-cyan-50',
               borderColor: 'border-blue-200',
               change: analyticsData?.salesMetrics.revenueGrowth
             },
@@ -363,14 +363,14 @@ const UserPayments = () => {
 
         {/* Quick Actions */}
         <div className='bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-gray-100'>
-          <h4 className='text-lg font-semibold text-vesoko_dark_blue mb-4'>
+          <h4 className='text-lg font-semibold text-vesoko_primary mb-4'>
             Quick Actions
           </h4>
           <div className='flex flex-wrap gap-3'>
             <button 
               onClick={() => setShowPayoutModal(true)}
               disabled={!hasStripeActiveAccount || (sellerBalance?.availableBalance || 0) <= 0}
-              className='inline-flex items-center px-4 py-2 bg-vesoko_green_600 text-white font-medium rounded-lg hover:bg-vesoko_green_700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors'
+              className='inline-flex items-center px-4 py-2 bg-vesoko_primary text-white font-medium rounded-lg hover:bg-vesoko_primary_dark disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors'
             >
               Request Payout
             </button>
@@ -393,7 +393,7 @@ const UserPayments = () => {
         <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 animate-slide-up' style={{animationDelay: '600ms'}}>
           <div className='p-6 border-b border-gray-100'>
             <div className='flex items-center gap-3 mb-2'>
-              <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-vesoko_dark_blue to-blue-600 flex items-center justify-center'>
+              <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-vesoko_primary to-vesoko_primary_dark flex items-center justify-center'>
                 <DollarIcon />
               </div>
               <h3 className='text-xl font-bold text-gray-900'>Transaction History</h3>

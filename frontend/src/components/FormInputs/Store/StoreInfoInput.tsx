@@ -207,7 +207,7 @@ const StoreInfoInput = ({
               setValue('storeCountry', values.residenceCountry);
               setValue('storeZipCode', values.residenceZipCode);
             }}
-            className='flex items-center gap-2 px-4 py-2 bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_green_600 transition-all duration-200 text-sm font-medium'
+            className='flex items-center gap-2 px-4 py-2 bg-vesoko_primary text-white rounded-md hover:bg-vesoko_primary transition-all duration-200 text-sm font-medium'
           >
             <Copy className='h-4 w-4' />
             Reuse Primary Contact Info
@@ -272,7 +272,7 @@ const StoreInfoInput = ({
                 type='button'
                 onClick={() => sendEmailVerificationCode(storeEmailValue)}
                 disabled={!storeEmailValue}
-                className='px-3 py-1.5 text-xs font-medium bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_green_600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200'
+                className='px-3 py-1.5 text-xs font-medium bg-vesoko_primary text-white rounded-md hover:bg-vesoko_primary disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200'
               >
                 <Mail className='inline-block w-4 h-4 mr-1' />
                 Send Verification Email
@@ -356,7 +356,7 @@ const StoreInfoInput = ({
                 type='button'
                 onClick={() => sendPhoneVerificationCode(storePhoneValue)}
                 disabled={!storePhoneValue}
-                className='px-3 py-1.5 text-xs font-medium bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_green_600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200'
+                className='px-3 py-1.5 text-xs font-medium bg-vesoko_primary text-white rounded-md hover:bg-vesoko_primary disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200'
               >
                 <MessageSquare className='inline-block w-4 h-4 mr-1' />
                 Send Verification SMS

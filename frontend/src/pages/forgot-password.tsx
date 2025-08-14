@@ -27,11 +27,11 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+    <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100'>
           <div className='text-center mb-8'>
-            <h1 className='text-3xl font-bold text-vesoko_dark_blue mb-2'>
+            <h1 className='text-3xl font-bold text-vesoko_primary mb-2'>
               Forgot Password?
             </h1>
             <p className='text-gray-600'>
@@ -49,7 +49,7 @@ const ForgotPasswordPage = () => {
                 <Mail className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' size={20} />
                 <input
                   id='email'
-                  className='w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20 focus:outline-none transition-all duration-200'
+                  className='w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20 focus:outline-none transition-all duration-200'
                   type='email'
                   placeholder='Enter your email'
                   value={email}
@@ -64,7 +64,7 @@ const ForgotPasswordPage = () => {
             <button
               type='submit'
               disabled={isLoading}
-              className={`w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200 ${
+              className={`w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 ${
                 isLoading ? 'opacity-70 cursor-not-allowed' : ''
               }`}
             >
@@ -100,7 +100,7 @@ const ForgotPasswordPage = () => {
           <div className='mt-8 text-center'>
             <Link
               href='/login'
-              className='inline-flex items-center text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
+              className='inline-flex items-center text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
             >
               <ArrowLeft size={16} className='mr-2' />
               Back to Login

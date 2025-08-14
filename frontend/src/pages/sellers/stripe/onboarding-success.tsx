@@ -128,16 +128,16 @@ const StripeOnboardingSuccess = () => {
   if (!sellerStoreType) {
     // Render a loading state or redirect if sellerStoreType is not yet available
     return (
-      <div className='w-full bg-vesoko_powder_blue min-h-screen flex items-center justify-center'>
+      <div className='w-full bg-vesoko_primary min-h-screen flex items-center justify-center'>
         <p className='text-vesoko_dark_slate text-lg'>Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className='w-full bg-vesoko_powder_blue min-h-screen flex items-center justify-center p-4'>
-      <div className='bg-vesoko_light_blue rounded-lg text-center items-center justify-center p-6 sm:p-8 shadow-xl max-w-4xl w-full'>
-        <h1 className='text-3xl font-bold text-vesoko_dark_blue mb-4'>
+    <div className='w-full bg-vesoko_primary min-h-screen flex items-center justify-center p-4'>
+      <div className='bg-vesoko_background rounded-lg text-center items-center justify-center p-6 sm:p-8 shadow-xl max-w-4xl w-full'>
+        <h1 className='text-3xl font-bold text-vesoko_primary mb-4'>
           Stripe Onboarding Complete!
         </h1>
         <p className='text-lg text-gray-700 mb-2'>
@@ -145,7 +145,7 @@ const StripeOnboardingSuccess = () => {
           plan to unlock your selling potential!
         </p>
         <p className='text-lg text-vesoko_green_700 mb-8 font-semibold'>
-          <span className='bg-vesoko_yellow_100 px-2 py-1 rounded'>
+          <span className='bg-vesoko_primary_100 px-2 py-1 rounded'>
             Enjoy your first{' '}
             <span className='text-vesoko_green_800'>3 months FREE</span> on any
             plan!
@@ -160,21 +160,21 @@ const StripeOnboardingSuccess = () => {
                   className={`bg-white p-6 rounded-lg shadow-lg flex flex-col justify-between
                     ${
                       plan.mostPopular
-                        ? 'border-2 border-vesoko_green_600 transform scale-105'
+                        ? 'border-2 border-vesoko_primary transform scale-105'
                         : 'border border-gray-200'
                     }
                     transition-all duration-300 hover:shadow-xl`}
                 >
                   <div>
-                    <h2 className='text-2xl font-bold text-vesoko_dark_blue mb-2'>
+                    <h2 className='text-2xl font-bold text-vesoko_primary mb-2'>
                       {plan.name}{' '}
                       {plan.mostPopular && (
-                        <span className='text-sm bg-vesoko_yellow_600 text-white px-2 py-1 rounded-full ml-2'>
+                        <span className='text-sm bg-vesoko_primary_600 text-white px-2 py-1 rounded-full ml-2'>
                           Popular
                         </span>
                       )}
                     </h2>
-                    <div className='text-4xl font-extrabold text-vesoko_green_600 mb-4'>
+                    <div className='text-4xl font-extrabold text-vesoko_primary mb-4'>
                       <FormattedPrice amount={plan.priceMonthly} />
                       <span className='text-base font-normal text-gray-500'>
                         {' '}
@@ -208,8 +208,8 @@ const StripeOnboardingSuccess = () => {
                     className={`w-full py-3 rounded-md font-semibold transition-colors duration-300
                       ${
                         plan.mostPopular
-                          ? 'bg-vesoko_green_600 text-white hover:bg-vesoko_green_800'
-                          : 'bg-vesoko_dark_blue text-white hover:bg-blue-700'
+                          ? 'bg-vesoko_primary text-white hover:bg-vesoko_secondary'
+                          : 'bg-vesoko_primary text-white hover:bg-blue-700'
                       }
                       ${
                         isProcessingPlan && selectedPlan === plan.id
@@ -227,7 +227,7 @@ const StripeOnboardingSuccess = () => {
             <div className='mt-8'>
               <button
                 onClick={handleSkipForNow}
-                className='text-vesoko_dark_blue hover:underline font-semibold text-lg'
+                className='text-vesoko_primary hover:underline font-semibold text-lg'
                 disabled={isProcessingPlan} // Disable skip if processing a plan
               >
                 Skip for now, continue to Dashboard &rarr;
@@ -238,7 +238,7 @@ const StripeOnboardingSuccess = () => {
 
         {showPaymentPrompt && (
           <div className='mt-10 flex flex-col items-center'>
-            <h2 className='text-2xl font-bold mb-4 text-vesoko_dark_blue'>
+            <h2 className='text-2xl font-bold mb-4 text-vesoko_primary'>
               Choose Payment Method
             </h2>
             <p className='text-gray-700 mb-4'>
@@ -249,7 +249,7 @@ const StripeOnboardingSuccess = () => {
               <button
                 onClick={handleUseCardOnFile}
                 disabled={isProcessingPlan}
-                className='bg-vesoko_green_600 text-white w-full md:w-auto px-6 py-3 rounded-md font-semibold hover:bg-vesoko_green_800 transition-colors duration-300 flex items-center justify-center'
+                className='bg-vesoko_primary text-white w-full md:w-auto px-6 py-3 rounded-md font-semibold hover:bg-vesoko_secondary transition-colors duration-300 flex items-center justify-center'
               >
                 {isProcessingPlan
                   ? 'Processing...'
@@ -258,7 +258,7 @@ const StripeOnboardingSuccess = () => {
               <button
                 onClick={handleEnterNewCard}
                 disabled={isProcessingPlan}
-                className='bg-white border border-vesoko_dark_blue text-vesoko_dark_blue w-full md:w-auto px-6 py-3 rounded-md font-semibold hover:bg-vesoko_dark_blue hover:text-white transition-colors duration-300'
+                className='bg-white border border-vesoko_primary text-vesoko_primary w-full md:w-auto px-6 py-3 rounded-md font-semibold hover:bg-vesoko_primary hover:text-white transition-colors duration-300'
               >
                 {isProcessingPlan
                   ? 'Processing...'

@@ -31,7 +31,7 @@ const FavoritesPage = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='mb-8'>
-          <Link href='/' className='inline-flex items-center text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors duration-200 mb-4'>
+          <Link href='/' className='inline-flex items-center text-vesoko_primary hover:text-vesoko_primary transition-colors duration-200 mb-4'>
             <ArrowLeft className='h-5 w-5 mr-2' />
             Continue Shopping
           </Link>
@@ -59,7 +59,7 @@ const FavoritesPage = () => {
                 </div>
                 <Link
                   href='/cart'
-                  className='inline-flex items-center gap-2 px-4 py-2 bg-vesoko_dark_blue text-white text-sm font-medium rounded-lg hover:bg-vesoko_green_600 transition-colors duration-200'
+                  className='inline-flex items-center gap-2 px-4 py-2 bg-vesoko_primary text-white text-sm font-medium rounded-lg hover:bg-vesoko_primary transition-colors duration-200'
                 >
                   <ShoppingCart className='h-4 w-4' />
                   View Cart
@@ -101,7 +101,7 @@ const FavoritesPage = () => {
                 </Link>
                 <button
                   onClick={handleAddAllToCartClick}
-                  className='inline-flex items-center gap-2 px-4 py-2 bg-vesoko_green_600 text-white text-sm font-medium rounded-lg hover:bg-vesoko_green_700 transition-colors duration-200'
+                  className='inline-flex items-center gap-2 px-4 py-2 bg-vesoko_primary text-white text-sm font-medium rounded-lg hover:bg-vesoko_primary_dark transition-colors duration-200'
                 >
                   <ShoppingCart className='h-4 w-4' />
                   Add All to Cart
@@ -130,7 +130,7 @@ const FavoritesPage = () => {
         
         {/* Success Message */}
         {successMessage && (
-          <div className='fixed top-4 right-4 bg-vesoko_green_600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in'>
+          <div className='fixed top-4 right-4 bg-vesoko_primary text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in'>
             <div className='flex items-center gap-2'>
               <ShoppingCart className='h-5 w-5' />
               <span>{successMessage}</span>

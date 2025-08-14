@@ -38,8 +38,8 @@ const TableHeader: React.FC<TableHeaderProps> = ({
       return <ChevronsUpDown className="w-4 h-4 text-gray-400" />;
     }
     return sortOrder === 'asc' 
-      ? <ChevronUp className="w-4 h-4 text-vesoko_dark_blue" />
-      : <ChevronDown className="w-4 h-4 text-vesoko_dark_blue" />;
+      ? <ChevronUp className="w-4 h-4 text-vesoko_primary" />
+      : <ChevronDown className="w-4 h-4 text-vesoko_primary" />;
   };
 
   const getAlignmentClass = (align?: string) => {
@@ -69,8 +69,8 @@ const TableHeader: React.FC<TableHeaderProps> = ({
                 checked={selectAllChecked}
                 onChange={onSelectAllChange}
                 className="
-                  w-4 h-4 text-vesoko_dark_blue bg-gray-100 border-gray-300 rounded 
-                  focus:ring-vesoko_dark_blue focus:ring-2 cursor-pointer
+                  w-4 h-4 text-vesoko_primary bg-gray-100 border-gray-300 rounded 
+                  focus:ring-vesoko_primary focus:ring-2 cursor-pointer
                   transition-colors duration-150
                 "
               />

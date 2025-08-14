@@ -284,7 +284,7 @@ const SideNavbar = ({
         </div>
         
         {/* Store Info Card */}
-        <div className='bg-gradient-to-r from-vesoko_green_50 to-vesoko_green_100 rounded-xl p-4 border border-vesoko_green_200'>
+        <div className='bg-gradient-to-r from-vesoko_background to-vesoko_background_light rounded-xl p-4 border border-vesoko_background'>
           <div className='flex items-center space-x-3'>
             <div className='relative'>
               {storeInfo?.logo ? (
@@ -296,7 +296,7 @@ const SideNavbar = ({
                   className='w-12 h-12 rounded-lg object-cover border-2 border-white shadow-sm'
                 />
               ) : (
-                <div className='w-12 h-12 rounded-lg bg-gradient-to-br from-vesoko_green_500 to-vesoko_green_600 flex items-center justify-center'>
+                <div className='w-12 h-12 rounded-lg bg-gradient-to-br from-vesoko_primary to-vesoko_primary flex items-center justify-center'>
                   <Store className='w-6 h-6 text-white' />
                 </div>
               )}
@@ -349,7 +349,7 @@ const SideNavbar = ({
                         }}
                         className={`group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 relative ${
                           isActive
-                            ? 'bg-gradient-to-r from-vesoko_green_500 to-vesoko_green_600 text-white shadow-md transform scale-105'
+                            ? 'bg-gradient-to-r from-vesoko_primary to-vesoko_primary text-white shadow-md transform scale-105'
                             : isNavigatingToThis
                             ? 'bg-gray-100 text-gray-700'
                             : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
@@ -358,7 +358,7 @@ const SideNavbar = ({
                         }`}
                       >
                         {isNavigatingToThis ? (
-                          <Loader2 className='flex-shrink-0 w-5 h-5 mr-3 animate-spin text-vesoko_green_600' />
+                          <Loader2 className='flex-shrink-0 w-5 h-5 mr-3 animate-spin text-vesoko_primary' />
                         ) : (
                           <item.icon 
                             className={`flex-shrink-0 w-5 h-5 mr-3 ${
@@ -395,7 +395,7 @@ const SideNavbar = ({
                                   }`} />
                                   <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${
                                     isActive 
-                                      ? 'bg-blue-400/20 text-blue-100' 
+                                      ? 'bg-blue-400/20 text-white' 
                                       : 'bg-blue-100 text-blue-600'
                                   }`}>
                                     {(item as any).phase || 'SOON'}

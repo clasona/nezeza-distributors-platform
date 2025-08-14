@@ -73,15 +73,15 @@ const About = () => {
         <meta property="og:type" content="website" />
       </Head>
 
-      <div className="flex flex-col min-h-screen bg-vesoko_powder_blue">        
+      <div className="flex flex-col min-h-screen bg-vesoko_primary">        
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="relative bg-gradient-to-br from-vesoko_dark_blue via-blue-700 to-vesoko_green_600 text-white py-16 sm:py-24 lg:py-32">
+          <section className="relative bg-gradient-to-br from-vesoko_primary via-vesoko_secondary to-vesoko_primary text-white py-16 sm:py-24 lg:py-32">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center space-y-8">
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                  About <span className="text-vesoko_yellow">VeSoko</span>
+                  About <span className="text-vesoko_primary">VeSoko</span>
                 </h1>
                 <p className="text-xl sm:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed">
                   The next-generation ecommerce platform designed exclusively for authentic African products, 
@@ -120,7 +120,7 @@ const About = () => {
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-center">
-                    <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-vesoko_dark_blue mb-2">
+                    <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-vesoko_primary mb-2">
                       {stat.number}{stat.suffix}
                     </div>
                     <div className="text-gray-600 font-medium">{stat.label}</div>
@@ -132,7 +132,7 @@ const About = () => {
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {features.map((feature, index) => (
                   <div key={index} className="text-center group">
-                    <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-vesoko_green_600 to-vesoko_dark_blue rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-vesoko_primary to-vesoko_primary rounded-2xl flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
                       {feature.icon}
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
@@ -144,7 +144,7 @@ const About = () => {
           </section>
 
           {/* Launch Strategy */}
-          <section className="py-16 sm:py-24 bg-gradient-to-br from-vesoko_light_blue via-blue-50 to-white">
+          <section className="py-16 sm:py-24 bg-gradient-to-br from-vesoko_background via-vesoko_background_light to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-16">
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Our Strategic Launch Plan</h2>
@@ -157,18 +157,18 @@ const About = () => {
                 {phases.map((phase, index) => (
                   <div key={index} className={`relative bg-white rounded-2xl p-8 shadow-xl ${phase.status === 'current' ? 'ring-2 ring-vesoko_green_600' : ''}`}>
                     {phase.status === 'current' && (
-                      <div className="absolute -top-4 left-8 px-4 py-2 bg-vesoko_green_600 text-white text-sm font-semibold rounded-full">
+                      <div className="absolute -top-4 left-8 px-4 py-2 bg-vesoko_primary text-white text-sm font-semibold rounded-full">
                         Active Now
                       </div>
                     )}
                     {phase.status === 'upcoming' && (
-                      <div className="absolute -top-4 left-8 px-4 py-2 bg-vesoko_yellow text-vesoko_dark_blue text-sm font-semibold rounded-full">
+                      <div className="absolute -top-4 left-8 px-4 py-2 bg-vesoko_primary text-white text-sm font-semibold rounded-full">
                         Coming Soon
                       </div>
                     )}
                     
                     <div className="mb-6">
-                      <h3 className="text-2xl font-bold text-vesoko_dark_blue mb-2">{phase.phase}</h3>
+                      <h3 className="text-2xl font-bold text-vesoko_primary mb-2">{phase.phase}</h3>
                       <h4 className="text-xl font-semibold text-gray-900 mb-4">{phase.title}</h4>
                       <p className="text-gray-600 leading-relaxed">{phase.description}</p>
                     </div>
@@ -176,7 +176,7 @@ const About = () => {
                     <ul className="space-y-3">
                       {phase.features.map((feature, featureIndex) => (
                         <li key={featureIndex} className="flex items-center gap-3">
-                          <CheckCircle className="w-5 h-5 text-vesoko_green_600 flex-shrink-0" />
+                          <CheckCircle className="w-5 h-5 text-vesoko_primary flex-shrink-0" />
                           <span className="text-gray-700">{feature}</span>
                         </li>
                       ))}
@@ -184,7 +184,7 @@ const About = () => {
 
                     {phase.status === 'current' && (
                       <div className="mt-8">
-                        <Link href="/sellers" className="inline-flex items-center gap-2 bg-vesoko_green_600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-vesoko_green_700 transition-colors duration-300">
+                        <Link href="/sellers" className="inline-flex items-center gap-2 bg-vesoko_primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-vesoko_primary_dark transition-colors duration-300">
                           Join as Seller
                           <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -208,7 +208,7 @@ const About = () => {
 
               <div className="grid md:grid-cols-3 gap-8">
                 <div className="relative text-center group">
-                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-vesoko_green_600 to-vesoko_dark_blue rounded-full flex items-center justify-center text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-vesoko_primary to-vesoko_primary rounded-full flex items-center justify-center text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-300">
                     1
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">African Sellers List Products</h3>
@@ -218,7 +218,7 @@ const About = () => {
                 </div>
 
                 <div className="relative text-center group">
-                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-vesoko_green_600 to-vesoko_dark_blue rounded-full flex items-center justify-center text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-vesoko_primary to-vesoko_primary rounded-full flex items-center justify-center text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-300">
                     2
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">Wholesalers Purchase & Distribute</h3>
@@ -228,7 +228,7 @@ const About = () => {
                 </div>
 
                 <div className="relative text-center group">
-                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-vesoko_green_600 to-vesoko_dark_blue rounded-full flex items-center justify-center text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-vesoko_primary to-vesoko_primary rounded-full flex items-center justify-center text-white text-2xl font-bold group-hover:scale-110 transition-transform duration-300">
                     3
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">Retailers Serve Customers</h3>
@@ -241,7 +241,7 @@ const About = () => {
           </section>
 
           {/* Call to Action */}
-          <section className="py-16 sm:py-24 bg-gradient-to-r from-vesoko_dark_blue to-vesoko_green_600 text-white">
+          <section className="py-16 sm:py-24 bg-gradient-to-r from-vesoko_primary to-vesoko_primary text-white">
             <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">Ready to Join the VeSoko Community?</h2>
               <p className="text-xl text-white/90 mb-8 leading-relaxed">
@@ -249,11 +249,11 @@ const About = () => {
                 we'd love to hear from you.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/sellers" className="inline-flex items-center justify-center gap-2 bg-white text-vesoko_dark_blue px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
+                <Link href="/sellers" className="inline-flex items-center justify-center gap-2 bg-white text-vesoko_primary px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
                   Become a Seller
                   <ArrowRight className="w-5 h-5" />
                 </Link>
-                <Link href="/contact" className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-vesoko_dark_blue transition-colors duration-300">
+                <Link href="/contact" className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-vesoko_primary transition-colors duration-300">
                   Contact Us
                   <ArrowRight className="w-5 h-5" />
                 </Link>

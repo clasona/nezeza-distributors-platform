@@ -36,7 +36,7 @@ const ResetCart = () => {
       </button>
       <Link
         href='/'
-        className='text-sm font-semibold text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors duration-300'
+        className='text-sm font-semibold text-vesoko_primary hover:text-vesoko_primary transition-colors duration-300'
       >
         Continue Shopping
       </Link>

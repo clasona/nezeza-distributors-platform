@@ -142,18 +142,18 @@ const FAQPage = () => {
         <meta property="og:type" content="website" />
       </Head>
 
-      <div className="flex flex-col min-h-screen bg-vesoko_powder_blue">
+      <div className="flex flex-col min-h-screen bg-vesoko_primary">
         
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="relative bg-gradient-to-br from-vesoko_dark_blue via-blue-700 to-vesoko_green_600 text-white py-16 sm:py-24">
+          <section className="relative bg-gradient-to-br from-vesoko_primary via-vesoko_secondary to-vesoko_primary text-white py-16 sm:py-24">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <div className="w-20 h-20 mx-auto mb-8 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                 <HelpCircle className="w-10 h-10 text-white" />
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-                How can we <span className="text-vesoko_yellow">help</span>?
+                How can we <span className="text-vesoko_primary">help</span>?
               </h1>
               <p className="text-xl sm:text-2xl text-white/90 mb-8 leading-relaxed">
                 Find answers to common questions about VeSoko, selling, buying, and more.
@@ -168,12 +168,12 @@ const FAQPage = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search for answers..."
-                    className="w-full pl-12 pr-4 py-4 text-lg rounded-2xl border-0 focus:ring-2 focus:ring-vesoko_yellow/50 focus:outline-none text-gray-900 placeholder-gray-500"
+                    className="w-full pl-12 pr-4 py-4 text-lg rounded-2xl border-0 focus:ring-2 focus:ring-vesoko_primary/50 focus:outline-none text-gray-900 placeholder-gray-500"
                   />
                   <button
                     type="submit"
                     disabled={isSearching}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-vesoko_green_600 text-white px-6 py-2 rounded-xl font-semibold hover:bg-vesoko_green_700 transition-colors duration-300 disabled:opacity-50"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-vesoko_primary text-white px-6 py-2 rounded-xl font-semibold hover:bg-vesoko_primary_dark transition-colors duration-300 disabled:opacity-50"
                   >
                     {isSearching ? 'Searching...' : 'Search'}
                   </button>
@@ -193,7 +193,7 @@ const FAQPage = () => {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {featuredFAQs.map((faq) => (
-                    <div key={faq._id} className="bg-vesoko_light_blue rounded-xl p-6 hover:shadow-lg transition-shadow duration-300">
+                    <div key={faq._id} className="bg-vesoko_background rounded-xl p-6 hover:shadow-lg transition-shadow duration-300">
                       <h3 className="font-semibold text-gray-900 mb-3 text-lg leading-tight">
                         {faq.question}
                       </h3>
@@ -205,7 +205,7 @@ const FAQPage = () => {
                           <HelpCircle className="w-4 h-4" />
                           {faq.views} views
                         </span>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full bg-vesoko_green_600 text-white`}>
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full bg-vesoko_primary text-white`}>
                           {faq.category}
                         </span>
                       </div>
@@ -217,7 +217,7 @@ const FAQPage = () => {
           )}
 
           {/* Filters & Results */}
-          <section className="py-16 bg-gradient-to-br from-vesoko_light_blue via-blue-50 to-white">
+          <section className="py-16 bg-gradient-to-br from-vesoko_background via-vesoko_background_light to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               {/* Filters */}
               <div className="bg-white rounded-2xl p-6 shadow-lg mb-8">
@@ -227,7 +227,7 @@ const FAQPage = () => {
                   {(selectedCategory !== 'all' || selectedUserType !== 'all' || searchQuery) && (
                     <button
                       onClick={clearFilters}
-                      className="text-vesoko_dark_blue hover:text-vesoko_green_600 text-sm font-medium transition-colors duration-200"
+                      className="text-vesoko_primary hover:text-vesoko_primary text-sm font-medium transition-colors duration-200"
                     >
                       Clear all
                     </button>
@@ -240,7 +240,7 @@ const FAQPage = () => {
                     <select
                       value={selectedCategory}
                       onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-vesoko_green_600 focus:border-vesoko_green_600"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-vesoko_primary focus:border-vesoko_primary"
                     >
                       {categories.map((category) => (
                         <option key={category.value} value={category.value}>
@@ -255,7 +255,7 @@ const FAQPage = () => {
                     <select
                       value={selectedUserType}
                       onChange={(e) => setSelectedUserType(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-vesoko_green_600 focus:border-vesoko_green_600"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-vesoko_primary focus:border-vesoko_primary"
                     >
                       {userTypes.map((userType) => (
                         <option key={userType.value} value={userType.value}>
@@ -271,7 +271,7 @@ const FAQPage = () => {
               <div className="bg-white rounded-2xl p-8 shadow-lg">
                 {isLoading ? (
                   <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-vesoko_green_600 mx-auto mb-4"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-vesoko_primary mx-auto mb-4"></div>
                     <p className="text-gray-600">Loading FAQs...</p>
                   </div>
                 ) : (
@@ -297,18 +297,18 @@ const FAQPage = () => {
               </div>
 
               {/* Still Need Help */}
-              <div className="mt-12 bg-gradient-to-r from-vesoko_dark_blue to-vesoko_green_600 text-white rounded-2xl p-8 text-center">
-                <MessageSquare className="w-12 h-12 mx-auto mb-4 text-vesoko_yellow" />
+              <div className="mt-12 bg-gradient-to-r from-vesoko_primary to-vesoko_primary text-white rounded-2xl p-8 text-center">
+                <MessageSquare className="w-12 h-12 mx-auto mb-4 text-vesoko_primary" />
                 <h3 className="text-2xl font-bold mb-4">Still need help?</h3>
                 <p className="text-white/90 mb-6 max-w-2xl mx-auto">
                   Can't find what you're looking for? Our support team is here to help you with any questions or issues you may have.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-white text-vesoko_dark_blue px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
+                  <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-white text-vesoko_primary px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
                     Contact Support
                     <ArrowRight className="w-4 h-4" />
                   </Link>
-                  <Link href="/customer/support" className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-6 py-3 rounded-xl font-semibold hover:bg-white hover:text-vesoko_dark_blue transition-colors duration-300">
+                  <Link href="/customer/support" className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-6 py-3 rounded-xl font-semibold hover:bg-white hover:text-vesoko_primary transition-colors duration-300">
                     Open Ticket
                     <ArrowRight className="w-4 h-4" />
                   </Link>

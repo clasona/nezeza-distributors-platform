@@ -44,12 +44,12 @@ const StoreApplicationDetails = () => {
 
   return (
     <AdminLayout>
-      <div className="max-w-3xl mx-auto p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl mt-10 border border-vesoko_green_600">
+      <div className="max-w-3xl mx-auto p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl mt-10 border border-vesoko_primary">
         <div className="flex items-center justify-between mb-6">
           <Button buttonTitle="← Back to All Applications" onClick={() => router.push('/admin/store-applications')} className="mb-0" />
-          <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-vesoko_green_100 text-vesoko_green_800 border border-vesoko_green_600">{application?.status}</span>
+          <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-vesoko_green_100 text-vesoko_green_800 border border-vesoko_primary">{application?.status}</span>
         </div>
-        <h2 className="text-3xl font-extrabold mb-6 text-vesoko_dark_blue tracking-tight">Store Application Details</h2>
+        <h2 className="text-3xl font-extrabold mb-6 text-vesoko_primary tracking-tight">Store Application Details</h2>
         {loading ? (
           <div className="text-center py-12 text-lg font-medium text-vesoko_gray_600">Loading...</div>
         ) : error ? (
@@ -68,8 +68,8 @@ const StoreApplicationDetails = () => {
                 <div><span className="font-semibold">Updated:</span> {formatDate(application.updatedAt)}</div>
               </div>
               <div className="space-y-2 text-base">
-                <div><span className="font-semibold">Business Document:</span> {application.verificationDocs?.businessDocument ? <Link href={application.verificationDocs.businessDocument.replace('/upload/', '/upload/f_jpg/')} target="_blank" rel="noopener noreferrer" className="text-vesoko_green_600 underline">View</Link> : 'Not provided'}</div>
-                <div><span className="font-semibold">Identity Document:</span> {application.verificationDocs?.primaryContactIdentityDocument ? <Link href={application.verificationDocs.primaryContactIdentityDocument.replace('/upload/', '/upload/f_jpg/')} target="_blank" rel="noopener noreferrer" className="text-vesoko_green_600 underline">View</Link> : 'Not provided'}</div>
+                <div><span className="font-semibold">Business Document:</span> {application.verificationDocs?.businessDocument ? <Link href={application.verificationDocs.businessDocument.replace('/upload/', '/upload/f_jpg/')} target="_blank" rel="noopener noreferrer" className="text-vesoko_primary underline">View</Link> : 'Not provided'}</div>
+                <div><span className="font-semibold">Identity Document:</span> {application.verificationDocs?.primaryContactIdentityDocument ? <Link href={application.verificationDocs.primaryContactIdentityDocument.replace('/upload/', '/upload/f_jpg/')} target="_blank" rel="noopener noreferrer" className="text-vesoko_primary underline">View</Link> : 'Not provided'}</div>
                 <div><span className="font-semibold">Store Description:</span> {application.storeInfo?.description}</div>
                 <div><span className="font-semibold">Store Email:</span> {application.storeInfo?.email}</div>
                 <div><span className="font-semibold">Store Phone:</span> {application.storeInfo?.phone}</div>
@@ -77,7 +77,7 @@ const StoreApplicationDetails = () => {
               </div>
             </div>
             <div className="flex flex-wrap gap-4 mb-8">
-              <Button buttonTitle="Approve" className="bg-vesoko_green_600 text-white" isLoading={actionLoading && actionSuccess === null} onClick={async () => {
+              <Button buttonTitle="Approve" className="bg-vesoko_primary text-white" isLoading={actionLoading && actionSuccess === null} onClick={async () => {
                 setActionLoading(true);
                 setActionError(null);
                 try {
@@ -91,7 +91,7 @@ const StoreApplicationDetails = () => {
                 setActionLoading(false);
               }} />
               <Button buttonTitle="Decline" className="bg-vesoko_red_600 text-white" onClick={() => setShowDeclineModal(true)} />
-              <Button buttonTitle="Download JSON" className="bg-vesoko_dark_blue text-white" onClick={() => {
+              <Button buttonTitle="Download JSON" className="bg-vesoko_primary text-white" onClick={() => {
                 const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(application, null, 2));
                 const downloadAnchorNode = document.createElement('a');
                 downloadAnchorNode.setAttribute('href', dataStr);
@@ -103,13 +103,13 @@ const StoreApplicationDetails = () => {
               <Button buttonTitle="Delete" className="bg-gray-400 text-white" onClick={() => alert('Delete functionality coming soon!')} />
             </div>
             {actionError && <div className="text-vesoko_red_600 mb-4">{actionError}</div>}
-            {actionSuccess && <div className="text-vesoko_green_600 mb-4">{actionSuccess}</div>}
+            {actionSuccess && <div className="text-vesoko_primary mb-4">{actionSuccess}</div>}
             {/* Decline Modal */}
             {showDeclineModal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
                 <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl max-w-md w-full p-6 relative">
                   <button className="absolute top-2 right-2 text-vesoko_red_600 hover:text-red-800 text-2xl font-bold" onClick={() => setShowDeclineModal(false)} aria-label="Close">&times;</button>
-                  <h2 className="text-xl font-bold mb-4 text-vesoko_dark_blue">Decline Store Application</h2>
+                  <h2 className="text-xl font-bold mb-4 text-vesoko_primary">Decline Store Application</h2>
                   <div className="mb-4">Are you sure you want to decline application <span className="font-semibold">{application._id}</span>?</div>
                   <textarea
                     className="w-full p-2 border rounded mb-4"

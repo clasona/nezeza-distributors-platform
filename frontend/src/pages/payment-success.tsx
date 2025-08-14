@@ -170,13 +170,13 @@ const SuccessPage = () => {
             <div className='flex flex-col sm:flex-row gap-4 justify-center'>
               <Link
                 href={getOrderDetailsUrl()}
-                className='flex items-center justify-center px-6 py-3 bg-vesoko_dark_blue text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 shadow-md'
+                className='flex items-center justify-center px-6 py-3 bg-vesoko_primary text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 shadow-md'
               >
                 View Order Details
               </Link>
               <Link
                 href='/'
-                className='flex items-center justify-center px-6 py-3 bg-white text-vesoko_dark_blue border-2 border-vesoko_dark_blue font-semibold rounded-lg hover:bg-vesoko_dark_blue hover:text-white transition duration-300'
+                className='flex items-center justify-center px-6 py-3 bg-white text-vesoko_primary border-2 border-vesoko_primary font-semibold rounded-lg hover:bg-vesoko_primary hover:text-white transition duration-300'
               >
                 Continue Shopping
               </Link>
@@ -193,7 +193,7 @@ const SuccessPage = () => {
         {/* Success Header */}
         <div className='text-center mb-8'>
           <div className='flex justify-center mb-4'>
-            <div className='rounded-full bg-green-100 p-3'>
+            <div className='rounded-full bg-vesoko_green_100 p-3'>
               <CheckCircle className='h-16 w-16 text-green-600' />
             </div>
           </div>
@@ -212,7 +212,7 @@ const SuccessPage = () => {
             {orderNumber && (
               <div className='bg-gray-50 rounded-lg p-4 mb-4'>
                 <p className='text-sm text-gray-600'>Order Reference</p>
-                <p className='text-2xl font-bold text-vesoko_dark_blue'>#{orderNumber}</p>
+                <p className='text-2xl font-bold text-vesoko_primary'>#{orderNumber}</p>
               </div>
             )}
             {estimatedDelivery && (
@@ -248,7 +248,7 @@ const SuccessPage = () => {
               </p>
             </div>
             <div className='text-center p-4'>
-              <div className='bg-green-100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center'>
+              <div className='bg-vesoko_green_100 rounded-full p-3 w-16 h-16 mx-auto mb-3 flex items-center justify-center'>
                 <Calendar className='h-8 w-8 text-green-600' />
               </div>
               <h3 className='font-semibold text-gray-900 mb-2'>Delivery</h3>
@@ -277,7 +277,7 @@ const SuccessPage = () => {
         <div className='flex flex-col sm:flex-row gap-4 justify-center'>
           <Link
             href={getOrderDetailsUrl()}
-            className='inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-vesoko_dark_blue hover:bg-vesoko_green_600 transition-colors duration-200 shadow-lg hover:shadow-xl'
+            className='inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-vesoko_primary hover:bg-vesoko_primary transition-colors duration-200 shadow-lg hover:shadow-xl'
           >
             View My Orders
           </Link>
@@ -297,14 +297,14 @@ const SuccessPage = () => {
           <div className='flex flex-col sm:flex-row gap-4 justify-center text-sm'>
             <Link
               href='mailto:support@vesoko.com'
-              className='text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium'
+              className='text-vesoko_primary hover:text-vesoko_primary font-medium'
             >
               📧 support@vesoko.com
             </Link>
             <span className='hidden sm:inline text-gray-400'>|</span>
             <Link
               href='tel:+1234567890'
-              className='text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium'
+              className='text-vesoko_primary hover:text-vesoko_primary font-medium'
             >
               📞 (123) 456-7890
             </Link>

@@ -82,7 +82,7 @@ const CloudinaryFileUpload = ({
                     ? 'border-green-300 bg-green-50 text-green-700'
                     : isUploading
                     ? 'border-blue-300 bg-blue-50 text-blue-700 cursor-wait'
-                    : 'border-gray-300 bg-gray-50 text-gray-700 hover:border-vesoko_dark_blue hover:bg-vesoko_dark_blue hover:text-white'
+                    : 'border-gray-300 bg-gray-50 text-gray-700 hover:border-vesoko_primary hover:bg-vesoko_primary hover:text-white'
                 }`}
               >
                 {isUploading ? (
@@ -116,7 +116,7 @@ const CloudinaryFileUpload = ({
 
       {resource && (
         <div className='mt-2'>
-          <p className='text-vesoko_green_600'>
+          <p className='text-vesoko_primary'>
             File uploaded successfully: {resource.original_filename}
           </p>
           <p>
@@ -124,7 +124,7 @@ const CloudinaryFileUpload = ({
               href={resource.secure_url}
               target='_blank'
               rel='noopener noreferrer'
-              className='text-vesoko_dark_blue underline'
+              className='text-vesoko_primary underline'
             >
               Download File
             </Link>

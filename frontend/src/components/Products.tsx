@@ -274,7 +274,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
     return (
       <div className='w-full px-4 py-16 text-center'>
         <div className='inline-flex items-center justify-center'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-vesoko_dark_blue mr-3'></div>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-vesoko_primary mr-3'></div>
           <span className='text-lg font-medium text-gray-700'>Loading products...</span>
         </div>
       </div>
@@ -325,7 +325,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
         return (
           <div
             key={product._id}
-            className={`w-full bg-white text-black p-2 sm:p-3 lg:p-4 border border-gray-200 rounded-xl sm:rounded-2xl group overflow-hidden hover:cursor-pointer flex flex-col transition-all duration-300 hover:shadow-2xl hover:border-vesoko_green_600/20 hover:-translate-y-2 transform touch-manipulation`}
+            className={`w-full bg-white text-black p-2 sm:p-3 lg:p-4 border border-gray-200 rounded-xl sm:rounded-2xl group overflow-hidden hover:cursor-pointer flex flex-col transition-all duration-300 hover:shadow-2xl hover:border-vesoko_primary/20 hover:-translate-y-2 transform touch-manipulation`}
           >
             <div className='w-full aspect-square relative mb-4 overflow-hidden rounded-xl bg-gray-50'>
               <div
@@ -377,7 +377,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                         key={idx}
                         className={`inline-block w-2 h-2 rounded-full ${
                           idx === currIndex
-                            ? 'bg-vesoko_green_600'
+                            ? 'bg-vesoko_primary'
                             : 'bg-gray-300'
                         }`}
                       />
@@ -400,7 +400,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                     <div className='flex items-center'>
                       {isInCart && cartItem ? (
                         // Quantity controls when product is in cart
-                        <div className='flex items-center bg-vesoko_green_600 text-white rounded-md px-1.5 py-1 gap-1 shadow-md'>
+                        <div className='flex items-center bg-vesoko_primary text-white rounded-md px-1.5 py-1 gap-1 shadow-md'>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -412,7 +412,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                                 dispatch(decreaseQuantity({ id: product._id }));
                               }
                             }}
-                            className='hover:bg-vesoko_green_800 rounded p-0.5 transition-colors'
+                            className='hover:bg-vesoko_secondary rounded p-0.5 transition-colors'
                           >
                             <Minus size={10} />
                           </button>
@@ -424,7 +424,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                               e.stopPropagation();
                               dispatch(increaseQuantity({ id: product._id }));
                             }}
-                            className='hover:bg-vesoko_green_800 rounded p-0.5 transition-colors'
+                            className='hover:bg-vesoko_secondary rounded p-0.5 transition-colors'
                           >
                             <Plus size={10} />
                           </button>
@@ -440,7 +440,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                           loadingButtonTitle=''
                           icon={ShoppingCart}
                           className='w-10 h-10 rounded-full flex items-center justify-center
-                            text-sm bg-white shadow-lg hover:bg-vesoko_green_600 hover:text-white cursor-pointer duration-300 transform hover:scale-110'
+                            text-sm bg-white shadow-lg hover:bg-vesoko_primary hover:text-white cursor-pointer duration-300 transform hover:scale-110'
                           disabled={
                             addingToCartProductId === product._id ||
                             addingToFavoritesProductId === product._id ||
@@ -487,7 +487,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                     {product.category}
                   </span>
                 </div>
-                <h3 className='text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 sm:mb-3 leading-tight hover:text-vesoko_dark_blue transition-colors cursor-pointer'
+                <h3 className='text-sm sm:text-base lg:text-lg font-bold text-gray-900 mb-2 sm:mb-3 leading-tight hover:text-vesoko_primary transition-colors cursor-pointer'
                     onClick={() => router.push(`/product/${product._id}`)}>
                   {product.title}
                 </h3>
@@ -507,7 +507,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                     ))}
                   <button
                     onClick={() => handleOpenReviewModal(product._id)}
-                    className='bg-transparent text-vesoko_gray_600 hover:text-vesoko_dark_blue p-0 h-auto text-xs sm:text-sm transition-colors'
+                    className='bg-transparent text-vesoko_gray_600 hover:text-vesoko_primary p-0 h-auto text-xs sm:text-sm transition-colors'
                   >
                     ({product.numOfReviews || 0})
                   </button>
@@ -515,7 +515,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                 <div className='mb-3 sm:mb-4'>
                   <p className='flex items-center mb-2'
                      onClick={() => router.push(`/product/${product._id}`)}>
-                    <span className='text-lg sm:text-xl lg:text-2xl font-bold text-vesoko_dark_blue'>
+                    <span className='text-lg sm:text-xl lg:text-2xl font-bold text-vesoko_primary'>
                       <FormattedPrice amount={product.price} />
                     </span>
                   </p>
@@ -574,7 +574,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                       ? 'Adding...'
                       : 'Adding...'
                   }
-                  className='flex items-center justify-center h-10 sm:h-12 text-xs sm:text-sm lg:text-base font-semibold bg-vesoko_dark_blue text-white rounded-lg sm:rounded-xl hover:bg-vesoko_dark_blue_2 transform hover:scale-105
+                  className='flex items-center justify-center h-10 sm:h-12 text-xs sm:text-sm lg:text-base font-semibold bg-vesoko_primary text-white rounded-lg sm:rounded-xl hover:bg-vesoko_primary_dark transform hover:scale-105
                              duration-300 w-full transition-all shadow-lg'
                   disabled={
                     addingToCartProductId === product._id ||
@@ -589,7 +589,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                     isLoading={buyingNowProductId === product._id}
                     buttonTitle='Buy Now'
                     loadingButtonTitle='Processing...'
-                    className='flex items-center justify-center h-10 sm:h-12 text-xs sm:text-sm lg:text-base font-semibold bg-vesoko_green_600 text-white rounded-lg sm:rounded-xl hover:bg-vesoko_green_800 transform hover:scale-105 duration-300 w-full transition-all shadow-lg'
+                    className='flex items-center justify-center h-10 sm:h-12 text-xs sm:text-sm lg:text-base font-semibold bg-vesoko_secondary text-white rounded-lg sm:rounded-xl hover:bg-vesoko_secondary_light transform hover:scale-105 duration-300 w-full transition-all shadow-lg'
                     disabled={
                       addingToCartProductId === product._id ||
                       addingToFavoritesProductId === product._id ||

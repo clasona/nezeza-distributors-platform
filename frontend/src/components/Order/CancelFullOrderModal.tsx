@@ -78,7 +78,7 @@ const CancelFullOrderModal: React.FC<CancelFullOrderModalProps> = ({
 
         {canCancel && ( // Only show reason selection if cancellation is allowed
           <select
-            className='w-full border border-gray-300 rounded-md p-2 mb-4 bg-white focus:ring-blue-500 focus:border-blue-500'
+            className='w-full border border-gray-300 rounded-md p-2 mb-4 bg-white focus:ring-vesoko_primary focus:border-blue-500'
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             required

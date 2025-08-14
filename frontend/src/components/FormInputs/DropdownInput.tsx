@@ -51,7 +51,7 @@ const DropdownInput = ({
           className={`block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none ${
             errors[name]
               ? 'border-vesoko_red_600 text-vesoko_red_600'
-              : 'focus:border-vesoko_green_600'
+              : 'focus:border-vesoko_primary'
           } ${
             disabled
               ? 'bg-gray-200 text-vesoko_gray_600 cursor-not-allowed'

@@ -239,7 +239,7 @@ const SellerMyOrders = () => {
             buttonTitle='Refresh'
             buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
-            className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
+            className='text-vesoko_primary hover:text-white hover:bg-vesoko_primary'
             onClick={async () => {
               await fetchData();
             }}
@@ -271,7 +271,7 @@ const SellerMyOrders = () => {
          Filter by dates (always on large, conditional on small) */}
         {/* <button
           onClick={toggleMoreFilters}
-          className='hidden sm:inline text-sm text-vesoko_dark_blue underline'
+          className='hidden sm:inline text-sm text-vesoko_primary underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
         </button> */}
@@ -324,7 +324,7 @@ const SellerMyOrders = () => {
                       // { content: '' },
                       {
                         content: (
-                          <Link href='#' className='text-vesoko_dark_blue'>
+                          <Link href='#' className='text-vesoko_primary'>
                             {order.orderItems.length}{' '}
                           </Link>
                         ),
@@ -358,7 +358,7 @@ const SellerMyOrders = () => {
                         {order.orderItems.map((item) => (
                           <div
                             key={item._id}
-                            className='flex items-center px-20 gap-4 border-b border-vesoko_light_blue pb-2'
+                            className='flex items-center px-20 gap-4 border-b border-vesoko_background pb-2'
                           >
                             <Image
                               src={item.image}
@@ -377,7 +377,7 @@ const SellerMyOrders = () => {
                                 <Link
                                   href='#'
                                   target='_blank'
-                                  className='text-vesoko_dark_blue'
+                                  className='text-vesoko_primary'
                                 >
                                   {item.sellerStoreId.name ||
                                     'Store Name Missing'}

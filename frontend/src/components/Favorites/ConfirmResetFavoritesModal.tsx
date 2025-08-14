@@ -24,7 +24,7 @@ const ConfirmResetFavoritesModal = <T extends { _id: number | string }>({
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
-      <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-96'>
+      <div className='bg-vesoko_background p-6 rounded-lg shadow-lg w-96'>
         <h3 className='text-lg font-semibold mb-4'>Confirm Reset Favorites</h3>
         <p className='mb-4'>
           Are you sure you want to clear the favorites permanently?

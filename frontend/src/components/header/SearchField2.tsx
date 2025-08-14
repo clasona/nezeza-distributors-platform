@@ -122,7 +122,7 @@ const SearchField2 = ({
           ref={inputRef}
           type='text'
           id='product-search'
-          className={`block w-full py-3 pl-12 text-base sm:text-sm sm:py-2 sm:pl-10 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-nezeza_green_600 focus:border-nezeza_green_600 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-nezeza_green_600 dark:focus:border-nezeza_green_600 ${
+          className={`block w-full py-3 pl-12 text-base sm:text-sm sm:py-2 sm:pl-10 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-500 focus:ring-vesoko_primary focus:border-vesoko_primary focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-vesoko_primary dark:focus:border-vesoko_primary ${
             isDisabled ? 'opacity-50 cursor-not-allowed' : ''
           }`}
           placeholder={`Search for ${searchFieldPlaceholder}`}
@@ -145,7 +145,7 @@ const SearchField2 = ({
               <div
                 key={suggestion}
                 className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${
-                  index === activeSuggestionIndex ? 'bg-nezeza_green_100 text-nezeza_green_800' : 'text-gray-900'
+                  index === activeSuggestionIndex ? 'bg-vesoko_background text-vesoko_secondary' : 'text-gray-900'
                 }`}
                 onClick={() => handleSuggestionClick(suggestion)}
                 onMouseEnter={() => setActiveSuggestionIndex(index)}
@@ -154,10 +154,10 @@ const SearchField2 = ({
                   <Search className='w-3 h-3 text-gray-400 mr-2' />
                   <span className='text-sm'>{suggestion}</span>
                   {suggestions?.categories.includes(suggestion) && (
-                    <span className='ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full'>Category</span>
+                    <span className='ml-2 px-2 py-1 text-xs bg-vesoko_background text-vesoko_secondary rounded-full'>Category</span>
                   )}
                   {suggestions?.popularTags.includes(suggestion) && (
-                    <span className='ml-2 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full'>Tag</span>
+                    <span className='ml-2 px-2 py-1 text-xs bg-vesoko_primary text-white rounded-full'>Tag</span>
                   )}
                 </div>
               </div>

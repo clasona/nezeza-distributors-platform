@@ -30,8 +30,8 @@ const PremiumFeatureComingSoon: React.FC<PremiumFeatureComingSoonProps> = ({
   features,
   comingSoonDate = "Q2 2025",
   phase = "Phase 2",
-  gradient = "from-blue-600 to-indigo-700",
-  iconBg = "from-blue-500 to-indigo-600"
+  gradient = "from-vesoko_primary600 to-indigo-700",
+  iconBg = "from-vesoko_primary500 to-indigo-600"
 }) => {
   // Notification subscription state
   const [email, setEmail] = useState('');
@@ -115,7 +115,7 @@ const PremiumFeatureComingSoon: React.FC<PremiumFeatureComingSoonProps> = ({
           </p>
           <Link 
             href='/retailer'
-            className='inline-flex items-center gap-2 px-6 py-3 bg-vesoko_green_500 hover:bg-vesoko_green_600 text-white rounded-lg font-semibold transition-colors duration-200'
+            className='inline-flex items-center gap-2 px-6 py-3 bg-vesoko_primary hover:bg-vesoko_primary text-white rounded-lg font-semibold transition-colors duration-200'
           >
             <ArrowUpRight className='w-4 h-4' />
             View Dashboard
@@ -195,7 +195,7 @@ const PremiumFeatureComingSoon: React.FC<PremiumFeatureComingSoonProps> = ({
         {message && (
           <div className={`mt-4 px-4 py-2 rounded-lg text-sm font-medium ${
             isSuccess 
-              ? 'bg-green-100 text-green-800 border border-green-200' 
+              ? 'bg-vesoko_green_100 text-green-800 border border-green-200' 
               : 'bg-red-100 text-red-800 border border-red-200'
           }`}>
             {message}

@@ -8,7 +8,7 @@ interface ContentPageProps {
 
 const ContentPageWrapper: React.FC<ContentPageProps> = ({ page }) => {
   return (
-    <div className="flex flex-col min-h-screen bg-vesoko_powder_blue">
+    <div className="flex flex-col min-h-screen bg-vesoko_primary">
       <ContentPageComponent 
         page={page} 
         backUrl="/" 

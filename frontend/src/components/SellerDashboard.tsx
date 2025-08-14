@@ -55,25 +55,25 @@ const SellerDashboard = () => {
 
   if (!analyticsData) {
     return (
-      <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-vesoko_powder_blue via-blue-50 to-white'>
+      <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-vesoko_primary via-vesoko_background_light to-white'>
         <div className='text-center space-y-4 animate-pulse'>
-          <div className='w-16 h-16 bg-vesoko_dark_blue rounded-full mx-auto animate-spin flex items-center justify-center'>
+          <div className='w-16 h-16 bg-vesoko_primary rounded-full mx-auto animate-spin flex items-center justify-center'>
             <TrendingUp className='w-8 h-8 text-white' />
           </div>
-          <p className='text-lg font-medium text-vesoko_dark_blue'>Loading your dashboard...</p>
+          <p className='text-lg font-medium text-vesoko_primary'>Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-blue-50 to-white'>
+    <div className='min-h-screen bg-gradient-to-br from-vesoko_primary via-vesoko_background_light to-white'>
       <div className='space-y-8 pb-8'>
         {/* Welcome Header */}
         <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 mb-8 border border-white/20'>
           <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
             <div className='animate-fade-in'>
-              <h1 className='text-3xl sm:text-4xl font-bold text-vesoko_dark_blue mb-2'>
+              <h1 className='text-3xl sm:text-4xl font-bold text-vesoko_primary mb-2'>
                 Welcome back, {username}! 👋
               </h1>
               <p className='text-lg text-gray-600'>
@@ -84,13 +84,13 @@ const SellerDashboard = () => {
             {/* Store Quick Stats */}
             <div className='flex items-center gap-4 text-sm'>
               <div className='text-center'>
-                <div className='text-2xl font-bold text-vesoko_green_600'>
+                <div className='text-2xl font-bold text-vesoko_primary'>
                   {totalProductsCount}
                 </div>
                 <div className='text-gray-600'>Products</div>
               </div>
               <div className='text-center'>
-                <div className='text-2xl font-bold text-vesoko_dark_blue'>
+                <div className='text-2xl font-bold text-vesoko_primary'>
                   {analyticsData?.customerMetrics?.totalCustomers || 0}
                 </div>
                 <div className='text-gray-600'>Customers</div>
@@ -107,7 +107,7 @@ const SellerDashboard = () => {
                     Complete your payment setup to start receiving payments
                   </p>
                   <button
-                    className='mt-2 inline-flex items-center gap-2 px-4 py-2 bg-vesoko_dark_blue text-white rounded-lg hover:bg-vesoko_dark_blue_2 transition-all duration-300 transform hover:scale-105'
+                    className='mt-2 inline-flex items-center gap-2 px-4 py-2 bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_primary_2 transition-all duration-300 transform hover:scale-105'
                     onClick={async () => {
                       try {
                         const response = await createStripeConnectAccount(
@@ -159,7 +159,7 @@ const SellerDashboard = () => {
               changeLabel: 'this month',
               icon: <Package size={24} />,
               color: 'blue',
-              gradient: 'from-blue-400 to-blue-600'
+              gradient: 'from-vesoko_primary400 to-vesoko_primary_dark'
             },
             {
               title: 'Total Customers',
@@ -217,7 +217,7 @@ const SellerDashboard = () => {
           {/* Sales Trends */}
           <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-white/20 animate-slide-up' style={{animationDelay: '400ms'}}>
             <div className='flex items-center gap-3 mb-6'>
-              <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-vesoko_dark_blue to-blue-600 flex items-center justify-center'>
+              <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-vesoko_primary to-vesoko_primary_dark flex items-center justify-center'>
                 <TrendingUp className='w-5 h-5 text-white' />
               </div>
               <h3 className='text-xl font-bold text-gray-900'>Sales Trends</h3>
@@ -248,30 +248,30 @@ const SellerDashboard = () => {
             </div>
             <div className='space-y-4'>
               {analyticsData?.topProducts.slice(0, 5).map((product, index) => (
-                <div key={product.id} className='group flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-vesoko_dark_blue hover:shadow-md transition-all duration-300'>
+                <div key={product.id} className='group flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:border-vesoko_primary hover:shadow-md transition-all duration-300'>
                   <div className='flex items-center gap-4'>
                     <div className='relative'>
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm ${
                         index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-500' :
                         index === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-400' :
                         index === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-500' :
-                        'bg-gradient-to-br from-blue-400 to-blue-500'
+                        'bg-gradient-to-br from-vesoko_primary400 to-blue-500'
                       }`}>
                         {index + 1}
                       </div>
                       {index < 3 && (
-                        <div className='absolute -top-1 -right-1 w-4 h-4 bg-vesoko_green_600 rounded-full flex items-center justify-center'>
+                        <div className='absolute -top-1 -right-1 w-4 h-4 bg-vesoko_primary rounded-full flex items-center justify-center'>
                           <Zap className='w-2.5 h-2.5 text-white' />
                         </div>
                       )}
                     </div>
                     <div>
-                      <p className='font-semibold text-gray-900 group-hover:text-vesoko_dark_blue transition-colors'>{product.name}</p>
+                      <p className='font-semibold text-gray-900 group-hover:text-vesoko_primary transition-colors'>{product.name}</p>
                       <p className='text-sm text-gray-600'>{product.quantity} units sold</p>
                     </div>
                   </div>
                   <div className='text-right'>
-                    <p className='font-bold text-vesoko_green_600 text-lg'>${product.revenue.toFixed(2)}</p>
+                    <p className='font-bold text-vesoko_primary text-lg'>${product.revenue.toFixed(2)}</p>
                     <p className='text-xs text-gray-500'>revenue</p>
                   </div>
                 </div>
@@ -309,7 +309,7 @@ const SellerDashboard = () => {
                       <span className='px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-semibold border border-orange-200'>
                         LOW STOCK
                       </span>
-                      <Link href='/retailer/inventory' className='text-xs text-vesoko_dark_blue hover:underline font-medium'>
+                      <Link href='/retailer/inventory' className='text-xs text-vesoko_primary hover:underline font-medium'>
                         Restock →
                       </Link>
                     </div>
@@ -318,7 +318,7 @@ const SellerDashboard = () => {
               ))}
               {analyticsData?.lowStockProducts.length === 0 && (
                 <div className='text-center py-8'>
-                  <div className='w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3'>
+                  <div className='w-12 h-12 bg-vesoko_green_100 rounded-full flex items-center justify-center mx-auto mb-3'>
                     <MdInventory className='w-6 h-6 text-green-600' />
                   </div>
                   <p className='text-green-600 font-medium'>All products are well stocked!</p>
@@ -332,14 +332,14 @@ const SellerDashboard = () => {
         <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-white/20 animate-slide-up mb-8' style={{animationDelay: '800ms'}}>
           <div className='flex items-center justify-between mb-6'>
             <div className='flex items-center gap-3'>
-              <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-vesoko_green_600 to-green-700 flex items-center justify-center'>
+              <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-vesoko_primary to-vesoko_primary_dark flex items-center justify-center'>
                 <MdAccountBalanceWallet className='w-5 h-5 text-white' />
               </div>
               <h3 className='text-xl font-bold text-gray-900'>Payment Overview</h3>
             </div>
             <Link
               href='/retailer/payments'
-              className='inline-flex items-center gap-2 px-4 py-2 bg-vesoko_dark_blue text-white rounded-lg hover:bg-vesoko_dark_blue_2 transition-all duration-300 transform hover:scale-105 text-sm font-medium'
+              className='inline-flex items-center gap-2 px-4 py-2 bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_primary_2 transition-all duration-300 transform hover:scale-105 text-sm font-medium'
             >
               <MdAccountBalanceWallet className='w-4 h-4' />
               Manage Payments
@@ -379,7 +379,7 @@ const SellerDashboard = () => {
         {/* Quick Actions */}
         <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-white/20 animate-slide-up' style={{animationDelay: '900ms'}}>
           <div className='flex items-center gap-3 mb-6'>
-            <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-vesoko_dark_blue to-blue-600 flex items-center justify-center'>
+            <div className='w-10 h-10 rounded-xl bg-gradient-to-br from-vesoko_primary to-vesoko_primary_dark flex items-center justify-center'>
               <Zap className='w-5 h-5 text-white' />
             </div>
             <h3 className='text-xl font-bold text-gray-900'>Quick Actions</h3>
@@ -391,15 +391,15 @@ const SellerDashboard = () => {
                 href: '/retailer/inventory/new-product',
                 icon: <Package className='w-6 h-6' />,
                 label: 'Add Product',
-                gradient: 'from-blue-500 to-blue-600',
-                hoverGradient: 'hover:from-blue-600 hover:to-blue-700'
+                gradient: 'from-vesoko_primary500 to-vesoko_primary_dark',
+                hoverGradient: 'hover:from-vesoko_primary600 hover:to-vesoko_secondary'
               },
               {
                 href: '/retailer/orders/customer-orders',
                 icon: <MdShoppingCart className='w-6 h-6' />,
                 label: 'View Customer Orders',
                 gradient: 'from-green-500 to-green-600',
-                hoverGradient: 'hover:from-green-600 hover:to-green-700'
+                hoverGradient: 'hover:from-green-600 hover:to-vesoko_primary_dark'
               },
               {
                 href: '/retailer/customers',

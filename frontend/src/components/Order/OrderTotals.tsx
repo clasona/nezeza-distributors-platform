@@ -21,7 +21,7 @@ const OrderTotals = ({ order }: OrderTotalsProps) => {
             >
               <span>
                 {item.product.title}
-                <span className='ml-2 text-xs text-vesoko_dark_blue'>
+                <span className='ml-2 text-xs text-vesoko_primary'>
                   x{item.quantity}
                 </span>
               </span>
@@ -32,7 +32,7 @@ const OrderTotals = ({ order }: OrderTotalsProps) => {
       </div> */}
       <p className='text-sm text-vesoko_gray_600'>
         {order.orderItems.length} Item(s) Subtotal:{' '}
-        <span className='font-medium text-vesoko_dark_blue'>
+        <span className='font-medium text-vesoko_primary'>
           ${calculateOrderItemsSubtotal(order) || 0}
         </span>
       </p>
@@ -44,7 +44,7 @@ const OrderTotals = ({ order }: OrderTotalsProps) => {
       </p>
       <p className='text-sm font-semibold mt-2'>
         Grand Total:{' '}
-        <span className='text-vesoko_dark_blue'>
+        <span className='text-vesoko_primary'>
           ${order.totalAmount.toFixed(2)}
         </span>
       </p>

@@ -200,8 +200,8 @@ const Orders = () => {
     switch (status.toLowerCase()) {
       case 'pending': return <AlertCircle className='w-4 h-4 text-yellow-600' />;
       case 'placed': return <CheckCircle className='w-4 h-4 text-green-600' />;
-      case 'processing': return <Package className='w-4 h-4 text-vesoko_dark_blue' />;
-      case 'shipped': return <Truck className='w-4 h-4 text-vesoko_dark_blue' />;
+      case 'processing': return <Package className='w-4 h-4 text-vesoko_primary' />;
+      case 'shipped': return <Truck className='w-4 h-4 text-vesoko_primary' />;
       case 'delivered': return <CheckCircle className='w-4 h-4 text-green-600' />;
       case 'cancelled': return <X className='w-4 h-4 text-red-600' />;
       default: return <Package className='w-4 h-4 text-gray-600' />;
@@ -226,7 +226,7 @@ const Orders = () => {
           <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
             <div className='flex justify-between items-center py-6'>
               <div className='flex items-center'>
-                <ShoppingBag className='w-8 h-8 text-vesoko_dark_blue mr-3' />
+                <ShoppingBag className='w-8 h-8 text-vesoko_primary mr-3' />
                 <div>
                   <h1 className='text-3xl font-bold text-gray-900'>My Orders</h1>
                   <p className='text-gray-600 mt-1'>Track and manage your purchases</p>
@@ -235,7 +235,7 @@ const Orders = () => {
               <button
                 onClick={fetchData}
                 disabled={isLoading}
-                className='inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-vesoko_dark_blue hover:bg-vesoko_dark_blue_2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200'
+                className='inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-vesoko_primary hover:bg-vesoko_primary_2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200'
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
                 {isLoading ? 'Refreshing...' : 'Refresh'}
@@ -260,7 +260,7 @@ const Orders = () => {
                     onClick={() => handleFilter(stat.status)}
                     className={`relative cursor-pointer rounded-xl p-4 transition-all duration-200 ${
                       filter === stat.status
-                        ? 'bg-vesoko_dark_blue text-white shadow-lg transform -translate-y-1'
+                        ? 'bg-vesoko_primary text-white shadow-lg transform -translate-y-1'
                         : 'bg-white text-gray-700 hover:bg-gray-50 hover:shadow-md'
                     }`}
                   >
@@ -326,27 +326,27 @@ const Orders = () => {
               <div className='flex items-center space-x-3 mt-3'>
                 <button 
                   onClick={() => handleFilter('All Orders')} 
-                  className={`px-3 py-1 rounded ${filter === 'All Orders' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}
+                  className={`px-3 py-1 rounded ${filter === 'All Orders' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
                 >All Orders</button>
                 <button 
                   onClick={() => handleFilter('Pending')} 
-                  className={`px-3 py-1 rounded ${filter === 'Pending' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}
+                  className={`px-3 py-1 rounded ${filter === 'Pending' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
                 >Pending</button>
                 <button 
                   onClick={() => handleFilter('Placed')} 
-                  className={`px-3 py-1 rounded ${filter === 'Placed' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}
+                  className={`px-3 py-1 rounded ${filter === 'Placed' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
                 >Placed</button>
                 <button 
                   onClick={() => handleFilter('Processing')} 
-                  className={`px-3 py-1 rounded ${filter === 'Processing' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}
+                  className={`px-3 py-1 rounded ${filter === 'Processing' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
                 >Processing</button>
                 <button 
                   onClick={() => handleFilter('Delivered')} 
-                  className={`px-3 py-1 rounded ${filter === 'Delivered' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}
+                  className={`px-3 py-1 rounded ${filter === 'Delivered' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
                 >Delivered</button>
                 <button 
                   onClick={() => handleFilter('Archived')} 
-                  className={`px-3 py-1 rounded ${filter === 'Archived' ? 'bg-vesoko_dark_blue text-white' : 'bg-white text-gray-600'}`}
+                  className={`px-3 py-1 rounded ${filter === 'Archived' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
                 >Archived</button>
               </div>
             </div>
@@ -363,7 +363,7 @@ const Orders = () => {
                 </p>
                 <button
                   onClick={() => router.push('/')}
-                  className='inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-vesoko_dark_blue hover:bg-vesoko_dark_blue_2 transition-colors duration-200'
+                  className='inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-vesoko_primary hover:bg-vesoko_primary_2 transition-colors duration-200'
                 >
                   <ShoppingBag className='w-4 h-4 mr-2' />
                   Start Shopping
@@ -381,7 +381,7 @@ const Orders = () => {
                     }`}>
                       {isNewestOrder && (
                         <div className='absolute top-0 right-2'>
-                          <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'>
+                          <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-vesoko_green_100 text-green-800'>
                             <span className='w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5'></span>
                             Newest
                           </span>
@@ -411,7 +411,7 @@ const Orders = () => {
                           {order.estimatedDeliveryDate && (
                             <div className='flex items-center'>
                               <Clock className='w-4 h-4 mr-2' />
-                              <span className='text-vesoko_dark_blue font-medium'>
+                              <span className='text-vesoko_primary font-medium'>
                                 Est. {formatDate(order.estimatedDeliveryDate)}
                               </span>
                             </div>
@@ -422,7 +422,7 @@ const Orders = () => {
                         {/* View Details */}
                         <button
                           onClick={() => router.push(`/customer/order/${order._id}`)}
-                          className='inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200'
+                          className='inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_primary transition-colors duration-200'
                           title='View order details'
                         >
                           <Eye className='w-4 h-4 mr-2' />

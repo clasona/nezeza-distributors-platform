@@ -34,12 +34,12 @@ const ArchiveRowModal = <T extends { _id: number | string }>({
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
-      <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-96'>
+      <div className='bg-vesoko_background p-6 rounded-lg shadow-lg w-96'>
         <h3 className='text-lg font-semibold mb-4'>Confirm Archive</h3>
         {/* {isOrderProps(rowData) && ( */}
         <p className='mb-4'>
           Are you sure you want to archive the order with ID #{' '}
-          <span className='font-bold text-vesoko_dark_blue'>{rowData._id}</span>
+          <span className='font-bold text-vesoko_primary'>{rowData._id}</span>
           ? <br />
           This action cannot be undone.
         </p>
@@ -47,7 +47,7 @@ const ArchiveRowModal = <T extends { _id: number | string }>({
         {/* {isInventoryProps(rowData) && (
           <p className='mb-4'>
             Are you sure you want to delete the inventory item with ID{' '}
-            <span className='font-bold text-vesoko_dark_blue'>
+            <span className='font-bold text-vesoko_primary'>
               {rowData._id}
             </span>
             ? <br />

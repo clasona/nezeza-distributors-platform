@@ -233,7 +233,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
         {/* Product Information Section */}
         <div className='mb-8'>
           <div className='flex items-center gap-3 mb-6'>
-            <div className='w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center'>
+            <div className='w-10 h-10 rounded-lg bg-gradient-to-br from-vesoko_primary500 to-vesoko_primary_dark flex items-center justify-center'>
               <Package className='w-5 h-5 text-white' />
             </div>
             <div>
@@ -326,7 +326,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
                 id='availability'
                 type='checkbox'
                 {...register('availability')}
-                className='w-5 h-5 text-vesoko_green_600 bg-gray-100 border-gray-300 rounded focus:ring-vesoko_green_500 focus:ring-2'
+                className='w-5 h-5 text-vesoko_primary bg-gray-100 border-gray-300 rounded focus:ring-vesoko_primary focus:ring-2'
                 defaultChecked
               />
               <label htmlFor='availability' className='text-sm font-medium text-gray-900'>
@@ -380,10 +380,10 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
               >
                 <button
                   type='button'
-                  className='w-full h-20 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 hover:border-vesoko_green_500 bg-gray-50 hover:bg-vesoko_green_50 transition-colors duration-200 group'
+                  className='w-full h-20 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 hover:border-vesoko_primary bg-gray-50 hover:bg-vesoko_background transition-colors duration-200 group'
                 >
                   <Plus className='w-6 h-6 text-gray-400 group-hover:text-vesoko_green_500 mb-1' />
-                  <span className='text-xs text-gray-500 group-hover:text-vesoko_green_600'>Add Image</span>
+                  <span className='text-xs text-gray-500 group-hover:text-vesoko_primary'>Add Image</span>
                 </button>
               </CloudinaryUploadWidget>
             </div>
@@ -448,14 +448,14 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
                     value={customColor}
                     onChange={(e) => setCustomColor(e.target.value)}
                     placeholder='#000000'
-                    className='px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono w-24 focus:outline-none focus:ring-2 focus:ring-vesoko_green_500 focus:border-vesoko_green_500'
+                    className='px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono w-24 focus:outline-none focus:ring-2 focus:ring-vesoko_primary focus:border-vesoko_primary'
                   />
                 </div>
                 <button
                   type='button'
                   onClick={handleAddCustomColor}
                   disabled={!customColor || selectedColors.includes(customColor)}
-                  className='px-4 py-2 bg-vesoko_green_500 hover:bg-vesoko_green_600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors duration-200'
+                  className='px-4 py-2 bg-vesoko_primary hover:bg-vesoko_primary disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors duration-200'
                 >
                   Add Color
                 </button>
@@ -566,7 +566,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
                 id='featured'
                 type='checkbox'
                 {...register('featured')}
-                className='w-5 h-5 text-vesoko_green_600 bg-gray-100 border-gray-300 rounded focus:ring-vesoko_green_500 focus:ring-2'
+                className='w-5 h-5 text-vesoko_primary bg-gray-100 border-gray-300 rounded focus:ring-vesoko_primary focus:ring-2'
               />
               <label htmlFor='featured' className='text-sm font-medium text-gray-900'>
                 Featured Product
@@ -578,7 +578,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
                 id='freeShipping'
                 type='checkbox'
                 {...register('freeShipping')}
-                className='w-5 h-5 text-vesoko_green_600 bg-gray-100 border-gray-300 rounded focus:ring-vesoko_green_500 focus:ring-2'
+                className='w-5 h-5 text-vesoko_primary bg-gray-100 border-gray-300 rounded focus:ring-vesoko_primary focus:ring-2'
               />
               <label htmlFor='freeShipping' className='text-sm font-medium text-gray-900'>
                 Free Shipping
@@ -607,7 +607,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
                 isLoading={false}
                 buttonTitle='Create Product'
                 loadingButtonTitle='Creating Product...'
-                className='px-8 py-3 bg-gradient-to-r from-vesoko_dark_blue to-blue-600 hover:from-vesoko_dark_blue_2 hover:to-blue-700 text-white rounded-lg font-medium transition-all duration-200 shadow-lg'
+                className='px-8 py-3 bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_2 hover:to-vesoko_secondary text-white rounded-lg font-medium transition-all duration-200 shadow-lg'
               />
             </div>
           </div>
