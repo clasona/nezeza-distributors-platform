@@ -58,7 +58,7 @@ const ConfirmNewProductModal = ({
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
-      <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-96'>
+      <div className='bg-vesoko_background p-6 rounded-lg shadow-lg w-96'>
         <h3 className='text-lg font-semibold mb-4'>Confirm Create Product</h3>
         {/* {isOrderProps(rowData) && ( */}
         <p className='mb-4'>
@@ -71,7 +71,7 @@ const ConfirmNewProductModal = ({
             onClick={handleConfirm}
             disabled={isConfirming}
             className={
-              'px-4 py-2 text-white bg-vesoko_green_600 hover:bg-vesoko_green_800 rounded-md'
+              'px-4 py-2 text-white bg-vesoko_primary hover:bg-vesoko_secondary rounded-md'
             }
           >
             Confirm

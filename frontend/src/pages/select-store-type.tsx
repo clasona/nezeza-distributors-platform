@@ -59,26 +59,26 @@ const SelectStoreType = () => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50'>
+    <div className='min-h-screen bg-gradient-to-br from-vesoko_primary50 via-white to-purple-50'>
       <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
         {/* Header */}
         <div className='text-center mb-12'>
           <Link 
             href='/sellers'
-            className='inline-flex items-center gap-2 text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium mb-8 transition-colors duration-200'
+            className='inline-flex items-center gap-2 text-vesoko_primary hover:text-vesoko_primary font-medium mb-8 transition-colors duration-200'
           >
             <ArrowLeft className='h-5 w-5' />
             Back to Overview
           </Link>
           
-          <div className='inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6'>
+          <div className='inline-flex items-center gap-2 bg-vesoko_background text-vesoko_secondary px-4 py-2 rounded-full text-sm font-medium mb-6'>
             <Info className='h-4 w-4' />
             Step 1 of 4 - Choose Your Store Type
           </div>
           
           <h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
             What Type of Store
-            <span className='block text-vesoko_green_600'>Would You Like to Create?</span>
+            <span className='block text-vesoko_primary'>Would You Like to Create?</span>
           </h1>
           
           <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed'>
@@ -88,7 +88,7 @@ const SelectStoreType = () => {
         </div>
 
         {/* Phase Information */}
-        <div className='mb-12 bg-gradient-to-r from-blue-50 to-green-50 rounded-2xl p-8 border border-blue-200'>
+        <div className='mb-12 bg-gradient-to-r from-vesoko_primary50 to-green-50 rounded-2xl p-8 border border-blue-200'>
           <div className='grid md:grid-cols-2 gap-8'>
             <div className='flex items-start gap-4'>
               <div className='inline-flex items-center justify-center w-12 h-12 bg-blue-500 rounded-full text-white font-bold text-lg'>
@@ -100,7 +100,7 @@ const SelectStoreType = () => {
                   Currently available for African sellers already operating in the US. 
                   Perfect for wholesalers and retailers with existing inventory.
                 </p>
-                <div className='inline-flex items-center gap-1 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium mt-2'>
+                <div className='inline-flex items-center gap-1 bg-vesoko_green_100 text-green-800 px-2 py-1 rounded-full text-xs font-medium mt-2'>
                   <CheckCircle className='h-3 w-3' />
                   Available Now
                 </div>
@@ -141,7 +141,7 @@ const SelectStoreType = () => {
                     ? 'cursor-not-allowed opacity-60 bg-gray-50 border-gray-300'
                     : isSelected 
                       ? 'cursor-pointer border-vesoko_green_500 bg-vesoko_green_50 shadow-xl shadow-vesoko_green_500/20 transform hover:scale-105' 
-                      : 'cursor-pointer border-gray-200 bg-white hover:border-vesoko_green_300 hover:shadow-lg transform hover:scale-105'
+                      : 'cursor-pointer border-gray-200 bg-white hover:border-vesoko_primary hover:shadow-lg transform hover:scale-105'
                 }`}
               >
                 {/* Badge */}
@@ -167,15 +167,15 @@ const SelectStoreType = () => {
                 {/* Icon */}
                 <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6 transition-colors duration-300 ${
                   isSelected 
-                    ? 'bg-vesoko_green_500 text-white' 
-                    : 'bg-gray-100 text-gray-600 group-hover:bg-vesoko_green_100 group-hover:text-vesoko_green_600'
+                    ? 'bg-vesoko_primary text-white' 
+                    : 'bg-gray-100 text-gray-600 group-hover:bg-vesoko_green_100 group-hover:text-vesoko_primary'
                 }`}>
                   <IconComponent className='h-8 w-8' />
                 </div>
 
                 {/* Content */}
                 <h3 className={`text-2xl font-bold mb-3 transition-colors duration-300 ${
-                  isSelected ? 'text-vesoko_green_600' : 'text-gray-900'
+                  isSelected ? 'text-vesoko_primary' : 'text-gray-900'
                 }`}>
                   {type.title}
                 </h3>
@@ -189,7 +189,7 @@ const SelectStoreType = () => {
                   {type.features.map((feature, index) => (
                     <li key={index} className='flex items-center gap-2 text-sm text-gray-600'>
                       <div className={`w-1.5 h-1.5 rounded-full ${
-                        isSelected ? 'bg-vesoko_green_500' : 'bg-gray-400'
+                        isSelected ? 'bg-vesoko_primary' : 'bg-gray-400'
                       }`} />
                       {feature}
                     </li>
@@ -207,7 +207,7 @@ const SelectStoreType = () => {
             disabled={!selectedType}
             className={`group inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
               selectedType
-                ? 'bg-vesoko_green_600 hover:bg-vesoko_green_700 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                ? 'bg-vesoko_primary hover:bg-vesoko_primary_dark text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
@@ -231,7 +231,7 @@ const SelectStoreType = () => {
             <span>25%</span>
           </div>
           <div className='w-full bg-gray-200 rounded-full h-2'>
-            <div className='bg-vesoko_green_500 h-2 rounded-full transition-all duration-500' style={{ width: '25%' }}></div>
+            <div className='bg-vesoko_primary h-2 rounded-full transition-all duration-500' style={{ width: '25%' }}></div>
           </div>
         </div>
       </div>

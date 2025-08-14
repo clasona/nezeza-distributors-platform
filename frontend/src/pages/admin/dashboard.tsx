@@ -38,7 +38,7 @@ const DashboardPage = () => {
       title: 'Store Applications',
       description: 'Manage and review all pending store applications',
       icon: Book,
-      color: 'bg-vesoko_green_500',
+      color: 'bg-vesoko_primary',
       path: '/admin/store-applications',
       count: '12 Pending'
     },
@@ -46,7 +46,7 @@ const DashboardPage = () => {
       title: 'Users Management',
       description: 'View and manage all registered users',
       icon: Users,
-      color: 'bg-vesoko_dark_blue',
+      color: 'bg-vesoko_primary',
       path: '/admin/users',
       count: '1,234 Users'
     },
@@ -54,7 +54,7 @@ const DashboardPage = () => {
       title: 'Stores',
       description: 'Monitor and manage active stores',
       icon: Store,
-      color: 'bg-vesoko_yellow_600',
+      color: 'bg-vesoko_primary_600',
       path: '/admin/stores',
       count: '56 Active'
     },
@@ -62,7 +62,7 @@ const DashboardPage = () => {
       title: 'Products',
       description: 'Overview of all products in the platform',
       icon: ShoppingCart,
-      color: 'bg-vesoko_green_600',
+      color: 'bg-vesoko_primary',
       path: '/admin/products',
       count: '2,340 Products'
     },
@@ -78,7 +78,7 @@ const DashboardPage = () => {
       title: 'Payments',
       description: 'Monitor payment transactions and issues',
       icon: CircleDollarSign,
-      color: 'bg-vesoko_green_800',
+      color: 'bg-vesoko_secondary',
       path: '/admin/payments',
       count: '$12,450 Today'
     },
@@ -86,7 +86,7 @@ const DashboardPage = () => {
       title: 'Support',
       description: 'Handle customer support requests',
       icon: MessageSquare,
-      color: 'bg-vesoko_powder_blue',
+      color: 'bg-vesoko_primary',
       path: '/admin/support',
       count: '5 Open'
     },
@@ -94,7 +94,7 @@ const DashboardPage = () => {
       title: 'Analytics',
       description: 'View platform performance and metrics',
       icon: BarChart3,
-      color: 'bg-vesoko_dark_blue_2',
+      color: 'bg-vesoko_primary_2',
       path: '/admin/analytics',
       count: 'View Reports'
     },
@@ -119,7 +119,7 @@ const DashboardPage = () => {
             buttonTitle='Refresh'
             buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
-            className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
+            className='text-vesoko_primary hover:text-white hover:bg-vesoko_primary'
             onClick={handleRefresh}
           />
         }
@@ -150,7 +150,7 @@ const DashboardPage = () => {
               <Button
                 buttonTitle='Manage'
                 onClick={() => handleNavigate(card.path)}
-                className='w-full bg-vesoko_dark_blue hover:bg-vesoko_dark_blue_2 text-white py-2 px-4 rounded-md transition-colors duration-200'
+                className='w-full bg-vesoko_primary hover:bg-vesoko_primary_2 text-white py-2 px-4 rounded-md transition-colors duration-200'
               />
             </div>
           );
@@ -164,8 +164,8 @@ const DashboardPage = () => {
             Recent Activity
           </h3>
           <div className='space-y-3'>
-            <div className='flex items-center p-3 bg-vesoko_light_blue rounded-lg'>
-              <div className='p-2 bg-vesoko_green_500 rounded-full mr-3'>
+            <div className='flex items-center p-3 bg-vesoko_background rounded-lg'>
+              <div className='p-2 bg-vesoko_primary rounded-full mr-3'>
                 <Book className='h-4 w-4 text-white' />
               </div>
               <div className='flex-1'>
@@ -173,8 +173,8 @@ const DashboardPage = () => {
                 <p className='text-xs text-vesoko_gray_600'>Cunda Fashion House - 2 minutes ago</p>
               </div>
             </div>
-            <div className='flex items-center p-3 bg-vesoko_light_blue rounded-lg'>
-              <div className='p-2 bg-vesoko_dark_blue rounded-full mr-3'>
+            <div className='flex items-center p-3 bg-vesoko_background rounded-lg'>
+              <div className='p-2 bg-vesoko_primary rounded-full mr-3'>
                 <Users className='h-4 w-4 text-white' />
               </div>
               <div className='flex-1'>
@@ -182,8 +182,8 @@ const DashboardPage = () => {
                 <p className='text-xs text-vesoko_gray_600'>john.doe@example.com - 15 minutes ago</p>
               </div>
             </div>
-            <div className='flex items-center p-3 bg-vesoko_light_blue rounded-lg'>
-              <div className='p-2 bg-vesoko_yellow_600 rounded-full mr-3'>
+            <div className='flex items-center p-3 bg-vesoko_background rounded-lg'>
+              <div className='p-2 bg-vesoko_primary_600 rounded-full mr-3'>
                 <ShoppingCart className='h-4 w-4 text-white' />
               </div>
               <div className='flex-1'>
@@ -195,7 +195,7 @@ const DashboardPage = () => {
           <div className='mt-4 text-center'>
             <Button
               buttonTitle='View All Activity'
-              className='text-vesoko_dark_blue hover:bg-vesoko_light_blue border border-vesoko_dark_blue'
+              className='text-vesoko_primary hover:bg-vesoko_background border border-vesoko_primary'
               onClick={() => handleNavigate('/admin/activity')}
             />
           </div>

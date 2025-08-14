@@ -30,7 +30,7 @@ export const calculateOrderStats = (
       count: existingOrders.filter(
         (order) => order.fulfillmentStatus === 'Processing'
       ).length,
-      className: 'bg-vesoko_dark_blue',
+      className: 'bg-vesoko_primary',
     },
     {
       status: 'Fulfilled',
@@ -44,7 +44,7 @@ export const calculateOrderStats = (
       count: existingOrders.filter(
         (order) => order.fulfillmentStatus === 'Shipped'
       ).length,
-      className: 'bg-vesoko_dark_blue',
+      className: 'bg-vesoko_primary',
     },
     {
       status: 'Delivered',

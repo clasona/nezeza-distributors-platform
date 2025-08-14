@@ -894,7 +894,7 @@ const SellerCustomerOrders = () => {
         },
         {
           content: (
-            <Link href="#" className="text-vesoko_dark_blue hover:underline">
+            <Link href="#" className="text-vesoko_primary hover:underline">
               {order.products.length} {order.products.length === 1 ? 'item' : 'items'}
             </Link>
           ),
@@ -966,7 +966,7 @@ const SellerCustomerOrders = () => {
               icon={Download}
               buttonTitle='Export'
               buttonTitleClassName='hidden md:inline'
-              className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2 disabled:opacity-50'
+              className='bg-vesoko_primary hover:bg-vesoko_primary_dark text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2 disabled:opacity-50'
               disabled={true} // TODO: Implement export functionality
               // loadingButtonTitle='Exporting...'
               // isLoading={isLoading}
@@ -981,7 +981,7 @@ const SellerCustomerOrders = () => {
               buttonTitle='Refresh'
               buttonTitleClassName='hidden md:inline'
               loadingButtonTitle='Refreshing...'
-              className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
+              className='bg-vesoko_primary hover:bg-vesoko_primary_dark text-white px-4 py-2 rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2'
               onClick={async () => {
                 await fetchData();
               }}
@@ -1059,7 +1059,7 @@ const SellerCustomerOrders = () => {
          Filter by dates (always on large, conditional on small) */}
         {/* <button
           onClick={toggleMoreFilters}
-          className='hidden sm:inline text-sm text-vesoko_dark_blue underline'
+          className='hidden sm:inline text-sm text-vesoko_primary underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
         </button> */}
@@ -1085,7 +1085,7 @@ const SellerCustomerOrders = () => {
               setPageSize(newPageSize);
               setCurrentPage(1); // Reset to first page when changing page size
             }}
-            className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="border border-gray-300 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-vesoko_primary focus:border-transparent"
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
@@ -1129,7 +1129,7 @@ const SellerCustomerOrders = () => {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-lg">
               <div className="text-center mb-6">
-                <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <div className="mx-auto w-16 h-16 bg-vesoko_green_100 rounded-full flex items-center justify-center mb-4">
                   <Package className="w-8 h-8 text-green-600" />
                 </div>
                 <h2 className="text-xl font-semibold text-gray-900">Shipping Label Created!</h2>
@@ -1140,7 +1140,7 @@ const SellerCustomerOrders = () => {
               
               <div className="space-y-3">
                 <button
-                  className="w-full px-4 py-3 bg-vesoko_green_500 text-white rounded-lg hover:bg-vesoko_green_700 transition-colors font-medium flex items-center justify-center gap-2"
+                  className="w-full px-4 py-3 bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_primary_dark transition-colors font-medium flex items-center justify-center gap-2"
                   onClick={() => {
                     setLabelActionType('print');
                     handleLabelAction();

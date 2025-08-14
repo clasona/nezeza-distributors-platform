@@ -20,9 +20,9 @@ const PaymentStatus = () => {
   }, [redirect_status]);
 
   const renderSuccessState = () => (
-    <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-white to-vesoko_light_blue flex items-center justify-center px-4 py-8'>
+    <div className='min-h-screen bg-gradient-to-br from-vesoko_primary via-white to-vesoko_background flex items-center justify-center px-4 py-8'>
       <div className='max-w-2xl w-full bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden'>
-        <div className='bg-gradient-to-r from-vesoko_green_600 to-green-500 px-8 py-12 text-center text-white relative'>
+        <div className='bg-gradient-to-r from-vesoko_primary to-green-500 px-8 py-12 text-center text-white relative'>
           <div className='mb-6'>
             <div className='inline-flex items-center justify-center w-20 h-20 bg-white bg-opacity-20 rounded-full backdrop-blur-sm'>
               <svg className='w-12 h-12 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -41,7 +41,7 @@ const PaymentStatus = () => {
             <div className='mb-8 text-center'>
               <div className='bg-gray-50 rounded-lg p-4 inline-block'>
                 <h3 className='text-sm font-medium text-gray-500 mb-1'>Order Number</h3>
-                <p className='text-xl font-bold text-vesoko_dark_blue'>{orderNumber}</p>
+                <p className='text-xl font-bold text-vesoko_primary'>{orderNumber}</p>
               </div>
             </div>
           )}
@@ -56,7 +56,7 @@ const PaymentStatus = () => {
           <div className='flex flex-col sm:flex-row gap-4 justify-center'>
             <Link
               href='/'
-              className='flex items-center justify-center px-6 py-3 bg-vesoko_dark_blue text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 shadow-md'
+              className='flex items-center justify-center px-6 py-3 bg-vesoko_primary text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 shadow-md'
             >
               <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' />
@@ -110,7 +110,7 @@ const PaymentStatus = () => {
           <div className='flex flex-col sm:flex-row gap-4 justify-center'>
             <Link
               href='/checkout'
-              className='flex items-center justify-center px-6 py-3 bg-vesoko_dark_blue text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 shadow-md'
+              className='flex items-center justify-center px-6 py-3 bg-vesoko_primary text-white font-semibold rounded-lg hover:bg-opacity-90 transition duration-300 shadow-md'
             >
               <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' />
@@ -119,7 +119,7 @@ const PaymentStatus = () => {
             </Link>
             <Link
               href='/cart'
-              className='flex items-center justify-center px-6 py-3 bg-white text-vesoko_dark_blue border-2 border-vesoko_dark_blue font-semibold rounded-lg hover:bg-vesoko_dark_blue hover:text-white transition duration-300'
+              className='flex items-center justify-center px-6 py-3 bg-white text-vesoko_primary border-2 border-vesoko_primary font-semibold rounded-lg hover:bg-vesoko_primary hover:text-white transition duration-300'
             >
               <svg className='w-5 h-5 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' />
@@ -133,11 +133,11 @@ const PaymentStatus = () => {
   );
 
   const renderLoadingState = () => (
-    <div className='min-h-screen bg-gradient-to-br from-vesoko_powder_blue via-white to-vesoko_light_blue flex items-center justify-center px-4 py-8'>
+    <div className='min-h-screen bg-gradient-to-br from-vesoko_primary via-white to-vesoko_background flex items-center justify-center px-4 py-8'>
       <div className='max-w-md w-full bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 text-center'>
         <div className='mb-6'>
-          <div className='inline-flex items-center justify-center w-16 h-16 bg-vesoko_green_600 bg-opacity-10 rounded-full'>
-            <svg className='w-8 h-8 text-vesoko_green_600 animate-spin' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <div className='inline-flex items-center justify-center w-16 h-16 bg-vesoko_primary bg-opacity-10 rounded-full'>
+            <svg className='w-8 h-8 text-vesoko_primary animate-spin' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15' />
             </svg>
           </div>

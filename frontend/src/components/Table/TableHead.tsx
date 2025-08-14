@@ -30,7 +30,7 @@ const TableHead = ({
   // };
 
   return (
-    <thead className='text-xs text-white uppercase bg-vesoko_dark_blue hover:cursor-pointer dark:bg-gray-700 dark:text-gray-400'>
+    <thead className='text-xs text-white uppercase bg-vesoko_primary hover:cursor-pointer dark:bg-gray-700 dark:text-gray-400'>
       <tr>
         <th className='px-6 py-3'>
           <input type='checkbox' checked={checked} onChange={onChange} />

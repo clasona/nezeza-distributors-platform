@@ -204,7 +204,7 @@ export default function DocumentUploadWidget({
         <div className="border-2 border-green-300 bg-green-50 rounded-lg p-4">
           <div className="flex items-start gap-3">
             <div className="flex-shrink-0">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-vesoko_green_100 rounded-lg flex items-center justify-center">
                 <FileText className="h-5 w-5 text-green-600" />
               </div>
             </div>

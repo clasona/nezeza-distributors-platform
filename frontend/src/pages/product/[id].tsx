@@ -273,7 +273,7 @@ const ProductDetails = () => {
                       key={idx}
                       className={`inline-block w-2 h-2 rounded-full ${
                         idx === activeImage
-                          ? 'bg-vesoko_green_600'
+                          ? 'bg-vesoko_primary'
                           : 'bg-gray-300'
                       }`}
                     />
@@ -342,7 +342,7 @@ const ProductDetails = () => {
                   {product.colors.map((color, index) => (
                     <div
                       key={index}
-                      className='w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer hover:border-vesoko_green_600 transition-colors'
+                      className='w-8 h-8 rounded-full border-2 border-gray-300 cursor-pointer hover:border-vesoko_primary transition-colors'
                       style={{ backgroundColor: color }}
                       title={color}
                     ></div>
@@ -358,7 +358,7 @@ const ProductDetails = () => {
                 <button
                   onClick={handleDecreaseQuantity}
                   disabled={quantity <= 1}
-                  className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_green_600 hover:bg-vesoko_green_50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                  className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_primary hover:bg-vesoko_background transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                 >
                   <Minus size={16} />
                 </button>
@@ -368,7 +368,7 @@ const ProductDetails = () => {
                 <button
                   onClick={handleIncreaseQuantity}
                   disabled={quantity >= product.quantity}
-                  className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_green_600 hover:bg-vesoko_green_50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                  className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_primary hover:bg-vesoko_background transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                 >
                   <Plus size={16} />
                 </button>
@@ -390,7 +390,7 @@ const ProductDetails = () => {
                   <div className='flex items-center gap-2 ml-auto'>
                     <button
                       onClick={handleCartDecrease}
-                      className='w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:border-vesoko_green_600 transition-colors'
+                      className='w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:border-vesoko_primary transition-colors'
                     >
                       <Minus size={14} />
                     </button>
@@ -398,7 +398,7 @@ const ProductDetails = () => {
                     <button
                       onClick={handleCartIncrease}
                       disabled={cartItem.quantity >= product.quantity}
-                      className='w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:border-vesoko_green_600 transition-colors disabled:opacity-50'
+                      className='w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center hover:border-vesoko_primary transition-colors disabled:opacity-50'
                     >
                       <Plus size={14} />
                     </button>
@@ -408,7 +408,7 @@ const ProductDetails = () => {
                 <Button
                   onClick={handleAddToCart}
                   disabled={addingToCartProductId === product._id || !product.availability}
-                  className='w-full bg-vesoko_dark_blue text-white flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg hover:bg-vesoko_green_600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                  className='w-full bg-vesoko_primary text-white flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg hover:bg-vesoko_primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                 >
                   {addingToCartProductId === product._id ? (
                     <>
@@ -432,7 +432,7 @@ const ProductDetails = () => {
                   className={`flex-1 border-2 flex items-center justify-center px-6 py-3 text-base font-semibold rounded-lg transition-colors ${
                     isInFavorites
                       ? 'border-red-500 bg-red-50 text-red-600 hover:bg-red-100'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-vesoko_green_600 hover:bg-vesoko_green_50 hover:text-vesoko_green_800'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-vesoko_primary hover:bg-vesoko_background hover:text-vesoko_green_800'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {addingToFavoritesProductId === product._id ? (
@@ -454,7 +454,7 @@ const ProductDetails = () => {
                 <Button
                   onClick={handleBuyNow}
                   disabled={buyingNowProductId === product._id || !product.availability || !userInfo}
-                  className={`flex-1 flex items-center justify-center px-6 py-3 text-base font-semibold bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`flex-1 flex items-center justify-center px-6 py-3 text-base font-semibold bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     !userInfo ? 'bg-gray-400' : ''
                   }`}
                 >
@@ -500,7 +500,7 @@ const ProductDetails = () => {
             {/* See Reviews Link */}
             <button
               onClick={handleOpenReviewModal}
-              className='bg-transparent text-vesoko_dark_blue hover:underline p-0 h-auto text-base'
+              className='bg-transparent text-vesoko_primary hover:underline p-0 h-auto text-base'
             >
               Reviews ({product.numOfReviews || 0})
             </button>

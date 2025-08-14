@@ -330,26 +330,26 @@ const StoreRegistrationForm = ({
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50'>
+    <div className='min-h-screen bg-gradient-to-br from-vesoko_primary50 via-white to-purple-50'>
       <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
         {/* Header */}
         <div className='text-center mb-12'>
           <Link 
             href='/select-store-type'
-            className='inline-flex items-center gap-2 text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium mb-8 transition-colors duration-200'
+            className='inline-flex items-center gap-2 text-vesoko_primary hover:text-vesoko_primary font-medium mb-8 transition-colors duration-200'
           >
             <ArrowLeft className='h-5 w-5' />
             Back to Store Type
           </Link>
           
-          <div className='inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6'>
+          <div className='inline-flex items-center gap-2 bg-vesoko_background text-vesoko_secondary px-4 py-2 rounded-full text-sm font-medium mb-6'>
             <FileText className='h-4 w-4' />
             Store Application Form
           </div>
           
           <h1 className='text-4xl md:text-5xl font-bold text-gray-900 mb-6'>
             Tell Us About
-            <span className='block text-vesoko_green_600'>Your Business</span>
+            <span className='block text-vesoko_primary'>Your Business</span>
           </h1>
           
           <p className='text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8'>
@@ -363,7 +363,7 @@ const StoreRegistrationForm = ({
           onSubmit={handleSubmit(onSubmit)}
         >
           {/* Progress Bar */}
-          <div className='bg-gradient-to-r from-vesoko_dark_blue to-vesoko_green_600 px-8 py-6'>
+          <div className='bg-gradient-to-r from-vesoko_primary to-vesoko_primary px-8 py-6'>
             <div className='flex items-center justify-between mb-4'>
               {sections.map((section, index) => {
                 const isActive = index === currentSection;
@@ -376,7 +376,7 @@ const StoreRegistrationForm = ({
                         isCompleted 
                           ? 'bg-green-500 text-white' 
                           : isActive 
-                            ? 'bg-white text-vesoko_dark_blue' 
+                            ? 'bg-white text-vesoko_primary' 
                             : 'bg-white/20 text-white/60'
                       }`}>
                         {isCompleted ? '✓' : index + 1}
@@ -537,7 +537,7 @@ const StoreRegistrationForm = ({
             <button
               type='button'
               className={`absolute left-0 top-1/2 transform -translate-y-1/2 ${
-                currentSection > 0 ? 'text-vesoko_dark_blue' : 'text-gray-400'
+                currentSection > 0 ? 'text-vesoko_primary' : 'text-gray-400'
               }`}
               onClick={handlePrevious}
               disabled={currentSection === 0}
@@ -550,7 +550,7 @@ const StoreRegistrationForm = ({
               type='button'
               className={`absolute right-0 top-1/2 transform -translate-y-1/2 ${
                 currentSection < sections.length - 1
-                  ? 'text-vesoko_dark_blue'
+                  ? 'text-vesoko_primary'
                   : 'text-gray-400'
               }`}
               onClick={handleNext}
@@ -574,7 +574,7 @@ const StoreRegistrationForm = ({
               {currentSection < sections.length - 1 && (
                 <button
                   type='button'
-                  className='bg-vesoko_dark_blue text-white px-6 py-2 rounded-lg hover:bg-vesoko_green_600 transition-colors duration-200'
+                  className='bg-vesoko_primary text-white px-6 py-2 rounded-lg hover:bg-vesoko_primary transition-colors duration-200'
                   onClick={handleNext}
                 >
                   Next
@@ -587,7 +587,7 @@ const StoreRegistrationForm = ({
                   className={`${
                     isSubmitting
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-vesoko_green_600 hover:bg-vesoko_green_800'
+                      : 'bg-vesoko_primary hover:bg-vesoko_secondary'
                   } text-white px-6 py-2 rounded-lg transition-colors duration-200`}
                 >
                   {isSubmitting ? 'Submitting...' : 'SUBMIT APPLICATION'}

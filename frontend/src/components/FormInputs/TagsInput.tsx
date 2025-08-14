@@ -128,7 +128,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
         {tags.map((tag, index) => (
           <span
             key={index}
-            className="inline-flex items-center px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full"
+            className="inline-flex items-center px-3 py-1 text-sm bg-vesoko_background text-vesoko_secondary rounded-full"
           >
             {tag}
             <button
@@ -156,7 +156,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
             onBlur={handleInputBlur}
             placeholder={tags.length >= maxTags ? `Maximum ${maxTags} tags reached` : placeholder}
             disabled={tags.length >= maxTags}
-            className={`flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none placeholder:text-sm ${
+            className={`flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-vesoko_primary focus:border-blue-500 outline-none placeholder:text-sm ${
               tags.length >= maxTags ? 'bg-gray-100 cursor-not-allowed' : ''
             }`}
           />
@@ -164,7 +164,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
             <button
               type="button"
               onClick={() => addTag(inputValue)}
-              className="ml-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
+              className="ml-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-vesoko_primary"
               aria-label="Add tag"
             >
               <Plus className="w-4 h-4" />
@@ -182,7 +182,7 @@ const TagsInput: React.FC<TagsInputProps> = ({
               <div
                 key={suggestion}
                 className={`px-3 py-2 cursor-pointer hover:bg-gray-100 ${
-                  index === activeSuggestionIndex ? 'bg-blue-100 text-blue-800' : 'text-gray-900'
+                  index === activeSuggestionIndex ? 'bg-vesoko_background text-vesoko_secondary' : 'text-gray-900'
                 }`}
                 onClick={() => handleSuggestionClick(suggestion)}
                 onMouseEnter={() => setActiveSuggestionIndex(index)}

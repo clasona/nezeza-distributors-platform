@@ -28,15 +28,18 @@ export default withUt({
         '2xl': '1536px',
       },
       colors: {
-        vesoko_dark_blue: '#3182ce', //0074d9
-        vesoko_dark_blue_2: '#2456a3',
-        vesoko_light_blue: '#e2f3fd',
-        vesoko_powder_blue: '#A7C7E7', //87CEEB
-        vesoko_light: '#232F3E',
-        vesoko_yellow: '#febd69',
+        // Updated Vesoko Brand Colors - Orange & Brown Theme (matching logo)
+        vesoko_primary: '#ff7a00', // Primary orange - main brand color
+        vesoko_primary_dark: '#e66a00', // Darker orange for hover states
+        vesoko_primary_light: '#ff8f33', // Lighter orange for subtle accents
+        vesoko_secondary: '#3d1f00', // Deep brown - secondary brand color
+        vesoko_secondary_light: '#5c2f00', // Lighter brown for hover states
+        vesoko_background: '#f7ede2', // Light cream/beige background
+        vesoko_background_light: '#faf6f1', // Even lighter background
+        vesoko_accent: '#ff7a00', // Same as primary for consistency
+        
+        // Functional colors (keeping some for alerts, success, etc.)
         lightText: '#ccc',
-        vesoko_dark_slate: 'slate-700',
-        vesoko_light_slate: 'slate-50',
         vesoko_green_500: '#4CAF50',
         vesoko_green_600: '#38a169', //43A047
         vesoko_green_800: '#276749', //2E7D32
@@ -45,7 +48,17 @@ export default withUt({
         vesoko_red_700: '#c53030', //D32F2F
         vesoko_gray_600: '#718096', //757575
         vesoko_gray_200: '#edf2f7', //dee2e6
-        vesoko_yellow_600: '#d69e2e',
+        
+        // Legacy color mappings for backward compatibility
+        vesoko_dark_blue: '#3d1f00', // Mapped to deep brown
+        vesoko_dark_blue_2: '#5c2f00', // Mapped to lighter brown
+        vesoko_light_blue: '#f7ede2', // Mapped to light background
+        vesoko_powder_blue: '#ff7a00', // Mapped to primary orange
+        vesoko_light: '#3d1f00', // Mapped to deep brown
+        vesoko_yellow: '#ff7a00', // Mapped to primary orange
+        vesoko_dark_slate: '#3d1f00', // Mapped to deep brown
+        vesoko_light_slate: '#f7ede2', // Mapped to light background
+        vesoko_yellow_600: '#ff7a00', // Mapped to primary orange
         sidebar: {
           DEFAULT: 'hsl(var(--sidebar-background))',
           foreground: 'hsl(var(--sidebar-foreground))',

@@ -155,15 +155,15 @@ const RowActionDropdown = ({
   const getActionVariantClasses = (actionVariant?: string) => {
     switch (actionVariant) {
       case 'primary':
-        return 'text-vesoko_dark_blue hover:bg-blue-50 hover:text-vesoko_dark_blue_2';
+        return 'text-vesoko_primary hover:bg-blue-50 hover:text-vesoko_primary_2';
       case 'secondary':
         return 'text-gray-600 hover:bg-gray-100 hover:text-gray-800';
       case 'danger':
         return 'text-vesoko_red_600 hover:bg-red-50 hover:text-vesoko_red_700';
       case 'success':
-        return 'text-vesoko_green_600 hover:bg-green-50 hover:text-vesoko_green_800';
+        return 'text-vesoko_primary hover:bg-green-50 hover:text-vesoko_green_800';
       case 'warning':
-        return 'text-vesoko_yellow_600 hover:bg-yellow-50 hover:text-yellow-700';
+        return 'text-vesoko_primary_600 hover:bg-yellow-50 hover:text-yellow-700';
       default:
         return 'text-gray-700 hover:bg-gray-100 hover:text-gray-900';
     }
@@ -198,7 +198,7 @@ const RowActionDropdown = ({
         ref={buttonRef}
         type='button'
         className={`
-          inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-vesoko_dark_blue focus:ring-offset-1
+          inline-flex items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-vesoko_primary focus:ring-offset-1
           ${getSizeClasses()}
           ${getVariantClasses()}
         `}

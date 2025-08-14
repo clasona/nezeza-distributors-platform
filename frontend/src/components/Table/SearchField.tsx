@@ -25,7 +25,7 @@ const SearchField = ({
         <input
           type='text'
           id='table-search'
-          className='block w-full py-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-vesoko_green_600 focus:border-vesoko_green_600 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-vesoko_green_600 dark:focus:border-vesoko_green_600'
+          className='block w-full py-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-vesoko_primary focus:border-vesoko_primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-vesoko_primary dark:focus:border-vesoko_primary'
           placeholder={`Search for ${searchFieldPlaceholder}`}
           onChange={handleInputChange}
         />

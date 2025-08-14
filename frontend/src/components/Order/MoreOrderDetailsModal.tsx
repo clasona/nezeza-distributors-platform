@@ -49,7 +49,7 @@ const MoreOrderDetailsModal = <T,>({
       aria-labelledby='modal-title'
       className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'
     >
-      <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-full max-w-7xl'>
+      <div className='bg-vesoko_background p-6 rounded-lg shadow-lg w-full max-w-7xl'>
         {isOrderProps(orderData) && (
           <>
             <div className='flex justify-between mb-4'>
@@ -69,7 +69,7 @@ const MoreOrderDetailsModal = <T,>({
 
                 <button
                   onClick={() => onViewInvoice?.(orderData._id)}
-                  className='px-4 py-1 text-white bg-vesoko_dark_blue rounded-md hover:bg-blue-600'
+                  className='px-4 py-1 text-white bg-vesoko_primary rounded-md hover:bg-blue-600'
                 >
                   View Invoice
                 </button>
@@ -94,7 +94,7 @@ const MoreOrderDetailsModal = <T,>({
               <div className='flex justify-between'>
                 <p>
                   <strong>Order #: </strong>
-                  <span className='font-bold text-vesoko_dark_blue'>
+                  <span className='font-bold text-vesoko_primary'>
                     {orderData._id}
                   </span>
                 </p>
@@ -104,7 +104,7 @@ const MoreOrderDetailsModal = <T,>({
                 </p>
                 <p>
                   <strong>Order Date: </strong>
-                  <span className='font-bold text-vesoko_dark_blue'>
+                  <span className='font-bold text-vesoko_primary'>
                     {orderData.createdAt}
                   </span>
                 </p>
@@ -128,7 +128,7 @@ const MoreOrderDetailsModal = <T,>({
                     </li>
                     <li>
                       <strong>Grand Total:</strong>{' '}
-                      <span className='font-bold text-vesoko_dark_blue'>
+                      <span className='font-bold text-vesoko_primary'>
                         ${orderData.totalAmount.toFixed(2)}
                       </span>
                     </li>

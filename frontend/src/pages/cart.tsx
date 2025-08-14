@@ -14,12 +14,12 @@ const CartPage = () => {
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='mb-8'>
-          <Link href='/' className='inline-flex items-center text-vesoko_dark_blue hover:text-vesoko_green_600 transition-colors duration-200 mb-4'>
+          <Link href='/' className='inline-flex items-center text-vesoko_primary hover:text-vesoko_primary transition-colors duration-200 mb-4'>
             <ArrowLeft className='h-5 w-5 mr-2' />
             Continue Shopping
           </Link>
           <div className='flex items-center gap-3 mb-2'>
-            <div className='p-2 bg-vesoko_dark_blue rounded-lg'>
+            <div className='p-2 bg-vesoko_primary rounded-lg'>
               <ShoppingCart className='h-6 w-6 text-white' />
             </div>
             <h1 className='text-3xl font-bold text-gray-900'>Shopping Cart</h1>
@@ -77,7 +77,7 @@ const CartPage = () => {
               <p className='text-gray-600 mb-8'>Looks like you haven't added any items to your cart yet. Start shopping to fill it up!</p>
               <Link
                 href='/'
-                className='inline-flex items-center justify-center w-full px-6 py-3 bg-vesoko_dark_blue text-white font-semibold rounded-lg hover:bg-vesoko_green_600 transition-colors duration-200'
+                className='inline-flex items-center justify-center w-full px-6 py-3 bg-vesoko_primary text-white font-semibold rounded-lg hover:bg-vesoko_primary transition-colors duration-200'
               >
                 <ShoppingCart className='h-5 w-5 mr-2' />
                 Start Shopping

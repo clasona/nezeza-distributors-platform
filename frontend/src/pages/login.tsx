@@ -379,11 +379,11 @@ const LoginPage = () => {
   const isAnyLoading = loadingStates.isLoading || loadingStates.isGoogleLoading;
 
   return (
-    <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+    <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100'>
           <div className='text-center mb-8'>
-            <h1 className='text-3xl font-bold text-vesoko_dark_blue mb-2'>
+            <h1 className='text-3xl font-bold text-vesoko_primary mb-2'>
               Welcome Back
             </h1>
             <p className='text-gray-600'>Sign in to your VeSoko account</p>
@@ -399,7 +399,7 @@ const LoginPage = () => {
                 <Mail className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' size={20} />
                 <input
                   id='email'
-                  className='w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20 focus:outline-none transition-all duration-200'
+                  className='w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20 focus:outline-none transition-all duration-200'
                   type='email'
                   placeholder='Enter your email'
                   value={formData.email}
@@ -419,7 +419,7 @@ const LoginPage = () => {
                 <Lock className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400' size={20} />
                 <input
                   id='password'
-                  className='w-full pl-12 pr-12 py-3 rounded-lg border border-gray-300 focus:border-vesoko_yellow focus:ring-2 focus:ring-vesoko_yellow/20 focus:outline-none transition-all duration-200'
+                  className='w-full pl-12 pr-12 py-3 rounded-lg border border-gray-300 focus:border-vesoko_primary focus:ring-2 focus:ring-vesoko_primary/20 focus:outline-none transition-all duration-200'
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Enter your password'
                   value={formData.password}
@@ -430,7 +430,7 @@ const LoginPage = () => {
                 <button
                   type='button'
                   onClick={handlePasswordVisibilityToggle}
-                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_dark_blue transition-colors duration-200'
+                  className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-vesoko_primary transition-colors duration-200'
                   disabled={isAnyLoading}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -442,7 +442,7 @@ const LoginPage = () => {
             <div className='text-right'>
               <Link
                 href='/forgot-password'
-                className='text-sm text-vesoko_dark_blue hover:text-vesoko_yellow transition-colors duration-200'
+                className='text-sm text-vesoko_primary hover:text-vesoko_primary transition-colors duration-200'
               >
                 Forgot Password?
               </Link>
@@ -452,7 +452,7 @@ const LoginPage = () => {
             <SubmitButton
               isLoading={loadingStates.isLoading}
               buttonTitle='Sign In'
-              className='w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200'
+              className='w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200'
               disabled={isAnyLoading}
             />
 
@@ -478,7 +478,7 @@ const LoginPage = () => {
               disabled={isAnyLoading}
             >
               {loadingStates.isGoogleLoading ? (
-                <div className='animate-spin h-5 w-5 border-2 border-gray-300 border-t-vesoko_dark_blue rounded-full'></div>
+                <div className='animate-spin h-5 w-5 border-2 border-gray-300 border-t-vesoko_primary rounded-full'></div>
               ) : (
                 <FcGoogle className='w-5 h-5' />
               )}
@@ -510,7 +510,7 @@ const LoginPage = () => {
             <p className='text-gray-600'>
               New to VeSoko?{' '}
               <Link
-                className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
+                className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
                 href='/register'
               >
                 Create an account

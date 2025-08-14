@@ -28,19 +28,19 @@ const Banner = ({ onBuyClick }: BannerProps) => {
       title: "Authentic African Products",
       subtitle: "Discover genuine African products connecting producers to global markets",
       cta: "Shop Now",
-      bgGradient: "from-blue-700 via-blue-500 to-purple-600"
+      bgGradient: "from-vesoko_primary via-vesoko_primary_dark to-vesoko_secondary"
     },
     {
       title: "Join Our African Marketplace",
       subtitle: "Connect with African sellers and expand your reach to global customers",
       cta: "Start Selling",
-      bgGradient: "from-green-600 via-green-500 to-teal-600"
+      bgGradient: "from-vesoko_secondary via-vesoko_primary to-vesoko_primary_dark"
     },
     {
       title: "End-to-End Supply Chain",
       subtitle: "Seamlessly connecting manufacturers, wholesalers, and retailers across continents",
       cta: "Learn More",
-      bgGradient: "from-purple-600 via-pink-500 to-red-500"
+      bgGradient: "from-vesoko_primary_dark via-vesoko_secondary to-vesoko_background"
     }
   ];
 
@@ -115,7 +115,7 @@ const Banner = ({ onBuyClick }: BannerProps) => {
               </button>
               <Link
                 href='/sellers'
-                className='group flex items-center justify-center bg-vesoko_green_600 hover:bg-vesoko_green_700 text-white font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-full text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg w-full sm:w-auto min-w-[160px] sm:min-w-[200px]'
+                className='group flex items-center justify-center bg-vesoko_primary hover:bg-vesoko_primary_dark text-white font-semibold py-3 sm:py-4 px-6 sm:px-8 rounded-full text-sm sm:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg w-full sm:w-auto min-w-[160px] sm:min-w-[200px]'
               >
                 <Store className='w-4 h-4 sm:w-5 sm:h-5 mr-2' />
                 Start Selling
@@ -157,7 +157,7 @@ const Banner = ({ onBuyClick }: BannerProps) => {
             renderIndicator={(onClickHandler, isSelected, index) => (
               <button
                 className={`inline-block w-3 h-3 mx-1 rounded-full transition-all duration-300 ${
-                  isSelected ? 'bg-vesoko_green_600 scale-125' : 'bg-white/50 hover:bg-white/75'
+                  isSelected ? 'bg-vesoko_primary scale-125' : 'bg-white/50 hover:bg-white/75'
                 }`}
                 onClick={onClickHandler}
                 key={index}

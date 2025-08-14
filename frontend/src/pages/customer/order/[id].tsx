@@ -224,7 +224,7 @@ const SingleOrderDetails = () => {
           // Add print button
           const printBtn = document.createElement('button');
           printBtn.innerHTML = 'Print Invoice';
-          printBtn.style.cssText = 'position: fixed; top: 10px; right: 10px; padding: 10px 20px; background: #3182ce; color: white; border: none; border-radius: 5px; cursor: pointer; z-index: 1000;';
+          printBtn.style.cssText = 'position: fixed; top: 10px; right: 10px; padding: 10px 20px; background: #ff7a00; color: white; border: none; border-radius: 5px; cursor: pointer; z-index: 1000;';
           printBtn.onclick = () => window.print();
           document.body.appendChild(printBtn);
           
@@ -286,7 +286,7 @@ const SingleOrderDetails = () => {
                 >
                   <ArrowLeft className='w-5 h-5' />
                 </button>
-                <ShoppingBag className='w-8 h-8 text-vesoko_dark_blue mr-3' />
+                <ShoppingBag className='w-8 h-8 text-vesoko_primary mr-3' />
                 <div>
                   <h1 className='text-3xl font-bold text-gray-900'>Order #{order._id}</h1>
                   <p className='text-gray-600 mt-1'>Order details and tracking information</p>
@@ -320,7 +320,7 @@ const SingleOrderDetails = () => {
                 
                 {/* View Invoice - always available */}
                 <button
-                  className='inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-vesoko_dark_blue hover:bg-vesoko_dark_blue_2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_dark_blue transition-colors duration-200'
+                  className='inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-vesoko_primary hover:bg-vesoko_primary_2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_primary transition-colors duration-200'
                   onClick={handleViewInvoice}
                 >
                   <FileText className='w-4 h-4 mr-2' />
@@ -392,7 +392,7 @@ const SingleOrderDetails = () => {
                         </div>
                         <div>
                           <p className='text-sm text-gray-500'>Estimated Delivery</p>
-                          <p className='font-medium text-vesoko_dark_blue'>
+                          <p className='font-medium text-vesoko_primary'>
                             {formatDate(order.estimatedDeliveryDate)}
                           </p>
                         </div>

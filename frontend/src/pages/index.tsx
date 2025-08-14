@@ -157,7 +157,7 @@ const Home = () => {
     }, 100);
   };
   return (
-    <div className='flex flex-col min-h-screen bg-vesoko_powder_blue'>
+    <div className='flex flex-col min-h-screen bg-vesoko_primary'>
       <Header onSearchChange={handleSearchChange} searchQuery={searchQuery} />
       <HeaderBottom 
         showSidebar={false}
@@ -166,7 +166,7 @@ const Home = () => {
         onFilterSelect={handleFilterSelect}
       />
       <main className='flex-1'>
-        <div className='bg-gradient-to-br from-vesoko_powder_blue via-blue-50 to-white'>
+        <div className='bg-gradient-to-br from-vesoko_primary via-vesoko_background_light to-white'>
           <Banner onBuyClick={handleBuyClick} />
           
           {/* Featured Categories Section - Commented out since categories are in HeaderBottom */}
@@ -190,10 +190,10 @@ const Home = () => {
                     onClick={() => handleCategoryClick(category.value)}
                   >
                     <div className='bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 min-h-[120px] sm:min-h-[140px] flex flex-col justify-center items-center text-center'>
-                      <div className='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-vesoko_green_600 to-vesoko_dark_blue rounded-xl sm:rounded-2xl flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-300'>
+                      <div className='w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-vesoko_primary to-vesoko_primary rounded-xl sm:rounded-2xl flex items-center justify-center mb-2 sm:mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-300'>
                         <span className='text-lg sm:text-xl lg:text-2xl text-white'>{category.icon}</span>
                       </div>
-                      <h3 className='font-semibold text-xs sm:text-sm lg:text-base text-gray-900 group-hover:text-vesoko_dark_blue transition-colors leading-tight'>{category.label}</h3>
+                      <h3 className='font-semibold text-xs sm:text-sm lg:text-base text-gray-900 group-hover:text-vesoko_primary transition-colors leading-tight'>{category.label}</h3>
                     </div>
                   </div>
                 ))}

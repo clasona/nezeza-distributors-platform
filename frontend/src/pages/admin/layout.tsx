@@ -27,7 +27,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         />
         <div className={`w-full transition-all duration-200 ${showSidebar && !collapsed ? 'ml-56' : showSidebar && collapsed ? 'ml-16' : ''}`}> 
           <main
-            className={`p-8 bg-slate-300 dark:bg-slate-900 text-vesoko_light_slate min-h-screen`}
+            className={`p-8 bg-slate-300 dark:bg-slate-900 text-vesoko_secondary_slate min-h-screen`}
           >
             {children}
           </main>

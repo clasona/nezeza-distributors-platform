@@ -126,7 +126,7 @@ const Header = ({
   // };
 
   return (
-    <div className='w-full bg-gradient-to-r from-vesoko_dark_blue via-blue-700 to-vesoko_dark_blue text-white sticky top-0 z-50 shadow-lg backdrop-blur-sm'>
+    <div className='w-full bg-gradient-to-r from-vesoko_primary via-vesoko_secondary to-vesoko_primary text-white sticky top-0 z-50 shadow-lg backdrop-blur-sm'>
       {/* Main header row */}
       <div className='h-16 sm:h-20 w-full max-w-7xl mx-auto flex items-center justify-between px-2 sm:px-4'>
         {/* Logo - Mobile Optimized */}
@@ -168,12 +168,12 @@ const Header = ({
             <div className='relative'>
               <Heart className='w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:scale-110 transition-transform duration-300' />
               {favoritesItemsData && favoritesItemsData.length > 0 && (
-                <span className='absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-vesoko_green_600 text-white text-xs font-bold rounded-full min-w-[16px] h-[16px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center shadow-lg animate-pulse text-[10px] sm:text-xs'>
+                <span className='absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-vesoko_primary text-white text-xs font-bold rounded-full min-w-[16px] h-[16px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center shadow-lg animate-pulse text-[10px] sm:text-xs'>
                   {favoritesItemsData.length > 9 ? '9+' : favoritesItemsData.length}
                 </span>
               )}
             </div>
-            <span className='text-white font-medium text-[10px] sm:text-xs mt-0.5 sm:mt-1 group-hover:text-vesoko_green_200 transition-colors duration-300'>
+            <span className='text-white font-medium text-[10px] sm:text-xs mt-0.5 sm:mt-1 group-hover:text-vesoko_background transition-colors duration-300'>
               Favorites
             </span>
           </Link>
@@ -186,12 +186,12 @@ const Header = ({
             <div className='relative'>
               <ShoppingCart className='w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:scale-110 transition-transform duration-300' />
               {cartItemsData && cartItemsData.length > 0 && (
-                <span className='absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-vesoko_green_600 text-white text-xs font-bold rounded-full min-w-[16px] h-[16px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center shadow-lg animate-pulse text-[10px] sm:text-xs'>
+                <span className='absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-vesoko_primary text-white text-xs font-bold rounded-full min-w-[16px] h-[16px] sm:min-w-[20px] sm:h-[20px] flex items-center justify-center shadow-lg animate-pulse text-[10px] sm:text-xs'>
                   {cartItemsData.length > 9 ? '9+' : cartItemsData.length}
                 </span>
               )}
             </div>
-            <span className='text-white font-medium text-[10px] sm:text-xs mt-0.5 sm:mt-1 group-hover:text-vesoko_green_200 transition-colors duration-300'>
+            <span className='text-white font-medium text-[10px] sm:text-xs mt-0.5 sm:mt-1 group-hover:text-vesoko_background transition-colors duration-300'>
               Cart
             </span>
           </Link>
@@ -211,7 +211,7 @@ const Header = ({
                         className='w-full h-full object-cover'
                       />
                     </div>
-                    <div className='absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 bg-vesoko_green_600 rounded-full border-1 sm:border-2 border-white'></div>
+                    <div className='absolute -bottom-0.5 -right-0.5 sm:-bottom-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 bg-vesoko_primary rounded-full border-1 sm:border-2 border-white'></div>
                   </div>
                   <div className='hidden md:block text-left'>
                     <p className='text-white font-medium text-sm'>Hello!</p>
@@ -225,12 +225,12 @@ const Header = ({
                   <DropdownMenuSeparator className='bg-gray-200' />
                   
                   {storeInfo ? (
-                    <DropdownMenuItem className='rounded-lg hover:bg-vesoko_green_50 transition-colors duration-200'>
+                    <DropdownMenuItem className='rounded-lg hover:bg-vesoko_background transition-colors duration-200'>
                       <Link
                         href={`/${getSellerTypeBaseurl(storeInfo.storeType)}`}
                         className='flex items-center space-x-3 w-full px-2 py-2'
                       >
-                        <LayoutDashboard className='w-5 h-5 text-vesoko_green_600' />
+                        <LayoutDashboard className='w-5 h-5 text-vesoko_primary' />
                         <span className='text-gray-700 font-medium'>Seller Dashboard</span>
                       </Link>
                     </DropdownMenuItem>
@@ -295,7 +295,7 @@ const Header = ({
           ) : (
             <Link
               href='/login'
-              className='group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-vesoko_green_600 hover:bg-vesoko_green_700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl min-h-[44px] touch-manipulation'
+              className='group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-vesoko_primary hover:bg-vesoko_primary_dark text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl min-h-[44px] touch-manipulation'
             >
               <User size={16} className='sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-300' />
               <span className='text-xs sm:text-sm'>Sign In</span>
@@ -306,7 +306,7 @@ const Header = ({
           <DropdownMenu>
             <DropdownMenuTrigger className='group relative flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl hover:bg-white/10 cursor-pointer transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/20 min-h-[44px] touch-manipulation'>
               <Menu className='w-4 h-4 sm:w-5 sm:h-5 text-white group-hover:scale-110 transition-transform duration-300' />
-              <span className='hidden sm:inline text-white font-medium text-xs sm:text-sm group-hover:text-vesoko_green_200 transition-colors duration-300'>More</span>
+              <span className='hidden sm:inline text-white font-medium text-xs sm:text-sm group-hover:text-vesoko_background transition-colors duration-300'>More</span>
               <ChevronDown className='w-3 h-3 sm:w-4 sm:h-4 text-white/80 group-hover:text-white transition-colors duration-300' />
             </DropdownMenuTrigger>
             <DropdownMenuContent className='w-52' align='start'>
@@ -317,20 +317,20 @@ const Header = ({
                 {/* For Sellers Submenu */}
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
-                    <Store className='w-4 h-4 text-vesoko_green_600 mr-2' />
+                    <Store className='w-4 h-4 text-vesoko_primary mr-2' />
                     For Sellers
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>
                       <DropdownMenuItem>
                         <Link href='/sellers' className='flex items-center w-full'>
-                          <Store className='w-4 h-4 text-vesoko_green_600 mr-2' />
+                          <Store className='w-4 h-4 text-vesoko_primary mr-2' />
                           Become a Seller
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Link href='/select-store-type' className='flex items-center w-full'>
-                          <FileText className='w-4 h-4 text-vesoko_green_600 mr-2' />
+                          <FileText className='w-4 h-4 text-vesoko_primary mr-2' />
                           Start Application
                         </Link>
                       </DropdownMenuItem>
@@ -397,7 +397,7 @@ const Header = ({
       </div>
       
       {/* Mobile search bar row - Enhanced design */}
-      <div className='sm:hidden bg-gradient-to-r from-vesoko_dark_blue via-blue-700 to-vesoko_dark_blue px-4 pb-4 pt-2 border-t border-white/10'>
+      <div className='sm:hidden bg-gradient-to-r from-vesoko_primary via-vesoko_secondary to-vesoko_primary px-4 pb-4 pt-2 border-t border-white/10'>
         <div className='relative'>
           <SearchField2
             searchFieldPlaceholder='authentic African products...'

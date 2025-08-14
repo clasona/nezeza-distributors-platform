@@ -53,7 +53,7 @@
 
 //         {/* Actions */}
 //         <div className='mt-4 flex gap-4'>
-//           <Button className='bg-vesoko_dark_blue text-white flex items-center'>
+//           <Button className='bg-vesoko_primary text-white flex items-center'>
 //             <ShoppingCart className='mr-2' /> Add to Cart
 //           </Button>
 //           <Button className='bg-green-500 text-white'>Buy Now</Button>

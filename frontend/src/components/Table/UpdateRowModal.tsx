@@ -102,7 +102,7 @@ const UpdateRowModal = <T,>({
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
-      <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-96'>
+      <div className='bg-vesoko_background p-6 rounded-lg shadow-lg w-96'>
         {/* <form onSubmit={handleSubmit(onSubmit)}> */}
         {isOrderProps(formData) && (
           <>
@@ -110,7 +110,7 @@ const UpdateRowModal = <T,>({
             <div className='mb-4'>
               <label className='block text-lg font-medium text-gray-700'>
                 Order #:{' '}
-                <span className=' px-2 text-lg font-bold text-vesoko_dark_blue'>
+                <span className=' px-2 text-lg font-bold text-vesoko_primary'>
                   {formData._id}
                 </span>
               </label>
@@ -142,7 +142,7 @@ const UpdateRowModal = <T,>({
             </h3>
             <p className='mt-4'>
               Are you sure you want to update product with ID #:{' '}
-              <span className='text-vesoko_dark_blue'>{formData._id}</span>
+              <span className='text-vesoko_primary'>{formData._id}</span>
             </p>
           </>
         )}
@@ -157,7 +157,7 @@ const UpdateRowModal = <T,>({
             onClick={handleConfirm}
             disabled={isConfirming}
             className={
-              'px-4 py-2 text-white bg-vesoko_green_600 hover:bg-vesoko_green_800 rounded-md'
+              'px-4 py-2 text-white bg-vesoko_primary hover:bg-vesoko_secondary rounded-md'
             }
           >
             Confirm
@@ -175,7 +175,7 @@ const UpdateRowModal = <T,>({
       {/* Confirmation Dialog */}
       {/* {showConfirmDialog && (
         <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
-          <div className='bg-vesoko_light_blue p-6 rounded-lg shadow-lg w-96'>
+          <div className='bg-vesoko_background p-6 rounded-lg shadow-lg w-96'>
             <h3 className='text-lg font-semibold mb-4'>Confirm Changes</h3>
             <p className='mb-4'>Are you sure you want to save the changes?</p>
             <div className='flex justify-end space-x-4'>
@@ -187,7 +187,7 @@ const UpdateRowModal = <T,>({
               </button>
               <button
                 onClick={handleConfirmSave}
-                className='px-4 py-2 text-white bg-vesoko_green_600 rounded-md'
+                className='px-4 py-2 text-white bg-vesoko_primary rounded-md'
               >
                 Confirm
               </button>

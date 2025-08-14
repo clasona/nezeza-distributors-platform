@@ -380,10 +380,10 @@ const CheckoutAddressPage = () => {
   if (isAutoValidating) {
     return (
       <RootLayout>
-        <div className='bg-vesoko_powder_blue min-h-[calc(100vh-100px)] flex items-center justify-center'>
+        <div className='bg-vesoko_primary min-h-[calc(100vh-100px)] flex items-center justify-center'>
           <div className='text-center'>
-            <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-vesoko_green_600 mx-auto mb-4'></div>
-            <h2 className='text-xl font-semibold text-vesoko_dark_blue mb-2'>Validating Address</h2>
+            <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-vesoko_primary mx-auto mb-4'></div>
+            <h2 className='text-xl font-semibold text-vesoko_primary mb-2'>Validating Address</h2>
             <p className='text-gray-600'>Checking your saved address for shipping compatibility...</p>
           </div>
         </div>
@@ -395,10 +395,10 @@ const CheckoutAddressPage = () => {
   if (!showForm && !isAutoValidating) {
     return (
       <RootLayout>
-        <div className='bg-vesoko_powder_blue min-h-[calc(100vh-100px)] flex items-center justify-center'>
+        <div className='bg-vesoko_primary min-h-[calc(100vh-100px)] flex items-center justify-center'>
           <div className='text-center'>
-            <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-vesoko_green_600 mx-auto mb-4'></div>
-            <h2 className='text-xl font-semibold text-vesoko_dark_blue mb-2'>Loading</h2>
+            <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-vesoko_primary mx-auto mb-4'></div>
+            <h2 className='text-xl font-semibold text-vesoko_primary mb-2'>Loading</h2>
             <p className='text-gray-600'>Preparing your checkout...</p>
           </div>
         </div>
@@ -408,7 +408,7 @@ const CheckoutAddressPage = () => {
 
   return (
     <RootLayout>
-      <div className='bg-vesoko_powder_blue min-h-[calc(100vh-100px)] p-2 sm:p-4 md:p-8 flex items-center justify-center'>
+      <div className='bg-vesoko_primary min-h-[calc(100vh-100px)] p-2 sm:p-4 md:p-8 flex items-center justify-center'>
         <div className='bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-xl max-w-2xl w-full'>
           <PageHeader heading='Enter Shipping Address' />
           
@@ -550,7 +550,7 @@ const CheckoutAddressPage = () => {
             <SubmitButton
               isLoading={isSubmitting}
               buttonTitle='Continue to Review'
-              className='w-full py-3 mt-6 bg-vesoko_green_600 text-white rounded-md hover:bg-vesoko_green_800 transition-colors duration-300 text-lg font-semibold'
+              className='w-full py-3 mt-6 bg-vesoko_primary text-white rounded-md hover:bg-vesoko_secondary transition-colors duration-300 text-lg font-semibold'
             />
           </form>
 
@@ -565,7 +565,7 @@ const CheckoutAddressPage = () => {
           <div className='mt-4 text-center'>
             <Link 
               href={buyNowProduct && buyNowProduct.isBuyNow ? '/' : '/cart'}
-              className='text-vesoko_dark_blue hover:underline text-sm'
+              className='text-vesoko_primary hover:underline text-sm'
             >
               ← {buyNowProduct && buyNowProduct.isBuyNow ? 'Back to Products' : 'Back to Cart'}
             </Link>

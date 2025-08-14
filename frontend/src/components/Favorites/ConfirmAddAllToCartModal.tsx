@@ -38,7 +38,7 @@ const ConfirmAddAllToCartModal = ({
             </div>
             <div className='flex justify-between items-center'>
               <span className='text-sm font-medium text-gray-600'>Total Value:</span>
-              <span className='text-sm font-bold text-vesoko_green_600'>${totalValue.toFixed(2)}</span>
+              <span className='text-sm font-bold text-vesoko_primary'>${totalValue.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -52,7 +52,7 @@ const ConfirmAddAllToCartModal = ({
           </button>
           <button
             onClick={handleConfirmAddAllToCart}
-            className='px-4 py-2 text-white bg-vesoko_green_600 rounded-md hover:bg-vesoko_green_700'
+            className='px-4 py-2 text-white bg-vesoko_primary rounded-md hover:bg-vesoko_primary_dark'
           >
             Confirm
           </button>

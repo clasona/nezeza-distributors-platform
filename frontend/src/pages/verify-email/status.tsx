@@ -45,7 +45,7 @@ const VerifyEmailStatusPage = () => {
 
   if (!token || !email) {
     return (
-      <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+      <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
         <div className='w-full max-w-md'>
           <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 text-center'>
             <XCircle className='w-16 h-16 text-red-500 mx-auto mb-4' />
@@ -56,13 +56,13 @@ const VerifyEmailStatusPage = () => {
             <div className='space-y-3'>
               <button
                 onClick={() => router.push('/register')}
-                className='w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200'
+                className='w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200'
               >
                 Back to Register
               </button>
               <p className='text-sm text-gray-500'>
                 Need help? Contact us at{' '}
-                <Link href='mailto:support@vesoko.com' className='text-vesoko_dark_blue hover:underline'>
+                <Link href='mailto:support@vesoko.com' className='text-vesoko_primary hover:underline'>
                   support@vesoko.com
                 </Link>
               </p>
@@ -74,13 +74,13 @@ const VerifyEmailStatusPage = () => {
   }
 
   return (
-    <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+    <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100'>
           {/* Success State */}
           {isVerified === true && (
             <div className='text-center'>
-              <div className='w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6'>
+              <div className='w-20 h-20 bg-vesoko_green_100 rounded-full flex items-center justify-center mx-auto mb-6'>
                 <CheckCircle2 className='w-12 h-12 text-green-600' />
               </div>
               <h1 className='text-3xl font-bold text-green-600 mb-4'>
@@ -89,7 +89,7 @@ const VerifyEmailStatusPage = () => {
               <p className='text-gray-600 mb-2'>
                 Your email address has been successfully verified.
               </p>
-              <p className='font-semibold text-vesoko_dark_blue break-all mb-6'>
+              <p className='font-semibold text-vesoko_primary break-all mb-6'>
                 {email}
               </p>
               <div className='bg-green-50 border border-green-200 rounded-lg p-4 mb-6'>
@@ -104,7 +104,7 @@ const VerifyEmailStatusPage = () => {
                 type='button'
                 onClick={goToLogin}
                 disabled={isLoading}
-                className={`w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+                className={`w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
                   isLoading ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
               >
@@ -135,7 +135,7 @@ const VerifyEmailStatusPage = () => {
               <p className='text-gray-600 mb-2'>
                 We couldn't verify your email address.
               </p>
-              <p className='font-semibold text-vesoko_dark_blue break-all mb-4'>
+              <p className='font-semibold text-vesoko_primary break-all mb-4'>
                 {email}
               </p>
               
@@ -151,7 +151,7 @@ const VerifyEmailStatusPage = () => {
               <div className='space-y-3'>
                 <button
                   onClick={() => router.push('/verify-email')}
-                  className='w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2'
+                  className='w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2'
                 >
                   <RefreshCw className='w-4 h-4' />
                   Request New Verification
@@ -178,7 +178,7 @@ const VerifyEmailStatusPage = () => {
                   Still having trouble?{' '}
                   <Link
                     href='mailto:support@vesoko.com'
-                    className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
+                    className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
                   >
                     Contact Support
                   </Link>
@@ -199,7 +199,7 @@ const VerifyEmailStatusPage = () => {
               <p className='text-gray-600 mb-2'>
                 Please wait while we verify your email address.
               </p>
-              <p className='font-semibold text-vesoko_dark_blue break-all mb-6'>
+              <p className='font-semibold text-vesoko_primary break-all mb-6'>
                 {email}
               </p>
               <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>

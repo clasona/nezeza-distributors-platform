@@ -316,7 +316,7 @@ const SellerInventory = () => {
         <div className='bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4 border border-white/20'>
           <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3'>
             <div>
-              <h1 className='text-2xl sm:text-3xl font-bold text-vesoko_dark_blue mb-1'>
+              <h1 className='text-2xl sm:text-3xl font-bold text-vesoko_primary mb-1'>
                 📦 Inventory Management
               </h1>
               <p className='text-sm text-gray-600'>
@@ -329,7 +329,7 @@ const SellerInventory = () => {
                 onClick={() => {
                   console.log('Export inventory');
                 }}
-                className='inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-md disabled:opacity-50'
+                className='inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-vesoko_primary_dark text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-md disabled:opacity-50'
               disabled={true} // Disable until export functionality is implemented
               >
                 <Upload className='w-4 h-4' />
@@ -339,7 +339,7 @@ const SellerInventory = () => {
               <button
                 onClick={async () => await fetchData()}
                 disabled={isLoading}
-                className='inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-md disabled:opacity-50'
+                className='inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-vesoko_primary500 to-vesoko_primary_dark hover:from-vesoko_primary600 hover:to-vesoko_secondary text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-md disabled:opacity-50'
               >
                 <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
                 <span className='hidden sm:inline'>{isLoading ? 'Refreshing...' : 'Refresh'}</span>
@@ -347,7 +347,7 @@ const SellerInventory = () => {
               
               <button
                 onClick={() => router.push('./inventory/new-product')}
-                className='inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-vesoko_dark_blue to-blue-600 hover:from-vesoko_dark_blue_2 hover:to-blue-700 text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-md'
+                className='inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_2 hover:to-vesoko_secondary text-white rounded-lg transition-all duration-200 text-sm font-medium shadow-md'
               >
                 <Plus className='w-4 h-4' />
                 <span className='hidden sm:inline'>Add Product</span>
@@ -371,8 +371,8 @@ const SellerInventory = () => {
               title: 'Total Products',
               value: totalProducts,
               icon: <Package className='w-5 h-5' />,
-              gradient: 'from-blue-400 to-blue-600',
-              bgGradient: 'from-blue-50 to-cyan-50',
+              gradient: 'from-vesoko_primary400 to-vesoko_primary_dark',
+              bgGradient: 'from-vesoko_primary50 to-cyan-50',
               borderColor: 'border-blue-200'
             },
             {
@@ -422,7 +422,7 @@ const SellerInventory = () => {
         {/* Compact Quick Filters */}
         <div className='bg-white/80 backdrop-blur-sm rounded-xl shadow-md p-4 border border-white/20'>
           <div className='flex items-center gap-2 mb-3'>
-            <div className='w-8 h-8 rounded-lg bg-gradient-to-br from-vesoko_dark_blue to-blue-600 flex items-center justify-center'>
+            <div className='w-8 h-8 rounded-lg bg-gradient-to-br from-vesoko_primary to-vesoko_primary_dark flex items-center justify-center'>
               <ShoppingBag className='w-4 h-4 text-white' />
             </div>
             <h3 className='text-lg font-semibold text-gray-900'>Quick Filters</h3>
@@ -510,25 +510,25 @@ const SellerInventory = () => {
             
             <div className='space-y-3'>
               {analyticsData.topProducts.slice(0, 5).map((product, index) => (
-                <div key={product.id} className='group flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:border-vesoko_dark_blue hover:shadow-md transition-all duration-200'>
+                <div key={product.id} className='group flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:border-vesoko_primary hover:shadow-md transition-all duration-200'>
                   <div className='flex items-center gap-3'>
                     <div className='relative'>
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm ${
                         index === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-500' :
                         index === 1 ? 'bg-gradient-to-br from-gray-300 to-gray-400' :
                         index === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-500' :
-                        'bg-gradient-to-br from-blue-400 to-blue-500'
+                        'bg-gradient-to-br from-vesoko_primary400 to-blue-500'
                       }`}>
                         {index + 1}
                       </div>
                       {index < 3 && (
-                        <div className='absolute -top-1 -right-1 w-3 h-3 bg-vesoko_green_600 rounded-full flex items-center justify-center'>
+                        <div className='absolute -top-1 -right-1 w-3 h-3 bg-vesoko_primary rounded-full flex items-center justify-center'>
                           <Star className='w-1.5 h-1.5 text-white' />
                         </div>
                       )}
                     </div>
                     <div>
-                      <p className='font-semibold text-gray-900 group-hover:text-vesoko_dark_blue transition-colors text-sm'>
+                      <p className='font-semibold text-gray-900 group-hover:text-vesoko_primary transition-colors text-sm'>
                         {product.name}
                       </p>
                       <p className='text-xs text-gray-600'>
@@ -537,7 +537,7 @@ const SellerInventory = () => {
                     </div>
                   </div>
                   <div className='text-right'>
-                    <p className='font-bold text-vesoko_green_600'>
+                    <p className='font-bold text-vesoko_primary'>
                       ${product.revenue.toFixed(2)}
                     </p>
                     <p className='text-xs text-gray-500'>revenue</p>
@@ -571,7 +571,7 @@ const SellerInventory = () => {
          Filter by dates (always on large, conditional on small) */}
         {/* <button
           onClick={toggleMoreFilters}
-          className='hidden sm:inline text-sm text-vesoko_dark_blue underline'
+          className='hidden sm:inline text-sm text-vesoko_primary underline'
         >
           {showMoreFilters ? 'Less Filters' : 'More Filters'}
         </button> */}

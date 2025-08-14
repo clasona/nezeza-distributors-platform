@@ -83,7 +83,7 @@ const CloudinaryImageUpload = ({
                   className={`w-full flex flex-col items-center justify-center gap-4 px-6 py-8 border-2 border-dashed rounded-xl transition-all duration-200 ${
                     isUploading
                       ? 'border-blue-300 bg-blue-50 text-blue-700 cursor-wait'
-                      : 'border-gray-300 bg-gray-50 text-gray-700 hover:border-vesoko_dark_blue hover:bg-vesoko_dark_blue hover:text-white'
+                      : 'border-gray-300 bg-gray-50 text-gray-700 hover:border-vesoko_primary hover:bg-vesoko_primary hover:text-white'
                   }`}
                 >
                   {isUploading ? (
@@ -128,7 +128,7 @@ const CloudinaryImageUpload = ({
                         <button
                           type='button'
                           onClick={handleUploadClick}
-                          className='inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_green_600 transition-colors duration-200'
+                          className='inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-vesoko_primary text-white rounded-md hover:bg-vesoko_primary transition-colors duration-200'
                         >
                           <RefreshCw className='h-3 w-3' />
                           Change

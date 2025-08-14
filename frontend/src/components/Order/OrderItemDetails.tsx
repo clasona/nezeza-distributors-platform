@@ -98,7 +98,7 @@ export const OrderItemDetails = ({ item, orderId }: OrderItemDetailsProps) => {
               More Info
             </button>
             <button
-              className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-vesoko_green_600 hover:text-white transition duration-300'
+              className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-vesoko_primary hover:text-white transition duration-300'
               // onClick={() => handleOpenQuantityModal(product)}
             >
               Buy Again

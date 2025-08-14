@@ -39,7 +39,7 @@ export default function SmallCards({ orderStats }: SmallCardsProps) {
 //       <SmallCard className='bg-purple-600' />
 //       <SmallCard className='bg-blue-600' />
 //       <SmallCard className='bg-teal-600' />
-//       <SmallCard className='bg-vesoko_green_600 ' />
+//       <SmallCard className='bg-vesoko_primary ' />
 //     </div>
 //   );
 // }

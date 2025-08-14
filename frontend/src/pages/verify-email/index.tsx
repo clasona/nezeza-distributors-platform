@@ -86,7 +86,7 @@ const RegisterVerifyPage = () => {
 
   if (!email) {
     return (
-      <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+      <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
         <div className='w-full max-w-md'>
           <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100 text-center'>
             <AlertCircle className='w-16 h-16 text-red-500 mx-auto mb-4' />
@@ -97,13 +97,13 @@ const RegisterVerifyPage = () => {
             <div className='space-y-3'>
               <button
                 onClick={() => router.push('/register')}
-                className='w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200'
+                className='w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200'
               >
                 Back to Register
               </button>
               <p className='text-sm text-gray-500'>
                 Need help? Contact us at{' '}
-                <Link href='mailto:support@vesoko.com' className='text-vesoko_dark_blue hover:underline'>
+                <Link href='mailto:support@vesoko.com' className='text-vesoko_primary hover:underline'>
                   support@vesoko.com
                 </Link>
               </p>
@@ -115,20 +115,20 @@ const RegisterVerifyPage = () => {
   }
 
   return (
-    <div className='w-full bg-gradient-to-br from-vesoko_powder_blue to-vesoko_light_blue min-h-screen flex items-center justify-center px-4 py-8'>
+    <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100'>
           <div className='text-center mb-8'>
-            <div className='w-20 h-20 bg-vesoko_yellow/20 rounded-full flex items-center justify-center mx-auto mb-4'>
-              <Mail className='w-10 h-10 text-vesoko_dark_blue' />
+            <div className='w-20 h-20 bg-vesoko_primary/20 rounded-full flex items-center justify-center mx-auto mb-4'>
+              <Mail className='w-10 h-10 text-vesoko_primary' />
             </div>
-            <h1 className='text-3xl font-bold text-vesoko_dark_blue mb-2'>
+            <h1 className='text-3xl font-bold text-vesoko_primary mb-2'>
               Check Your Email
             </h1>
             <p className='text-gray-600'>
               We've sent a verification link to
             </p>
-            <p className='font-semibold text-vesoko_dark_blue break-all'>
+            <p className='font-semibold text-vesoko_primary break-all'>
               {email}
             </p>
           </div>
@@ -183,7 +183,7 @@ const RegisterVerifyPage = () => {
             >
               {isResendLoading ? (
                 <>
-                  <div className='animate-spin h-5 w-5 border-2 border-gray-300 border-t-vesoko_dark_blue rounded-full'></div>
+                  <div className='animate-spin h-5 w-5 border-2 border-gray-300 border-t-vesoko_primary rounded-full'></div>
                   Sending...
                 </>
               ) : resendCooldown > 0 ? (
@@ -205,7 +205,7 @@ const RegisterVerifyPage = () => {
                 type='button'
                 onClick={checkVerification}
                 disabled={isLoading}
-                className={`w-full h-12 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+                className={`w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 ${
                   isLoading ? 'opacity-70 cursor-not-allowed' : ''
                 }`}
               >
@@ -235,7 +235,7 @@ const RegisterVerifyPage = () => {
                   • Still having trouble?{' '}
                   <Link
                     href='mailto:support@vesoko.com'
-                    className='text-vesoko_dark_blue hover:text-vesoko_yellow font-medium transition-colors duration-200'
+                    className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
                   >
                     Contact Support
                   </Link>

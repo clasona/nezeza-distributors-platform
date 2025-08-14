@@ -338,7 +338,7 @@ const StoreApplications = () => {
             buttonTitle='Refresh'
             buttonTitleClassName='hidden md:inline'
             loadingButtonTitle='Refreshing...'
-            className='text-vesoko_dark_blue hover:text-white hover:bg-vesoko_dark_blue'
+            className='text-vesoko_primary hover:text-white hover:bg-vesoko_primary'
             onClick={async () => { await fetchData(); }}
           />
         }
@@ -384,7 +384,7 @@ const StoreApplications = () => {
                   {analyticsLoading ? '...' : analytics?.statusCounts.approved || 0}
                 </p>
               </div>
-              <div className="p-3 bg-green-100 rounded-full">
+              <div className="p-3 bg-vesoko_green_100 rounded-full">
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
@@ -410,7 +410,7 @@ const StoreApplications = () => {
           {/* Store Type Breakdown */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center gap-3 mb-4">
-              <Building2 className="w-5 h-5 text-vesoko_dark_blue" />
+              <Building2 className="w-5 h-5 text-vesoko_primary" />
               <h3 className="text-lg font-semibold text-gray-900">Store Types</h3>
             </div>
             <div className="space-y-3">
@@ -420,7 +420,7 @@ const StoreApplications = () => {
                 analytics.storeTypeBreakdown.slice(0, 5).map((item) => (
                   <div key={item._id} className="flex justify-between items-center">
                     <span className="text-gray-700">{item._id || 'Unknown'}</span>
-                    <span className="font-semibold text-vesoko_dark_blue">{item.count}</span>
+                    <span className="font-semibold text-vesoko_primary">{item.count}</span>
                   </div>
                 ))
               ) : (
@@ -432,7 +432,7 @@ const StoreApplications = () => {
           {/* Country Breakdown */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center gap-3 mb-4">
-              <MapPin className="w-5 h-5 text-vesoko_dark_blue" />
+              <MapPin className="w-5 h-5 text-vesoko_primary" />
               <h3 className="text-lg font-semibold text-gray-900">Top Countries</h3>
             </div>
             <div className="space-y-3">
@@ -442,7 +442,7 @@ const StoreApplications = () => {
                 analytics.countryBreakdown.slice(0, 5).map((item) => (
                   <div key={item._id} className="flex justify-between items-center">
                     <span className="text-gray-700">{item._id || 'Unknown'}</span>
-                    <span className="font-semibold text-vesoko_dark_blue">{item.count}</span>
+                    <span className="font-semibold text-vesoko_primary">{item.count}</span>
                   </div>
                 ))
               ) : (
@@ -454,7 +454,7 @@ const StoreApplications = () => {
           {/* Processing Times */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
             <div className="flex items-center gap-3 mb-4">
-              <BarChart3 className="w-5 h-5 text-vesoko_dark_blue" />
+              <BarChart3 className="w-5 h-5 text-vesoko_primary" />
               <h3 className="text-lg font-semibold text-gray-900">Avg Processing Time</h3>
             </div>
             <div className="space-y-3">
@@ -464,7 +464,7 @@ const StoreApplications = () => {
                 analytics.processingTimeData.map((item) => (
                   <div key={item._id} className="flex justify-between items-center">
                     <span className="text-gray-700">{item._id}</span>
-                    <span className="font-semibold text-vesoko_dark_blue">
+                    <span className="font-semibold text-vesoko_primary">
                       {Math.round(item.avgProcessingTime)} days
                     </span>
                   </div>
@@ -531,7 +531,7 @@ const StoreApplications = () => {
             buttonTitle="Next"
             disabled={currentPage >= Math.ceil(filteredApplications.length / PAGE_SIZE)}
             onClick={() => handlePageChange(currentPage + 1)}
-            className="px-4 py-2 text-sm bg-vesoko_dark_blue hover:bg-vesoko_dark_blue/90 text-white disabled:opacity-50"
+            className="px-4 py-2 text-sm bg-vesoko_primary hover:bg-vesoko_primary/90 text-white disabled:opacity-50"
           />
         </div>
       </div>
@@ -568,7 +568,7 @@ const StoreApplications = () => {
             >
               &times;
             </button>
-            <h2 className="text-xl font-bold mb-4 text-vesoko_dark_blue">Decline Store Application</h2>
+            <h2 className="text-xl font-bold mb-4 text-vesoko_primary">Decline Store Application</h2>
             <div className="mb-4">
               Are you sure you want to decline application{' '}
               <span className="font-semibold">{currentRowData._id}</span>?

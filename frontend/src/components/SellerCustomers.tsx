@@ -125,7 +125,7 @@ const SellerCustomers = () => {
         {/* Modern Header */}
         <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 border border-white/20 animate-fade-in'>
           <div>
-            <h1 className='text-3xl sm:text-4xl font-bold text-vesoko_dark_blue mb-2'>
+            <h1 className='text-3xl sm:text-4xl font-bold text-vesoko_primary mb-2'>
               👥 Customers Overview
             </h1>
             <p className='text-lg text-gray-600'>
@@ -158,8 +158,8 @@ const SellerCustomers = () => {
               title: 'Verified Customers',
               value: activeCustomers,
               icon: <UserCheck className='w-6 h-6' />,
-              gradient: 'from-blue-400 to-blue-600',
-              bgGradient: 'from-blue-50 to-cyan-50',
+              gradient: 'from-vesoko_primary400 to-vesoko_primary_dark',
+              bgGradient: 'from-vesoko_primary50 to-cyan-50',
               borderColor: 'border-blue-200'
             },
             {
@@ -246,7 +246,7 @@ const SellerCustomers = () => {
                       {
                         content: (
                           <button
-                            className='px-2 py-1 bg-vesoko_green_500 text-white rounded hover:bg-vesoko_green_700 text-xs mr-2'
+                            className='px-2 py-1 bg-vesoko_primary text-white rounded hover:bg-vesoko_primary_dark text-xs mr-2'
                             onClick={() => handleViewCustomer(customer)}
                           >
                             View

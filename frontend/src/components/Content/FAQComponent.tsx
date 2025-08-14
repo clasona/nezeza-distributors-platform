@@ -48,8 +48,8 @@ const FAQComponent: React.FC<FAQComponentProps> = ({
 
   const getCategoryColor = (category: string) => {
     const colors: { [key: string]: string } = {
-      general: 'bg-blue-100 text-blue-800',
-      seller: 'bg-green-100 text-green-800',
+      general: 'bg-vesoko_background text-vesoko_secondary',
+      seller: 'bg-vesoko_green_100 text-green-800',
       shopper: 'bg-purple-100 text-purple-800',
       payments: 'bg-yellow-100 text-yellow-800',
       shipping: 'bg-indigo-100 text-indigo-800',
@@ -63,8 +63,8 @@ const FAQComponent: React.FC<FAQComponentProps> = ({
   const getUserTypeColor = (userType: string) => {
     const colors: { [key: string]: string } = {
       all: 'bg-gray-100 text-gray-800',
-      seller: 'bg-vesoko_green_600 text-white',
-      shopper: 'bg-vesoko_dark_blue text-white',
+      seller: 'bg-vesoko_primary text-white',
+      shopper: 'bg-vesoko_primary text-white',
       wholesaler: 'bg-purple-600 text-white',
       retailer: 'bg-orange-600 text-white',
       manufacturer: 'bg-teal-600 text-white',
@@ -142,7 +142,7 @@ const FAQComponent: React.FC<FAQComponentProps> = ({
                           </span>
                         )}
                         {faq.featured && (
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-vesoko_yellow text-vesoko_dark_blue">
+                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-vesoko_primary text-white">
                             Featured
                           </span>
                         )}
@@ -213,7 +213,7 @@ const FAQComponent: React.FC<FAQComponentProps> = ({
                               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
                                 hasFeedback 
                                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                  : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                  : 'bg-vesoko_green_100 text-green-700 hover:bg-green-200'
                               }`}
                             >
                               <ThumbsUp className="w-4 h-4" />

@@ -185,11 +185,11 @@ const HeaderBottom = ({
             <div className='relative flex-1 sm:flex-none' ref={dropdownRef}>
               <button
                 onClick={() => setShowCategoriesDropdown(!showCategoriesDropdown)}
-                className='group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-white hover:bg-vesoko_green_50 border border-gray-300 hover:border-vesoko_green_300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:text-vesoko_green_700 transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 w-full sm:w-auto min-h-[36px] touch-manipulation'
+                className='group flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-white hover:bg-vesoko_background border border-gray-300 hover:border-vesoko_primary rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:text-vesoko_primary_dark transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 w-full sm:w-auto min-h-[36px] touch-manipulation'
               >
-                <Menu className='w-3 h-3 sm:w-4 sm:h-4 group-hover:text-vesoko_green_600 transition-colors duration-300 flex-shrink-0' />
+                <Menu className='w-3 h-3 sm:w-4 sm:h-4 group-hover:text-vesoko_primary transition-colors duration-300 flex-shrink-0' />
                 <span className='truncate max-w-[120px] xs:max-w-[140px] sm:max-w-40'>{getCurrentCategoryLabel()}</span>
-                <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-300 flex-shrink-0 ${showCategoriesDropdown ? 'rotate-180 text-vesoko_green_600' : 'group-hover:text-vesoko_green_600'}`} />
+                <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-300 flex-shrink-0 ${showCategoriesDropdown ? 'rotate-180 text-vesoko_primary' : 'group-hover:text-vesoko_primary'}`} />
               </button>
               
               {/* Categories Dropdown Menu - Mobile Optimized */}
@@ -206,19 +206,19 @@ const HeaderBottom = ({
                           className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 text-left rounded-lg transition-all duration-300 transform hover:scale-105 min-h-[44px] touch-manipulation ${
                             isSelected 
                               ? 'bg-vesoko_green_50 text-vesoko_green_700 border-l-4 border-vesoko_green_500 shadow-sm' 
-                              : 'text-gray-700 hover:bg-gray-50 hover:text-vesoko_green_600'
+                              : 'text-gray-700 hover:bg-gray-50 hover:text-vesoko_primary'
                           }`}
                         >
                           {typeof category.icon === 'string' ? (
                             <span className='text-base sm:text-lg flex-shrink-0'>{category.icon}</span>
                           ) : (
                             IconComponent ? <IconComponent className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 ${
-                              isSelected ? 'text-vesoko_green_600' : 'text-gray-500'
+                              isSelected ? 'text-vesoko_primary' : 'text-gray-500'
                             }`} /> : null
                           )}
                           <span className='font-medium text-sm sm:text-base truncate'>{category.label}</span>
                           {isSelected && (
-                            <span className='ml-auto text-vesoko_green_600 font-bold flex-shrink-0'>✓</span>
+                            <span className='ml-auto text-vesoko_primary font-bold flex-shrink-0'>✓</span>
                           )}
                         </button>
                       );
@@ -232,7 +232,7 @@ const HeaderBottom = ({
             <div className='flex sm:hidden'>
               <button
                 onClick={() => setShowMobileFilters(!showMobileFilters)}
-                className='flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 bg-white hover:bg-vesoko_green_50 text-gray-700 hover:text-vesoko_green_700 border border-gray-200 hover:border-vesoko_green_300 min-h-[36px] touch-manipulation'
+                className='flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 bg-white hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary min-h-[36px] touch-manipulation'
               >
                 <Menu className='w-3 h-3 flex-shrink-0' />
                 <span>Filters</span>
@@ -250,8 +250,8 @@ const HeaderBottom = ({
                     onClick={filter.action}
                     className={`flex items-center gap-1 lg:gap-2 px-2 lg:px-3 py-1.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-300 transform hover:scale-105 min-h-[36px] touch-manipulation ${
                       isActive 
-                        ? 'bg-vesoko_green_600 text-white shadow-md' 
-                        : 'bg-white hover:bg-vesoko_green_50 text-gray-700 hover:text-vesoko_green_700 border border-gray-200 hover:border-vesoko_green_300'
+                        ? 'bg-vesoko_primary text-white shadow-md' 
+                        : 'bg-white hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary'
                     }`}
                   >
                     <IconComponent className='w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0' />
@@ -270,8 +270,8 @@ const HeaderBottom = ({
                       onClick={filter.action}
                       className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
                         isActive 
-                          ? 'bg-vesoko_green_600 text-white shadow-md' 
-                          : 'bg-white hover:bg-vesoko_green_50 text-gray-700 hover:text-vesoko_green_700 border border-gray-200 hover:border-vesoko_green_300'
+                          ? 'bg-vesoko_primary text-white shadow-md' 
+                          : 'bg-white hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary'
                       }`}
                     >
                       <IconComponent className='w-4 h-4' />
@@ -300,7 +300,7 @@ const HeaderBottom = ({
                   <Link
                     href='/sellers'
                     target='_blank'
-                    className='flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-vesoko_green_600 hover:bg-vesoko_green_700 text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg min-h-[36px] touch-manipulation'
+                    className='flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-vesoko_primary hover:bg-vesoko_primary_dark text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg min-h-[36px] touch-manipulation'
                   >
                     <SquareArrowOutUpRight className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
                     <span className='hidden xs:inline truncate'>Sell</span>
@@ -310,7 +310,7 @@ const HeaderBottom = ({
                 {storeInfo && (
                   <Link
                     href={`/${getSellerTypeBaseurl(storeInfo.storeType)}`}
-                    className='flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-vesoko_dark_blue hover:bg-vesoko_dark_blue_2 text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg min-h-[36px] touch-manipulation'
+                    className='flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-vesoko_primary hover:bg-vesoko_primary_2 text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg min-h-[36px] touch-manipulation'
                   >
                     <span className='truncate max-w-[80px] sm:max-w-none'>Dashboard</span>
                   </Link>
@@ -319,7 +319,7 @@ const HeaderBottom = ({
             ) : (
               <Link
                 href='/sellers'
-                className='flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-vesoko_green_600 hover:bg-vesoko_green_700 text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg min-h-[36px] touch-manipulation'
+                className='flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-vesoko_primary hover:bg-vesoko_primary_dark text-white rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg min-h-[36px] touch-manipulation'
               >
                 <SquareArrowOutUpRight className='w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0' />
                 <span className='hidden xs:inline truncate'>Sell</span>
@@ -353,8 +353,8 @@ const HeaderBottom = ({
                     onClick={() => { setShowMobileFilters(false); filter.action(); }}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
                       isActive
-                        ? 'bg-vesoko_green_600 text-white shadow-md'
-                        : 'bg-gray-50 hover:bg-vesoko_green_50 text-gray-700 hover:text-vesoko_green_700 border border-gray-200 hover:border-vesoko_green_300'
+                        ? 'bg-vesoko_primary text-white shadow-md'
+                        : 'bg-gray-50 hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary'
                     }`}
                   >
                     <IconComponent className='w-5 h-5 flex-shrink-0' />

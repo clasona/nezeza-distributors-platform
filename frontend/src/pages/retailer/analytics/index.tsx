@@ -26,8 +26,8 @@ const AnalyticsComingSoon = () => {
         features={features}
         comingSoonDate="~Q1 2026"
         phase="Phase 1"
-        gradient="from-blue-600 to-indigo-700"
-        iconBg="from-blue-500 to-indigo-600"
+        gradient="from-vesoko_primary600 to-indigo-700"
+        iconBg="from-vesoko_primary500 to-indigo-600"
       />
     </RetailerLayout>
   );

@@ -255,7 +255,7 @@ const CheckoutReviewPage = () => {
       <button
         type='button'
         onClick={() => router.push('/checkout/shipping-address')}
-        className='mt-3 sm:mt-0 bg-vesoko_green_600 text-white font-medium px-4 py-2 rounded hover:bg-vesoko_green_800 transition'
+        className='mt-3 sm:mt-0 bg-vesoko_primary text-white font-medium px-4 py-2 rounded hover:bg-vesoko_secondary transition'
       >
         Change
       </button>
@@ -276,7 +276,7 @@ const CheckoutReviewPage = () => {
   if (error) {
     const isAddressError = error.includes('address') || error.includes('validation');
     return (
-      <div className='bg-vesoko_powder_blue min-h-screen py-8 px-2 md:px-8'>
+      <div className='bg-vesoko_primary min-h-screen py-8 px-2 md:px-8'>
         <div className='max-w-2xl mx-auto'>
           <div className='bg-white rounded-lg shadow-lg p-6 border border-red-200'>
             <div className='flex items-start'>
@@ -296,7 +296,7 @@ const CheckoutReviewPage = () => {
                   {isAddressError && (
                     <button
                       onClick={() => router.push('/checkout/shipping-address')}
-                      className='bg-vesoko_green_600 text-white px-4 py-2 rounded hover:bg-vesoko_green_700 transition-colors text-sm font-medium'
+                      className='bg-vesoko_primary text-white px-4 py-2 rounded hover:bg-vesoko_primary_dark transition-colors text-sm font-medium'
                     >
                       Update Shipping Address
                     </button>
@@ -308,7 +308,7 @@ const CheckoutReviewPage = () => {
                     Retry
                   </button>
                   <Link href={buyNowProduct && buyNowProduct.isBuyNow ? '/' : '/cart'}>
-                    <span className='text-vesoko_dark_blue hover:underline text-sm'>
+                    <span className='text-vesoko_primary hover:underline text-sm'>
                       ← {buyNowProduct && buyNowProduct.isBuyNow ? 'Back to Products' : 'Back to Cart'}
                     </span>
                   </Link>
@@ -322,8 +322,8 @@ const CheckoutReviewPage = () => {
   }
 
   return (
-    <div className='bg-vesoko_powder_blue min-h-screen py-8 px-2 md:px-8'>
-      <h2 className='text-2xl font-bold mb-4 text-vesoko_dark_blue text-center'>
+    <div className='bg-vesoko_primary min-h-screen py-8 px-2 md:px-8'>
+      <h2 className='text-2xl font-bold mb-4 text-vesoko_primary text-center'>
         Review &amp; Choose Delivery Options
       </h2>
       <div className='max-w-3xl mx-auto flex flex-col gap-4'>
@@ -375,7 +375,7 @@ const CheckoutReviewPage = () => {
                     key={option.rateId}
                     className={`flex items-center gap-2 cursor-pointer p-2 rounded ${
                       selectedRateId === option.rateId
-                        ? 'border border-vesoko_green_600 bg-green-50'
+                        ? 'border border-vesoko_primary bg-green-50'
                         : 'border border-gray-200'
                     }`}
                   >
@@ -384,7 +384,7 @@ const CheckoutReviewPage = () => {
                       name={`delivery-${group.groupId}`}
                       checked={selectedRateId === option.rateId}
                       onChange={() => handleRadio(group.groupId, option.rateId)}
-                      className='form-radio text-vesoko_green_600'
+                      className='form-radio text-vesoko_primary'
                     />
                     <span className='font-medium'>{option.label}</span>
                     <span className='text-gray-500 text-sm'>
@@ -409,7 +409,7 @@ const CheckoutReviewPage = () => {
         })}
         {/* Order Summary */}
         <div className='bg-white rounded-lg shadow-lg p-6 border'>
-          <h3 className='text-lg font-bold mb-4 text-vesoko_dark_blue'>
+          <h3 className='text-lg font-bold mb-4 text-vesoko_primary'>
             Order Summary
           </h3>
           <div className='space-y-2 text-gray-700'>
@@ -433,7 +433,7 @@ const CheckoutReviewPage = () => {
             </div>
           </div>
           <hr className='my-3' />
-          <div className='flex justify-between text-lg font-bold text-vesoko_dark_blue'>
+          <div className='flex justify-between text-lg font-bold text-vesoko_primary'>
             <span>Total:</span>
             <span>
               <FormattedPrice amount={grandTotal} />
@@ -445,7 +445,7 @@ const CheckoutReviewPage = () => {
             buttonTitle={isProceeding ? 'Processing...' : 'Proceed to Payment'}
             isLoading={isProceeding}
             disabled={!canSubmit || isProceeding}
-            className='w-full py-3 text-center justify-center bg-vesoko_green_600 text-white rounded-md hover:bg-vesoko_green_800 transition-colors duration-300 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed'
+            className='w-full py-3 text-center justify-center bg-vesoko_primary text-white rounded-md hover:bg-vesoko_secondary transition-colors duration-300 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed'
             onClick={handleProceedToPayment}
           />
           {!canSubmit && (
@@ -457,7 +457,7 @@ const CheckoutReviewPage = () => {
         {/* add option to go back */}
         <div className='mt-4 text-center'>
           <Link href={buyNowProduct && buyNowProduct.isBuyNow ? '/' : '/cart'}>
-            <p className='text-vesoko_dark_blue hover:underline'>
+            <p className='text-vesoko_primary hover:underline'>
               &larr; {buyNowProduct && buyNowProduct.isBuyNow ? 'Back to Products' : 'Back to Cart'}
             </p>
           </Link>

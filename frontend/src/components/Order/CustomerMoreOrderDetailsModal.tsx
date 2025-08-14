@@ -79,7 +79,7 @@ const CustomerMoreOrderDetailsModal = ({
       aria-labelledby='modal-title'
       className='fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-75'
     >
-      <div className='bg-vesoko_light_blue p-8 rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto'>
+      <div className='bg-vesoko_background p-8 rounded-lg shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto'>
         <div className='flex justify-between items-center mb-4'>
           <h3 id='modal-title' className='text-2xl font-bold text-vesoko_black'>
             Order Details - <span className='text-vesoko_blue_600'>#{orderData._id}</span>
@@ -264,7 +264,7 @@ const CustomerMoreOrderDetailsModal = ({
                 
                 <div className='space-y-4'>
                   <div className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
-                    <div className='w-10 h-10 bg-green-100 rounded-full flex items-center justify-center'>
+                    <div className='w-10 h-10 bg-vesoko_green_100 rounded-full flex items-center justify-center'>
                       <CreditCard className='w-5 h-5 text-green-600' />
                     </div>
                     <div>
@@ -276,7 +276,7 @@ const CustomerMoreOrderDetailsModal = ({
                   <div className='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'>
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       orderData.paymentStatus === 'Paid' 
-                        ? 'bg-green-100' 
+                        ? 'bg-vesoko_green_100' 
                         : orderData.paymentStatus === 'Failed' 
                         ? 'bg-red-100' 
                         : 'bg-yellow-100'
@@ -451,7 +451,7 @@ const CustomerMoreOrderDetailsModal = ({
                   {onUpdateOrder && (
                     <button
                       onClick={handleSubmit(handleUpdateOrder)}
-                      className='w-full px-4 py-3 bg-vesoko_green_600 text-white rounded-lg hover:bg-vesoko_green_700 transition-colors font-medium'
+                      className='w-full px-4 py-3 bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_primary_dark transition-colors font-medium'
                     >
                       Update Order Status
                     </button>
@@ -486,7 +486,7 @@ const CustomerMoreOrderDetailsModal = ({
             {onUpdateOrder && (
               <button
                 onClick={handleSubmit(handleUpdateOrder)}
-                className='px-4 py-2 bg-vesoko_green_500 text-white rounded-md hover:bg-vesoko_green_600 transition'
+                className='px-4 py-2 bg-vesoko_primary text-white rounded-md hover:bg-vesoko_primary transition'
               >
                 Update Order
               </button>

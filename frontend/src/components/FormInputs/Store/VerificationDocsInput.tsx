@@ -68,7 +68,7 @@ const VerificationDocsInput = ({
   return (
     <div className='w-full space-y-6'>
       <div className='text-center'>
-        <div className='inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4'>
+        <div className='inline-flex items-center gap-2 bg-vesoko_background text-vesoko_secondary px-4 py-2 rounded-full text-sm font-medium mb-4'>
           <Shield className='h-4 w-4' />
           Document Verification
         </div>
@@ -164,7 +164,7 @@ const VerificationDocsInput = ({
         {/* Business Document Card */}
         <div className='bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200'>
           <div className='flex items-center gap-3 mb-4'>
-            <div className='w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center'>
+            <div className='w-10 h-10 bg-vesoko_green_100 rounded-lg flex items-center justify-center'>
               <FileText className='h-5 w-5 text-green-600' />
             </div>
             <div>
@@ -216,7 +216,7 @@ const VerificationDocsInput = ({
       
       {/* Help Text */}
       <div className='text-center text-sm text-gray-500'>
-        <p>Having trouble uploading documents? <Link href='/contact' className='text-vesoko_green_600 hover:text-vesoko_green_700 font-medium'>Contact our support team</Link> for assistance.</p>
+        <p>Having trouble uploading documents? <Link href='/contact' className='text-vesoko_primary hover:text-vesoko_primary_dark font-medium'>Contact our support team</Link> for assistance.</p>
       </div>
     </div>
   );

@@ -129,7 +129,7 @@ const ModernTable: React.FC<ModernTableProps> = ({
         className="px-6 py-12 text-center"
       >
         <div className="flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-vesoko_dark_blue" />
+          <Loader2 className="w-8 h-8 animate-spin text-vesoko_primary" />
           <p className="text-gray-500 text-sm font-medium">{loadingMessage}</p>
         </div>
       </td>

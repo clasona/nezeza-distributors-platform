@@ -58,7 +58,7 @@ const Pagination = ({ data, pageSize, onPageChange }: PaginationProps) => {
      
   ${
     currentPage === index + 1
-      ? 'text-gray-50 bg-vesoko_dark_blue border-blue-300 dark:bg-vesoko_dark_blue dark:border-gray-700  dark:text-gray-50 dark:hover:bg-blue-900 dark:hover:text-white hover:bg-blue-900 hover:text-white'
+      ? 'text-gray-50 bg-vesoko_primary border-blue-300 dark:bg-vesoko_primary dark:border-gray-700  dark:text-gray-50 dark:hover:bg-blue-900 dark:hover:text-white hover:bg-blue-900 hover:text-white'
       : 'text-vesoko_gray_600 bg-white border-gray-300 dark:bg-gray-800 dark:border-gray-700  dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white hover:bg-gray-100 hover:text-gray-700'
   }`}
               >

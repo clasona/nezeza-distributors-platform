@@ -66,7 +66,7 @@ const CheckoutPage = () => {
 
   // Show loading while redirecting
   return (
-    <div className='bg-vesoko_powder_blue min-h-screen flex items-center justify-center'>
+    <div className='bg-vesoko_primary min-h-screen flex items-center justify-center'>
       <div className='text-center'>
         <Loading message='Redirecting to checkout...' />
         <p className='mt-4 text-gray-600'>Taking you to the new checkout experience</p>

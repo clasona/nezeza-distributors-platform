@@ -5,78 +5,86 @@
  * for consistent color usage across the application.
  */
 
-// Primary Brand Colors
+// Primary Brand Colors - Updated Orange & Brown Theme
 export const VESOKO_COLORS = {
-  // Blues - Primary brand colors
-  DARK_BLUE: '#3182ce',
-  DARK_BLUE_2: '#2456a3', 
-  LIGHT_BLUE: '#e2f3fd',
-  POWDER_BLUE: '#A7C7E7',
+  // Orange & Brown - Primary brand colors (matching logo)
+  PRIMARY: '#ff7a00',           // Main orange
+  PRIMARY_DARK: '#e66a00',      // Darker orange for hover states
+  PRIMARY_LIGHT: '#ff8f33',     // Lighter orange for subtle accents
+  SECONDARY: '#3d1f00',         // Deep brown
+  SECONDARY_LIGHT: '#5c2f00',   // Lighter brown for hover states
+  BACKGROUND: '#f7ede2',        // Light cream/beige background
+  BACKGROUND_LIGHT: '#faf6f1',  // Even lighter background
+  ACCENT: '#ff7a00',            // Same as primary for consistency
   
-  // Greens - Success states
+  // Legacy color mappings for backward compatibility
+  DARK_BLUE: '#ff7a00',         // Mapped to primary orange
+  DARK_BLUE_2: '#e66a00',       // Mapped to darker orange
+  LIGHT_BLUE: '#f7ede2',        // Mapped to background
+  POWDER_BLUE: '#ff7a00',       // Mapped to primary orange
+  YELLOW: '#ff7a00',            // Mapped to primary orange
+  YELLOW_600: '#ff7a00',        // Mapped to primary orange
+  LIGHT: '#3d1f00',             // Mapped to secondary brown
+  
+  // Greens - Success states (keeping as is)
   GREEN_500: '#4CAF50',
   GREEN_600: '#38a169',
   GREEN_800: '#276749',
   
-  // Reds - Error/warning states
+  // Reds - Error/warning states (keeping as is)
   RED_200: '#fed7d7',
   RED_600: '#e53e3e',
   RED_700: '#c53030',
   
-  // Grays - Neutral states
+  // Grays - Neutral states (keeping as is)
   GRAY_200: '#edf2f7',
   GRAY_600: '#718096',
-  
-  // Other
-  YELLOW: '#febd69',
-  YELLOW_600: '#d69e2e',
-  LIGHT: '#232F3E',
 } as const;
 
 // Tailwind class mappings for the brand colors
 export const VESOKO_TAILWIND_CLASSES = {
   // Background colors
-  BG_DARK_BLUE: 'bg-vesoko_dark_blue',
-  BG_DARK_BLUE_2: 'bg-vesoko_dark_blue_2',
-  BG_LIGHT_BLUE: 'bg-vesoko_light_blue',
-  BG_POWDER_BLUE: 'bg-vesoko_powder_blue',
-  BG_GREEN_500: 'bg-vesoko_green_500',
-  BG_GREEN_600: 'bg-vesoko_green_600',
-  BG_GREEN_800: 'bg-vesoko_green_800',
+  BG_DARK_BLUE: 'bg-vesoko_primary',
+  BG_DARK_BLUE_2: 'bg-vesoko_primary_2',
+  BG_LIGHT_BLUE: 'bg-vesoko_background',
+  BG_POWDER_BLUE: 'bg-vesoko_primary',
+  BG_GREEN_500: 'bg-vesoko_primary',
+  BG_GREEN_600: 'bg-vesoko_primary',
+  BG_GREEN_800: 'bg-vesoko_secondary',
   BG_RED_200: 'bg-vesoko_red_200',
   BG_RED_600: 'bg-vesoko_red_600',
   BG_RED_700: 'bg-vesoko_red_700',
   BG_GRAY_200: 'bg-vesoko_gray_200',
   BG_GRAY_600: 'bg-vesoko_gray_600',
-  BG_YELLOW: 'bg-vesoko_yellow',
-  BG_YELLOW_600: 'bg-vesoko_yellow_600',
+  BG_YELLOW: 'bg-vesoko_primary',
+  BG_YELLOW_600: 'bg-vesoko_primary_600',
   
   // Text colors
-  TEXT_DARK_BLUE: 'text-vesoko_dark_blue',
-  TEXT_DARK_BLUE_2: 'text-vesoko_dark_blue_2',
-  TEXT_LIGHT_BLUE: 'text-vesoko_light_blue',
-  TEXT_POWDER_BLUE: 'text-vesoko_powder_blue',
+  TEXT_DARK_BLUE: 'text-vesoko_primary',
+  TEXT_DARK_BLUE_2: 'text-vesoko_primary_2',
+  TEXT_LIGHT_BLUE: 'text-vesoko_background',
+  TEXT_POWDER_BLUE: 'text-vesoko_primary',
   TEXT_GREEN_500: 'text-vesoko_green_500',
-  TEXT_GREEN_600: 'text-vesoko_green_600',
+  TEXT_GREEN_600: 'text-vesoko_primary',
   TEXT_GREEN_800: 'text-vesoko_green_800',
   TEXT_RED_200: 'text-vesoko_red_200',
   TEXT_RED_600: 'text-vesoko_red_600',
   TEXT_RED_700: 'text-vesoko_red_700',
   TEXT_GRAY_200: 'text-vesoko_gray_200',
   TEXT_GRAY_600: 'text-vesoko_gray_600',
-  TEXT_YELLOW: 'text-vesoko_yellow',
-  TEXT_YELLOW_600: 'text-vesoko_yellow_600',
-  TEXT_LIGHT: 'text-vesoko_light',
+  TEXT_YELLOW: 'text-vesoko_primary',
+  TEXT_YELLOW_600: 'text-vesoko_primary_600',
+  TEXT_LIGHT: 'text-vesoko_secondary',
   TEXT_WHITE: 'text-white',
   
   // Border colors
-  BORDER_DARK_BLUE: 'border-vesoko_dark_blue',
+  BORDER_DARK_BLUE: 'border-vesoko_primary',
   BORDER_RED_200: 'border-vesoko_red_200',
   BORDER_RED_600: 'border-vesoko_red_600',
   BORDER_GRAY_200: 'border-vesoko_gray_200',
   
   // Ring colors (for focus states)
-  RING_DARK_BLUE: 'ring-vesoko_dark_blue',
+  RING_DARK_BLUE: 'ring-vesoko_primary',
   RING_RED_600: 'ring-vesoko_red_600',
   RING_GREEN_600: 'ring-vesoko_green_600',
 } as const;

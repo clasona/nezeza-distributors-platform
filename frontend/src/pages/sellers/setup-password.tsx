@@ -126,10 +126,10 @@ const PasswordSetupPage = () => {
 
   if (isValidating) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-vesoko_green_50 to-white flex items-center justify-center'>
+      <div className='min-h-screen bg-gradient-to-br from-vesoko_background to-white flex items-center justify-center'>
         <div className='bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4'>
           <div className='text-center'>
-            <Loader2 className='w-8 h-8 animate-spin text-vesoko_green_600 mx-auto mb-4' />
+            <Loader2 className='w-8 h-8 animate-spin text-vesoko_primary mx-auto mb-4' />
             <h2 className='text-xl font-semibold text-gray-900 mb-2'>Validating Setup Link</h2>
             <p className='text-gray-600'>Please wait while we validate your password setup link...</p>
           </div>
@@ -140,7 +140,7 @@ const PasswordSetupPage = () => {
 
   if (!token || !email || !isValidToken) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-vesoko_green_50 to-white flex items-center justify-center'>
+      <div className='min-h-screen bg-gradient-to-br from-vesoko_background to-white flex items-center justify-center'>
         <div className='bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4'>
           <div className='text-center'>
             <AlertCircle className='w-16 h-16 text-red-500 mx-auto mb-4' />
@@ -150,7 +150,7 @@ const PasswordSetupPage = () => {
             </p>
             <Link
               href='/contact'
-              className='inline-flex items-center px-4 py-2 bg-vesoko_green_600 text-white rounded-md hover:bg-vesoko_green_700 transition-colors'
+              className='inline-flex items-center px-4 py-2 bg-vesoko_primary text-white rounded-md hover:bg-vesoko_primary_dark transition-colors'
             >
               Contact Support
             </Link>
@@ -161,18 +161,18 @@ const PasswordSetupPage = () => {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-vesoko_green_50 to-white flex items-center justify-center'>
+    <div className='min-h-screen bg-gradient-to-br from-vesoko_background to-white flex items-center justify-center'>
       <div className='bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4'>
         {/* Header */}
         <div className='text-center mb-8'>
           <div className='w-16 h-16 bg-vesoko_green_100 rounded-full flex items-center justify-center mx-auto mb-4'>
-            <Lock className='w-8 h-8 text-vesoko_green_600' />
+            <Lock className='w-8 h-8 text-vesoko_primary' />
           </div>
           <h2 className='text-2xl font-bold text-gray-900 mb-2'>Set Up Your Password</h2>
           <p className='text-gray-600'>
             Welcome to VeSoko! Please set up your seller account password to get started.
           </p>
-          <p className='text-sm text-vesoko_green_600 mt-2 font-medium'>
+          <p className='text-sm text-vesoko_primary mt-2 font-medium'>
             {email}
           </p>
         </div>
@@ -191,7 +191,7 @@ const PasswordSetupPage = () => {
                 name='password'
                 value={formData.password}
                 onChange={handleInputChange}
-                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_green_500 focus:border-transparent pr-10'
+                className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary focus:border-transparent pr-10'
                 placeholder='Enter your new password'
                 required
               />
@@ -257,7 +257,7 @@ const PasswordSetupPage = () => {
                     ? 'border-green-300 focus:ring-green-500'
                     : formData.confirmPassword && !passwordsMatch
                     ? 'border-red-300 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-vesoko_green_500'
+                    : 'border-gray-300 focus:ring-vesoko_primary'
                 } focus:border-transparent`}
                 placeholder='Confirm your new password'
                 required
@@ -279,7 +279,7 @@ const PasswordSetupPage = () => {
           <button
             type='submit'
             disabled={isLoading || !isPasswordValid || !passwordsMatch}
-            className='w-full bg-vesoko_green_600 text-white py-2 px-4 rounded-md hover:bg-vesoko_green_700 focus:outline-none focus:ring-2 focus:ring-vesoko_green_500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center gap-2'
+            className='w-full bg-vesoko_primary text-white py-2 px-4 rounded-md hover:bg-vesoko_primary_dark focus:outline-none focus:ring-2 focus:ring-vesoko_primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center gap-2'
           >
             {isLoading ? (
               <>
@@ -296,7 +296,7 @@ const PasswordSetupPage = () => {
         <div className='mt-8 text-center text-sm text-gray-600'>
           <p>
             Need help?{' '}
-            <Link href='/contact' className='text-vesoko_green_600 hover:text-vesoko_green_700 font-medium'>
+            <Link href='/contact' className='text-vesoko_primary hover:text-vesoko_primary_dark font-medium'>
               Contact Support
             </Link>
           </p>

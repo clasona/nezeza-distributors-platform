@@ -50,7 +50,7 @@ const SellersHub = () => {
       icon: <Globe className="w-8 h-8" />,
       title: "Global Market Access",
       description: "Reach customers worldwide, starting with the US market and expanding globally.",
-      color: "from-blue-600 to-blue-500"
+      color: "from-vesoko_primary600 to-blue-500"
     },
     {
       icon: <DollarSign className="w-8 h-8" />,
@@ -144,11 +144,11 @@ const SellersHub = () => {
         <meta property="og:type" content="website" />
       </Head>
 
-      <div className="flex flex-col min-h-screen bg-vesoko_powder_blue">
+      <div className="flex flex-col min-h-screen bg-vesoko_primary">
         
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="relative bg-gradient-to-br from-vesoko_dark_blue via-blue-700 to-vesoko_green_600 text-white py-16 sm:py-24 lg:py-32">
+          <section className="relative bg-gradient-to-br from-vesoko_primary via-vesoko_primary_dark to-vesoko_secondary text-white py-16 sm:py-24 lg:py-32">
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -159,22 +159,22 @@ const SellersHub = () => {
                       <span>For African Sellers</span>
                     </div>
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
-                    Sell Your African Products <span className="text-vesoko_yellow">Globally</span>
+                    Sell Your African Products <span className="text-vesoko_primary">Globally</span>
                   </h1>
                   <p className="text-xl sm:text-2xl text-white/90 leading-relaxed">
                     Join VeSoko and connect your authentic African products with customers worldwide.<br />
-                    <span className="font-semibold text-vesoko_yellow">Store application review and approval takes just <span className="text-vesoko_green_200">48 hours</span>!</span><br />
+                    <span className="font-semibold text-vesoko_primary">Store application review and approval takes just <span className="text-vesoko_background">48 hours</span>!</span><br />
                     Start with the US market and expand globally.
                   </p>
                   </div>
                   
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Link href="/select-store-type" className="inline-flex items-center justify-center gap-2 bg-vesoko_yellow text-vesoko_dark_blue px-8 py-4 rounded-xl font-semibold hover:bg-yellow-300 transition-colors duration-300 text-lg">
+                    <Link href="/select-store-type" className="inline-flex items-center justify-center gap-2 bg-white text-vesoko_primary px-8 py-4 rounded-xl font-semibold hover:bg-vesoko_background hover:text-vesoko_secondary transition-colors duration-300 text-lg">
                       Start Selling Now
                       <ArrowRight className="w-5 h-5" />
                     </Link>
-                    <Link href="/sellers/guide" className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-vesoko_dark_blue transition-colors duration-300">
+                    <Link href="/sellers/guide" className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-vesoko_primary transition-colors duration-300">
                       Seller Guide
                       <BookOpen className="w-5 h-5" />
                     </Link>
@@ -182,14 +182,14 @@ const SellersHub = () => {
 
                   <div className="mt-4">
                     <span className="text-white/80 text-base">Already a seller? </span>
-                    <Link href="/login" className="text-vesoko_yellow font-semibold hover:underline ml-1">Sign In</Link>
+                    <Link href="/login" className="text-vesoko_primary font-semibold hover:underline ml-1">Sign In</Link>
                   </div>
 
                   {/* Quick Stats */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8 border-t border-white/20">
                     {stats.map((stat, index) => (
                       <div key={index} className="text-center">
-                        <div className="text-2xl sm:text-3xl font-bold text-vesoko_yellow mb-1">
+                        <div className="text-2xl sm:text-3xl font-bold text-vesoko_primary mb-1">
                           {stat.number}{stat.suffix}
                         </div>
                         <div className="text-sm text-white/80">{stat.label}</div>
@@ -202,8 +202,8 @@ const SellersHub = () => {
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
                   <div className="space-y-6">
                     <div className="text-center">
-                      <div className="w-16 h-16 mx-auto mb-4 bg-vesoko_yellow rounded-2xl flex items-center justify-center">
-                        <Zap className="w-8 h-8 text-vesoko_dark_blue" />
+                      <div className="w-16 h-16 mx-auto mb-4 bg-vesoko_primary rounded-2xl flex items-center justify-center">
+                        <Zap className="w-8 h-8 text-vesoko_primary" />
                       </div>
                       <h3 className="text-2xl font-bold mb-2">Phase 1: Active Now!</h3>
                       <p className="text-white/90">
@@ -213,15 +213,15 @@ const SellersHub = () => {
                     
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 text-vesoko_yellow flex-shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-vesoko_primary flex-shrink-0" />
                         <span className="text-white/90">Products already in the US</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 text-vesoko_yellow flex-shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-vesoko_primary flex-shrink-0" />
                         <span className="text-white/90">Immediate market access</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 text-vesoko_yellow flex-shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-vesoko_primary flex-shrink-0" />
                         <span className="text-white/90">No import/export complexity</span>
                       </div>
                       <div className="flex items-center gap-3">
@@ -231,7 +231,7 @@ const SellersHub = () => {
                     </div>
 
                     <div className="pt-4 border-t border-white/20">
-                      <Link href="/select-store-type" className="block w-full text-center bg-white text-vesoko_dark_blue py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
+                      <Link href="/select-store-type" className="block w-full text-center bg-white text-vesoko_primary py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors duration-300">
                         Apply Now - It's Free!
                       </Link>
                     </div>
@@ -266,7 +266,7 @@ const SellersHub = () => {
           </section>
 
           {/* How to Start Selling */}
-          <section className="py-16 sm:py-24 bg-gradient-to-br from-vesoko_light_blue via-blue-50 to-white">
+          <section className="py-16 sm:py-24 bg-gradient-to-br from-vesoko_background via-vesoko_background_light to-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-16">
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">How to Start Selling</h2>
@@ -280,22 +280,22 @@ const SellersHub = () => {
                   <div key={index} className="relative">
                     <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                       <div className="flex items-center gap-4 mb-6">
-                        <div className="w-12 h-12 bg-vesoko_green_600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                        <div className="w-12 h-12 bg-vesoko_primary rounded-xl flex items-center justify-center text-white font-bold text-lg">
                           {process.step}
                         </div>
-                        <div className="w-10 h-10 bg-vesoko_light_blue rounded-xl flex items-center justify-center text-vesoko_dark_blue">
+                        <div className="w-10 h-10 bg-vesoko_background rounded-xl flex items-center justify-center text-vesoko_primary">
                           {process.icon}
                         </div>
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-3">{process.title}</h3>
                       <p className="text-gray-600 leading-relaxed">{process.description}</p>
                       {process.step === 1 && (
-                        <div className="mt-4 text-sm text-vesoko_green_600 font-semibold">Review & approval in 48 hours</div>
+                        <div className="mt-4 text-sm text-vesoko_primary font-semibold">Review & approval in 48 hours</div>
                       )}
                     </div>
                     {index < sellingProcess.length - 1 && (
                       <div className="hidden lg:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                        <ArrowRight className="w-6 h-6 text-vesoko_green_600" />
+                        <ArrowRight className="w-6 h-6 text-vesoko_primary" />
                       </div>
                     )}
                   </div>
@@ -316,15 +316,15 @@ const SellersHub = () => {
 
               <div className="grid lg:grid-cols-2 gap-8">
                 {requirements.map((req, index) => (
-                  <div key={index} className={`bg-white rounded-2xl p-8 shadow-lg border-2 ${req.status === 'active' ? 'border-vesoko_green_600' : 'border-gray-200'}`}>
+                  <div key={index} className={`bg-white rounded-2xl p-8 shadow-lg border-2 ${req.status === 'active' ? 'border-vesoko_primary' : 'border-gray-200'}`}>
                     {req.status === 'active' && (
-                      <div className="inline-flex items-center gap-2 bg-vesoko_green_600 text-white px-3 py-1 rounded-full text-sm font-semibold mb-4">
+                      <div className="inline-flex items-center gap-2 bg-vesoko_primary text-white px-3 py-1 rounded-full text-sm font-semibold mb-4">
                         <CheckCircle className="w-4 h-4" />
                         Active Now
                       </div>
                     )}
                     {req.status === 'coming-soon' && (
-                      <div className="inline-flex items-center gap-2 bg-vesoko_yellow text-vesoko_dark_blue px-3 py-1 rounded-full text-sm font-semibold mb-4">
+                      <div className="inline-flex items-center gap-2 bg-vesoko_background text-vesoko_secondary px-3 py-1 rounded-full text-sm font-semibold mb-4">
                         <Star className="w-4 h-4" />
                         Coming Soon
                       </div>
@@ -335,7 +335,7 @@ const SellersHub = () => {
                     <ul className="space-y-3">
                       {req.items.map((item, itemIndex) => (
                         <li key={itemIndex} className="flex items-start gap-3">
-                          <CheckCircle className="w-5 h-5 text-vesoko_green_600 flex-shrink-0 mt-0.5" />
+                          <CheckCircle className="w-5 h-5 text-vesoko_primary flex-shrink-0 mt-0.5" />
                           <span className="text-gray-700">{item}</span>
                         </li>
                       ))}
@@ -343,7 +343,7 @@ const SellersHub = () => {
 
                     {req.status === 'active' && (
                       <div className="mt-6 pt-6 border-t border-gray-200">
-                        <Link href="/select-store-type" className="inline-flex items-center gap-2 bg-vesoko_green_600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-vesoko_green_700 transition-colors duration-300">
+                        <Link href="/select-store-type" className="inline-flex items-center gap-2 bg-vesoko_primary text-white px-6 py-3 rounded-xl font-semibold hover:bg-vesoko_primary_dark transition-colors duration-300">
                           Apply Now
                           <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -357,7 +357,7 @@ const SellersHub = () => {
 
           {/* Resources Section */}
           {!isLoading && (sellerContent.length > 0 || sellerFAQs.length > 0) && (
-            <section className="py-16 sm:py-24 bg-gradient-to-br from-vesoko_light_blue via-blue-50 to-white">
+            <section className="py-16 sm:py-24 bg-gradient-to-br from-vesoko_background via-vesoko_background_light to-white">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                   <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Seller Resources</h2>
@@ -384,7 +384,7 @@ const SellersHub = () => {
                         ))}
                       </div>
                       <div className="mt-6">
-                        <Link href="/sellers/resources" className="inline-flex items-center gap-2 text-vesoko_dark_blue hover:text-vesoko_green_600 font-semibold">
+                        <Link href="/sellers/resources" className="inline-flex items-center gap-2 text-vesoko_primary hover:text-vesoko_primary font-semibold">
                           View All Resources
                           <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -412,7 +412,7 @@ const SellersHub = () => {
                         ))}
                       </div>
                       <div className="mt-6">
-                        <Link href="/faq?userType=seller" className="inline-flex items-center gap-2 text-vesoko_dark_blue hover:text-vesoko_green_600 font-semibold">
+                        <Link href="/faq?userType=seller" className="inline-flex items-center gap-2 text-vesoko_primary hover:text-vesoko_primary font-semibold">
                           View All Seller FAQs
                           <ArrowRight className="w-4 h-4" />
                         </Link>
@@ -425,7 +425,7 @@ const SellersHub = () => {
           )}
 
           {/* CTA Section */}
-          <section className="py-16 sm:py-24 bg-gradient-to-r from-vesoko_dark_blue to-vesoko_green_600 text-white">
+          <section className="py-16 sm:py-24 bg-gradient-to-r from-vesoko_primary to-vesoko_primary text-white">
             <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
               <h2 className="text-3xl sm:text-4xl font-bold mb-6">Ready to Start Selling?</h2>
               <p className="text-xl text-white/90 mb-8 leading-relaxed">
@@ -433,11 +433,11 @@ const SellersHub = () => {
                 Phase 1 is active now for US-based African sellers!
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/select-store-type" className="inline-flex items-center justify-center gap-2 bg-vesoko_yellow text-vesoko_dark_blue px-8 py-4 rounded-xl font-semibold hover:bg-yellow-300 transition-colors duration-300">
+                <Link href="/select-store-type" className="inline-flex items-center justify-center gap-2 bg-white text-vesoko_primary px-8 py-4 rounded-xl font-semibold hover:bg-vesoko_background hover:text-vesoko_secondary transition-colors duration-300">
                   Apply to Sell Now
                   <ArrowRight className="w-5 h-5" />
                 </Link>
-                <Link href="/contact?inquiryType=seller" className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-vesoko_dark_blue transition-colors duration-300">
+                <Link href="/contact?inquiryType=seller" className="inline-flex items-center justify-center gap-2 border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-vesoko_primary transition-colors duration-300">
                   Have Questions?
                   <MessageSquare className="w-5 h-5" />
                 </Link>

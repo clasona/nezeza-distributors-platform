@@ -46,7 +46,7 @@ export const CustomerOrderItemDetails = ({ item }: { item: ProductProps }) => {
             </button>
 
             <button
-              className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-vesoko_dark_blue hover:text-white transition duration-300'
+              className='px-4 py-1 border border-gray rounded-lg text-sm hover:bg-vesoko_primary hover:text-white transition duration-300'
               onClick={() => {
                 router.push(`/product/${item._id}`);
               }}

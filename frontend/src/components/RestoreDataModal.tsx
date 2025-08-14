@@ -69,7 +69,7 @@ const RestoreDataModal: React.FC<RestoreDataModalProps> = ({
           <div className="flex gap-3">
             <button
               onClick={onKeepData}
-              className="flex-1 bg-vesoko_dark_blue text-white px-4 py-2 rounded-md hover:bg-vesoko_green_600 transition-colors duration-200 flex items-center justify-center gap-2"
+              className="flex-1 bg-vesoko_primary text-white px-4 py-2 rounded-md hover:bg-vesoko_primary transition-colors duration-200 flex items-center justify-center gap-2"
             >
               <RotateCcw className="h-4 w-4" />
               Continue Previous

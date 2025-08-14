@@ -66,7 +66,7 @@ const CartProduct = ({ item }: CartProductProps) => {
               {product.description.length > 80 && (
                 <button
                   onClick={toggleDescription}
-                  className='text-sm text-vesoko_dark_blue hover:text-vesoko_green_600 font-medium transition-colors duration-200 mt-1'
+                  className='text-sm text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200 mt-1'
                 >
                   {showFullDescription ? 'Show Less' : 'Read More'}
                 </button>
@@ -137,7 +137,7 @@ const CartProduct = ({ item }: CartProductProps) => {
                       setSuccessMessage('Moved to favorites successfully!');
                       dispatch(deleteCartProduct(product._id));
                     }}
-                    className='flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-vesoko_dark_blue border border-vesoko_dark_blue rounded-lg hover:bg-vesoko_dark_blue hover:text-white transition-all duration-200'
+                    className='flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-vesoko_primary border border-vesoko_primary rounded-lg hover:bg-vesoko_primary hover:text-white transition-all duration-200'
                     aria-label='Move to Favorites'
                   >
                     <Heart className='h-4 w-4' />
@@ -157,7 +157,7 @@ const CartProduct = ({ item }: CartProductProps) => {
               
               <div className='text-right'>
                 <p className='text-sm text-gray-500'>Total</p>
-                <p className='text-xl font-bold text-vesoko_dark_blue'>
+                <p className='text-xl font-bold text-vesoko_primary'>
                   <FormattedPrice amount={item.price * item.quantity} />
                 </p>
               </div>

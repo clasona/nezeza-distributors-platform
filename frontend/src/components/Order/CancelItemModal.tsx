@@ -86,7 +86,7 @@ const CancelItemModal: React.FC<CancelItemModalProps> = ({
             Cancel
           </button>
           <button
-            className='px-4 py-1 bg-vesoko_dark_blue text-white rounded hover:bg-vesoko_dark_blue_2 cursor-pointer transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
+            className='px-4 py-1 bg-vesoko_primary text-white rounded hover:bg-vesoko_primary_2 cursor-pointer transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed'
             onClick={() => onSubmit(quantity, reason)}
             disabled={
               quantity < 1 ||

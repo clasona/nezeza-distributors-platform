@@ -76,9 +76,9 @@ const CheckoutPaymentPage = () => {
   );
 
   return (
-    <div className='bg-vesoko_powder_blue min-h-screen p-4 md:p-8 flex items-center justify-center'>
+    <div className='bg-vesoko_primary min-h-screen p-4 md:p-8 flex items-center justify-center'>
       <div className='w-full max-w-lg p-6 bg-white shadow-lg rounded-lg'>
-        <h2 className='text-2xl font-bold mb-4 text-center text-vesoko_dark_blue'>
+        <h2 className='text-2xl font-bold mb-4 text-center text-vesoko_primary'>
           Complete Your Payment
         </h2>
         {clientSecret ? (
@@ -95,7 +95,7 @@ const CheckoutPaymentPage = () => {
         )}
         <div className='mt-6 text-center'>
           <Link href='/checkout/review'>
-            <p className='text-vesoko_dark_blue hover:underline'>
+            <p className='text-vesoko_primary hover:underline'>
               &larr; Back to Order Review
             </p>
           </Link>

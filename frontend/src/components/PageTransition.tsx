@@ -37,7 +37,7 @@ const PageTransition = ({ children }: PageTransitionProps) => {
       {isLoading && (
         <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-200">
           <div 
-            className="h-full bg-gradient-to-r from-vesoko_green_500 to-vesoko_green_600 transition-all duration-700 ease-out"
+            className="h-full bg-gradient-to-r from-vesoko_primary to-vesoko_primary transition-all duration-700 ease-out"
             style={{
               width: '100%',
               transformOrigin: 'left',
