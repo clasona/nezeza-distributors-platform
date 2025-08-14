@@ -1093,9 +1093,12 @@ const TicketDetailView = React.memo(({
                     <p className="text-gray-700 whitespace-pre-wrap">{message.content}</p>
                     {message.attachments && message.attachments.length > 0 && (
                       <div className="mt-3">
-                        <div className="text-sm text-gray-600 mb-2">
-                          📎 {message.attachments.length} attachment{message.attachments.length !== 1 ? 's' : ''}: {message.attachments.map(att => att.name || 'file').join(', ')}
-                        </div>
+                        <AttachmentViewer 
+                          attachments={message.attachments}
+                          title="Message Attachments"
+                          maxDisplay={3}
+                          className="max-w-lg"
+                        />
                       </div>
                     )}
                   </div>
