@@ -35,7 +35,7 @@ const mockRetailerBusiness = {
   businessType: 'Electronics Retailer',
   accountManager: 'Sarah Johnson',
   monthlyOrders: 1250,
-  totalRevenue: 'RWF 45,000,000',
+  totalRevenue: '$34,615',
   supportTier: 'Premium'
 };
 
@@ -52,7 +52,7 @@ const mockRetailerTickets = [
     createdAt: '2024-01-20T10:30:00Z',
     updatedAt: '2024-01-21T14:20:00Z',
     businessImpact: 'high',
-    estimatedValue: 'RWF 15,000,000',
+    estimatedValue: '$11,538',
     messages: [
       {
         id: '1',
@@ -99,7 +99,7 @@ const mockRetailerTickets = [
     _id: '3',
     ticketNumber: 'RT-2024-003',
     subject: 'New product onboarding for laptop category',
-    category: 'product_inquiry',
+    category: 'other',
     priority: 'low',
     status: 'resolved',
     description: 'Request to add new laptop models to our retailer catalog',
@@ -137,15 +137,402 @@ const TAB_MAP = {
 
 type TabValue = 'dashboard' | 'submit-ticket' | 'my-tickets' | 'analytics' | 'faqs';
 
+// Dashboard Content Component - moved outside to prevent recreation
+const DashboardContent = React.memo(({ 
+  mockRetailerBusiness, 
+  tickets, 
+  handleTabChange, 
+  formatDate, 
+  getStatusColor, 
+  getPriorityColor, 
+  getBusinessImpactColor 
+}: {
+  mockRetailerBusiness: any;
+  tickets: any[];
+  handleTabChange: (value: string) => void;
+  formatDate: (dateString: string) => string | null;
+  getStatusColor: (status: string) => string;
+  getPriorityColor: (priority: string) => string;
+  getBusinessImpactColor: (impact: string) => string;
+}) => (
+  <div className="space-y-8">
+    {/* Business Overview */}
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">Business Support Dashboard</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="text-center">
+          <h3 className="text-lg font-semibold text-gray-900">{mockRetailerBusiness.businessName}</h3>
+          <p className="text-gray-600">{mockRetailerBusiness.businessType}</p>
+          <p className="text-sm text-blue-600 mt-2">{mockRetailerBusiness.supportTier} Support</p>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-green-600">{mockRetailerBusiness.monthlyOrders}</div>
+          <p className="text-gray-600">Monthly Orders</p>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold text-blue-600">{mockRetailerBusiness.totalRevenue}</div>
+          <p className="text-gray-600">Total Revenue</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Quick Actions for Retailers */}
+    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500">
+        <div className="flex items-center mb-3">
+          <div className="bg-blue-100 p-3 rounded-full mr-4">
+            <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-blue-700">Business Analytics</h3>
+        </div>
+        <p className="text-gray-600 mb-4">View detailed analytics about your support interactions, response times, and business impact metrics.</p>
+        <button onClick={() => handleTabChange('analytics')} className="text-blue-600 font-medium hover:text-blue-800">View Analytics →</button>
+      </div>
+
+      <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500">
+        <div className="flex items-center mb-3">
+          <div className="bg-green-100 p-3 rounded-full mr-4">
+            <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-green-700">Volume Discounts</h3>
+        </div>
+        <p className="text-gray-600 mb-4">Request volume pricing, negotiate terms, and manage your bulk order discounts for better margins.</p>
+        <button onClick={() => handleTabChange('submit-ticket')} className="text-green-600 font-medium hover:text-green-800">Request Pricing →</button>
+      </div>
+
+      <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-purple-500">
+        <div className="flex items-center mb-3">
+          <div className="bg-purple-100 p-3 rounded-full mr-4">
+            <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a2 2 0 011-1h4a2 2 0 011 1v12m-6 0h6" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-purple-700">Account Management</h3>
+        </div>
+        <p className="text-gray-600 mb-4">Connect with your dedicated account manager for business planning and strategic support.</p>
+        <div className="text-purple-600 font-medium">Contact: {mockRetailerBusiness.accountManager}</div>
+      </div>
+    </section>
+
+    {/* Recent Tickets */}
+    <section className="bg-white rounded-lg shadow-md p-6">
+      <h3 className="text-xl font-semibold mb-4 text-gray-800">Recent Support Tickets</h3>
+      <div className="space-y-4">
+        {tickets.slice(0, 3).map((ticket) => (
+          <div key={ticket._id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-medium text-gray-900">{ticket.subject}</h4>
+              <div className="flex items-center space-x-2">
+                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(ticket.status)}`}>
+                  {ticket.status.toUpperCase()}
+                </span>
+                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(ticket.priority)}`}>
+                  {ticket.priority.toUpperCase()}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-sm text-gray-600">
+              <span>#{ticket.ticketNumber}</span>
+              {formatDate(ticket.updatedAt) && (
+                <span>Updated {formatDate(ticket.updatedAt).split(',')[0]}</span>
+              )}
+              {ticket.businessImpact && (
+                <span className={`px-2 py-1 text-xs rounded-full ${getBusinessImpactColor(ticket.businessImpact)}`}>
+                  {ticket.businessImpact} impact
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 text-center">
+        <button onClick={() => handleTabChange('my-tickets')} className="text-blue-600 hover:text-blue-800 font-medium">
+          View All Tickets →
+        </button>
+      </div>
+    </section>
+  </div>
+));
+
+// Analytics Content Component - moved outside to prevent recreation
+const AnalyticsContent = React.memo(() => (
+  <div className="space-y-8">
+    <h2 className="text-2xl font-bold text-gray-900">Business Analytics</h2>
+    
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="bg-white rounded-lg shadow-sm border p-6 text-center">
+        <div className="text-3xl font-bold text-blue-600">12</div>
+        <div className="text-sm text-gray-600">Total Tickets</div>
+      </div>
+      <div className="bg-white rounded-lg shadow-sm border p-6 text-center">
+        <div className="text-3xl font-bold text-green-600">2.4h</div>
+        <div className="text-sm text-gray-600">Avg Response Time</div>
+      </div>
+      <div className="bg-white rounded-lg shadow-sm border p-6 text-center">
+        <div className="text-3xl font-bold text-purple-600">94%</div>
+        <div className="text-sm text-gray-600">Resolution Rate</div>
+      </div>
+      <div className="bg-white rounded-lg shadow-sm border p-6 text-center">
+        <div className="text-3xl font-bold text-orange-600">$1,769</div>
+        <div className="text-sm text-gray-600">Revenue Impact</div>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <h3 className="text-lg font-semibold mb-4">Support Categories</h3>
+        <div className="space-y-3">
+          {[
+            { category: 'Volume Pricing', count: 5, percentage: 42 },
+            { category: 'Shipping Issues', count: 3, percentage: 25 },
+            { category: 'Product Inquiries', count: 2, percentage: 17 },
+            { category: 'Account Management', count: 2, percentage: 16 }
+          ].map((item, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">{item.category}</span>
+              <div className="flex items-center space-x-2">
+                <div className="w-20 bg-gray-200 rounded-full h-2">
+                  <div className="bg-blue-600 h-2 rounded-full" style={{width: `${item.percentage}%`}}></div>
+                </div>
+                <span className="text-sm font-medium">{item.count}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <h3 className="text-lg font-semibold mb-4">Business Impact</h3>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-gray-700">Revenue at Risk</span>
+            <span className="text-red-600 font-semibold">$615</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-700">Revenue Recovered</span>
+            <span className="text-green-600 font-semibold">$1,154</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-gray-700">Customer Satisfaction</span>
+            <span className="text-blue-600 font-semibold">4.8/5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+));
+
+// FAQ Content Component - moved outside to prevent recreation
+const FAQContent = React.memo(() => (
+  <div className="max-w-4xl mx-auto">
+    <h2 className="text-2xl font-bold mb-6">Retailer Support FAQ</h2>
+    
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <h3 className="text-lg font-semibold mb-3 text-blue-700">Volume Pricing & Discounts</h3>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium mb-1">How do I qualify for volume discounts?</h4>
+            <p className="text-gray-600 text-sm">Volume discounts start at 50+ units per month. Contact your account manager for custom pricing tiers.</p>
+          </div>
+          <div>
+            <h4 className="font-medium mb-1">What payment terms are available?</h4>
+            <p className="text-gray-600 text-sm">We offer NET 30, NET 60, and custom payment terms based on your business volume and history.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <h3 className="text-lg font-semibold mb-3 text-green-700">Business Operations</h3>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium mb-1">How do I add new products to my catalog?</h4>
+            <p className="text-gray-600 text-sm">Submit a product inquiry ticket with the specific models you want to add. Our team will review and approve within 2 business days.</p>
+          </div>
+          <div>
+            <h4 className="font-medium mb-1">What are the minimum order quantities?</h4>
+            <p className="text-gray-600 text-sm">MOQs vary by product category. Electronics typically have a MOQ of 10 units, while accessories have a MOQ of 25 units.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+));
+
+// MyTicketsContent Component - moved outside to prevent recreation and focus loss
+const MyTicketsContent = React.memo(({ 
+  selectedTicket, 
+  setSelectedTicket,
+  tickets,
+  handleTabChange,
+  formatDate,
+  getStatusColor,
+  getPriorityColor,
+  getBusinessImpactColor,
+  newMessage,
+  setNewMessage,
+  messageAttachments,
+  setMessageAttachments,
+  isSubmittingMessage,
+  setIsSubmittingMessage,
+  messageError,
+  setMessageError
+}: {
+  selectedTicket: any;
+  setSelectedTicket: (ticket: any) => void;
+  tickets: any[];
+  handleTabChange: (value: string) => void;
+  formatDate: (dateString: string) => string | null;
+  getStatusColor: (status: string) => string;
+  getPriorityColor: (priority: string) => string;
+  getBusinessImpactColor: (impact: string) => string;
+  newMessage: string;
+  setNewMessage: (message: string) => void;
+  messageAttachments: string[];
+  setMessageAttachments: (attachments: string[]) => void;
+  isSubmittingMessage: boolean;
+  setIsSubmittingMessage: (submitting: boolean) => void;
+  messageError: string;
+  setMessageError: (error: string) => void;
+}) => {
+  if (selectedTicket) {
+    return <TicketDetailView 
+      selectedTicket={selectedTicket}
+      setSelectedTicket={setSelectedTicket}
+      newMessage={newMessage}
+      setNewMessage={setNewMessage}
+      messageAttachments={messageAttachments}
+      setMessageAttachments={setMessageAttachments}
+      isSubmittingMessage={isSubmittingMessage}
+      setIsSubmittingMessage={setIsSubmittingMessage}
+      messageError={messageError}
+      setMessageError={setMessageError}
+      formatDate={formatDate}
+      getStatusColor={getStatusColor}
+      getPriorityColor={getPriorityColor}
+      getBusinessImpactColor={getBusinessImpactColor}
+    />;
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">My Business Support Tickets</h2>
+        <button 
+          onClick={() => handleTabChange('submit-ticket')}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          New Support Request
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {tickets.map((ticket) => (
+          <div 
+            key={ticket._id} 
+            className="bg-white rounded-lg shadow-sm border p-6 cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => setSelectedTicket(ticket)}
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center space-x-3 mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900">{ticket.subject}</h3>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
+                    {ticket.status.replace('_', ' ').toUpperCase()}
+                  </span>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(ticket.priority)}`}>
+                    {ticket.priority.toUpperCase()}
+                  </span>
+                  {ticket.businessImpact && (
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getBusinessImpactColor(ticket.businessImpact)}`}>
+                      {ticket.businessImpact.toUpperCase()} IMPACT
+                    </span>
+                  )}
+                </div>
+                <p className="text-gray-600 mb-3">{ticket.description}</p>
+                
+                {/* Show ticket attachments if any */}
+                {ticket.attachments && ticket.attachments.length > 0 && (
+                  <div className="mb-3">
+                    <AttachmentViewer 
+                      attachments={ticket.attachments}
+                      title="Initial Attachments"
+                      maxDisplay={2}
+                    />
+                  </div>
+                )}
+                
+                {/* Show recent messages with attachments */}
+                {ticket.messages && ticket.messages.length > 0 && (
+                  <div className="mb-3">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Messages ({ticket.messages.length})</h4>
+                    <div className="bg-gray-50 rounded-lg p-3 space-y-2 max-h-40 overflow-y-auto">
+                      {ticket.messages.slice(-2).map((message, idx) => (
+                        <div key={message.id || idx} className="text-xs">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium text-gray-800">{message.authorName}</span>
+                            {formatDate(message.timestamp) && (
+                              <span className="text-gray-500">{formatDate(message.timestamp).split(',')[0]}</span>
+                            )}
+                          </div>
+                          <p className="text-gray-700 mb-1 line-clamp-2">{message.content}</p>
+                          {message.attachments && message.attachments.length > 0 && (
+                            <div className="mt-1">
+                              <div className="text-xs text-gray-600">
+                                📎 {message.attachments.length} attachment{message.attachments.length !== 1 ? 's' : ''}: {message.attachments.map(att => att.name || 'file').join(', ')}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-6 text-sm text-gray-500">
+                    <span>#{ticket.ticketNumber}</span>
+                    {formatDate(ticket.createdAt) && <span>Created {formatDate(ticket.createdAt)}</span>}
+                    {formatDate(ticket.updatedAt) && <span>Updated {formatDate(ticket.updatedAt)}</span>}
+                    {ticket.estimatedValue && <span className="text-green-600 font-medium">Value: {ticket.estimatedValue}</span>}
+                    {ticket.affectedOrders && <span className="text-red-600 font-medium">{ticket.affectedOrders} orders affected</span>}
+                    {ticket.messages && <span>💬 {ticket.messages.length} message{ticket.messages.length !== 1 ? 's' : ''}</span>}
+                  </div>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedTicket(ticket);
+                    }}
+                    className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                  >
+                    View & Reply →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+});
+
 const RetailerSupportPage = () => {
   const pathname = usePathname();
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState<TabValue>('dashboard');
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [newMessage, setNewMessage] = useState('');
   const [tickets, setTickets] = useState([]);
   const [loadingTickets, setLoadingTickets] = useState(false);
   const [ticketError, setTicketError] = useState<string | null>(null);
+  const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
+  const [messageError, setMessageError] = useState('');
+  const [messageAttachments, setMessageAttachments] = useState<string[]>([]);
 
   // Form state for submit ticket
   const [formData, setFormData] = useState({
@@ -194,22 +581,29 @@ const RetailerSupportPage = () => {
     loadTickets();
   }, [loadTickets]);
 
-  const handleTabChange = (value: string) => {
+  const handleTabChange = useCallback((value: string) => {
     const targetPath = `/retailer/support${value === 'dashboard' ? '' : `/${value}`}`;
     router.push(targetPath);
-  };
+  }, [router]);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('en-US', {
+  const formatDate = useCallback((dateString: string) => {
+    if (!dateString) return null;
+    
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+    
+    return date.toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
-  };
+  }, []);
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = useCallback((status: string) => {
     switch (status) {
       case 'open': return 'bg-blue-100 text-blue-800';
       case 'in_progress': return 'bg-yellow-100 text-yellow-800';
@@ -217,9 +611,9 @@ const RetailerSupportPage = () => {
       case 'closed': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
-  };
+  }, []);
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = useCallback((priority: string) => {
     switch (priority) {
       case 'low': return 'bg-green-100 text-green-800';
       case 'medium': return 'bg-yellow-100 text-yellow-800';
@@ -227,9 +621,9 @@ const RetailerSupportPage = () => {
       case 'urgent': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
-  };
+  }, []);
 
-  const getBusinessImpactColor = (impact: string) => {
+  const getBusinessImpactColor = useCallback((impact: string) => {
     switch (impact) {
       case 'low': return 'bg-green-50 text-green-700';
       case 'medium': return 'bg-yellow-50 text-yellow-700';
@@ -237,7 +631,7 @@ const RetailerSupportPage = () => {
       case 'critical': return 'bg-red-50 text-red-700';
       default: return 'bg-gray-50 text-gray-700';
     }
-  };
+  }, []);
 
   // Form handlers - using useCallback to prevent re-renders
   const handleInputChange = useCallback((field: string, value: string) => {
@@ -330,303 +724,7 @@ const RetailerSupportPage = () => {
     }
   }, [formData, handleTabChange]);
 
-  // Dashboard Content
-  const DashboardContent = () => (
-    <div className="space-y-8">
-      {/* Business Overview */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">Business Support Dashboard</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900">{mockRetailerBusiness.businessName}</h3>
-            <p className="text-gray-600">{mockRetailerBusiness.businessType}</p>
-            <p className="text-sm text-blue-600 mt-2">{mockRetailerBusiness.supportTier} Support</p>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">{mockRetailerBusiness.monthlyOrders}</div>
-            <p className="text-gray-600">Monthly Orders</p>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{mockRetailerBusiness.totalRevenue}</div>
-            <p className="text-gray-600">Total Revenue</p>
-          </div>
-        </div>
-      </div>
 
-      {/* Quick Actions for Retailers */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-blue-500">
-          <div className="flex items-center mb-3">
-            <div className="bg-blue-100 p-3 rounded-full mr-4">
-              <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-blue-700">Business Analytics</h3>
-          </div>
-          <p className="text-gray-600 mb-4">View detailed analytics about your support interactions, response times, and business impact metrics.</p>
-          <button onClick={() => handleTabChange('analytics')} className="text-blue-600 font-medium hover:text-blue-800">View Analytics →</button>
-        </div>
-
-        <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-green-500">
-          <div className="flex items-center mb-3">
-            <div className="bg-green-100 p-3 rounded-full mr-4">
-              <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-green-700">Volume Discounts</h3>
-          </div>
-          <p className="text-gray-600 mb-4">Request volume pricing, negotiate terms, and manage your bulk order discounts for better margins.</p>
-          <button onClick={() => handleTabChange('submit-ticket')} className="text-green-600 font-medium hover:text-green-800">Request Pricing →</button>
-        </div>
-
-        <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow border-l-4 border-purple-500">
-          <div className="flex items-center mb-3">
-            <div className="bg-purple-100 p-3 rounded-full mr-4">
-              <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m0 0H5m4 0V9a2 2 0 011-1h4a2 2 0 011 1v12m-6 0h6" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-purple-700">Account Management</h3>
-          </div>
-          <p className="text-gray-600 mb-4">Connect with your dedicated account manager for business planning and strategic support.</p>
-          <div className="text-purple-600 font-medium">Contact: {mockRetailerBusiness.accountManager}</div>
-        </div>
-      </section>
-
-      {/* Recent Tickets */}
-      <section className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-semibold mb-4 text-gray-800">Recent Support Tickets</h3>
-        <div className="space-y-4">
-          {tickets.slice(0, 3).map((ticket) => (
-            <div key={ticket._id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-medium text-gray-900">{ticket.subject}</h4>
-                <div className="flex items-center space-x-2">
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(ticket.status)}`}>
-                    {ticket.status.toUpperCase()}
-                  </span>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(ticket.priority)}`}>
-                    {ticket.priority.toUpperCase()}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>#{ticket.ticketNumber}</span>
-                <span>Updated {formatDate(ticket.updatedAt).split(',')[0]}</span>
-                {ticket.businessImpact && (
-                  <span className={`px-2 py-1 text-xs rounded-full ${getBusinessImpactColor(ticket.businessImpact)}`}>
-                    {ticket.businessImpact} impact
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 text-center">
-          <button onClick={() => handleTabChange('my-tickets')} className="text-blue-600 hover:text-blue-800 font-medium">
-            View All Tickets →
-          </button>
-        </div>
-      </section>
-    </div>
-  );
-
-  // Enhanced My Tickets with business context
-  const MyTicketsContent = () => (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">My Business Support Tickets</h2>
-        <button 
-          onClick={() => handleTabChange('submit-ticket')}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          New Support Request
-        </button>
-      </div>
-
-      <div className="space-y-4">
-        {tickets.map((ticket) => (
-          <div key={ticket._id} className="bg-white rounded-lg shadow-sm border p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">{ticket.subject}</h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
-                    {ticket.status.replace('_', ' ').toUpperCase()}
-                  </span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(ticket.priority)}`}>
-                    {ticket.priority.toUpperCase()}
-                  </span>
-                  {ticket.businessImpact && (
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getBusinessImpactColor(ticket.businessImpact)}`}>
-                      {ticket.businessImpact.toUpperCase()} IMPACT
-                    </span>
-                  )}
-                </div>
-                <p className="text-gray-600 mb-3">{ticket.description}</p>
-                
-                {/* Show ticket attachments if any */}
-                {ticket.attachments && ticket.attachments.length > 0 && (
-                  <div className="mb-3">
-                    <AttachmentViewer 
-                      attachments={ticket.attachments}
-                      title="Initial Attachments"
-                      maxDisplay={2}
-                    />
-                  </div>
-                )}
-                
-                {/* Show recent messages with attachments */}
-                {ticket.messages && ticket.messages.length > 0 && (
-                  <div className="mb-3">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Messages ({ticket.messages.length})</h4>
-                    <div className="bg-gray-50 rounded-lg p-3 space-y-2 max-h-40 overflow-y-auto">
-                      {ticket.messages.slice(-2).map((message, idx) => (
-                        <div key={message.id || idx} className="text-xs">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-medium text-gray-800">{message.authorName}</span>
-                            <span className="text-gray-500">{formatDate(message.timestamp).split(',')[0]}</span>
-                          </div>
-                          <p className="text-gray-700 mb-1 line-clamp-2">{message.content}</p>
-                          {message.attachments && message.attachments.length > 0 && (
-                            <div className="mt-1">
-                              <AttachmentViewer 
-                                attachments={message.attachments.map(att => ({ url: att.url, filename: att.name }))}
-                                title={`Attachments (${message.attachments.length})`}
-                                maxDisplay={2}
-                                className="text-xs"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="flex items-center space-x-6 text-sm text-gray-500">
-                  <span>#{ticket.ticketNumber}</span>
-                  <span>Created {formatDate(ticket.createdAt)}</span>
-                  <span>Updated {formatDate(ticket.updatedAt)}</span>
-                  {ticket.estimatedValue && <span className="text-green-600 font-medium">Value: {ticket.estimatedValue}</span>}
-                  {ticket.affectedOrders && <span className="text-red-600 font-medium">{ticket.affectedOrders} orders affected</span>}
-                  {ticket.messages && <span>💬 {ticket.messages.length} message{ticket.messages.length !== 1 ? 's' : ''}</span>}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  // Business Analytics Dashboard
-  const AnalyticsContent = () => (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-gray-900">Business Analytics</h2>
-      
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border p-6 text-center">
-          <div className="text-3xl font-bold text-blue-600">12</div>
-          <div className="text-sm text-gray-600">Total Tickets</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border p-6 text-center">
-          <div className="text-3xl font-bold text-green-600">2.4h</div>
-          <div className="text-sm text-gray-600">Avg Response Time</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border p-6 text-center">
-          <div className="text-3xl font-bold text-purple-600">94%</div>
-          <div className="text-sm text-gray-600">Resolution Rate</div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border p-6 text-center">
-          <div className="text-3xl font-bold text-orange-600">RWF 2.3M</div>
-          <div className="text-sm text-gray-600">Revenue Impact</div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold mb-4">Support Categories</h3>
-          <div className="space-y-3">
-            {[
-              { category: 'Volume Pricing', count: 5, percentage: 42 },
-              { category: 'Shipping Issues', count: 3, percentage: 25 },
-              { category: 'Product Inquiries', count: 2, percentage: 17 },
-              { category: 'Account Management', count: 2, percentage: 16 }
-            ].map((item, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">{item.category}</span>
-                <div className="flex items-center space-x-2">
-                  <div className="w-20 bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{width: `${item.percentage}%`}}></div>
-                  </div>
-                  <span className="text-sm font-medium">{item.count}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold mb-4">Business Impact</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">Revenue at Risk</span>
-              <span className="text-red-600 font-semibold">RWF 800K</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">Revenue Recovered</span>
-              <span className="text-green-600 font-semibold">RWF 1.5M</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-700">Customer Satisfaction</span>
-              <span className="text-blue-600 font-semibold">4.8/5</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-
-  // Retailer-specific FAQs
-  const FAQContent = () => (
-    <div className="max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Retailer Support FAQ</h2>
-      
-      <div className="space-y-6">
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold mb-3 text-blue-700">Volume Pricing & Discounts</h3>
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-medium mb-1">How do I qualify for volume discounts?</h4>
-              <p className="text-gray-600 text-sm">Volume discounts start at 50+ units per month. Contact your account manager for custom pricing tiers.</p>
-            </div>
-            <div>
-              <h4 className="font-medium mb-1">What payment terms are available?</h4>
-              <p className="text-gray-600 text-sm">We offer NET 30, NET 60, and custom payment terms based on your business volume and history.</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <h3 className="text-lg font-semibold mb-3 text-green-700">Business Operations</h3>
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-medium mb-1">How do I add new products to my catalog?</h4>
-              <p className="text-gray-600 text-sm">Submit a product inquiry ticket with the specific models you want to add. Our team will review and approve within 2 business days.</p>
-            </div>
-            <div>
-              <h4 className="font-medium mb-1">What are the minimum order quantities?</h4>
-              <p className="text-gray-600 text-sm">MOQs vary by product category. Electronics typically have a MOQ of 10 units, while accessories have a MOQ of 25 units.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   const tabs = useMemo(() => [
     { label: 'Dashboard', value: 'dashboard' },
@@ -636,10 +734,18 @@ const RetailerSupportPage = () => {
     { label: 'FAQ', value: 'faqs' },
   ], []);
 
-  const renderTabContent = () => {
+  const renderTabContent = useCallback(() => {
     switch (selectedTab) {
       case 'dashboard':
-        return <DashboardContent />;
+        return <DashboardContent 
+          mockRetailerBusiness={mockRetailerBusiness}
+          tickets={tickets}
+          handleTabChange={handleTabChange}
+          formatDate={formatDate}
+          getStatusColor={getStatusColor}
+          getPriorityColor={getPriorityColor}
+          getBusinessImpactColor={getBusinessImpactColor}
+        />;
       case 'submit-ticket':
         return <SubmitTicketContent 
           formData={formData}
@@ -652,15 +758,40 @@ const RetailerSupportPage = () => {
           handleSubmit={handleSubmit}
         />;
       case 'my-tickets':
-        return <MyTicketsContent />;
+        return <MyTicketsContent 
+          selectedTicket={selectedTicket}
+          setSelectedTicket={setSelectedTicket}
+          tickets={tickets}
+          handleTabChange={handleTabChange}
+          formatDate={formatDate}
+          getStatusColor={getStatusColor}
+          getPriorityColor={getPriorityColor}
+          getBusinessImpactColor={getBusinessImpactColor}
+          newMessage={newMessage}
+          setNewMessage={setNewMessage}
+          messageAttachments={messageAttachments}
+          setMessageAttachments={setMessageAttachments}
+          isSubmittingMessage={isSubmittingMessage}
+          setIsSubmittingMessage={setIsSubmittingMessage}
+          messageError={messageError}
+          setMessageError={setMessageError}
+        />;
       case 'analytics':
         return <AnalyticsContent />;
       case 'faqs':
         return <FAQContent />;
       default:
-        return <DashboardContent />;
+        return <DashboardContent 
+          mockRetailerBusiness={mockRetailerBusiness}
+          tickets={tickets}
+          handleTabChange={handleTabChange}
+          formatDate={formatDate}
+          getStatusColor={getStatusColor}
+          getPriorityColor={getPriorityColor}
+          getBusinessImpactColor={getBusinessImpactColor}
+        />;
     }
-  };
+  }, [selectedTab, formData, isSubmitting, submitError, submitSuccess, handleInputChange, handleFileChange, handleAttachmentUrlsChange, handleSubmit, selectedTicket, setSelectedTicket, tickets, handleTabChange, formatDate, getStatusColor, getPriorityColor, getBusinessImpactColor, newMessage, setNewMessage, messageAttachments, setMessageAttachments, isSubmittingMessage, setIsSubmittingMessage, messageError, setMessageError]);
 
   return (
     <SupportCenterLayout
@@ -682,6 +813,284 @@ const RetailerSupportPage = () => {
     </SupportCenterLayout>
   );
 };
+
+// Memoized TicketDetailView component to prevent re-renders and focus loss
+const TicketDetailView = React.memo(({ 
+  selectedTicket, 
+  setSelectedTicket,
+  newMessage,
+  setNewMessage,
+  messageAttachments,
+  setMessageAttachments,
+  isSubmittingMessage,
+  setIsSubmittingMessage,
+  messageError,
+  setMessageError,
+  formatDate,
+  getStatusColor,
+  getPriorityColor,
+  getBusinessImpactColor
+}: {
+  selectedTicket: any;
+  setSelectedTicket: (ticket: any) => void;
+  newMessage: string;
+  setNewMessage: (message: string) => void;
+  messageAttachments: string[];
+  setMessageAttachments: (attachments: string[]) => void;
+  isSubmittingMessage: boolean;
+  setIsSubmittingMessage: (submitting: boolean) => void;
+  messageError: string;
+  setMessageError: (error: string) => void;
+  formatDate: (dateString: string) => string | null;
+  getStatusColor: (status: string) => string;
+  getPriorityColor: (priority: string) => string;
+  getBusinessImpactColor: (impact: string) => string;
+}) => {
+  const handleMessageSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    setIsSubmittingMessage(true);
+    setMessageError('');
+
+    try {
+      // Here you would call the API to send the message
+      // For now, we'll just simulate it
+      console.log('Sending message:', { 
+        ticketId: selectedTicket._id, 
+        message: newMessage,
+        attachments: messageAttachments
+      });
+      
+      // Simulate success
+      setNewMessage('');
+      setMessageAttachments([]);
+      
+      // In a real implementation, you would refresh the ticket data
+      // await loadTickets();
+      
+    } catch (error: any) {
+      setMessageError(error.message || 'Failed to send message. Please try again.');
+    } finally {
+      setIsSubmittingMessage(false);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      {/* Header with back button */}
+      <div className="flex items-center mb-6">
+        <button 
+          onClick={() => setSelectedTicket(null)}
+          className="flex items-center text-blue-600 hover:text-blue-800 mr-4"
+        >
+          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Tickets
+        </button>
+        <h1 className="text-2xl font-bold text-gray-900">Ticket Details</h1>
+      </div>
+
+      {/* Ticket Information */}
+      <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">{selectedTicket.subject}</h2>
+            <div className="flex items-center space-x-3 mb-3">
+              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedTicket.status)}`}>
+                {selectedTicket.status.replace('_', ' ').toUpperCase()}
+              </span>
+              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedTicket.priority)}`}>
+                {selectedTicket.priority.toUpperCase()}
+              </span>
+              {selectedTicket.businessImpact && (
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getBusinessImpactColor(selectedTicket.businessImpact)}`}>
+                  {selectedTicket.businessImpact.toUpperCase()} IMPACT
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="text-right text-sm text-gray-500">
+            <div>#{selectedTicket.ticketNumber}</div>
+            {formatDate(selectedTicket.createdAt) && <div>Created {formatDate(selectedTicket.createdAt)}</div>}
+            {formatDate(selectedTicket.updatedAt) && <div>Updated {formatDate(selectedTicket.updatedAt)}</div>}
+          </div>
+        </div>
+        
+        <p className="text-gray-700 mb-4">{selectedTicket.description}</p>
+        
+        <div className="flex items-center space-x-6 text-sm text-gray-500 pt-4 border-t">
+          {selectedTicket.estimatedValue && <span className="text-green-600 font-medium">Value: {selectedTicket.estimatedValue}</span>}
+          {selectedTicket.affectedOrders && <span className="text-red-600 font-medium">{selectedTicket.affectedOrders} orders affected</span>}
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="bg-white rounded-lg shadow-sm border mb-6">
+        <div className="p-6 border-b">
+          <h3 className="text-lg font-semibold text-gray-900">
+            Messages ({selectedTicket.messages?.length || 0})
+          </h3>
+        </div>
+        
+        <div className="max-h-96 overflow-y-auto">
+          {selectedTicket.messages && selectedTicket.messages.length > 0 ? (
+            <div className="space-y-4 p-6">
+              {selectedTicket.messages.map((message, idx) => (
+                <div key={message.id || idx} className={`flex ${message.author === 'retailer' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-2xl p-4 rounded-lg ${message.author === 'retailer' ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'} border`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-gray-900">{message.authorName}</span>
+                      {formatDate(message.timestamp) && (
+                        <span className="text-sm text-gray-500">{formatDate(message.timestamp)}</span>
+                      )}
+                    </div>
+                    <p className="text-gray-700 whitespace-pre-wrap">{message.content}</p>
+                    {message.attachments && message.attachments.length > 0 && (
+                      <div className="mt-3">
+                        <div className="text-sm text-gray-600 mb-2">
+                          📎 {message.attachments.length} attachment{message.attachments.length !== 1 ? 's' : ''}: {message.attachments.map(att => att.name || 'file').join(', ')}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-6 text-center text-gray-500">
+              No messages yet. Start the conversation below.
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Message Reply Form */}
+      {selectedTicket.status !== 'closed' && selectedTicket.status !== 'resolved' && (
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Send Reply</h3>
+          
+          {messageError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-700 text-sm">{messageError}</p>
+            </div>
+          )}
+          
+          <form onSubmit={handleMessageSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Your Message</label>
+              <textarea
+                rows={4}
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Type your message here..."
+                disabled={isSubmittingMessage}
+                required
+              />
+            </div>
+            
+            {/* Message Attachments */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Attachments (optional)</label>
+              
+              {messageAttachments.length > 0 && (
+                <div className="mb-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                    {messageAttachments.map((url, index) => (
+                      <div key={index} className="relative group">
+                        <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                          {typeof url === 'string' && url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                            <img
+                              src={url}
+                              alt={`Attachment ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="text-xs text-gray-500 text-center px-1">
+                              {typeof url === 'string' ? (url.split('.').pop()?.toUpperCase() || 'FILE') : 'FILE'}
+                            </div>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newAttachments = messageAttachments.filter((_, i) => i !== index);
+                            setMessageAttachments(newAttachments);
+                          }}
+                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                          title="Remove attachment"
+                          disabled={isSubmittingMessage}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {messageAttachments.length < 3 && !isSubmittingMessage && (
+                <CloudinaryUploadWidget
+                  onUpload={(files) => {
+                    const urls = files.map(file => file.secure_url || file.url).filter(Boolean);
+                    const newAttachments = [...messageAttachments, ...urls];
+                    setMessageAttachments(newAttachments.slice(0, 3));
+                  }}
+                  maxFiles={3 - messageAttachments.length}
+                  folder="support-messages/retailer"
+                  buttonText={`Add Files (${messageAttachments.length}/3)`}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                  </svg>
+                  Add Files
+                </CloudinaryUploadWidget>
+              )}
+            </div>
+            
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={isSubmittingMessage || !newMessage.trim()}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              >
+                {isSubmittingMessage && (
+                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                    <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path>
+                  </svg>
+                )}
+                {isSubmittingMessage ? 'Sending...' : 'Send Reply'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+      
+      {(selectedTicket.status === 'closed' || selectedTicket.status === 'resolved') && (
+        <div className="bg-gray-50 rounded-lg border p-6 text-center">
+          <p className="text-gray-600">
+            This ticket has been {selectedTicket.status}. If you need further assistance, please create a new support ticket.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}, (prevProps, nextProps) => {
+  // Enhanced comparison function to prevent unnecessary re-renders
+  // Only re-render if these specific props actually change
+  return (
+    prevProps.selectedTicket?._id === nextProps.selectedTicket?._id &&
+    prevProps.newMessage === nextProps.newMessage &&
+    prevProps.messageAttachments.length === nextProps.messageAttachments.length &&
+    JSON.stringify(prevProps.messageAttachments) === JSON.stringify(nextProps.messageAttachments) &&
+    prevProps.isSubmittingMessage === nextProps.isSubmittingMessage &&
+    prevProps.messageError === nextProps.messageError
+  );
+});
 
 // Define SubmitTicketContent at module scope to prevent remount-caused focus loss
 const SubmitTicketContent = React.memo(({ 
@@ -748,12 +1157,15 @@ const SubmitTicketContent = React.memo(({
             required
           >
             <option value="">Select request type...</option>
-            <option value="volume_pricing">Volume Pricing Request</option>
-            <option value="shipping_issue">Shipping/Logistics Issue</option>
-            <option value="product_inquiry">Product Catalog Inquiry</option>
-            <option value="account_management">Account Management</option>
+            <option value="billing_inquiry">Volume Pricing / Billing Question</option>
+            <option value="shipping_delay">Shipping/Logistics Issue</option>
+            <option value="order_issue">Order Related Issue</option>
+            <option value="account_access">Account Management</option>
             <option value="technical_support">Technical Support</option>
-            <option value="billing_inquiry">Billing Question</option>
+            <option value="payment_problem">Payment Problem</option>
+            <option value="refund_request">Refund Request</option>
+            <option value="product_quality">Product Quality Issue</option>
+            <option value="other">Other</option>
           </select>
         </div>
 
@@ -779,7 +1191,7 @@ const SubmitTicketContent = React.memo(({
             value={formData.estimatedValue}
             onChange={(e) => handleInputChange('estimatedValue', e.target.value)}
             className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="e.g., RWF 500,000"
+            placeholder="e.g., $385"
             disabled={isSubmitting}
           />
           <p className="text-xs text-gray-500 mt-1">This information helps us prioritize your request</p>
@@ -814,7 +1226,7 @@ const SubmitTicketContent = React.memo(({
                   {formData.attachmentUrls.map((url, index) => (
                     <div key={index} className="relative group">
                       <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
-                        {url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                        {typeof url === 'string' && url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
                           <img
                             src={url}
                             alt={`Business Attachment ${index + 1}`}
@@ -822,7 +1234,7 @@ const SubmitTicketContent = React.memo(({
                           />
                         ) : (
                           <div className="text-xs text-gray-500 text-center px-1">
-                            {url.split('.').pop()?.toUpperCase() || 'FILE'}
+                            {typeof url === 'string' ? (url.split('.').pop()?.toUpperCase() || 'FILE') : 'FILE'}
                           </div>
                         )}
                       </div>
@@ -847,7 +1259,9 @@ const SubmitTicketContent = React.memo(({
             {/* Upload widget */}
             {formData.attachmentUrls.length < 5 && !isSubmitting && (
               <CloudinaryUploadWidget
-                onUpload={(urls) => {
+                onUpload={(files) => {
+                  // Extract URLs from CloudinaryFileInfo objects
+                  const urls = files.map(file => file.secure_url || file.url).filter(Boolean);
                   const newUrls = [...formData.attachmentUrls, ...urls];
                   handleAttachmentUrlsChange(newUrls.slice(0, 5)); // Limit to 5 files
                 }}
@@ -919,3 +1333,6 @@ const SubmitTicketContent = React.memo(({
 });
 
 export default RetailerSupportPage;
+
+
+
