@@ -169,18 +169,10 @@ const CustomerSupportSubmitTicket: React.FC = () => {
 
       console.log('Submitting ticket with attachment URLs:', attachmentUrls);
 
-      // Create simple attachment data from URLs
-      const attachmentData = attachmentUrls.length > 0 ? attachmentUrls.map((url, index) => ({
-        filename: `attachment-${index + 1}`,
-        url: url,
-        fileType: 'unknown',
-        fileSize: 0,
-        public_id: ''
-      })) : undefined;
-
+      // Send Cloudinary URLs directly as strings array
       const ticketData: CreateSupportTicketData = {
         ...data,
-        attachments: attachmentData,
+        attachments: attachmentUrls.length > 0 ? attachmentUrls : undefined,
       };
 
       console.log('Final ticket data:', ticketData);
@@ -304,15 +296,6 @@ const CustomerSupportSubmitTicket: React.FC = () => {
             Attachments (optional)
           </label>
           <div className="space-y-3">
-            {/* Debug info */}
-            <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-              Debug: attachmentUrls.length = {attachmentUrls.length}
-              {attachmentUrls.length > 0 && (
-                <div className="mt-1">
-                  URLs: {JSON.stringify(attachmentUrls, null, 2)}
-                </div>
-              )}
-            </div>
             
             {/* Display uploaded attachments */}
             {attachmentUrls.length > 0 ? (

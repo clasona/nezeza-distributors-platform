@@ -3,7 +3,7 @@ import { SupportTicket } from './createSupportTicket';
 
 export interface AddMessageData {
   message: string;
-  attachments?: File[];
+  attachments?: File[] | string[]; // Either File objects or Cloudinary URLs
   cloudinaryAttachments?: Array<{
     filename: string;
     url: string;
@@ -22,12 +22,23 @@ export const addMessageToTicket = async (
     formData.append('message', data.message);
     
     if (data.attachments && data.attachments.length > 0) {
-      data.attachments.forEach((file) => {
-        formData.append('attachments', file);
-      });
+      // Check if attachments are URLs (strings) or File objects
+      const isUrlArray = data.attachments.every(item => typeof item === 'string');
+      
+      if (isUrlArray) {
+        // Send Cloudinary URLs directly as attachments
+        formData.append('attachments', JSON.stringify(data.attachments));
+      } else {
+        // Send File objects for traditional upload
+        data.attachments.forEach((file) => {
+          if (file instanceof File) {
+            formData.append('attachments', file);
+          }
+        });
+      }
     }
     
-    // Add Cloudinary attachments if any
+    // Add Cloudinary attachments if any (legacy support)
     if (data.cloudinaryAttachments && data.cloudinaryAttachments.length > 0) {
       formData.append('cloudinaryAttachments', JSON.stringify(data.cloudinaryAttachments));
     }

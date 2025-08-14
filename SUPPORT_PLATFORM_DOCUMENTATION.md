@@ -1,22 +1,93 @@
-# Nezeza Support Platform Documentation
+# Vesoko Support Platform Documentation
 
 ## Table of Contents
 1. [Overview](#overview)
-2. [Architecture](#architecture)
-3. [Features](#features)
-4. [Database Schema](#database-schema)
-5. [API Endpoints](#api-endpoints)
-6. [Frontend Components](#frontend-components)
-7. [Email System](#email-system)
-8. [File Upload System](#file-upload-system)
-9. [User Roles & Permissions](#user-roles--permissions)
-10. [Usage Guide](#usage-guide)
-11. [Development Guide](#development-guide)
-12. [Troubleshooting](#troubleshooting)
+2. [Recent Improvements](#recent-improvements)
+3. [Architecture](#architecture)
+4. [Features](#features)
+5. [Database Schema](#database-schema)
+6. [API Endpoints](#api-endpoints)
+7. [Frontend Components](#frontend-components)
+8. [Email System](#email-system)
+9. [File Upload System](#file-upload-system)
+10. [User Roles & Permissions](#user-roles--permissions)
+11. [Usage Guide](#usage-guide)
+12. [Development Guide](#development-guide)
+13. [Troubleshooting](#troubleshooting)
 
 ## Overview
 
-The Nezeza Support Platform is a comprehensive customer support system designed to handle support tickets from multiple user types including customers, retailers, wholesalers, and manufacturers. It features a full ticket management system with real-time messaging, file attachments, email notifications, and administrative controls.
+The Vesoko Support Platform is a comprehensive customer support system designed to handle support tickets from multiple user types including customers, retailers, wholesalers, and manufacturers. It features a full ticket management system with real-time messaging, file attachments, email notifications, and administrative controls.
+
+## Recent Improvements
+
+### ✅ Cloudinary File Attachment System (January 2025)
+
+#### Problem Resolved
+- **File Type Detection Issues**: Fixed "INVALID" display for PDFs and JPEGs due to overly simplistic URL regex matching
+- **Attachment Data Structure Mismatch**: Resolved backend/frontend data format conflicts preventing proper file storage
+- **Cloudinary URL Construction**: Fixed incorrect resource type paths (image/upload vs raw/upload) breaking file viewing
+
+#### Key Improvements
+1. **Enhanced File Type Detection**
+   - Added `getFileTypeFromUrl()` function with Cloudinary-specific format parameter detection
+   - Improved URL parsing for Cloudinary resource type identifiers (`/image/`, `/raw/`, `/video/`)
+   - Fallback to file extension detection when Cloudinary indicators are absent
+
+2. **Fixed Attachment Data Flow**
+   - **Frontend**: Simplified attachment data to send Cloudinary URLs as string arrays
+   - **Backend**: Updated controllers to properly handle URL strings without unnecessary object conversion
+   - **Database**: Maintained clean string array storage matching the SupportTicket schema
+
+3. **Cloudinary URL Corrections**
+   - **Auto-fixing Resource Types**: PDFs now use `/raw/upload/` instead of `/image/upload/`
+   - **File Type Mapping**: Proper resource type assignment based on file extensions
+   - **AttachmentViewer Component**: Enhanced with automatic URL correction and file type detection
+
+4. **Robust File Display System**
+   - **Image Files**: Direct image display with fallback to file type indicator
+   - **Document Files**: Generic file icon with proper file type labeling
+   - **Error Handling**: Graceful fallbacks when files fail to load
+   - **Multiple Format Support**: JPEGs, PNGs, PDFs, DOCs, etc. all properly recognized
+
+#### Files Modified
+- `frontend/src/components/Support/AttachmentViewer.tsx` - Enhanced file type detection and URL fixing
+- `frontend/src/components/Support/SupportCenter/CustomerSupportSubmitTicket.tsx` - Simplified attachment data structure
+- `frontend/src/utils/support/addMessageToTicket.ts` - Updated attachment handling for message replies
+- `backend/controllers/supportController.js` - Fixed both ticket creation and message addition attachment processing
+- `frontend/src/utils/cloudinaryUrlUtils.ts` - New utility for URL corrections and file type detection
+
+#### Testing Verified
+- ✅ Ticket creation with multiple file types (PDF, JPEG, PNG, DOC)
+- ✅ Message replies with attachments properly saved and displayed
+- ✅ Admin and customer views show attachments correctly
+- ✅ File download and viewing functionality restored
+- ✅ Backward compatibility with existing attachments maintained
+
+### ✅ Email System Branding Update (January 2025)
+
+#### Branding Consistency
+- **Updated Platform Name**: Changed from "Nezeza" to "Vesoko" across all email templates
+- **Email Headers**: All support notification emails now display "Vesoko" branding
+- **Template Consistency**: Unified branding across ticket creation, response, and status update emails
+
+#### Email Enhancement Status
+- **Ticket Creation Notifications**: ✅ Complete with Vesoko branding
+- **Admin Response Notifications**: ✅ Complete with Vesoko branding
+- **Status Update Notifications**: ✅ Complete with Vesoko branding
+- **Email Template Design**: Modern, mobile-responsive HTML templates maintained
+
+### 🔄 Ongoing Improvements
+
+#### Email System Enhancement (In Progress)
+- **Attachment Links in Emails**: Working to include clickable attachment links in notification emails
+- **Email Template Enhancement**: Adding thumbnail previews for image attachments
+- **Notification Synchronization**: Integrating database notifications with email sending
+
+#### UI/UX Improvements (Planned)
+- **Ticket Detail Views**: Enhanced attachment display in both customer and admin interfaces
+- **Upload Progress Indicators**: Better feedback during file upload processes
+- **File Preview System**: Inline preview capabilities for common file types
 
 ### Key Technologies
 - **Backend**: Node.js, Express.js, MongoDB, Mongoose
@@ -752,10 +823,30 @@ db.supporttickets.createIndex({priority: 1, createdAt: -1})
 
 ## Conclusion
 
-The Nezeza Support Platform provides a comprehensive solution for managing customer support operations across multiple user types. With its robust feature set, scalable architecture, and user-friendly interfaces, it serves as a complete customer support ecosystem.
+The Vesoko Support Platform provides a comprehensive solution for managing customer support operations across multiple user types. With its robust feature set, scalable architecture, and user-friendly interfaces, it serves as a complete customer support ecosystem.
+
+### Recent Platform Enhancements
+The platform has recently undergone significant improvements including:
+- **Complete file attachment system overhaul** with proper Cloudinary integration
+- **Enhanced email notification system** with consistent Vesoko branding
+- **Improved file type detection** and URL handling for all supported formats
+- **Robust error handling** and fallback mechanisms for file operations
+
+### System Status
+- **File Attachments**: ✅ Fully functional with PDF, image, and document support
+- **Email Notifications**: ✅ Complete with updated branding and templates
+- **User Interface**: ✅ Responsive design with proper file preview capabilities
+- **API Endpoints**: ✅ All endpoints tested and operational
+- **Security**: ✅ Proper file validation and access controls implemented
+
+### Future Roadmap
+- Enhanced email templates with attachment previews
+- Improved ticket detail UI/UX for both customers and admins
+- Advanced file preview system with inline viewing
+- Comprehensive notification preferences system
 
 For additional support or feature requests, please contact the development team or create an issue in the project repository.
 
-**Last Updated**: January 2024
-**Version**: 1.0.0
-**Authors**: Nezeza Development Team
+**Last Updated**: January 2025
+**Version**: 1.2.0
+**Authors**: Vesoko Development Team

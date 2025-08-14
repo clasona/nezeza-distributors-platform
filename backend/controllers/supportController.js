@@ -40,32 +40,33 @@ const createSupportTicket = async (req, res) => {
       attachments, // Array of Cloudinary URLs
     } = req.body;
     
-    // Handle PDF attachments with normalization
-    let normalizedAttachments = [];
+    // Handle Cloudinary attachments (URLs as strings)
+    let cloudinaryUrls = [];
     if (attachments) {
       // Parse attachments safely
       const parsedAttachments = safeParseAttachments(attachments);
       
       if (parsedAttachments.length > 0) {
-        // Validate and normalize PDF attachments
-        const validationResult = validateAndNormalizePdfAttachments(parsedAttachments, 10);
+        // Validate URLs and keep them as strings
+        cloudinaryUrls = parsedAttachments
+          .filter(attachment => {
+            // Handle both string URLs and objects with url property
+            const url = typeof attachment === 'string' ? attachment : attachment.url || attachment.secure_url;
+            return url && typeof url === 'string' && url.includes('res.cloudinary.com');
+          })
+          .map(attachment => {
+            // Extract URL and return as string
+            return typeof attachment === 'string' ? attachment : attachment.url || attachment.secure_url;
+          })
+          .slice(0, 10); // Limit to 10 attachments
         
-        if (!validationResult.isValid) {
-          throw new CustomError.BadRequestError(
-            `Invalid attachments: ${validationResult.errors.join(', ')}`
-          );
-        }
-        
-        normalizedAttachments = validationResult.normalizedAttachments;
-        
-        // Log successful normalization
-        console.log(`[CREATE_TICKET] Normalized ${normalizedAttachments.length} PDF attachments`);
+        console.log(`[CREATE_TICKET] Processed ${cloudinaryUrls.length} Cloudinary attachments`);
       }
     }
 
     // Handle traditional file uploads as fallback (deprecated but kept for compatibility)
     let traditionalFileUrls = [];
-    if (req.files && req.files.attachments && normalizedAttachments.length === 0) {
+    if (req.files && req.files.attachments && cloudinaryUrls.length === 0) {
       const files = Array.isArray(req.files.attachments) ? req.files.attachments : [req.files.attachments];
       
       for (const file of files) {
@@ -105,8 +106,8 @@ const createSupportTicket = async (req, res) => {
     else if (userRoles.includes('retailer')) userRole = 'retailer';
     else if (userRoles.includes('owner')) userRole = 'owner';
 
-    // Combine all attachment sources
-    const allAttachments = [...normalizedAttachments, ...traditionalFileUrls];
+    // Combine all attachment sources (keep URLs as strings)
+    const allAttachments = [...cloudinaryUrls, ...traditionalFileUrls];
 
     // Log attachment processing for debugging
     if (process.env.NODE_ENV === 'development') {
@@ -351,34 +352,44 @@ const addMessageToTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const userId = req.user.userId;
-    const { message, attachments } = req.body;
+    const { message, attachments, cloudinaryAttachments } = req.body;
     
-    // Handle PDF attachments with normalization for replies
-    let normalizedAttachments = [];
+    // Handle Cloudinary attachments (URLs as strings) for replies
+    let cloudinaryUrls = [];
+    
+    // Process both attachments and cloudinaryAttachments fields
+    let allAttachmentData = [];
+    
     if (attachments) {
-      // Parse attachments safely
       const parsedAttachments = safeParseAttachments(attachments);
+      allAttachmentData = [...allAttachmentData, ...parsedAttachments];
+    }
+    
+    if (cloudinaryAttachments) {
+      const parsedCloudinaryAttachments = safeParseAttachments(cloudinaryAttachments);
+      allAttachmentData = [...allAttachmentData, ...parsedCloudinaryAttachments];
+    }
+    
+    if (allAttachmentData.length > 0) {
+      // Validate URLs and keep them as strings
+      cloudinaryUrls = allAttachmentData
+        .filter(attachment => {
+          // Handle both string URLs and objects with url property
+          const url = typeof attachment === 'string' ? attachment : attachment.url || attachment.secure_url;
+          return url && typeof url === 'string' && url.includes('res.cloudinary.com');
+        })
+        .map(attachment => {
+          // Extract URL and return as string
+          return typeof attachment === 'string' ? attachment : attachment.url || attachment.secure_url;
+        })
+        .slice(0, 5); // Limit to 5 attachments for replies
       
-      if (parsedAttachments.length > 0) {
-        // Validate and normalize PDF attachments (limit to 5 for replies)
-        const validationResult = validateAndNormalizePdfAttachments(parsedAttachments, 5);
-        
-        if (!validationResult.isValid) {
-          throw new CustomError.BadRequestError(
-            `Invalid attachments: ${validationResult.errors.join(', ')}`
-          );
-        }
-        
-        normalizedAttachments = validationResult.normalizedAttachments;
-        
-        // Log successful normalization
-        console.log(`[ADD_MESSAGE] Normalized ${normalizedAttachments.length} PDF attachments for reply`);
-      }
+      console.log(`[ADD_MESSAGE] Processed ${cloudinaryUrls.length} Cloudinary attachments for reply`);
     }
 
     // Handle traditional file uploads as fallback (deprecated but kept for compatibility)
     let traditionalFileUrls = [];
-    if (req.files && req.files.attachments && normalizedAttachments.length === 0) {
+    if (req.files && req.files.attachments && cloudinaryUrls.length === 0) {
       const files = Array.isArray(req.files.attachments) ? req.files.attachments : [req.files.attachments];
       
       for (const file of files) {
@@ -432,8 +443,8 @@ const addMessageToTicket = async (req, res) => {
     else if (userRoles.includes('retailer')) userRole = 'retailer';
     else if (userRoles.includes('owner')) userRole = 'owner';
 
-    // Combine all attachment sources
-    const allAttachments = [...normalizedAttachments, ...traditionalFileUrls];
+    // Combine all attachment sources (keep URLs as strings)
+    const allAttachments = [...cloudinaryUrls, ...traditionalFileUrls];
 
     // Log attachment processing for debugging
     if (process.env.NODE_ENV === 'development') {
@@ -457,11 +468,31 @@ const addMessageToTicket = async (req, res) => {
 
     await ticket.save();
 
-    // Populate the new message for response
-    await ticket.populate('messages.senderId', 'firstName lastName');
+    // Re-fetch the ticket with full population to ensure we get the complete updated data
+    const updatedTicket = await SupportTicket.findById(ticketId).populate([
+      { path: 'userId', select: 'firstName lastName email' },
+      { path: 'userStoreId', select: 'name email' },
+      { path: 'assignedTo', select: 'firstName lastName email' },
+      {
+        path: 'orderId',
+        select: 'totalAmount paymentStatus fulfillmentStatus createdAt',
+      },
+      { path: 'productId', select: 'title price image' },
+      { path: 'resolvedBy', select: 'firstName lastName' },
+      { path: 'closedBy', select: 'firstName lastName' },
+      { path: 'messages.senderId', select: 'firstName lastName' },
+    ]);
+
+    // Log the final message structure for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[ADD_MESSAGE] Final ticket messages count: ${updatedTicket.messages.length}`);
+      if (updatedTicket.messages.length > 0) {
+        const lastMessage = updatedTicket.messages[updatedTicket.messages.length - 1];
+        console.log(`[ADD_MESSAGE] Last message attachments:`, lastMessage.attachments);
+      }
+    }
 
     // Send email notification to assigned admin
-
     if (ticket.assignedTo && ticket.assignedTo.email) {
       await sendTicketResponseEmail({
         userEmail: 'clasona.us@gmail.com',
@@ -476,7 +507,7 @@ const addMessageToTicket = async (req, res) => {
     res.status(StatusCodes.OK).json({
       success: true,
       message: 'Message added successfully',
-      ticket,
+      ticket: updatedTicket,
     });
   } catch (error) {
     console.error('Error adding message to ticket:', error);

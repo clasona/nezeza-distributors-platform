@@ -169,6 +169,7 @@ const CustomerSupportMyTickets: React.FC = () => {
   const [newMessage, setNewMessage] = useState('');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [replyAttachmentUrls, setReplyAttachmentUrls] = useState<string[]>([]);
+  const [replyAttachmentFiles, setReplyAttachmentFiles] = useState<any[]>([]); // Store full file info
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -327,6 +328,7 @@ const CustomerSupportMyTickets: React.FC = () => {
     setNewMessage('');
     setSelectedFiles([]);
     setReplyAttachmentUrls([]);
+    setReplyAttachmentFiles([]);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -345,6 +347,54 @@ const CustomerSupportMyTickets: React.FC = () => {
     );
   };
 
+  // Helper function to transform Cloudinary URL strings to structured objects
+  const transformUrlsToStructuredAttachments = (urls: string[]) => {
+    return urls.map(url => {
+      // Extract public_id from Cloudinary URL
+      // URL format: https://res.cloudinary.com/{cloud_name}/{resource_type}/upload/{version?}/{public_id}.{format}
+      const extractPublicId = (cloudinaryUrl: string): string => {
+        try {
+          const urlParts = cloudinaryUrl.split('/');
+          const uploadIndex = urlParts.findIndex(part => part === 'upload');
+          if (uploadIndex !== -1 && uploadIndex < urlParts.length - 1) {
+            // Get everything after 'upload/' and remove file extension
+            const pathAfterUpload = urlParts.slice(uploadIndex + 1).join('/');
+            // Remove version if present (starts with 'v' followed by numbers)
+            const versionRegex = /^v\d+\//;
+            const pathWithoutVersion = pathAfterUpload.replace(versionRegex, '');
+            // Remove file extension
+            const lastDotIndex = pathWithoutVersion.lastIndexOf('.');
+            return lastDotIndex > 0 ? pathWithoutVersion.substring(0, lastDotIndex) : pathWithoutVersion;
+          }
+        } catch (error) {
+          console.error('Error extracting public_id from URL:', error);
+        }
+        return 'unknown';
+      };
+
+      // Extract file format from URL
+      const extractFormat = (url: string): string => {
+        const lastDotIndex = url.lastIndexOf('.');
+        if (lastDotIndex > 0 && lastDotIndex < url.length - 1) {
+          return url.substring(lastDotIndex + 1).toLowerCase();
+        }
+        return 'unknown';
+      };
+
+      const public_id = extractPublicId(url);
+      const format = extractFormat(url);
+      const filename = `${public_id.split('/').pop() || 'attachment'}.${format}`;
+
+      return {
+        filename,
+        url,
+        fileType: format,
+        fileSize: 0, // Size not available from URL, backend should handle this
+        public_id
+      };
+    });
+  };
+
   const handleSubmitMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !selectedTicket) return;
@@ -354,34 +404,51 @@ const CustomerSupportMyTickets: React.FC = () => {
     try {
       console.log('Sending message to ticket:', selectedTicket._id);
       
-      // Validate and send Cloudinary URLs directly as array of strings
+      // Validate Cloudinary URLs and transform to structured objects
       const validatedUrls = validateCloudinaryUrls(replyAttachmentUrls);
+      const structuredAttachments = transformUrlsToStructuredAttachments(validatedUrls);
       
-      console.log('Sending attachments:', validatedUrls);
+      console.log('Sending attachments as structured objects:', structuredAttachments);
       
-      // Real API call to add message with Cloudinary URLs
+      // Real API call to add message with structured Cloudinary attachments
       const response = await addMessageToTicket(selectedTicket._id, {
         message: newMessage,
-        attachments: validatedUrls // Send URLs directly as array of strings
+        cloudinaryAttachments: structuredAttachments // Send as structured objects
       });
       
       console.log('Message sent successfully:', response);
+      console.log('Response ticket messages:', response.ticket?.messages);
       
-      // Refresh ticket details to get updated messages
-      const updatedTicketResponse = await getTicketDetails(selectedTicket._id);
-      const rawUpdatedTicket = updatedTicketResponse.ticket;
-      
-      // Convert backend response to frontend format
-      const updatedTicket = convertBackendTicket(rawUpdatedTicket);
-      
-      // Update the selected ticket and tickets list
-      setSelectedTicket(updatedTicket);
-      setTickets(prev => prev.map(t => t._id === selectedTicket._id ? updatedTicket : t));
+      // Use the updated ticket from the response directly (it should include the new message)
+      if (response.ticket) {
+        console.log('Using ticket from addMessage response:', response.ticket);
+        const updatedTicket = convertBackendTicket(response.ticket);
+        console.log('Converted ticket messages:', updatedTicket.messages);
+        
+        // Update the selected ticket and tickets list
+        setSelectedTicket(updatedTicket);
+        setTickets(prev => prev.map(t => t._id === selectedTicket._id ? updatedTicket : t));
+      } else {
+        // Fallback: Refresh ticket details if response doesn't include ticket
+        console.log('No ticket in response, fetching fresh data...');
+        const updatedTicketResponse = await getTicketDetails(selectedTicket._id);
+        const rawUpdatedTicket = updatedTicketResponse.ticket;
+        console.log('Fresh ticket data:', rawUpdatedTicket);
+        
+        // Convert backend response to frontend format
+        const updatedTicket = convertBackendTicket(rawUpdatedTicket);
+        console.log('Fresh converted ticket messages:', updatedTicket.messages);
+        
+        // Update the selected ticket and tickets list
+        setSelectedTicket(updatedTicket);
+        setTickets(prev => prev.map(t => t._id === selectedTicket._id ? updatedTicket : t));
+      }
       
       // Clear form
       setNewMessage('');
       setSelectedFiles([]);
       setReplyAttachmentUrls([]);
+      setReplyAttachmentFiles([]);
       
     } catch (error: any) {
       console.error('Failed to send message:', error);
@@ -543,15 +610,6 @@ const CustomerSupportMyTickets: React.FC = () => {
                   Attachments (optional)
                 </label>
                 <div className="space-y-3">
-                  {/* Debug info for reply attachments */}
-                  <div className="text-xs text-blue-600 bg-blue-50 p-2 rounded">
-                    Debug: replyAttachmentUrls.length = {replyAttachmentUrls.length}
-                    {replyAttachmentUrls.length > 0 && (
-                      <div className="mt-1">
-                        URLs: {JSON.stringify(replyAttachmentUrls, null, 2)}
-                      </div>
-                    )}
-                  </div>
                   
                   {/* Display uploaded Cloudinary attachments */}
                   {replyAttachmentUrls.length > 0 && (
@@ -560,94 +618,54 @@ const CustomerSupportMyTickets: React.FC = () => {
                         Reply Attachments ({replyAttachmentUrls.length}/3):
                       </p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-                        {replyAttachmentUrls.map((url, index) => (
-                          <div key={index} className="relative group">
-                            <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
-                              {(() => {
-                                if (!url || typeof url !== 'string') {
-                                  return (
-                                    <div className="text-xs text-gray-500 text-center px-1">
-                                      INVALID
-                                    </div>
-                                  );
-                                }
-                                
-                                // Enhanced file type detection for Cloudinary URLs
-                                const getFileTypeFromUrl = (urlString: string) => {
-                                  // Check for format parameter in Cloudinary URLs (e.g., f_auto,q_auto)
-                                  const formatMatch = urlString.match(/f_([^,]+)/);
-                                  if (formatMatch) {
-                                    return formatMatch[1].toUpperCase();
-                                  }
-                                  
-                                  // Check for resource_type in Cloudinary URLs
-                                  if (urlString.includes('/image/')) {
-                                    return 'IMAGE';
-                                  }
-                                  if (urlString.includes('/raw/')) {
-                                    return 'FILE';
-                                  }
-                                  if (urlString.includes('/video/')) {
-                                    return 'VIDEO';
-                                  }
-                                  
-                                  // Fallback to file extension
-                                  const extension = urlString.split('.').pop()?.toLowerCase();
-                                  if (extension) {
-                                    return extension.toUpperCase();
-                                  }
-                                  
-                                  return 'FILE';
-                                };
-                                
-                                const fileType = getFileTypeFromUrl(url);
-                                
-                                // Check if it's likely an image (either by extension or Cloudinary indicators)
-                                const isImage = url.match(/\.(jpg|jpeg|png|gif|webp)$/i) || 
-                                               url.includes('/image/') ||
-                                               ['JPG', 'JPEG', 'PNG', 'GIF', 'WEBP'].includes(fileType);
-                                
-                                if (isImage) {
-                                  return (
-                                    <img
-                                      src={url}
-                                      alt={`Reply Attachment ${index + 1}`}
-                                      className="w-full h-full object-cover"
-                                      onError={(e) => {
-                                        // Fallback to file icon if image fails to load
-                                        const target = e.target as HTMLImageElement;
-                                        target.style.display = 'none';
-                                        const fallback = document.createElement('div');
-                                        fallback.className = 'text-xs text-gray-500 text-center px-1';
-                                        fallback.textContent = fileType;
-                                        target.parentNode?.appendChild(fallback);
-                                      }}
-                                    />
-                                  );
-                                } else {
-                                  // Show file type for non-images
-                                  return (
-                                    <div className="text-xs text-gray-500 text-center px-1 flex flex-col items-center">
-                                      {/* File icon */}
-                                      <svg className="w-6 h-6 mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                      </svg>
-                                      <span className="text-xs">{fileType}</span>
-                                    </div>
-                                  );
-                                }
-                              })()}
+                        {replyAttachmentFiles.map((fileInfo, index) => {
+                          const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileInfo.format?.toLowerCase() || '');
+                          return (
+                            <div key={index} className="relative group">
+                              <div className="w-16 h-16 bg-gray-100 border border-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                                {isImage ? (
+                                  <img
+                                    src={fileInfo.secure_url}
+                                    alt={fileInfo.original_filename || `Attachment ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => {
+                                      // Fallback to file icon if image fails to load
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                      const fallback = document.createElement('div');
+                                      fallback.className = 'text-xs text-gray-500 text-center px-1 flex flex-col items-center';
+                                      fallback.innerHTML = `
+                                        <svg class="w-6 h-6 mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <span class="text-xs">${(fileInfo.format || 'FILE').toUpperCase()}</span>
+                                      `;
+                                      target.parentNode?.appendChild(fallback);
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="text-xs text-gray-500 text-center px-1 flex flex-col items-center">
+                                    <svg className="w-6 h-6 mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-xs">{(fileInfo.format || 'FILE').toUpperCase()}</span>
+                                  </div>
+                                )}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setReplyAttachmentUrls(prev => prev.filter((_, i) => i !== index));
+                                  setReplyAttachmentFiles(prev => prev.filter((_, i) => i !== index));
+                                }}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                                title="Remove attachment"
+                              >
+                                ×
+                              </button>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => setReplyAttachmentUrls(prev => prev.filter((_, i) => i !== index))}
-                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
-                              title="Remove attachment"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -659,9 +677,17 @@ const CustomerSupportMyTickets: React.FC = () => {
                         console.log('Reply upload - files received:', files);
                         const newUrls = files.map(file => file.secure_url).filter(url => url);
                         console.log('Reply upload - extracted URLs:', newUrls);
+                        
+                        // Store both URLs (for backward compatibility) and full file info
                         setReplyAttachmentUrls((prev) => {
                           const updated = [...prev, ...newUrls];
                           console.log('Reply upload - updated URLs:', updated);
+                          return updated;
+                        });
+                        
+                        setReplyAttachmentFiles((prev) => {
+                          const updated = [...prev, ...files];
+                          console.log('Reply upload - updated file info:', updated);
                           return updated;
                         });
                       }}
