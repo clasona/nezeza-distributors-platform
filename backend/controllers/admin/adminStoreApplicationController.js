@@ -105,6 +105,10 @@ const approveStoreApplication = async (req, res, next) => {
       ownerId: createdUser._id,
       storeType: storeInfo.storeType,
       businessType: businessInfo?.businessType || 'individual',
+      registrationNumber: storeInfo.registrationNumber || '', // Handle string registration number
+      category: storeInfo.category,
+      logo: storeInfo.logo,
+      phone: storeInfo.phone,
       address: {
         street1: storeInfo.address.street || storeInfo.address.street1,
         street2: storeInfo.address.street2,

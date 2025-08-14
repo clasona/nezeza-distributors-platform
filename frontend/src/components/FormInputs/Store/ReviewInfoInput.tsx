@@ -47,22 +47,20 @@ const ReviewInfoInput = ({
               fieldName='phone'
               getValues={getValues as any}
             />
+            {/* Commented out - Country of Citizenship not requested
             <ReviewInputItem
               label='Country of Citizenship'
               fieldName='citizenshipCountry'
               getValues={getValues as any}
             />
-            {/* <ReviewInputItem
-              label='Country of Birth'
-              fieldName='birthCountry'
-              getValues={getValues}
-            /> */}
+            */}
             <ReviewInputItem
               label='Date of Birth'
               fieldName='dob'
               getValues={getValues as any}
               className='sm:col-span-2'
             />
+            {/* Commented out - Residence Address not requested
             <StoreFormHeading heading='Residence Address' />
             <ReviewInputItem
               label='Street Address'
@@ -89,6 +87,7 @@ const ReviewInfoInput = ({
               fieldName='residenceZipCode'
               getValues={getValues as any}
             />
+            */}
           </div>
         </div>
 

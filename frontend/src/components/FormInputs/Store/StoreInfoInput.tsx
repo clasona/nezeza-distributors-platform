@@ -72,7 +72,8 @@ const StoreInfoInput = ({
   }, [emailValidationStatus, phoneValidationStatus, onVerificationStatusChange]);
 
   const selectedStoreTypeValue = useWatch({ control, name: 'storeType' });
-  const storeEmailValue = useWatch({ control, name: 'storeEmail' });
+  const primaryEmailValue = useWatch({ control, name: 'email' }); // Changed to primary contact email
+  const storeEmailValue = useWatch({ control, name: 'storeEmail' }); // Keep this for store email field
   const storePhoneValue = useWatch({ control, name: 'storePhone' });
 
   // Email verification functions
@@ -200,12 +201,7 @@ const StoreInfoInput = ({
               const values = getValues();
               setValue('storeEmail', values.email);
               setValue('storePhone', values.phone);
-              setValue('storeStreet', values.residenceStreet);
-              setValue('storeStreet2', values.residenceStreet2 || '');
-              setValue('storeCity', values.residenceCity);
-              setValue('storeState', values.residenceState);
-              setValue('storeCountry', values.residenceCountry);
-              setValue('storeZipCode', values.residenceZipCode);
+              // Note: Store address will need to be filled separately as we don't collect residence address
             }}
             className='flex items-center gap-2 px-4 py-2 bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_green_600 transition-all duration-200 text-sm font-medium'
           >
@@ -228,8 +224,8 @@ const StoreInfoInput = ({
           name='storeRegistrationNumber'
           register={register as any}
           errors={errors as any}
-          type='number'
-          placeholder='EIN or equivalent'
+          type='text'
+          placeholder='EIN or equivalent (e.g., 12-3456789)'
         />
         <TextInput
           label='Store Name'
@@ -256,91 +252,17 @@ const StoreInfoInput = ({
           type='text'
           className='sm:col-span-2'
         />
-        {/* Store Email with Validation */}
-        <div className='space-y-2'>
-          <TextInput
-            label='Store Email'
-            id='storeEmail'
-            name='storeEmail'
-            register={register as any}
-            errors={errors as any}
-            type='email'
-          />
-          <div className='flex items-center gap-2 flex-wrap'>
-            {emailValidationStatus === 'idle' && (
-              <button
-                type='button'
-                onClick={() => sendEmailVerificationCode(storeEmailValue)}
-                disabled={!storeEmailValue}
-                className='px-3 py-1.5 text-xs font-medium bg-vesoko_dark_blue text-white rounded-md hover:bg-vesoko_green_600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200'
-              >
-                <Mail className='inline-block w-4 h-4 mr-1' />
-                Send Verification Email
-              </button>
-            )}
-            {emailValidationStatus === 'sending' && (
-              <div className='flex items-center gap-1 text-blue-600 text-sm'>
-                <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600'></div>
-                <span>Sending verification email...</span>
-              </div>
-            )}
-            {(emailValidationStatus === 'code-sent' || emailValidationStatus === 'code-error') && (
-              <div className='space-y-2'>
-                <div className='flex items-center gap-2'>
-                  <input
-                    type='text'
-                    placeholder='Enter 6-digit code'
-                    value={emailVerificationCode}
-                    onChange={(e) => setEmailVerificationCode(e.target.value)}
-                    className='px-2 py-1 text-sm border border-gray-300 rounded-md w-32'
-                    maxLength={6}
-                  />
-                  <button
-                    type='button'
-                    onClick={() => verifyEmailWithCode(storeEmailValue, emailVerificationCode)}
-                    disabled={emailVerificationCode.length !== 6}
-                    className='px-3 py-1.5 text-xs font-medium bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200'
-                  >
-                    Verify
-                  </button>
-                  <button
-                    type='button'
-                    onClick={() => sendEmailVerificationCode(storeEmailValue)}
-                    className='px-2 py-1.5 text-xs font-medium bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors duration-200'
-                  >
-                    Resend
-                  </button>
-                </div>
-                {emailValidationStatus === 'code-error' && verificationErrors.email && (
-                  <div className='flex items-center gap-1 text-red-600 text-sm'>
-                    <AlertCircle className='h-4 w-4' />
-                    <span>{verificationErrors.email}</span>
-                  </div>
-                )}
-              </div>
-            )}
-            {emailValidationStatus === 'verifying' && (
-              <div className='flex items-center gap-1 text-blue-600 text-sm'>
-                <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600'></div>
-                <span>Verifying code...</span>
-              </div>
-            )}
-            {emailValidationStatus === 'verified' && (
-              <div className='flex items-center gap-1 text-green-600 text-sm'>
-                <CheckCircle className='h-4 w-4' />
-                <span>Email verified!</span>
-              </div>
-            )}
-            {emailValidationStatus === 'invalid' && (
-              <div className='flex items-center gap-1 text-red-600 text-sm'>
-                <AlertCircle className='h-4 w-4' />
-                <span>{verificationErrors.email || 'Verification failed'}</span>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* Store Email - No verification required */}
+        <TextInput
+          label='Store Email'
+          id='storeEmail'
+          name='storeEmail'
+          register={register as any}
+          errors={errors as any}
+          type='email'
+        />
         
-        {/* Store Phone with Validation */}
+        {/* Store Phone - Commented out verification for now */}
         <div className='space-y-2'>
           <TextInput
             label='Store Phone'
@@ -350,6 +272,7 @@ const StoreInfoInput = ({
             errors={errors as any}
             type='tel'
           />
+          {/* Commented out phone verification functionality for now
           <div className='flex items-center gap-2 flex-wrap'>
             {phoneValidationStatus === 'idle' && (
               <button
@@ -422,6 +345,7 @@ const StoreInfoInput = ({
               </div>
             )}
           </div>
+          */}
         </div>
         {/*Store logo */}
         <CloudinaryImageUpload

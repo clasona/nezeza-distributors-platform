@@ -207,15 +207,15 @@ const StoreRegistrationForm = ({
   const handleNext = async () => {
     const isStepValid = await trigger(); // triggers validation for current fields
     
-    // Additional validation for Store Info section (section 1)    
-    if (currentSection === 1) {
+    // Additional validation for Primary Contact section (section 0) - verify primary contact email    
+    if (currentSection === 0) {
       let errorMsg = '';
       if (!emailVerified) {
-        errorMsg = 'Please verify your store email before proceeding.';
+        errorMsg = 'Please verify your primary contact email before proceeding.';
       }
-      // COMMENTED OUT FOR TESTING - UNCOMMENT WHEN READY TO ACTIVATE PHONE VERIFICATION
+      // COMMENTED OUT - Phone verification not required for now
       // if (!phoneVerified) {
-      //   errorMsg = 'Please verify your store phone before proceeding.';
+      //   errorMsg = 'Please verify your phone before proceeding.';
       // }
       if (errorMsg) {
         setVerificationError(errorMsg);
@@ -275,7 +275,7 @@ const StoreRegistrationForm = ({
       },
       storeInfo: {
         storeType: data.storeType,
-        registrationNumber: parseInt(data.storeRegistrationNumber) || 0,
+        registrationNumber: data.storeRegistrationNumber || '', // Keep as string to support EIN format with dashes
         name: data.storeName,
         category: data.storeCategory,
         description: data.storeDescription,
@@ -420,12 +420,39 @@ const StoreRegistrationForm = ({
             <div>
               {/* Primary Contact Info Section */}
               {currentSection === 0 && (
-                <PrimaryContactInput
-                  register={register}
-                  errors={errors}
-                  setValue={setValue}
-                  control={control}
-                />
+                <>
+                  <PrimaryContactInput
+                    register={register}
+                    errors={errors}
+                    setValue={setValue}
+                    control={control}
+                    onVerificationStatusChange={(emailVerified, phoneVerified) => {
+                      setEmailVerified(emailVerified);
+                      setPhoneVerified(phoneVerified);
+                      // Clear error when email is verified (phone verification not required for now)
+                      if (emailVerified) {
+                        setVerificationError('');
+                      }
+                    }}
+                  />
+                  {/* Verification Error Message */}
+                  {verificationError && (
+                    <div className='mt-4 p-4 bg-red-50 border border-red-200 rounded-lg'>
+                      <div className='flex items-center'>
+                        <div className='flex-shrink-0'>
+                          <svg className='h-5 w-5 text-red-400' viewBox='0 0 20 20' fill='currentColor'>
+                            <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z' clipRule='evenodd' />
+                          </svg>
+                        </div>
+                        <div className='ml-3'>
+                          <p className='text-sm font-medium text-red-800'>
+                            {verificationError}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
               {/* Store Info Section */}
               {currentSection === 1 && (

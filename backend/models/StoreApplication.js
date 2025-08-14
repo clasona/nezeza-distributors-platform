@@ -22,11 +22,11 @@ const PrimaryContactInfoSchema = new mongoose.Schema({
   },
   citizenshipCountry: {
     type: String,
-    required: true,
+    required: false, // Made optional as we're not requesting it for now
   },
   birthCountry: {
     type: String,
-    required: true,
+    required: false, // Made optional as we're not requesting it for now
   },
   dob: {
     type: Date,
@@ -37,15 +37,15 @@ const PrimaryContactInfoSchema = new mongoose.Schema({
   //   ref: 'Address',
   //   required: true,
   // },
-  // In PrimaryContactInfoSchema
+  // In PrimaryContactInfoSchema - Made optional as we're not requesting it for now
   residenceAddress: {
-    street: { type: String, required: true },
+    street: { type: String, required: false },
     street1: { type: String }, // For Shippo API compatibility
     street2: { type: String }, // For Shippo API compatibility
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zip: { type: String, required: true },
-    country: { type: String, required: true },
+    city: { type: String, required: false },
+    state: { type: String, required: false },
+    zip: { type: String, required: false },
+    country: { type: String, required: false },
     phone: { type: String }, // For Shippo API compatibility
   },
 });
@@ -56,7 +56,7 @@ const StoreInfoSchema = new mongoose.Schema({
     required: true,
   },
   registrationNumber: {
-    type: Number, // Changed to Number to match your input type
+    type: String, // Changed to String to support EIN format with dashes
     required: true,
   },
   name: {

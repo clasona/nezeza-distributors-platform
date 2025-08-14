@@ -53,7 +53,7 @@ const storeSchema = new mongoose.Schema(
       maxlength: 20,
     },
     registrationNumber: {
-      type: String,
+      type: String, // Supports EIN format with dashes (e.g., 12-3456789)
       maxlength: 50,
     },
 

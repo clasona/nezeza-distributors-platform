@@ -155,7 +155,7 @@ export interface StoreProduct {
 export interface StoreProps {
   _id: string;
   storeType: string;
-  registrationNumber?: number;
+  registrationNumber?: string; // Changed to string to support EIN format with dashes
   name: string;
   storeName?: string; // Additional field for compatibility
   category?: string;
