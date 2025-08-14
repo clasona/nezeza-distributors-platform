@@ -128,8 +128,9 @@ const SellersHub = () => {
 
   const stats = [
     { number: "100%", label: "African Products", suffix: "" },
-    { number: "50M+", label: "Potential Customers", suffix: "" },
-    { number: "3-5%", label: "Platform Fee", suffix: "" },
+    { number: "100M+", label: "Potential Customers", suffix: "" },
+    // { number: "10,000+", label: "African Suppliers", suffix: "" },
+    // { number: "3-5%", label: "Platform Fee", suffix: "" },
     { number: "24/7", label: "Support Available", suffix: "" }
   ];
 
