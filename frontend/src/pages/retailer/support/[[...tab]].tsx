@@ -370,6 +370,7 @@ const MyTicketsContent = React.memo(({
   selectedTicket, 
   setSelectedTicket,
   tickets,
+  setTickets,
   handleTabChange,
   formatDate,
   getStatusColor,
