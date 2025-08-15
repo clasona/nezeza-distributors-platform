@@ -220,6 +220,29 @@ POST /api/v1/orders/:id/cancel      // Cancel full order
 POST /api/v1/orders/:id/:itemId/cancel // Cancel order item
 ```
 
+## Architecture & Design Patterns
+
+### Dynamic Routing with `[[...tab]].tsx`
+The platform implements advanced Next.js dynamic routing patterns for sophisticated user interfaces. This architectural pattern allows single files to handle multiple related routes while maintaining clean URLs and excellent performance.
+
+📖 **[Complete Dynamic Routing Documentation](./DYNAMIC_ROUTING_ARCHITECTURE.md)**
+
+**Key Benefits:**
+- Single file per user type instead of multiple separate pages
+- Tab-based navigation with clean, bookmarkable URLs
+- Role-specific support portals with tailored content
+- Optimized performance and state management
+- Easier maintenance and feature additions
+
+**Current Implementations:**
+- Customer Support Portal: `/customer/support/[[...tab]].tsx`
+- Retailer Business Support: `/retailer/support/[[...tab]].tsx`
+- Wholesaler B2B Support: `/wholesaler/support/[[...tab]].tsx`
+- Manufacturer Support: `/manufacturer/support/[[...tab]].tsx`
+- Admin Support Management: `/admin/support/[[...tab]].tsx`
+
+Each implementation handles 4-6 related routes (dashboard, ticket submission, ticket management, analytics, FAQs) in a single file with dynamic content rendering.
+
 ## Frontend Pages
 
 ### Public Pages
