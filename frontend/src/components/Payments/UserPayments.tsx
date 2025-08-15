@@ -294,7 +294,7 @@ const UserPayments = () => {
               subtitle: 'Ready to withdraw'
             },
             {
-              title: 'Pending Balance',
+              title: 'Incoming Balance',
               value: formatPrice(sellerBalance?.pendingBalance || 0),
               icon: <ClockIcon />,
               gradient: 'from-yellow-400 to-orange-500',

@@ -617,7 +617,9 @@ const SellerInventory = () => {
                           />
                         ),
                       },
-                      { content: product._id },
+                      { content: ( <span className="font-mono text-sm">
+              #{product._id.slice(-8).toUpperCase()}
+            </span>) },
 
                       {
                         content: (

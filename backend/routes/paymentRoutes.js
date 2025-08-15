@@ -9,7 +9,7 @@ const {
   createStripeConnectAccount,
   getStripeConnectAccount,
   hasActiveStripeAccount,
-  confirmPayment,
+  confirmPaymentEndpoint,
   processRefund,
   refundTest,
   sellerRequestPayOut,
@@ -33,7 +33,7 @@ router.post('/seller-subscription', createSubscription);
 router.post('/cancel-subscription', cancelSubscription);
 router.post('/confirm-with-saved-card', authenticateUser, confirmWithSavedCard);
 router.get('/user-payment-methods', authenticateUser, getUserPaymentMethods);
-router.post('/confirm-payment', confirmPayment);
+router.post('/confirm-payment', confirmPaymentEndpoint);
 router.post('/refund', processRefund);
 router.post('/refund', refundTest);
 router.post('/request-payout', sellerRequestPayOut);

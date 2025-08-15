@@ -46,6 +46,10 @@ const TempOrderDataSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  feeBreakdown: {
+    type: Object,
+    required: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

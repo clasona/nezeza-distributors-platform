@@ -7,6 +7,8 @@ import { CustomerOrderItemDetails } from './CustomerOrderItemDetails';
 import { useForm } from 'react-hook-form';
 import DropdownInput from '../FormInputs/DropdownInput';
 import { getOrderFulfillmentStatuses } from '@/lib/utils';
+import { calculateOrderFees } from '@/utils/payment/feeCalculationUtils';
+import FormattedPrice from '../FormattedPrice';
 import { 
   Package, 
   MapPin, 
@@ -20,7 +22,9 @@ import {
   FileText,
   CheckCircle,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  DollarSign,
+  Info
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -57,6 +61,8 @@ const CustomerMoreOrderDetailsModal = ({
     console.log('Received rowData:', rowData);
     if (isOpen) {
       setOrderData(rowData);
+      // Initialize form with current order status (convert to lowercase to match options)
+      setValue('fulfillmentStatus', rowData.fulfillmentStatus.toLowerCase());
     }
   }, [isOpen, rowData, setValue]);
 
@@ -174,7 +180,6 @@ const CustomerMoreOrderDetailsModal = ({
                       options={getOrderFulfillmentStatuses()}
                       register={register}
                       errors={errors}
-                      value={orderData.fulfillmentStatus}
                       className='w-full'
                     />
                   </div>
@@ -343,12 +348,18 @@ const CustomerMoreOrderDetailsModal = ({
               <div className='space-y-4'>
                 {orderData.products.map((product, index) => (
                   <div key={product._id} className='flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors'>
-                    <Image
-                      src={product.image || '/placeholder.png'}
-                      alt={product.title}
-                      width={64}
-                      height={64}
+                  {/* what placeholder should i have in my public? */}
+                  <Image
+                    src={product.image || '/placeholder.jpg'}
+                    alt={product.title || 'Product image'}
+                    width={64}
+                    height={64}
                       className='w-16 h-16 rounded-lg object-cover border border-gray-200'
+                      unoptimized={product.image?.startsWith('https://nezeza-products.s3')}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder.jpg';
+                      }}
                     />
                     <div className='flex-1 min-w-0'>
                       <h5 className='font-semibold text-gray-900 truncate'>{product.title}</h5>
@@ -378,26 +389,108 @@ const CustomerMoreOrderDetailsModal = ({
               {/* Order Totals */}
               <div className='space-y-4 mb-6'>
                 <div className='flex justify-between items-center py-3 border-b border-gray-100'>
-                  <span className='text-gray-600 font-medium'>Subtotal</span>
-                  <span className='font-bold text-gray-900'>${orderData.totalAmount.toFixed(2)}</span>
+                  <span className='text-gray-600 font-medium'>Products</span>
+                  <span className='font-bold text-gray-900'><FormattedPrice amount={orderData.totalAmount} /></span>
                 </div>
                 
                 <div className='flex justify-between items-center py-3 border-b border-gray-100'>
                   <span className='text-gray-600 font-medium'>Tax</span>
-                  <span className='font-bold text-gray-900'>${orderData.totalTax.toFixed(2)}</span>
+                  <span className='font-bold text-gray-900'><FormattedPrice amount={orderData.totalTax} /></span>
                 </div>
                 
                 <div className='flex justify-between items-center py-3 border-b border-gray-100'>
                   <span className='text-gray-600 font-medium'>Shipping</span>
-                  <span className='font-bold text-gray-900'>${orderData.totalShipping.toFixed(2)}</span>
+                  <span className='font-bold text-gray-900'><FormattedPrice amount={orderData.totalShipping} /></span>
                 </div>
                 
-                <div className='flex justify-between items-center py-4 bg-vesoko_blue_50 -mx-6 px-6 rounded-lg'>
-                  <span className='text-lg font-bold text-vesoko_blue_900'>Total</span>
-                  <span className='text-xl font-bold text-vesoko_blue_900'>
-                    ${(orderData.totalAmount + orderData.totalTax + orderData.totalShipping).toFixed(2)}
-                  </span>
+                {(() => {
+                  // Calculate fee breakdown for transparency
+                  const productSubtotal = orderData.totalAmount;
+                  const taxAmount = orderData.totalTax;
+                  const shippingCost = orderData.totalShipping;
+                  
+                  const feeBreakdown = calculateOrderFees({
+                    productSubtotal,
+                    taxAmount,
+                    shippingCost,
+                    grossUpFees: true
+                  });
+                  
+                  const customerSubtotal = productSubtotal + taxAmount + shippingCost;
+                  const hasProcessingFee = feeBreakdown.breakdown.processingFee > 0;
+                  
+                  return (
+                    <>
+                      {hasProcessingFee && (
+                        <div className='flex justify-between items-center py-3 border-b border-gray-100'>
+                          <div className='flex items-center space-x-2'>
+                            <span className='text-gray-600 font-medium'>Processing Fee</span>
+                            <div className='group relative'>
+                              <Info className='w-4 h-4 text-gray-400 cursor-help' />
+                              <div className='absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap'>
+                                Small fee to ensure sellers receive full payment
+                              </div>
+                            </div>
+                          </div>
+                          <span className='font-bold text-gray-900'><FormattedPrice amount={feeBreakdown.breakdown.processingFee} /></span>
+                        </div>
+                      )}
+                      
+                      <div className='flex justify-between items-center py-4 bg-vesoko_blue_50 -mx-6 px-6 rounded-lg'>
+                        <span className='text-lg font-bold text-vesoko_blue_900'>Customer Total</span>
+                        <span className='text-xl font-bold text-vesoko_blue_900'>
+                          <FormattedPrice amount={feeBreakdown.customerTotal} />
+                        </span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+              
+              {/* Fee Transparency Section */}
+              <div className='bg-vesoko_background rounded-lg p-4 mb-6'>
+                <div className='flex items-center space-x-2 mb-3'>
+                  <DollarSign className='w-5 h-5 text-vesoko_primary' />
+                  <h5 className='font-semibold text-vesoko_primary'>Revenue Breakdown</h5>
                 </div>
+                {(() => {
+                  const productSubtotal = orderData.totalAmount;
+                  const taxAmount = orderData.totalTax;
+                  const shippingCost = orderData.totalShipping;
+                  
+                  const feeBreakdown = calculateOrderFees({
+                    productSubtotal,
+                    taxAmount,
+                    shippingCost,
+                    grossUpFees: true
+                  });
+                  
+                  return (
+                    <div className='space-y-2 text-sm'>
+                      <div className='flex justify-between'>
+                        <span className='text-gray-600'>Seller Receives:</span>
+                        <span className='font-medium text-green-600'>
+                          <FormattedPrice amount={feeBreakdown.sellerReceives} />
+                        </span>
+                      </div>
+                      <div className='flex justify-between'>
+                        <span className='text-gray-600'>Platform Commission (10%):</span>
+                        <span className='font-medium text-orange-600'>
+                          <FormattedPrice amount={feeBreakdown.platformBreakdown.commission} />
+                        </span>
+                      </div>
+                      <div className='flex justify-between'>
+                        <span className='text-gray-600'>Platform Services:</span>
+                        <span className='font-medium text-blue-600'>
+                          <FormattedPrice amount={feeBreakdown.platformBreakdown.shippingRevenue + feeBreakdown.platformBreakdown.stripeFeesCovered} />
+                        </span>
+                      </div>
+                      <div className='text-xs text-gray-500 mt-2 pt-2 border-t'>
+                        Transparent pricing: Seller gets product price + tax, platform covers payment processing
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
               
               {/* Store Information */}

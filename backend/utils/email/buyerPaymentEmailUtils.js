@@ -39,15 +39,49 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
     </div>
   `;
 
+  // Calculate fee breakdown for display
+  const { calculateOrderFees } = require('../payment/feeCalculationUtil');
+  const productSubtotal = order.totalAmount - order.totalTax - order.totalShipping;
+  const feeBreakdown = calculateOrderFees({
+    productSubtotal,
+    taxAmount: order.totalTax,
+    shippingCost: order.totalShipping,
+    grossUpFees: true
+  });
+
   const paymentSummary = `
-    <p><strong>Subtotal:</strong> $${(
-      order.totalAmount -
-      order.totalTax -
-      order.totalShipping
-    ).toFixed(2)}</p>
-    <p><strong>Tax:</strong> $${order.totalTax.toFixed(2)}</p>
-    <p><strong>Shipping:</strong> $${order.totalShipping.toFixed(2)}</p>
-    <p><strong>Grand Total:</strong> $${order.totalAmount.toFixed(2)}</p>
+    <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+      <h3 style="color: #333; margin-top: 0;">💰 Payment Summary</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Products:</strong></td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">$${productSubtotal.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Tax:</strong></td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">$${order.totalTax.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Shipping:</strong></td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">$${order.totalShipping.toFixed(2)}</td>
+        </tr>
+        ${feeBreakdown.breakdown.processingFee > 0 ? `
+        <tr>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;"><strong>Processing Fee:</strong></td>
+          <td style="padding: 8px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">$${feeBreakdown.breakdown.processingFee.toFixed(2)}</td>
+        </tr>` : ''}
+        <tr style="background-color: #dbeafe;">
+          <td style="padding: 12px 8px; font-size: 18px;"><strong>Total Paid:</strong></td>
+          <td style="padding: 12px 8px; text-align: right; font-size: 18px;"><strong>$${feeBreakdown.customerTotal.toFixed(2)}</strong></td>
+        </tr>
+      </table>
+      ${feeBreakdown.breakdown.processingFee > 0 ? `
+      <div style="margin-top: 15px; padding: 12px; background-color: #e0f2fe; border-radius: 6px; border-left: 4px solid #0284c7;">
+        <p style="margin: 0; font-size: 14px; color: #0c4a6e;">
+          <strong>💡 Why a processing fee?</strong> This small fee ensures our sellers receive their full earnings while covering secure payment processing costs.
+        </p>
+      </div>` : ''}
+    </div>
   `;
 
   const message = `
@@ -55,7 +89,6 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
       <h2 style="color: #4CAF50;">Thank you for your payment!</h2>
       <p>Your order has been successfully confirmed.</p>
       ${orderSummary}
-      <h3 style="margin-top: 20px;">Payment Summary</h3>
       ${paymentSummary}
       <hr style="border-top: 1px solid #eee; margin: 20px 0;" />
       <p style="color: #555;">If you have any questions or need assistance with your order, please contact us.</p>

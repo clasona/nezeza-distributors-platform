@@ -890,7 +890,11 @@ const SellerCustomerOrders = () => {
           ),
         },
         {
-          content: order.buyerId || 'N/A',
+          content: (
+            <span className="font-mono text-sm">
+              #{order.buyerId.slice(-8).toUpperCase()}
+            </span>
+          ),
         },
         {
           content: (
@@ -937,9 +941,16 @@ const SellerCustomerOrders = () => {
                 className="flex items-center gap-3 bg-gray-50 rounded-lg p-3 min-w-64"
               >
                 <Image
-                  src={item.image ?? '/placeholder.png'}
-                  alt={item.description || item.title}
+                  src={item.image ?? '/placeholder.jpg'}
+                  alt={item.description || item.title || 'Product image'}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 object-cover rounded"
+                  unoptimized={item.image?.startsWith('https://') || item.image?.startsWith('/uploads/')}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder.jpg';
+                  }}
                 />
                 <div className="flex-1">
                   <p className="font-medium text-sm">

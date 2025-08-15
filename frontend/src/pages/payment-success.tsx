@@ -209,18 +209,20 @@ const SuccessPage = () => {
         <div className='bg-white rounded-2xl shadow-lg p-8 mb-8'>
           <div className='border-b border-gray-200 pb-6 mb-6'>
             <h2 className='text-2xl font-semibold text-gray-900 mb-4'>Order Confirmation</h2>
-            {orderNumber && (
-              <div className='bg-gray-50 rounded-lg p-4 mb-4'>
-                <p className='text-sm text-gray-600'>Order Reference</p>
-                <p className='text-2xl font-bold text-vesoko_primary'>#{orderNumber}</p>
-              </div>
-            )}
-            {estimatedDelivery && (
-              <div className='bg-gray-50 rounded-lg p-4 mb-4'>
-                <p className='text-sm text-gray-600'>Estimated Delivery</p>
-                <p className='text-lg font-semibold text-gray-800'>{estimatedDelivery}</p>
-              </div>
-            )}
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
+              {orderNumber && (
+                <div className='bg-gray-50 rounded-lg p-4 flex-1'>
+                  <p className='text-sm text-gray-600'>Order ID</p>
+                  <p className='text-2xl font-bold text-vesoko_primary'>#{orderNumber}</p>
+                </div>
+              )}
+              {estimatedDelivery && (
+                <div className='bg-gray-50 rounded-lg p-4 flex-1'>
+                  <p className='text-sm text-gray-600'>Estimated Delivery</p>
+                  <p className='text-lg font-semibold text-gray-800'>{estimatedDelivery}</p>
+                </div>
+              )}
+            </div>
             <p className='text-gray-600'>
               Your order has been successfully placed and is being processed. 
               You'll receive a confirmation email shortly with all the details.

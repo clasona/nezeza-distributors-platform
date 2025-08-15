@@ -18,6 +18,7 @@ const {
   errorLoggingMiddleware,
 } = require('../../controllers/admin/adminSystemMonitoringController');
 const calculateEstimatedDelivery = require('./calculateEstimatedDelivery');
+const { getEarliestDeliveryDate } = require('../shipping/extractDeliveryDateFromRate');
 
 /* 
   Create a new order, group items by seller,
@@ -44,8 +45,10 @@ const createSubOrders = async (fullOrder, selectedShippingOptions, session) => {
       // Add transaction fee (10% platform fee on subtotal)
       const transactionFee = subtotal * 0.1;
       
-      // Get the selected shipping rate for this seller
-      const selectedRateId = selectedShippingOptions ? selectedShippingOptions[sellerId] : null;
+      // Get the selected shipping option for this seller
+      const selectedShippingOption = selectedShippingOptions ? selectedShippingOptions[sellerId] : null;
+      const selectedRateId = selectedShippingOption ? 
+        (selectedShippingOption.rateId || selectedShippingOption) : null;
       
       return {
         ...subOrder,
@@ -210,8 +213,34 @@ const createOrderUtil = async ({
     totalShipping = shippingFee;
     const totalAmount = totalTax + totalShipping + subtotal;
 
-    // Calculate estimated delivery date (5 business days from order creation)
-    const estimatedDeliveryDate = calculateEstimatedDelivery(new Date(), 5);
+    // Use the actual delivery date selected by the user instead of recalculating
+    let estimatedDeliveryDate;
+    
+    if (selectedShippingOptions && Object.keys(selectedShippingOptions).length > 0) {
+      // Find the earliest delivery date from user's selected shipping options
+      let earliestDate = null;
+      
+      for (const sellerId in selectedShippingOptions) {
+        const shippingOption = selectedShippingOptions[sellerId];
+        
+        // Use the exact deliveryTime selected by the user
+        if (shippingOption.deliveryTime) {
+          const deliveryDate = new Date(shippingOption.deliveryTime);
+          if (!isNaN(deliveryDate.getTime())) {
+            if (!earliestDate || deliveryDate < earliestDate) {
+              earliestDate = deliveryDate;
+            }
+          }
+        }
+      }
+      
+      estimatedDeliveryDate = earliestDate || calculateEstimatedDelivery(new Date(), 5);
+    } else {
+      // Fallback if no shipping options provided
+      estimatedDeliveryDate = calculateEstimatedDelivery(new Date(), 5);
+    }
+    
+    console.log(`✅ Using selected delivery date: ${estimatedDeliveryDate.toISOString()} from user's shipping choice:`, selectedShippingOptions);
 
     // Validate and process addresses
     if (!shippingAddress) {

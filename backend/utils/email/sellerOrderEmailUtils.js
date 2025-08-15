@@ -86,13 +86,52 @@ const sendSellerNewOrderNotificationEmail = async ({
     </div>
   `;
   
+  // Calculate seller's actual revenue using our fee breakdown
+  const { calculateOrderFees } = require('../payment/feeCalculationUtil');
+  const productSubtotal = sellerSubtotal;
+  const feeBreakdown = calculateOrderFees({
+    productSubtotal,
+    taxAmount: sellerTax,
+    shippingCost: 0, // Seller doesn't get shipping revenue
+    grossUpFees: true
+  });
+
   const itemsSection = `
     <div style="background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="color: #333; margin-top: 0;">📋 Your Items in This Order</h3>
       <ul style="margin-bottom: 20px; padding-left: 20px;">${itemsList}</ul>
-      <div style="background-color: #d4edda; padding: 15px; border-radius: 5px; margin-top: 15px;">
-        <p style="margin: 0; font-size: 18px;"><strong>💰 Total Amount (Your Items): $${totalAmount}</strong></p>
-        <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">Subtotal: $${sellerSubtotal.toFixed(2)} | Tax: $${sellerTax.toFixed(2)} | Shipping: $${sellerShipping.toFixed(2)}</p>
+      
+      <div style="background-color: #d1f2eb; padding: 20px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #27ae60;">
+        <h4 style="color: #27ae60; margin-top: 0;">💰 Your Revenue Breakdown</h4>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; border-bottom: 1px solid #a9dfbf;"><strong>Product Revenue:</strong></td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #a9dfbf; text-align: right;">$${productSubtotal.toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; border-bottom: 1px solid #a9dfbf;"><strong>Tax You Collect:</strong></td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #a9dfbf; text-align: right;">$${sellerTax.toFixed(2)}</td>
+          </tr>
+          <tr style="background-color: #a9dfbf;">
+            <td style="padding: 12px 8px; font-size: 18px;"><strong>🎯 You Receive:</strong></td>
+            <td style="padding: 12px 8px; text-align: right; font-size: 18px;"><strong>$${feeBreakdown.sellerReceives.toFixed(2)}</strong></td>
+          </tr>
+        </table>
+        
+        <div style="margin-top: 15px; padding: 12px; background-color: #e8f8f5; border-radius: 6px;">
+          <p style="margin: 0; font-size: 14px; color: #0d5d2b;">
+            <strong>📊 Platform Details:</strong><br>
+            • Platform Commission (10%): $${feeBreakdown.platformBreakdown.commission.toFixed(2)}<br>
+            • Shipping Revenue (Platform): $${sellerShipping.toFixed(2)}<br>
+            • Payment Processing: Covered by platform
+          </p>
+        </div>
+        
+        <div style="margin-top: 10px; padding: 10px; background-color: #f0f9ff; border-radius: 6px; border: 1px solid #0284c7;">
+          <p style="margin: 0; font-size: 12px; color: #0c4a6e;">
+            <strong>💡 Transparent Pricing:</strong> You receive 100% of your product price plus tax. Our platform fee covers marketing, support, and secure payment processing.
+          </p>
+        </div>
       </div>
     </div>
   `;

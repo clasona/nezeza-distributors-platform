@@ -347,10 +347,10 @@ const SellerDashboard = () => {
           </div>
           
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-            {/* Pending Balance */}
+            {/* Incoming Balance */}
             <div className='bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-200'>
               <div className='flex items-center justify-between mb-2'>
-                <span className='text-sm font-medium text-gray-600'>Pending Balance</span>
+                <span className='text-sm font-medium text-gray-600'>Incoming Balance</span>
                 <div className='w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center'>
                   <MdAttachMoney className='w-4 h-4 text-white' />
                 </div>

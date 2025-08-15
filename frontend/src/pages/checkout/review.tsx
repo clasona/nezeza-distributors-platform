@@ -1,11 +1,13 @@
 import FormattedPrice from '@/components/FormattedPrice';
 import Button from '@/components/FormInputs/Button';
 import Loading from '@/components/Loaders/Loading';
+import OrderFeeBreakdown from '@/components/Order/OrderFeeBreakdown';
 import { useRouter } from 'next/router';
 import { useEffect, useMemo, useState } from 'react';
 
 import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
 import { createShipping } from '@/utils/shipping/createShipping';
+import { calculateOrderFees, type FeeBreakdown } from '@/utils/payment/feeCalculationUtils';
 import { useSelector } from 'react-redux';
 import { AddressProps, stateProps } from '../../../type';
 import Link from 'next/link';
@@ -185,7 +187,20 @@ const CheckoutReviewPage = () => {
     }
   }, [uniqueTaxRates]);
 
-  const grandTotal = subtotal + shippingTotal + tax;
+  // Calculate comprehensive fee breakdown
+  const feeBreakdown = useMemo(() => {
+    if (subtotal > 0) {
+      return calculateOrderFees({
+        productSubtotal: subtotal,
+        taxAmount: tax,
+        shippingCost: shippingTotal,
+        grossUpFees: true // Use gross-up model
+      });
+    }
+    return null;
+  }, [subtotal, tax, shippingTotal]);
+
+  const grandTotal = feeBreakdown?.customerTotal || (subtotal + shippingTotal + tax);
 
   const handleRadio = (groupId: string, rateId: string) => {
     setSelectedOptions((prev) => ({
@@ -203,11 +218,35 @@ const CheckoutReviewPage = () => {
     setIsProceeding(true);
     setError(null);
     try {
-      // Create Payment Intent using either cart items or buy now product
+      // Build complete shipping options with delivery dates
+      const completeShippingOptions: { [groupId: string]: any } = {};
+      
+      for (const group of shippingGroups) {
+        const selectedRateId = selectedOptions[group.groupId];
+        const selectedOption = group.deliveryOptions.find(
+          (opt: any) => opt.rateId === selectedRateId
+        );
+        
+        if (selectedOption) {
+          completeShippingOptions[group.groupId] = {
+            rateId: selectedOption.rateId,
+            deliveryTime: selectedOption.deliveryTime,
+            price: selectedOption.price,
+            provider: selectedOption.provider,
+            servicelevel: selectedOption.servicelevel,
+            durationTerms: selectedOption.durationTerms,
+            label: selectedOption.label
+          };
+        }
+      }
+      
+      console.log('🚚 Sending complete shipping options:', completeShippingOptions);
+      
+      // Create Payment Intent using complete shipping option details
       const response = await createPaymentIntent(
         itemsToProcess,
         shippingAddress,
-        selectedOptions,
+        completeShippingOptions,
         shippingTotal
       );
       console.log('Payment intent response:', response);
@@ -407,45 +446,55 @@ const CheckoutReviewPage = () => {
             </div>
           );
         })}
-        {/* Order Summary */}
-        <div className='bg-white rounded-lg shadow-lg p-6 border'>
-          <h3 className='text-lg font-bold mb-4 text-vesoko_primary'>
-            Order Summary
-          </h3>
-          <div className='space-y-2 text-gray-700'>
-            <div className='flex justify-between'>
-              <span>Items Subtotal:</span>
-              <span>
-                <FormattedPrice amount={subtotal} />
-              </span>
+        {/* Order Summary with Fee Breakdown */}
+        {feeBreakdown ? (
+          <OrderFeeBreakdown 
+            feeBreakdown={feeBreakdown}
+            showDetailedBreakdown={true}
+            showProcessingFeeExplanation={true}
+            className="mb-4"
+          />
+        ) : (
+          // Fallback to simple summary if fee breakdown not available
+          <div className='bg-white rounded-lg shadow-lg p-6 border'>
+            <h3 className='text-lg font-bold mb-4 text-vesoko_primary'>
+              Order Summary
+            </h3>
+            <div className='space-y-2 text-gray-700'>
+              <div className='flex justify-between'>
+                <span>Items Subtotal:</span>
+                <span>
+                  <FormattedPrice amount={subtotal} />
+                </span>
+              </div>
+              <div className='flex justify-between'>
+                <span>Shipping:</span>
+                <span>
+                  <FormattedPrice amount={shippingTotal} />
+                </span>
+              </div>
+              <div className='flex justify-between'>
+                <span>{taxLabel}</span>
+                <span>
+                  <FormattedPrice amount={tax} />
+                </span>
+              </div>
             </div>
-            <div className='flex justify-between'>
-              <span>Shipping:</span>
+            <hr className='my-3' />
+            <div className='flex justify-between text-lg font-bold text-vesoko_primary'>
+              <span>Total:</span>
               <span>
-                <FormattedPrice amount={shippingTotal} />
-              </span>
-            </div>
-            <div className='flex justify-between'>
-              <span>{taxLabel}</span>
-              <span>
-                <FormattedPrice amount={tax} />
+                <FormattedPrice amount={grandTotal} />
               </span>
             </div>
           </div>
-          <hr className='my-3' />
-          <div className='flex justify-between text-lg font-bold text-vesoko_primary'>
-            <span>Total:</span>
-            <span>
-              <FormattedPrice amount={grandTotal} />
-            </span>
-          </div>
-        </div>
+        )}
         <div className='text-center mt-4'>
           <Button
             buttonTitle={isProceeding ? 'Processing...' : 'Proceed to Payment'}
             isLoading={isProceeding}
             disabled={!canSubmit || isProceeding}
-            className='w-full py-3 text-center justify-center bg-vesoko_primary text-white rounded-md hover:bg-vesoko_secondary transition-colors duration-300 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed'
+            className='w-full py-3 text-center justify-center bg-vesoko_secondary text-white rounded-md hover:bg-vesoko_secondary_light transition-colors duration-300 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed'
             onClick={handleProceedToPayment}
           />
           {!canSubmit && (
