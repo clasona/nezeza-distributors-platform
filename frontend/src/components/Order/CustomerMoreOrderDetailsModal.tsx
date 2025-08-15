@@ -5,10 +5,12 @@ import FormattedStatus from '../Table/FormattedStatus';
 import { OrderItemDetails } from './OrderItemDetails';
 import { CustomerOrderItemDetails } from './CustomerOrderItemDetails';
 import { useForm } from 'react-hook-form';
+import { getOrderFulfillmentStatuses } from '../../lib/utils';
 import DropdownInput from '../FormInputs/DropdownInput';
-import { getOrderFulfillmentStatuses } from '@/lib/utils';
-import { calculateOrderFees } from '@/utils/payment/feeCalculationUtils';
 import FormattedPrice from '../FormattedPrice';
+import { calculateOrderFees, FeeBreakdown } from '@/utils/payment/feeCalculationUtils';
+import OrderFeeDisplay from './OrderFeeDisplay';
+import OrderRevenueBreakdown from './OrderRevenueBreakdown';
 import { 
   Package, 
   MapPin, 
@@ -403,48 +405,12 @@ const CustomerMoreOrderDetailsModal = ({
                   <span className='font-bold text-gray-900'><FormattedPrice amount={orderData.totalShipping} /></span>
                 </div>
                 
-                {(() => {
-                  // Calculate fee breakdown for transparency
-                  const productSubtotal = orderData.totalAmount;
-                  const taxAmount = orderData.totalTax;
-                  const shippingCost = orderData.totalShipping;
-                  
-                  const feeBreakdown = calculateOrderFees({
-                    productSubtotal,
-                    taxAmount,
-                    shippingCost,
-                    grossUpFees: true
-                  });
-                  
-                  const customerSubtotal = productSubtotal + taxAmount + shippingCost;
-                  const hasProcessingFee = feeBreakdown.breakdown.processingFee > 0;
-                  
-                  return (
-                    <>
-                      {hasProcessingFee && (
-                        <div className='flex justify-between items-center py-3 border-b border-gray-100'>
-                          <div className='flex items-center space-x-2'>
-                            <span className='text-gray-600 font-medium'>Processing Fee</span>
-                            <div className='group relative'>
-                              <Info className='w-4 h-4 text-gray-400 cursor-help' />
-                              <div className='absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap'>
-                                Small fee to ensure sellers receive full payment
-                              </div>
-                            </div>
-                          </div>
-                          <span className='font-bold text-gray-900'><FormattedPrice amount={feeBreakdown.breakdown.processingFee} /></span>
-                        </div>
-                      )}
-                      
-                      <div className='flex justify-between items-center py-4 bg-vesoko_blue_50 -mx-6 px-6 rounded-lg'>
-                        <span className='text-lg font-bold text-vesoko_blue_900'>Customer Total</span>
-                        <span className='text-xl font-bold text-vesoko_blue_900'>
-                          <FormattedPrice amount={feeBreakdown.customerTotal} />
-                        </span>
-                      </div>
-                    </>
-                  );
-                })()}
+                <OrderFeeDisplay
+                  productSubtotal={orderData.totalAmount}
+                  taxAmount={orderData.totalTax}
+                  shippingCost={orderData.totalShipping}
+                  grossUpFees={true}
+                />
               </div>
               
               {/* Fee Transparency Section */}
@@ -453,44 +419,12 @@ const CustomerMoreOrderDetailsModal = ({
                   <DollarSign className='w-5 h-5 text-vesoko_primary' />
                   <h5 className='font-semibold text-vesoko_primary'>Revenue Breakdown</h5>
                 </div>
-                {(() => {
-                  const productSubtotal = orderData.totalAmount;
-                  const taxAmount = orderData.totalTax;
-                  const shippingCost = orderData.totalShipping;
-                  
-                  const feeBreakdown = calculateOrderFees({
-                    productSubtotal,
-                    taxAmount,
-                    shippingCost,
-                    grossUpFees: true
-                  });
-                  
-                  return (
-                    <div className='space-y-2 text-sm'>
-                      <div className='flex justify-between'>
-                        <span className='text-gray-600'>Seller Receives:</span>
-                        <span className='font-medium text-green-600'>
-                          <FormattedPrice amount={feeBreakdown.sellerReceives} />
-                        </span>
-                      </div>
-                      <div className='flex justify-between'>
-                        <span className='text-gray-600'>Platform Commission (10%):</span>
-                        <span className='font-medium text-orange-600'>
-                          <FormattedPrice amount={feeBreakdown.platformBreakdown.commission} />
-                        </span>
-                      </div>
-                      <div className='flex justify-between'>
-                        <span className='text-gray-600'>Platform Services:</span>
-                        <span className='font-medium text-blue-600'>
-                          <FormattedPrice amount={feeBreakdown.platformBreakdown.shippingRevenue + feeBreakdown.platformBreakdown.stripeFeesCovered} />
-                        </span>
-                      </div>
-                      <div className='text-xs text-gray-500 mt-2 pt-2 border-t'>
-                        Transparent pricing: Seller gets product price + tax, platform covers payment processing
-                      </div>
-                    </div>
-                  );
-                })()}
+                <OrderRevenueBreakdown
+                  productSubtotal={orderData.totalAmount}
+                  taxAmount={orderData.totalTax}
+                  shippingCost={orderData.totalShipping}
+                  grossUpFees={true}
+                />
               </div>
               
               {/* Store Information */}

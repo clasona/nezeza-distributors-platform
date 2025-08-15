@@ -45,7 +45,12 @@ const BuyQuantityModal: React.FC<BuyQuantityModalProps> = ({
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    console.log('BuyQuantityModal: Confirm button clicked with quantity:', quantity);
     onConfirm(quantity);
     onClose();
   };

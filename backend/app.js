@@ -48,6 +48,7 @@ const contactRouter = require('./routes/contactRoutes');
 const customerRouter = require('./routes/customerRoutes');
 const contentRouter = require('./routes/contentRoutes');
 const passwordSetupRouter = require('./routes/passwordSetupRoutes');
+const feeCalculationRouter = require('./routes/feeCalculation');
 // middleware
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
@@ -136,6 +137,8 @@ app.use('/api/v1/customers', customerRouter);
 app.use('/api/v1/content', contentRouter);
 // password setup routes
 app.use('/api/v1/password-setup', passwordSetupRouter);
+// fee calculation routes
+app.use('/api/v1/fee-calculation', feeCalculationRouter);
 // address validation routes
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

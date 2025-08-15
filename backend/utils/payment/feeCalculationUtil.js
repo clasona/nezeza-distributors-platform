@@ -31,20 +31,35 @@ function calculateOrderFees({
   const customerSubtotal = productSubtotal + taxAmount + shippingCost;
   
   let customerTotal;
+  let processingFee = 0; // Only used in gross-up model
   let stripeFee;
   let platformRevenue;
   let netSellerReceives;
 
   if (grossUpFees) {
-    // Gross-up model: Calculate total needed to cover all fees
-    // We need to find X where: X - (X * 0.029 + 0.30) = customerSubtotal
-    // Solving for X: X = (customerSubtotal + 0.30) / (1 - 0.029)
-    customerTotal = (customerSubtotal + STRIPE_FIXED_FEE) / (1 - STRIPE_PERCENTAGE_FEE);
+    // Gross-up model: Calculate total needed to cover ALL costs (seller payout + platform costs + stripe fees)
+    // Total costs that need to be covered after Stripe fees are deducted:
+    const totalCostsNeeded = sellerReceives + platformShippingRevenue + platformCommission;
+    console.log('Platform commission:', platformCommission);
+    console.log('Platform shipping revenue:', platformShippingRevenue);
+    console.log('Seller receives:', sellerReceives);
+    console.log('Total costs needed:', totalCostsNeeded);
+
+
+    // We need to find X where: X - (X * 0.029 + 0.30) = totalCostsNeeded
+    // Solving for X: X = (totalCostsNeeded + 0.30) / (1 - 0.029)
+    customerTotal = (totalCostsNeeded + STRIPE_FIXED_FEE) / (1 - STRIPE_PERCENTAGE_FEE);
+    processingFee = customerTotal - totalCostsNeeded; // This is the gross-up fee added to customer total
     stripeFee = (customerTotal * STRIPE_PERCENTAGE_FEE) + STRIPE_FIXED_FEE;
+
+    console.log('Gross-up model:');
+    console.log('Total costs needed:', totalCostsNeeded);
+    console.log('Customer total:', customerTotal);
+    console.log('Processing fee (gross-up):', processingFee);
+    console.log('Stripe fee:', stripeFee);
     
-    // Platform gets: commission + shipping + (grossed up amount - original subtotal) - stripe fees
-    const grossUpAmount = customerTotal - customerSubtotal;
-    platformRevenue = platformCommission + platformShippingRevenue + grossUpAmount - stripeFee;
+    // Platform gets: commission + shipping (all costs are covered)
+    platformRevenue = platformCommission + platformShippingRevenue;
     netSellerReceives = sellerReceives; // Seller protected from fees
     
   } else {
@@ -68,7 +83,7 @@ function calculateOrderFees({
       productSubtotal: roundMoney(productSubtotal),
       tax: roundMoney(taxAmount),
       shipping: roundMoney(shippingCost),
-      processingFee: grossUpFees ? roundMoney(customerTotal - customerSubtotal) : 0
+      processingFee: grossUpFees ? roundMoney(processingFee) : 0
     },
     
     // Seller perspective

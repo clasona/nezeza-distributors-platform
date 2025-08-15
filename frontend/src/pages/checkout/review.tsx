@@ -187,17 +187,33 @@ const CheckoutReviewPage = () => {
     }
   }, [uniqueTaxRates]);
 
-  // Calculate comprehensive fee breakdown
-  const feeBreakdown = useMemo(() => {
-    if (subtotal > 0) {
-      return calculateOrderFees({
-        productSubtotal: subtotal,
-        taxAmount: tax,
-        shippingCost: shippingTotal,
-        grossUpFees: true // Use gross-up model
-      });
-    }
-    return null;
+  // Calculate comprehensive fee breakdown - now async
+  const [feeBreakdown, setFeeBreakdown] = useState<any>(null);
+  const [feeCalculationLoading, setFeeCalculationLoading] = useState(false);
+
+  useEffect(() => {
+    const calculateFees = async () => {
+      if (subtotal > 0) {
+        setFeeCalculationLoading(true);
+        try {
+          const breakdown = await calculateOrderFees({
+            productSubtotal: subtotal,
+            taxAmount: tax,
+            shippingCost: shippingTotal,
+            grossUpFees: true // Use gross-up model
+          });
+          setFeeBreakdown(breakdown);
+        } catch (error) {
+          console.error('Error calculating fees:', error);
+          setFeeBreakdown(null);
+        }
+        setFeeCalculationLoading(false);
+      } else {
+        setFeeBreakdown(null);
+      }
+    };
+
+    calculateFees();
   }, [subtotal, tax, shippingTotal]);
 
   const grandTotal = feeBreakdown?.customerTotal || (subtotal + shippingTotal + tax);

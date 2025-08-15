@@ -124,12 +124,16 @@ const CheckoutAddressPage = () => {
     }
   }, [shippingAddress, userInfo, reset]);
 
-  // Redirect if cart is empty
+  // Redirect if no items (cart or buy now)
   useEffect(() => {
-    if (!cartItemsData?.length) {
+    // For Buy Now flow, check buyNowProduct; for cart flow, check cartItemsData
+    const hasItems = (buyNowProduct && buyNowProduct.isBuyNow) || (cartItemsData?.length > 0);
+    
+    if (!hasItems) {
+      console.log('No items found, redirecting to home. buyNowProduct:', buyNowProduct, 'cartItemsData:', cartItemsData?.length);
       router.replace('/');
     }
-  }, [cartItemsData, router]);
+  }, [cartItemsData, buyNowProduct, router]);
 
   // Check for error messages from URL params (when redirected from review page)
   useEffect(() => {
@@ -215,11 +219,13 @@ const CheckoutAddressPage = () => {
       }
     };
 
-    // Only auto-validate once when the component mounts or when cart changes
-    if (cartItemsData?.length && !showForm && !isAutoValidating) {
+    // Only auto-validate once when the component mounts or when items are available
+    const hasItems = (buyNowProduct && buyNowProduct.isBuyNow) || (cartItemsData?.length > 0);
+    
+    if (hasItems && !showForm && !isAutoValidating) {
       autoValidateExistingAddress();
     }
-  }, [cartItemsData?.length, showForm, isAutoValidating]); // Removed problematic dependencies
+  }, [cartItemsData?.length, buyNowProduct?.isBuyNow, showForm, isAutoValidating]); // Added buyNowProduct dependency
 
   // Get state options based on selected country
   const getStateOptions = () => {
@@ -366,11 +372,14 @@ const CheckoutAddressPage = () => {
     }
   };
 
-  if (!cartItemsData?.length) {
+  // Check if we have items (cart or buy now)
+  const hasItems = (buyNowProduct && buyNowProduct.isBuyNow) || (cartItemsData?.length > 0);
+  
+  if (!hasItems) {
     return (
       <RootLayout>
         <div className='flex items-center justify-center min-h-[calc(100vh-100px)]'>
-          <p>No items in the cart. Redirecting...</p>
+          <p>No items found. Redirecting...</p>
         </div>
       </RootLayout>
     );

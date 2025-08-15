@@ -229,13 +229,15 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
       console.log('Navigating to /checkout/buy-now');
       // Redirect to buy now checkout page for proper address validation
       try {
-        // Using router.push with options to prevent default form submission behavior
-        await router.push({
-          pathname: '/checkout/buy-now',
-        }, undefined, { shallow: false });
-        console.log('Navigation initiated successfully');
+        // Using router.push with explicit navigation
+        const navigationResult = await router.push('/checkout/buy-now');
+        console.log('Navigation result:', navigationResult);
+        console.log('Current route after navigation:', router.asPath);
       } catch (navError) {
         console.error('Navigation error:', navError);
+        // Fallback navigation method
+        console.log('Attempting fallback navigation...');
+        window.location.href = '/checkout/buy-now';
       }
     } catch (error: any) {
       console.error('Error in handleConfirmBuyNow:', error);
