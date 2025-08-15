@@ -58,7 +58,7 @@ const About = () => {
 
   const stats = [
     { number: "50+", label: "US States", suffix: "" },
-    { number: "3.3B", label: "Population Served", suffix: "" },
+    { number: "3.3B", label: "TAM in the US", suffix: "" },
     { number: "100%", label: "African Products", suffix: "" },
     { number: "3", label: "User Types", suffix: "" }
   ];
