@@ -5,6 +5,7 @@ const Order = require('../models/Order');
 const SubOrder = require('../models/SubOrder');
 const Store = require('../models/Store');
 const SellerBalance = require('../models/sellerBalance');
+const Transaction = require('../models/Transaction');
 const Address = require('../models/Address');
 const path = require('path');
 const createOrderUtil = require('../utils/order/createOrderUtil');
@@ -121,17 +122,26 @@ const webhookHandler = async (req, res) => {
         // Handle successful payment intent
 
         if (!paymentIntentId) {
-          console.error('No payment intent id provided to the stripe webhook.');
+          console.error('❌ No payment intent id provided to the stripe webhook.');
           throw new CustomError.BadRequestError(
             'No payment intent id provided to the stripe webhook'
           );
         } else if (!orderItems || orderItems.length < 1) {
-          console.error('No order items provided to the stripe webhook.');
+          console.error('❌ No order items provided to the stripe webhook.');
           throw new CustomError.BadRequestError(
             'No order items provided to the stripe webhook'
           );
         } else {
-          console.log('Creating the order....');
+          console.log('=== WEBHOOK: Processing payment with new card ===');
+          console.log('💳 Payment Intent ID:', paymentIntentId);
+          console.log('👤 Customer:', customerFirstName, '(' + customerEmail + ')');
+          console.log('🛒 Order Items Count:', orderItems.length);
+          console.log('💰 Payment Amount:', `$${totalAmount.toFixed(2)}`);
+          console.log('📦 Shipping Cost:', `$${totalShipping.toFixed(2)}`);
+          console.log('🏷️ Tax Amount:', `$${totalTax.toFixed(2)}`);
+          console.log('📍 Shipping to:', shippingAddress?.city, shippingAddress?.state);
+          
+          console.log('📝 Creating order from webhook...');
           const orderId = await createOrderUtil({
             cartItems: orderItems,
             shippingFee: totalShipping,
@@ -141,7 +151,7 @@ const webhookHandler = async (req, res) => {
             shippingAddress: shippingAddress,
             billingAddress: billingAddress
           });
-          console.log('Order created successfully. Order ID:', orderId)
+          console.log('✅ Order created successfully. Order ID:', orderId)
           
           // Save payment method for first-time users
           if (buyerId && paymentMethodId) {
@@ -199,9 +209,12 @@ const webhookHandler = async (req, res) => {
               }
             }
           }
-          // Use the centralized confirmPayment function
-          console.log('Calling confirmPayment to process order completion...');
+          // Use the centralized confirmPayment function with detailed logging
+          console.log('🔄 WEBHOOK: Calling confirmPayment to process order completion...');
+          console.log('📊 Starting seller balance updates and email notifications...');
           await confirmPayment(orderId, paymentIntentId);
+          console.log('🎉 WEBHOOK: Payment processing completed successfully!');
+          console.log('======================================');
         }
         break;
       case 'payment_intent.failed':
@@ -724,6 +737,26 @@ const confirmPayment = async (orderId, paymentIntentId) => {
       );
     }
     
+    // Get the original fee breakdown from temp order data or payment intent metadata
+    let originalFeeBreakdown = null;
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      const tempOrderDataId = paymentIntent.metadata.tempOrderDataId;
+      if (tempOrderDataId) {
+        const tempOrderData = await TempOrderData.findById(tempOrderDataId);
+        if (tempOrderData && tempOrderData.feeBreakdown) {
+          originalFeeBreakdown = tempOrderData.feeBreakdown;
+          console.log('📊 Retrieved original fee breakdown from temp order data:', {
+            customerTotal: originalFeeBreakdown.customerTotal,
+            sellerReceives: originalFeeBreakdown.sellerReceives,
+            platformRevenue: originalFeeBreakdown.platformRevenue
+          });
+        }
+      }
+    } catch (error) {
+      console.log('⚠️ Could not retrieve original fee breakdown, will recalculate:', error.message);
+    }
+    
     // Update order payment status
     order.paymentStatus = 'Paid';
     order.fulfillmentStatus = 'Placed';
@@ -735,49 +768,113 @@ const confirmPayment = async (orderId, paymentIntentId) => {
 
     // Process each suborder
     for (let suborder of suborders) {
+      console.log(`🔄 Processing suborder ${suborder._id} for seller store ${suborder.sellerStoreId}`);
+      
       const sellerStore = await Store.findById(suborder.sellerStoreId);
       if (!sellerStore) {
-        console.error(`Seller store not found for suborder ${suborder._id}`);
+        console.error(`❌ Seller store not found for suborder ${suborder._id}`);
         continue;
       }
       
+      console.log(`📊 Found seller store: ${sellerStore.name} (${sellerStore._id}) owned by ${sellerStore.ownerId}`);
+      
       // Get the correct seller ID from store owner, not store ID
       const sellerId = sellerStore.ownerId;
+      
+      // Check if seller has a Stripe account
       const seller = await stripeModel.findOne({ sellerId: sellerId });
+      console.log(`💳 Stripe account for seller ${sellerId}:`, seller ? `Found: ${seller.stripeAccountId}` : 'Not found');
       
       // Update suborder payment status
       suborder.paymentStatus = 'Paid';
       await suborder.save({ session });
+      console.log(`✅ Updated suborder ${suborder._id} payment status to Paid`);
 
-      // Calculate proper fee breakdown for this suborder
-      const productSubtotal = suborder.totalAmount - (suborder.totalTax || 0) - (suborder.totalShipping || 0);
-      const feeBreakdown = calculateOrderFees({
-        productSubtotal: productSubtotal,
-        taxAmount: suborder.totalTax || 0,
-        shippingCost: 0, // Seller doesn't get shipping, platform keeps it
-        grossUpFees: true
+      console.log(`💰 Suborder amounts:`, {
+        totalAmount: suborder.totalAmount,
+        totalTax: suborder.totalTax,
+        totalShipping: suborder.totalShipping
       });
       
-      console.log(`Suborder ${suborder._id} fee breakdown for seller ${sellerId}:`, {
-        sellerReceives: feeBreakdown.sellerReceives,
-        platformCommission: feeBreakdown.platformBreakdown.commission
-      });
+      // Use the original fee breakdown if available, otherwise recalculate
+      let feeBreakdown;
+      if (originalFeeBreakdown && suborders.length === 1) {
+        // Single suborder - use the original fee breakdown directly
+        feeBreakdown = {
+          sellerReceives: originalFeeBreakdown.sellerReceives,
+          platformBreakdown: {
+            commission: originalFeeBreakdown.platformBreakdown?.commission || 0
+          }
+        };
+        console.log(`✅ Using original fee breakdown for single suborder:`, {
+          sellerReceives: feeBreakdown.sellerReceives,
+          platformCommission: feeBreakdown.platformBreakdown.commission
+        });
+      } else {
+        // Multiple suborders or no original breakdown - calculate based on suborder amounts
+        // Use proper fee calculation logic: seller gets product price + tax, platform gets commission
+        // const productAmount = suborder.totalAmount - (suborder.totalTax || 0) - (suborder.totalShipping || 0);
+        // const taxAmount = suborder.totalTax || 0;
+        
+        // Seller receives product price + tax (no deductions)
+        const sellerReceives = suborder.totalAmount  + suborder.totalTax;
+        // Platform gets 10% commission on product amount only (not tax or shipping)
+        const platformCommission = suborder.totalAmount * 0.1;
+
+        feeBreakdown = {
+          sellerReceives: Math.round(sellerReceives * 100) / 100,
+          platformBreakdown: {
+            commission: Math.round(platformCommission * 100) / 100
+          }
+        };
+        console.log(`🔄 Calculated fee breakdown for suborder:`, {
+          sellerReceives: feeBreakdown.sellerReceives,
+          platformCommission: feeBreakdown.platformBreakdown.commission
+        });
+      }
 
       // Update seller's balance with proper amounts from fee calculation  
-      await SellerBalance.findOneAndUpdate(
+      const updatedBalance = await SellerBalance.findOneAndUpdate(
         { sellerId: sellerId },
         {
           $inc: {
             totalSales: feeBreakdown.sellerReceives,
             pendingBalance: feeBreakdown.sellerReceives,
-            commissionDeducted: feeBreakdown.platformBreakdown.commission,
+            commissionDeducted: feeBreakdown.platformBreakdown?.commission || 0,
             netRevenue: feeBreakdown.sellerReceives
           },
         },
-        { upsert: true, session }
+        { upsert: true, session, new: true }
       );
       
-      console.log(`Updated seller balance for seller ${sellerId}`);
+      console.log(`✅ Updated seller balance for seller ${sellerId}:`, {
+        totalSales: updatedBalance.totalSales,
+        pendingBalance: updatedBalance.pendingBalance,
+        commissionDeducted: updatedBalance.commissionDeducted
+      });
+      
+      // Create transaction record for tracking
+      try {
+        const transaction = await Transaction.create({
+          order: order._id,
+          seller: sellerId,
+          grossAmount: suborder.totalAmount, // Full suborder amount
+          netAmount: feeBreakdown.sellerReceives, // What seller actually gets
+          commission: feeBreakdown.platformBreakdown?.commission || 0, // Platform commission
+          stripeTransferId: suborder.transferId || null, // Will be null initially
+          status: 'paid'
+        });
+        
+        console.log(`💳 Created transaction record for seller ${sellerId}:`, {
+          transactionId: transaction._id,
+          grossAmount: transaction.grossAmount,
+          netAmount: transaction.netAmount,
+          commission: transaction.commission
+        });
+      } catch (transactionError) {
+        console.error(`❌ Failed to create transaction record for seller ${sellerId}:`, transactionError.message);
+        // Don't fail the entire process if transaction record creation fails
+      }
     }
     
     await session.commitTransaction();
@@ -1328,22 +1425,14 @@ const confirmWithSavedCard = async (req, res) => {
           console.error('Failed to send buyer confirmation email:', emailError.message);
         }
 
-        // Send email to sellers
-        const subOrders = order.subOrders;
-        for (const subOrder of subOrders) {
-          try {
-            await sendSellerNewOrderNotificationEmail({
-              sellerStoreId: subOrder.sellerStoreId,
-              orderId: orderId,
-              sellerOrderItems: subOrder.products,
-              sellerSubtotal: subOrder.totalAmount,
-              sellerTax: subOrder.totalTax,
-              sellerShipping: subOrder.totalShipping,
-            });
-            console.log(`Seller notification email sent for store ${subOrder.sellerStoreId}`);
-          } catch (emailError) {
-            console.error(`Failed to send seller notification email for store ${subOrder.sellerStoreId}:`, emailError.message);
-          }
+        // Use the centralized confirmPayment function to handle seller balances
+        console.log('Calling confirmPayment to process seller balances...');
+        try {
+          await confirmPayment(orderId, paymentIntentId);
+          console.log('✅ Payment confirmation and seller balance updates completed successfully');
+        } catch (confirmError) {
+          console.error('❌ Error in confirmPayment (seller balances may not be updated):', confirmError.message);
+          // Don't fail the entire process since the order was created successfully
         }
         
         return res.json({ success: true, orderId: orderId });

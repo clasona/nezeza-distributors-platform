@@ -506,7 +506,7 @@ const CheckoutReviewPage = () => {
         {/* add option to go back */}
         <div className='mt-4 text-center'>
           <Link href={buyNowProduct && buyNowProduct.isBuyNow ? '/' : '/cart'}>
-            <p className='text-vesoko_primary hover:underline'>
+            <p className='text-white hover:underline'>
               &larr; {buyNowProduct && buyNowProduct.isBuyNow ? 'Back to Products' : 'Back to Cart'}
             </p>
           </Link>

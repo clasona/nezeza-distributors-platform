@@ -159,18 +159,26 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
   };
 
   const handleOpenQuantityModal = (product: ProductProps) => {
+    console.log('Buy Now clicked for product:', product.title);
     if (!userInfo) {
+      console.log('User not logged in, showing error message');
       setErrorMessage('Please login to buy now!');
       return;
     }
+    console.log('Opening quantity modal for product:', product._id);
     setSelectedProductForBuyNow(product);
     setIsQuantityModalOpen(true);
   };
 
   // Buy Now (Redirect to Checkout Review)
   const handleConfirmBuyNow = async (quantity: number) => {
-    if (!selectedProductForBuyNow) return; // Should not happen
+    console.log('Quantity confirmed:', quantity);
+    if (!selectedProductForBuyNow) {
+      console.error('No product selected for buy now');
+      return; // Should not happen
+    }
 
+    console.log('Setting buying now product ID:', selectedProductForBuyNow._id);
     setBuyingNowProductId(selectedProductForBuyNow._id);
 
     try {
@@ -220,7 +228,15 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
 
       console.log('Navigating to /checkout/buy-now');
       // Redirect to buy now checkout page for proper address validation
-      router.push('/checkout/buy-now');
+      try {
+        // Using router.push with options to prevent default form submission behavior
+        await router.push({
+          pathname: '/checkout/buy-now',
+        }, undefined, { shallow: false });
+        console.log('Navigation initiated successfully');
+      } catch (navError) {
+        console.error('Navigation error:', navError);
+      }
     } catch (error: any) {
       console.error('Error in handleConfirmBuyNow:', error);
       handleError(error);
@@ -236,6 +252,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
   };
 
   const handleCloseQuantityModal = () => {
+    console.log('Closing quantity modal');
     setIsQuantityModalOpen(false);
     setSelectedProductForBuyNow(null); // Clear selected product on close
   };

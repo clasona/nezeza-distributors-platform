@@ -45,6 +45,10 @@ const createSubOrders = async (fullOrder, selectedShippingOptions, session) => {
       // Add transaction fee (10% platform fee on subtotal)
       const transactionFee = subtotal * 0.1;
       
+      // Calculate average tax rate for this seller's products
+      const avgTaxRate = subOrder.products.length > 0 ? 
+        subOrder.products.reduce((sum, product) => sum + (product.taxRate || 0), 0) / subOrder.products.length : 0;
+      
       // Get the selected shipping option for this seller
       const selectedShippingOption = selectedShippingOptions ? selectedShippingOptions[sellerId] : null;
       const selectedRateId = selectedShippingOption ? 
@@ -54,6 +58,7 @@ const createSubOrders = async (fullOrder, selectedShippingOptions, session) => {
         ...subOrder,
         sellerId,
         totalAmount: finalTotalAmount, // Store subtotal here
+        taxRate: avgTaxRate, // Store average tax rate for this seller
         totalTax: sellerTax, // Store tax separately
         totalShipping: sellerShipping, // Store shipping separately
         transactionFee,

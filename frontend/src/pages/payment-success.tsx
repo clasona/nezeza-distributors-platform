@@ -83,8 +83,13 @@ const SuccessPage = () => {
             setOrderNumber(orderData._id);
             
             // Use the estimated delivery date from the order
+            // Parse the date string directly to avoid timezone conversion issues
             const deliveryDate = new Date(orderData.estimatedDeliveryDate);
-            setEstimatedDelivery(deliveryDate.toLocaleDateString('en-US', {
+            // Ensure we're working with the actual date by adding timezone offset
+            const timezoneOffset = deliveryDate.getTimezoneOffset();
+            const adjustedDate = new Date(deliveryDate.getTime() + (timezoneOffset * 60 * 1000));
+            
+            setEstimatedDelivery(adjustedDate.toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
               month: 'long',
@@ -213,7 +218,7 @@ const SuccessPage = () => {
               {orderNumber && (
                 <div className='bg-gray-50 rounded-lg p-4 flex-1'>
                   <p className='text-sm text-gray-600'>Order ID</p>
-                  <p className='text-2xl font-bold text-vesoko_primary'>#{orderNumber}</p>
+                  <p className='text-lg sm:text-xl lg:text-2xl font-bold text-vesoko_primary break-all'>#{orderNumber}</p>
                 </div>
               )}
               {estimatedDelivery && (

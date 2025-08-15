@@ -207,8 +207,15 @@ const LoginPage = () => {
 
       console.log('Handling post-login redirect for user:', user);
 
-      if (user.storeId) {
-        // User is a seller - check Stripe account status
+      // Check if user is an admin or seller (both need Stripe account)
+      // Roles come populated as objects with 'name' field, not strings
+      const isAdmin = user.roles && user.roles.some((role: any) =>
+        (typeof role === 'object' ? role.name : role) === 'admin'
+      );
+      const isSeller = user.storeId;
+
+      if (isAdmin || isSeller) {
+        // User is admin or seller - check Stripe account status
         updateLoadingState({ isLoading: true });
 
         try {
@@ -219,10 +226,17 @@ const LoginPage = () => {
 
             if (response?.hasStripeAccount && response.isActive) {
               // Active Stripe account - redirect to appropriate dashboard
-              const callbackUrl = getStoreRoute(user.storeId.storeType);
-              router.replace(callbackUrl);
+              if (isAdmin) {
+                console.log('Admin with active Stripe account, redirecting to admin dashboard');
+                router.replace('/admin');
+              } else {
+                console.log('Seller with active Stripe account, redirecting to store dashboard');
+                const callbackUrl = getStoreRoute(user.storeId.storeType);
+                router.replace(callbackUrl);
+              }
             } else {
               // No active Stripe account - redirect to setup
+              console.log('Admin/Seller without Stripe account, redirecting to setup');
               router.replace('/sellers/stripe/setup');
             }
           }
@@ -237,6 +251,7 @@ const LoginPage = () => {
         }
       } else {
         // User is a customer - redirect to homepage
+        console.log('Customer user, redirecting to homepage');
         router.replace('/');
       }
     },

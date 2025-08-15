@@ -95,7 +95,11 @@ function calculateSameDayDeliveryTime() {
 function formatDateLabel(isoDate) {
   if (!isoDate) return '';
   const d = new Date(isoDate);
-  return d.toLocaleDateString('en-US', {
+  // Ensure we're working with the actual date by adding timezone offset
+  const timezoneOffset = d.getTimezoneOffset();
+  const adjustedDate = new Date(d.getTime() + (timezoneOffset * 60 * 1000));
+  
+  return adjustedDate.toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'short',
     day: 'numeric',

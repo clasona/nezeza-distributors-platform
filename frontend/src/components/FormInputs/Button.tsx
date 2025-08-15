@@ -56,7 +56,11 @@ const Button = ({
         <button
           type={type}
           className={`flex items-center test-sm font-medium text-center rounded-lg px-1 ${className}`}
-          onClick={disabled ? undefined : onClick}
+          onClick={(e) => {
+            // Prevent default behavior to avoid page refresh
+            e.preventDefault();
+            if (!disabled && onClick) onClick();
+          }}
           disabled={disabled}
         >
           {Icon && <Icon className='w-4 h-4 mr-1' />}{' '}
