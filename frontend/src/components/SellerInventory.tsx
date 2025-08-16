@@ -41,7 +41,7 @@ import BulkDeleteModal from './Table/BulkDeleteModal';
 // interface SellerProductProps {
 //   inventoryData: ProductProps[];
 // }
-const SellerInventory = () => {
+const cfSellerInventory = () => {
   const [inventoryData, setInventoryData] = useState<ProductProps[]>([]);
   const [filteredInventory, setFilteredInventory] = useState<ProductProps[]>(
     []
