@@ -36,6 +36,26 @@ src/
     |-store
     |-styles
 
+## Architecture & Patterns
+
+### Dynamic Routing with `[[...tab]].tsx`
+The platform uses advanced Next.js dynamic routing patterns for complex user interfaces. See our comprehensive documentation:
+
+📖 **[Dynamic Routing Architecture](../docs/DYNAMIC_ROUTING_ARCHITECTURE.md)**
+
+Key features:
+- Single file handles multiple related routes
+- Tab-based navigation with clean URLs
+- Role-specific support portals for all user types
+- Optimized performance and user experience
+
+Current implementations:
+- Customer Support: `pages/customer/support/[[...tab]].tsx`
+- Retailer Support: `pages/retailer/support/[[...tab]].tsx`
+- Wholesaler Support: `pages/wholesaler/support/[[...tab]].tsx`
+- Manufacturer Support: `pages/manufacturer/support/[[...tab]].tsx`
+- Admin Support: `pages/admin/support/[[...tab]].tsx`
+
 You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
 
 [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.

@@ -6,7 +6,7 @@ import Image from 'next/image';
 import SubmitButton from '@/components/FormInputs/SubmitButton';
 import SuccessMessageModal from '@/components/SuccessMessageModal';
 import ErrorMessageModal from '@/components/ErrorMessageModal';
-import UploadWidget from '../Cloudinary/UploadWidget';
+import UploadWidget, { CloudinaryFileInfo } from '../Cloudinary/UploadWidget';
 import PageHeader from '../PageHeader';
 import { useSelector, useDispatch } from 'react-redux';
 import { stateProps } from '../../../type';
@@ -35,9 +35,9 @@ const StoreAccount = () => {
   const dispatch = useDispatch();
 
   // Handle logo upload
-  const handleLogoUpload = async (urls: string[]) => {
-    if (urls.length > 0 && storeInfo?._id) {
-      const logoUrl = urls[0]; // Take the first uploaded image
+  const handleLogoUpload = async (files: CloudinaryFileInfo[]) => {
+    if (files.length > 0 && storeInfo?._id) {
+      const logoUrl = files[0].secure_url || files[0].url; // Take the first uploaded image URL
       
       try {
         // Immediately update the logo in the database

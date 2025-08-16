@@ -20,12 +20,8 @@ const {
   emailShippingLabel,
 } = require('../controllers/shippingController');
 
-const {
-  getShippingOptionsCopy,
-} = require('../controllers/shippingController_copy');
 
 router.post('/shipments/', getShippingOptions); //creates same-day and standard shipping
-router.post('/shipments/copy', getShippingOptionsCopy); //creates same-day and standard shipping
 router.post('/shipments/delivery', createUberDelivery); // creates uber delivery
 router.get('/shipment/:shipmentId', getSpecificShipment);
 router.get('/shipments/delivery/:deliveryId', trackUberDelivery);

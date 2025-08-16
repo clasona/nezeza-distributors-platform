@@ -1,3 +1,4 @@
+'use client';
 import { LucideIcon } from 'lucide-react';
 
 interface ButtonProps {
@@ -28,8 +29,10 @@ const Button = ({
         <button
           type='button'
           disabled
-          className={`flex items-center test-sm font-medium text-center 
+          className={
+            `flex items-center justify-center text-sm font-medium text-center 
                     rounded-lg focus:outline-none
+                    
                    ${className}`}
         >
           <svg
@@ -53,9 +56,10 @@ const Button = ({
           {loadingButtonTitle}
         </button>
       ) : (
+
         <button
           type={type}
-          className={`flex items-center test-sm font-medium text-center rounded-lg px-1 ${className}`}
+          className={`flex items-center justify-center test-sm font-medium text-center rounded-lg px-1 ${className}`}
           onClick={disabled ? undefined : onClick}
           disabled={disabled}
         >

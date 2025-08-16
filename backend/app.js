@@ -55,8 +55,8 @@ const errorHandlerMiddleware = require('./middleware/error-handler');
 app.set('trust proxy', 1);
 app.use(
   rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    max: 60,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 200, // Increased from 60 to 200 for development
   })
 );
 app.use(helmet());
