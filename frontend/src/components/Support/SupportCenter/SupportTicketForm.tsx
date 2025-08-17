@@ -73,7 +73,7 @@ const SupportTicketForm = () => {
         options={topicOptions}
         value={selectedTopic}
         onChange={(option) => setValue('topic', option || topicOptions[0])}
-        register={register}
+        register={register as any}
         errors={errors}
       />
 

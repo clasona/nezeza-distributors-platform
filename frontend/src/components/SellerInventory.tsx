@@ -699,4 +699,4 @@ const cfSellerInventory = () => {
   );
 };
 
-export default SellerInventory;
+export default cfSellerInventory;

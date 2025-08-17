@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import AdminSupportTicketList from '@/components/Support/AdminSupport/AdminSupportTicketList';
 import AdminSupportDashboard from '@/components/Support/AdminSupport/AdminSupportDashboard';
-import AdminLayout from '..';
+import AdminLayout from '../layout';
 import { SupportTicket } from '@/utils/support/createSupportTicket';
 import Button from '@/components/FormInputs/Button';
 

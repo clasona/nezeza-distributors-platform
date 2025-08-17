@@ -29,6 +29,13 @@ export interface CreateSupportTicketData {
   category: string;
   priority: string;
   attachments?: File[];
+  cloudinaryAttachments?: Array<{
+    filename: string;
+    url: string;
+    fileType: string;
+    fileSize: number;
+    public_id: string;
+  }>;
   orderId?: string;
 }
 
@@ -50,6 +57,11 @@ export const createSupportTicket = async (data: CreateSupportTicketData): Promis
       data.attachments.forEach((file, index) => {
         formData.append(`attachments`, file);
       });
+    }
+    
+    // Add Cloudinary attachments if any
+    if (data.cloudinaryAttachments && data.cloudinaryAttachments.length > 0) {
+      formData.append('cloudinaryAttachments', JSON.stringify(data.cloudinaryAttachments));
     }
     
     const response = await axiosInstance.post('/support', formData, {

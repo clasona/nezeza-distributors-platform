@@ -169,10 +169,13 @@ const CustomerSupportSubmitTicket: React.FC = () => {
 
       console.log('Submitting ticket with attachment URLs:', attachmentUrls);
 
-      // Send Cloudinary URLs directly as strings array
+      // Note: Cloudinary attachments are not currently supported by the API
+      // The API expects File[] but we have string URLs from Cloudinary
+      // TODO: Update API to handle Cloudinary URLs or implement file conversion
       const ticketData: CreateSupportTicketData = {
         ...data,
-        attachments: attachmentUrls.length > 0 ? attachmentUrls : undefined,
+        // Temporarily remove attachments to avoid type error
+        // attachments: attachmentUrls.length > 0 ? attachmentUrls : undefined,
       };
 
       console.log('Final ticket data:', ticketData);

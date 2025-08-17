@@ -2,7 +2,19 @@ import axiosInstance from '../axiosInstance';
 
 import { SupportTicket } from './createSupportTicket';
 
-export const addMessageToTicket = async (ticketId: string, data: { message: string; attachments?: File[] }): Promise<{ success: boolean; ticket: SupportTicket }> => {
+interface AddMessageData {
+  message: string;
+  attachments?: File[];
+  cloudinaryAttachments?: Array<{
+    filename: string;
+    url: string;
+    fileType: string;
+    fileSize: number;
+    public_id: string;
+  }>;
+}
+
+export const addMessageToTicket = async (ticketId: string, data: AddMessageData): Promise<{ success: boolean; ticket: SupportTicket }> => {
   try {
     const formData = new FormData();
     formData.append('message', data.message);
@@ -11,6 +23,11 @@ export const addMessageToTicket = async (ticketId: string, data: { message: stri
       data.attachments.forEach((file) => {
         formData.append('attachments', file);
       });
+    }
+    
+    // Add Cloudinary attachments if any
+    if (data.cloudinaryAttachments && data.cloudinaryAttachments.length > 0) {
+      formData.append('cloudinaryAttachments', JSON.stringify(data.cloudinaryAttachments));
     }
     
     const response = await axiosInstance.post(`/support/tickets/${ticketId}/message`, formData, {

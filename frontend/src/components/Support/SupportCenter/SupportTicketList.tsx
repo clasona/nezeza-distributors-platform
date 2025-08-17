@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { SupportTicket } from '@/utils/support/createSupportTicket';
-import { getUserTickets, GetUserTicketsParams } from '@/utils/support/getUserTickets';
+import { getUserTickets } from '@/utils/support/getUserTickets';
 import formatDate from '@/utils/formatDate';
 import Button from '@/components/FormInputs/Button';
 import DropdownInputSearchable from '@/components/FormInputs/DropdownInputSearchable';
@@ -14,6 +14,13 @@ interface SupportTicketListProps {
   className?: string;
 }
 
+// Simple local filter interface since the API doesn't support filtering yet
+interface LocalFilters {
+  status?: string;
+  category?: string;
+  priority?: string;
+}
+
 const SupportTicketList: React.FC<SupportTicketListProps> = ({
   onTicketSelect,
   showFilters = true,
@@ -23,12 +30,7 @@ const SupportTicketList: React.FC<SupportTicketListProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [metadata, setMetadata] = useState<SupportMetadata | null>(null);
-  const [filters, setFilters] = useState<GetUserTicketsParams>({
-    limit: 10,
-    offset: 0,
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
-  });
+  const [filters, setFilters] = useState<LocalFilters>({});
   const [pagination, setPagination] = useState({
     total: 0,
     limit: 10,
@@ -56,9 +58,15 @@ const SupportTicketList: React.FC<SupportTicketListProps> = ({
   const fetchTickets = async () => {
     try {
       setLoading(true);
-      const response = await getUserTickets(filters);
+      const response = await getUserTickets();
       setTickets(response.tickets);
-      setPagination(response.pagination);
+      // Note: API doesn't support pagination yet, so we'll just show all tickets
+      setPagination({
+        total: response.tickets.length,
+        limit: 10,
+        offset: 0,
+        hasMore: false,
+      });
     } catch (error: any) {
       setError(error.message);
     } finally {
@@ -66,11 +74,10 @@ const SupportTicketList: React.FC<SupportTicketListProps> = ({
     }
   };
 
-  const handleFilterChange = (key: keyof GetUserTicketsParams, value: any) => {
+  const handleFilterChange = (key: keyof LocalFilters, value: any) => {
     setFilters(prev => ({
       ...prev,
       [key]: value,
-      offset: 0, // Reset pagination when filters change
     }));
   };
 
@@ -214,7 +221,7 @@ const SupportTicketList: React.FC<SupportTicketListProps> = ({
                   </div>
                   <div className="text-right text-sm text-gray-500">
                     <div>{formatDate(ticket.createdAt)}</div>
-                    {ticket.messages.length > 1 && (
+                    {ticket.messages && ticket.messages.length > 1 && (
                       <div className="text-xs">
                         {ticket.messages.length - 1} replies
                       </div>

@@ -11,7 +11,7 @@ import { updateUserPassword } from '@/utils/user/updatePassword';
 import SuccessMessageModal from '@/components/SuccessMessageModal';
 import ErrorMessageModal from '@/components/ErrorMessageModal';
 import { getUserById } from '@/utils/user/getUserById';
-import UploadWidget from '../Cloudinary/UploadWidget';
+import UploadWidget, { CloudinaryFileInfo } from '../Cloudinary/UploadWidget';
 import PageHeader from '../PageHeader';
 import { UserProps } from '../../../type';
 import { useDispatch } from 'react-redux';
@@ -48,9 +48,9 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [userProfilePicture, setUserProfilePicture] = useState<string | null>(null);
   // Handle profile picture upload
-  const handleProfilePictureUpload = async (urls: string[]) => {
-    if (urls.length > 0 && userInfo?._id) {
-      const imageUrl = urls[0];
+  const handleProfilePictureUpload = async (files: CloudinaryFileInfo[]) => {
+    if (files.length > 0 && userInfo?._id) {
+      const imageUrl = files[0].secure_url || files[0].url;
       try {
         await updateUser(userInfo._id, { image: imageUrl });
         setUserProfilePicture(imageUrl);

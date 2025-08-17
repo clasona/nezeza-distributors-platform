@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
           withCredentials: true,
         });
-      } catch (backendError) {
+      } catch (backendError: any) {
         // If backend logout fails, we'll still clear the frontend cookies
         console.log('Backend logout failed (this is okay):', backendError.response?.data || backendError.message);
       }

@@ -469,7 +469,7 @@ const AdminSupportTicketList: React.FC<AdminSupportTicketListProps> = ({
                     </td>
                     <td className="px-4 py-4">
                       <div className="text-sm text-gray-900">
-                        {ticket.userId.firstName} {ticket.userId.lastName}
+                        {ticket.userId ? `${ticket.userId.firstName} ${ticket.userId.lastName}` : 'Unknown User'}
                       </div>
                       <div className="text-sm text-gray-500 capitalize">
                         {ticket.userRole}

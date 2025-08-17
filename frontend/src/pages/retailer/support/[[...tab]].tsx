@@ -239,8 +239,8 @@ const DashboardContent = React.memo(({
             </div>
             <div className="flex items-center justify-between text-sm text-gray-600">
               <span>#{ticket.ticketNumber}</span>
-              {formatDate(ticket.updatedAt) && (
-                <span>Updated {formatDate(ticket.updatedAt).split(',')[0]}</span>
+              {ticket.updatedAt && formatDate(ticket.updatedAt) && (
+                <span>Updated {formatDate(ticket.updatedAt)!.split(',')[0]}</span>
               )}
               {ticket.businessImpact && (
                 <span className={`px-2 py-1 text-xs rounded-full ${getBusinessImpactColor(ticket.businessImpact)}`}>
@@ -259,6 +259,7 @@ const DashboardContent = React.memo(({
     </section>
   </div>
 ));
+DashboardContent.displayName = 'DashboardContent';
 
 // Analytics Content Component - moved outside to prevent recreation
 const AnalyticsContent = React.memo(() => (
@@ -327,6 +328,7 @@ const AnalyticsContent = React.memo(() => (
     </div>
   </div>
 ));
+AnalyticsContent.displayName = 'AnalyticsContent';
 
 // FAQ Content Component - moved outside to prevent recreation
 const FAQContent = React.memo(() => (
@@ -364,6 +366,7 @@ const FAQContent = React.memo(() => (
     </div>
   </div>
 ));
+FAQContent.displayName = 'FAQContent';
 
 // MyTicketsContent Component - moved outside to prevent recreation and focus loss
 const MyTicketsContent = React.memo(({ 
@@ -477,19 +480,19 @@ const MyTicketsContent = React.memo(({
                   <div className="mb-3">
                     <h4 className="text-sm font-medium text-gray-700 mb-2">Recent Messages ({ticket.messages.length})</h4>
                     <div className="bg-gray-50 rounded-lg p-3 space-y-2 max-h-40 overflow-y-auto">
-                      {ticket.messages.slice(-2).map((message, idx) => (
+                      {ticket.messages.slice(-2).map((message: any, idx: number) => (
                         <div key={message.id || idx} className="text-xs">
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-medium text-gray-800">{message.authorName}</span>
                             {formatDate(message.timestamp) && (
-                              <span className="text-gray-500">{formatDate(message.timestamp).split(',')[0]}</span>
+                              <span className="text-gray-500">{formatDate(message.timestamp)!.split(',')[0]}</span>
                             )}
                           </div>
                           <p className="text-gray-700 mb-1 line-clamp-2">{message.content}</p>
                           {message.attachments && message.attachments.length > 0 && (
                             <div className="mt-1">
                               <div className="text-xs text-gray-600">
-                                📎 {message.attachments.length} attachment{message.attachments.length !== 1 ? 's' : ''}: {message.attachments.map(att => att.name || 'file').join(', ')}
+                                📎 {message.attachments.length} attachment{message.attachments.length !== 1 ? 's' : ''}: {message.attachments.map((att: any) => att.name || 'file').join(', ')}
                               </div>
                             </div>
                           )}
@@ -526,6 +529,7 @@ const MyTicketsContent = React.memo(({
     </div>
   );
 });
+MyTicketsContent.displayName = 'MyTicketsContent';
 
 const RetailerSupportPage = () => {
   const pathname = usePathname();
@@ -533,7 +537,7 @@ const RetailerSupportPage = () => {
   const [selectedTab, setSelectedTab] = useState<TabValue>('dashboard');
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [newMessage, setNewMessage] = useState('');
-  const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState<any[]>([]);
   const [loadingTickets, setLoadingTickets] = useState(false);
   const [ticketError, setTicketError] = useState<string | null>(null);
   const [isSubmittingMessage, setIsSubmittingMessage] = useState(false);
@@ -565,12 +569,7 @@ const RetailerSupportPage = () => {
     try {
       setLoadingTickets(true);
       setTicketError(null);
-      const response = await getUserTickets({
-        limit: 50, // Load more tickets for retailers
-        offset: 0,
-        sortBy: 'createdAt',
-        sortOrder: 'desc'
-      });
+      const response = await getUserTickets();
       setTickets(response.tickets);
     } catch (error: any) {
       console.error('Failed to load tickets:', error);
@@ -688,12 +687,60 @@ const RetailerSupportPage = () => {
         enhancedDescription += `\n[Estimated Value: ${formData.estimatedValue}]`;
       }
 
+      // Transform Cloudinary URLs to structured attachments
+      const transformUrlsToStructuredAttachments = (urls: string[]) => {
+        return urls.map(url => {
+          // Extract public_id from Cloudinary URL
+          const extractPublicId = (cloudinaryUrl: string): string => {
+            try {
+              const urlParts = cloudinaryUrl.split('/');
+              const uploadIndex = urlParts.findIndex(part => part === 'upload');
+              if (uploadIndex !== -1 && uploadIndex < urlParts.length - 1) {
+                // Get everything after 'upload/' and remove file extension
+                const pathAfterUpload = urlParts.slice(uploadIndex + 1).join('/');
+                // Remove version if present (starts with 'v' followed by numbers)
+                const versionRegex = /^v\d+\//;
+                const pathWithoutVersion = pathAfterUpload.replace(versionRegex, '');
+                // Remove file extension
+                const lastDotIndex = pathWithoutVersion.lastIndexOf('.');
+                return lastDotIndex > 0 ? pathWithoutVersion.substring(0, lastDotIndex) : pathWithoutVersion;
+              }
+            } catch (error) {
+              console.error('Error extracting public_id from URL:', error);
+            }
+            return 'unknown';
+          };
+      
+          // Extract file format from URL
+          const extractFormat = (url: string): string => {
+            const lastDotIndex = url.lastIndexOf('.');
+            if (lastDotIndex > 0 && lastDotIndex < url.length - 1) {
+              return url.substring(lastDotIndex + 1).toLowerCase();
+            }
+            return 'unknown';
+          };
+      
+          const public_id = extractPublicId(url);
+          const format = extractFormat(url);
+          const filename = `${public_id.split('/').pop() || 'attachment'}.${format}`;
+      
+          return {
+            filename,
+            url,
+            fileType: format,
+            fileSize: 0, // Size not available from URL, backend should handle this
+            public_id
+          };
+        });
+      };
+
       const ticketData: CreateSupportTicketData = {
         subject: formData.subject,
         description: enhancedDescription,
         category: formData.requestType, // Map requestType to category
         priority: mapBusinessImpactToPriority(formData.businessImpact),
-        attachments: formData.attachmentUrls.length > 0 ? formData.attachmentUrls : (formData.attachments.length > 0 ? formData.attachments : undefined)
+        attachments: formData.attachments.length > 0 ? formData.attachments : undefined,
+        cloudinaryAttachments: formData.attachmentUrls.length > 0 ? transformUrlsToStructuredAttachments(formData.attachmentUrls) : undefined
       };
 
       const result = await createSupportTicket(ticketData);
@@ -1081,7 +1128,7 @@ const TicketDetailView = React.memo(({
         <div className="max-h-96 overflow-y-auto">
           {selectedTicket.messages && selectedTicket.messages.length > 0 ? (
             <div className="space-y-4 p-6">
-              {selectedTicket.messages.map((message, idx) => (
+              {selectedTicket.messages.map((message: any, idx: number) => (
                 <div key={message.id || idx} className={`flex ${message.author === 'retailer' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-2xl p-4 rounded-lg ${message.author === 'retailer' ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'} border`}>
                     <div className="flex items-center justify-between mb-2">
@@ -1238,6 +1285,7 @@ const TicketDetailView = React.memo(({
     prevProps.messageError === nextProps.messageError
   );
 });
+TicketDetailView.displayName = 'TicketDetailView';
 
 // Define SubmitTicketContent at module scope to prevent remount-caused focus loss
 const SubmitTicketContent = React.memo(({ 
@@ -1478,6 +1526,7 @@ const SubmitTicketContent = React.memo(({
     </div>
   );
 });
+SubmitTicketContent.displayName = 'SubmitTicketContent';
 
 export default RetailerSupportPage;
 

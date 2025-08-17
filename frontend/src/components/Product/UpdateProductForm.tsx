@@ -14,7 +14,7 @@ import { OrderItemsProps, ProductProps, stateProps } from '../../../type';
 import { updateProduct } from '@/utils/product/updateProduct';
 import { getSingleProduct } from '@/utils/product/getSingleProduct';
 import { updateOrderItem } from '@/utils/order/updateOrderItem';
-import CloudinaryUploadWidget from '../Cloudinary/UploadWidget';
+import CloudinaryUploadWidget, { CloudinaryFileInfo } from '../Cloudinary/UploadWidget';
 import DropdownInputSearchable from '../FormInputs/DropdownInputSearchable';
 import { ArrowLeft, Package, DollarSign, Ruler, Settings, Palette, Check, Images } from 'lucide-react';
 import Image from 'next/image';
@@ -383,7 +383,7 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
                   </div>
                 ))}
                 <CloudinaryUploadWidget
-                  onUpload={(urls) => setImageUrls((prev) => [...prev, ...urls])}
+                  onUpload={(files) => setImageUrls((prev) => [...prev, ...files.map(f => f.secure_url || f.url)])}
                 >
                   <div className="w-full h-24 flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer group">
                     <div className="text-center">

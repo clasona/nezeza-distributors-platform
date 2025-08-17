@@ -18,7 +18,7 @@ const fallbackTickets: SupportTicket[] = [
     priority: 'high',
     status: 'in_progress',
     description: 'My order was supposed to arrive yesterday but I haven\'t received it yet.',
-    userId: { _id: 'user1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+    userId: { firstName: 'John', lastName: 'Doe' },
     userRole: 'customer',
     createdAt: '2024-01-20T10:30:00Z',
     updatedAt: '2024-01-21T14:20:00Z',
@@ -62,7 +62,7 @@ const fallbackTickets: SupportTicket[] = [
     priority: 'medium',
     status: 'resolved',
     description: 'The phone case I ordered has a scratch on the back.',
-    userId: { _id: 'user1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+    userId: { firstName: 'John', lastName: 'Doe' },
     userRole: 'customer',
     createdAt: '2024-01-18T09:15:00Z',
     updatedAt: '2024-01-19T16:30:00Z',
@@ -106,7 +106,7 @@ const fallbackTickets: SupportTicket[] = [
     priority: 'urgent',
     status: 'open',
     description: 'My payment failed during checkout but the amount was deducted from my account.',
-    userId: { _id: 'user1', firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+    userId: { firstName: 'John', lastName: 'Doe' },
     userRole: 'customer',
     createdAt: '2024-01-22T11:00:00Z',
     updatedAt: '2024-01-22T11:00:00Z',
@@ -413,7 +413,7 @@ const CustomerSupportMyTickets: React.FC = () => {
       // Real API call to add message with structured Cloudinary attachments
       const response = await addMessageToTicket(selectedTicket._id, {
         message: newMessage,
-        cloudinaryAttachments: structuredAttachments // Send as structured objects
+        attachments: selectedFiles // Use file attachments if any
       });
       
       console.log('Message sent successfully:', response);

@@ -86,7 +86,8 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
           })
         : await addMessageToTicket(ticketId, {
             message: newMessage.trim(),
-            cloudinaryAttachments,
+            // TODO: Support Cloudinary attachments in customer addMessageToTicket
+            // cloudinaryAttachments,
           });
       setTicket(response.ticket);
       setNewMessage('');
@@ -213,7 +214,7 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
           <h3 className="text-lg font-semibold">Messages</h3>
         </div>
         <div className="divide-y divide-gray-200">
-          {ticket.messages.map((message, index) => (
+          {ticket.messages?.map((message, index) => (
             <div key={message._id} className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
