@@ -39,7 +39,7 @@ const CustomerSupportTrackPackage: React.FC = () => {
         <div className="mt-6">
           <a
             href="/customer/support/submit-ticket"
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-block bg-vesoko_primary_light text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Contact Support for Tracking Help
           </a>
