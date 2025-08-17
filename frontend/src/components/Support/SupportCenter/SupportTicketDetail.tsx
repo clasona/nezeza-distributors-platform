@@ -342,7 +342,7 @@ const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
                 buttonTitle={sendingMessage ? 'Sending...' : 'Send Reply'}
                 onClick={handleSendMessage}
                 disabled={!newMessage.trim() || sendingMessage}
-                className="bg-nezeza_dark_blue text-white hover:bg-nezeza_dark_blue_2 disabled:bg-gray-400"
+                className="bg-vesoko_primary_light text-white hover:bg-vesoko_primary_light disabled:bg-gray-400"
               />
             </div>
           </div>

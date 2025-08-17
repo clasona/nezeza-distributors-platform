@@ -7,6 +7,7 @@ import { addMessageToTicket } from '@/utils/support/addMessageToTicket';
 import { getTicketDetails } from '@/utils/support/getTicketDetails';
 import AttachmentViewer from '@/components/Support/AttachmentViewer';
 import CloudinaryUploadWidget from '@/components/Cloudinary/UploadWidget';
+import Button from '@/components/FormInputs/Button';
 
 // Fallback ticket data for offline/error scenarios
 const fallbackTickets: SupportTicket[] = [
@@ -560,7 +561,7 @@ const CustomerSupportMyTickets: React.FC = () => {
               <div key={message.id} className={`flex ${message.author === 'customer' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-4xl ${
                   message.author === 'customer' 
-                    ? 'bg-nezeza_dark_blue text-white'
+                    ? 'bg-vesoko_primary_light text-white'
                     : 'bg-gray-100 text-gray-900'
                 } rounded-lg p-3`}>
                   <div className="flex items-center justify-between mb-2">
@@ -719,11 +720,24 @@ const CustomerSupportMyTickets: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmittingMessage || !newMessage.trim()}
-                  className="bg-nezeza_dark_blue text-white px-6 py-2 rounded-lg hover:bg-nezeza_dark_blue_2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  className="bg-vesoko_primary_light text-white px-6 py-2 rounded-lg hover:bg-vesoko_primary_light disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
                   {isSubmittingMessage ? 'Sending...' : 'Send Reply'}
                 </button>
               </div>
+
+              {/* <div className="flex justify-end">
+              <Button
+                buttonTitle={sendingMessage ? 'Sending...' : 'Send Reply'}
+                onClick={handleSendMessage}
+                disabled={!newMessage.trim() || sendingMessage}
+                className="bg-vesoko_primary_light text-white hover:bg-vesoko_primary_light disabled:bg-gray-400"
+              />
+            </div> */}
+
+
+
+
             </form>
           </div>
         )}

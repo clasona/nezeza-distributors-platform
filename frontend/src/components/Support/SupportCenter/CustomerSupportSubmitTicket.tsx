@@ -362,7 +362,7 @@ const CustomerSupportSubmitTicket: React.FC = () => {
             buttonTitle={loading ? 'Submitting...' : 'Submit Ticket'}
             type="submit"
             disabled={loading}
-            className="bg-nezeza_blue text-white hover:bg-nezeza_dark_blue_2 disabled:bg-gray-400 px-6 py-2"
+            className="bg-vesoko_primary_light text-white hover:bg-vesoko_primary_light disabled:bg-gray-400 px-6 py-2"
           />
         </div>
       </form>

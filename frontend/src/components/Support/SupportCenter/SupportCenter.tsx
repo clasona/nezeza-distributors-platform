@@ -44,7 +44,6 @@ const SupportCenterLayout: React.FC<SupportCenterLayoutProps> = ({
                 <div className="space-y-1 text-gray-600">
                   <p>📧 support@vesoko.com</p>
                   <p>📞 +250 788 123 456</p>
-                  <p>💬 Live chat available</p>
                 </div>
               </div>
               <div>
@@ -58,9 +57,9 @@ const SupportCenterLayout: React.FC<SupportCenterLayoutProps> = ({
               <div>
                 <h3 className="text-md font-semibold text-gray-900 mb-2">Business Hours</h3>
                 <div className="space-y-1 text-gray-600">
-                  <p>Monday - Friday: 8 AM - 8 PM</p>
-                  <p>Saturday: 9 AM - 5 PM</p>
-                  <p>Sunday: 10 AM - 4 PM</p>
+                  <p>24/7 around the clock</p>
+                  
+                 
                 </div>
               </div>
           </div>
