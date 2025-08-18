@@ -40,7 +40,7 @@ const sendSellerNotificationEmail = ({
         process.env.CLIENT_URL
       }/login">Go to Seller Dashboard</a>
 
-      <p>If you have any questions, contact our support team at <a href="mailto:support@vesoko.com">support@vesoko.com</a>.</p>
+      <p>If you have any questions, contact our support team at <a href="mailto:marketplace@vesoko.com">marketplace@vesoko.com</a>.</p>
 
       <p>Thank you for selling with VeSoko!</p>
       <strong>VeSoko Team</strong>

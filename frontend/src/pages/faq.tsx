@@ -21,7 +21,7 @@ const FAQPage = () => {
     { value: 'all', label: 'All Categories' },
     { value: 'general', label: 'General' },
     { value: 'seller', label: 'Selling' },
-    { value: 'shopper', label: 'Shopping' },
+    { value: 'buyer', label: 'Shopping' },
     { value: 'payments', label: 'Payments' },
     { value: 'shipping', label: 'Shipping' },
     { value: 'returns', label: 'Returns' },
@@ -32,7 +32,7 @@ const FAQPage = () => {
   const userTypes = [
     { value: 'all', label: 'All Users' },
     { value: 'seller', label: 'Sellers' },
-    { value: 'shopper', label: 'Shoppers' },
+    { value: 'buyer', label: 'Buyers' },
     { value: 'wholesaler', label: 'Wholesalers' },
     { value: 'retailer', label: 'Retailers' },
     { value: 'manufacturer', label: 'Manufacturers' }

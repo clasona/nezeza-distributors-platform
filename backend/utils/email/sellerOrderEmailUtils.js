@@ -190,7 +190,7 @@ const sendSellerNewOrderNotificationEmail = async ({
         </div>
         
         <hr style="border-top: 1px solid #eee; margin: 30px 0;" />
-        <p style="color: #666; font-size: 14px;">If you have any questions or need assistance, contact our support team at <a href="mailto:support@vesoko.com" style="color: #FF9800;">support@vesoko.com</a>.</p>
+        <p style="color: #666; font-size: 14px;">If you have any questions or need assistance, contact our support team at <a href="mailto:marketplace@vesoko.com" style="color: #FF9800;">marketplace@vesoko.com</a>.</p>
         
         <footer style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; text-align: center; color: #888;">
           <p style="margin: 0;">Thank you for selling with VeSoko!</p>

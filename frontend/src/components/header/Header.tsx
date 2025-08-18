@@ -34,6 +34,7 @@ import {
   ShoppingBag,
   BookOpen,
   FileText,
+  Lock,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -334,15 +335,34 @@ const Header = ({
                           Start Application
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href='/sellers/faq' className='flex items-center w-full'>
+                          <HelpCircle className='w-4 h-4 text-vesoko_primary mr-2' />
+                          Seller FAQ
+                        </Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem>
+                        <Link href='/sellers/privacy-policy' className='flex items-center w-full'>
+                          <Lock className='w-4 h-4 text-vesoko_primary mr-2' />
+                          Seller Privacy
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href='/sellers/terms-conditions' className='flex items-center w-full'>
+                          <FileText className='w-4 h-4 text-vesoko_primary mr-2' />
+                          Seller Terms
+                        </Link>
+                      </DropdownMenuItem>
                     </DropdownMenuSubContent>
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
                 
-                {/* For Shoppers Submenu */}
+                {/* For Buyers Submenu */}
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <ShoppingBag className='w-4 h-4 text-blue-600 mr-2' />
-                    For Shoppers
+                    For Buyers
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent>
@@ -355,13 +375,31 @@ const Header = ({
                       <DropdownMenuItem>
                         <Link href='/favorites' className='flex items-center w-full'>
                           <Heart className='w-4 h-4 text-blue-600 mr-2' />
-                          My Wishlist
+                          My Favorites
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Link href='/cart' className='flex items-center w-full'>
                           <ShoppingCart className='w-4 h-4 text-blue-600 mr-2' />
                           Shopping Cart
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href='/buyers/faq' className='flex items-center w-full'>
+                          <HelpCircle className='w-4 h-4 text-blue-600 mr-2' />
+                          Buyers FAQ
+                        </Link>
+                      </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <Link href='/buyers/privacy-policy' className='flex items-center w-full'>
+                            <Lock className='w-4 h-4 text-blue-600 mr-2' />
+                            Buyers Privacy
+                          </Link>
+                        </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link href='/buyers/terms-conditions' className='flex items-center w-full'>
+                          <FileText className='w-4 h-4 text-blue-600 mr-2' />
+                          Buyers Terms
                         </Link>
                       </DropdownMenuItem>
                     </DropdownMenuSubContent>
@@ -379,15 +417,20 @@ const Header = ({
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Link href='/faq' className='flex items-center w-full'>
-                    <HelpCircle className='w-4 h-4 text-purple-600 mr-2' />
-                    Help & FAQ
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
                   <Link href='/contact' className='flex items-center w-full'>
                     <MessageSquare className='w-4 h-4 text-orange-600 mr-2' />
                     Contact Us
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              
+              <DropdownMenuSeparator />
+              
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <Link href='/return-refund-policy' className='flex items-center w-full'>
+                    <FileText className='w-4 h-4 text-gray-600 mr-2' />
+                    Return Policy
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>

@@ -303,10 +303,10 @@ const SuccessPage = () => {
           </p>
           <div className='flex flex-col sm:flex-row gap-4 justify-center text-sm'>
             <Link
-              href='mailto:support@vesoko.com'
+              href='mailto:marketplace@vesoko.com'
               className='text-vesoko_primary hover:text-vesoko_primary font-medium'
             >
-              📧 support@vesoko.com
+              📧 marketplace@vesoko.com
             </Link>
             <span className='hidden sm:inline text-gray-400'>|</span>
             <Link

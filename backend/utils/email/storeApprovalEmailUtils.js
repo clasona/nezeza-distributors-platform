@@ -92,7 +92,7 @@ const sendStoreApprovalEmail = async ({
       <footer style="text-align: center; color: #718096; font-size: 14px;">
         <p style="margin: 10px 0;">Welcome to VeSoko!<br><strong>The VeSoko Team</strong></p>
         <p style="margin: 10px 0;">
-          📧 <a href="mailto:support@vesoko.com" style="color: #48bb78; text-decoration: none;">support@vesoko.com</a>
+          📧 <a href="mailto:marketplace@vesoko.com" style="color: #48bb78; text-decoration: none;">marketplace@vesoko.com</a>
         </p>
         <p style="margin: 10px 0; font-size: 12px;">
           If you're having trouble clicking the button, copy and paste this URL into your browser:<br>
@@ -186,7 +186,7 @@ const sendStoreDeclineEmail = async ({
       <footer style="text-align: center; color: #718096; font-size: 14px;">
         <p style="margin: 10px 0;">Best regards,<br><strong>The VeSoko Team</strong></p>
         <p style="margin: 10px 0;">
-          📧 <a href="mailto:support@vesoko.com" style="color: #319795; text-decoration: none;">support@vesoko.com</a>
+          📧 <a href="mailto:marketplace@vesoko.com" style="color: #319795; text-decoration: none;">marketplace@vesoko.com</a>
         </p>
         <p style="margin: 10px 0; font-size: 12px;">
           This email was sent regarding your store application submission.

@@ -116,7 +116,7 @@ ${shippingAddress.street2 ? shippingAddress.street2 + '\n' : ''}${shippingAddres
 
 You will receive updates as your order progresses. You can track your order in your account.
 
-If you have any questions, feel free to contact us at support@vesoko.com.`;
+If you have any questions, feel free to contact us at marketplace@vesoko.com.`;
 
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; line-height: 1.6;">
@@ -146,7 +146,7 @@ If you have any questions, feel free to contact us at support@vesoko.com.`;
       </div>
 
       <p>You will receive an update once your order has been shipped. You can also track your order in your account.</p>
-      <p>If you have any questions, feel free to contact us at <a href="mailto:support@vesoko.com">support@vesoko.com</a>.</p>
+      <p>If you have any questions, feel free to contact us at <a href="mailto:marketplace@vesoko.com">marketplace@vesoko.com</a>.</p>
       
       <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
       <p style="color: #666;">
@@ -229,7 +229,7 @@ const sendOrderStatusUpdateEmailAndNotification = async ({
     },
     'Cancelled': {
       title: `Order Update: Package Cancelled`,
-      body: `Dear ${buyerName},\n\nYour ${orderDescription} has been cancelled.${itemsDescription}\n\nIf you were charged for this order, you will receive a full refund within 5-7 business days.\n\nIf you have any questions, please contact us at support@vesoko.com.`,
+      body: `Dear ${buyerName},\n\nYour ${orderDescription} has been cancelled.${itemsDescription}\n\nIf you were charged for this order, you will receive a full refund within 5-7 business days.\n\nIf you have any questions, please contact us at marketplace@vesoko.com.`,
       priority: 'high',
     },
   };
@@ -308,7 +308,7 @@ Please log in to your seller dashboard to confirm and fulfill this order.`;
       </div>
 
       <p>Please log in to your seller dashboard to confirm and fulfill this order.</p>
-      <p>If you have any questions, feel free to contact us at <a href="mailto:support@vesoko.com">support@vesoko.com</a>.</p>
+      <p>If you have any questions, feel free to contact us at <a href="mailto:marketplace@vesoko.com">marketplace@vesoko.com</a>.</p>
       
       <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
       <p style="color: #666;">

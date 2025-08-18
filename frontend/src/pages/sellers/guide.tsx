@@ -520,11 +520,11 @@ const SellersGuide = () => {
               <h3 className='text-xl font-semibold text-gray-900 mb-4'>Email Support</h3>
               <p className='text-gray-600 mb-6'>Get detailed answers to your questions</p>
               <Link 
-                href='mailto:support@vesoko.com' 
+                href='mailto:marketplace@vesoko.com' 
                 className='inline-flex items-center gap-2 bg-vesoko_primary text-white px-6 py-3 rounded-lg font-medium hover:bg-vesoko_primary transition-colors'
               >
                 <Mail className='h-5 w-5' />
-                support@vesoko.com
+                marketplace@vesoko.com
               </Link>
             </div>
 

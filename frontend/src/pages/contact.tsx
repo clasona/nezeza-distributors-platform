@@ -61,7 +61,7 @@ const Contact = () => {
     {
       icon: <Mail className="w-6 h-6" />,
       title: "Email Us",
-      details: ["marketplace@vesoko.com", "support@vesoko.com"],
+      details: ["marketplace@vesoko.com"],
       description: "We typically respond within 24 hours"
     },
     {
@@ -89,28 +89,28 @@ const Contact = () => {
       icon: <Users className="w-8 h-8" />,
       title: "Sales & Partnerships",
       description: "Interested in joining VeSoko as a seller or exploring partnership opportunities?",
-      email: "marketplace@vesoko.com",
+      // email: "marketplace@vesoko.com",
       color: "from-vesoko_primary to-green-500"
     },
     {
       icon: <MessageSquare className="w-8 h-8" />,
       title: "Customer Support",
       description: "Need help with your account, orders, or have technical questions?",
-      email: "support@vesoko.com",
+      // email: "marketplace@vesoko.com",
       color: "from-vesoko_primary to-vesoko_primary_dark"
     },
     {
       icon: <Building className="w-8 h-8" />,
       title: "Business Development",
       description: "Enterprise solutions, wholesale inquiries, and strategic partnerships.",
-      email: "marketplace@vesoko.com",
+      // email: "marketplace@vesoko.com",
       color: "from-purple-600 to-purple-500"
     },
     {
       icon: <Globe className="w-8 h-8" />,
       title: "Press & Media",
       description: "Media inquiries, press releases, and brand collaboration requests.",
-      email: "marketplace@vesoko.com",
+      // email: "marketplace@vesoko.com",
       color: "from-orange-600 to-orange-500"
     }
   ];
@@ -159,14 +159,14 @@ const Contact = () => {
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-3 text-center">{dept.title}</h3>
                     <p className="text-gray-600 text-sm leading-relaxed mb-4 text-center">{dept.description}</p>
-                    <div className="text-center">
+                    {/* <div className="text-center">
                       <Link 
                         href={`mailto:${dept.email}`}
                         className="text-vesoko_primary hover:text-vesoko_primary font-medium text-sm transition-colors duration-300"
                       >
                         {dept.email}
                       </Link>
-                    </div>
+                    </div> */}
                   </div>
                 ))}
               </div>

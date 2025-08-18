@@ -273,7 +273,7 @@ The system provides a comprehensive workflow for processing store applications, 
 4. **Login Issues**: Verify email/password combination
 
 ### Support Contacts
-- Technical Support: support@vesoko.com
+- Technical Support: marketplace@vesoko.com
 - Admin Issues: admin@vesoko.com
 - Email Delivery: notifications@vesoko.com
 

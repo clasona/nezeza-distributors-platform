@@ -10,7 +10,7 @@ export interface ContentPage {
   excerpt?: string;
   seoTitle?: string;
   seoDescription?: string;
-  category: 'general' | 'seller' | 'shopper' | 'legal' | 'support';
+  category: 'general' | 'seller' | 'buyer' | 'legal' | 'support';
   published: boolean;
   featured: boolean;
   order: number;
@@ -27,9 +27,9 @@ export interface FAQ {
   _id: string;
   question: string;
   answer: string;
-  category: 'general' | 'seller' | 'shopper' | 'payments' | 'shipping' | 'returns' | 'account' | 'technical';
+  category: 'general' | 'seller' | 'buyer' | 'payments' | 'shipping' | 'returns' | 'account' | 'technical';
   subcategory?: string;
-  userType: 'all' | 'seller' | 'shopper' | 'wholesaler' | 'retailer' | 'manufacturer';
+  userType: 'all' | 'seller' | 'buyer' | 'wholesaler' | 'retailer' | 'manufacturer';
   published: boolean;
   featured: boolean;
   helpfulCount: number;

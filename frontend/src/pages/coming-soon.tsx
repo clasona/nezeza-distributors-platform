@@ -125,7 +125,7 @@ const ComingSoonPage = () => {
                     : 'text-[#3d1f00] hover:text-[#ff7a00]'
                 }`}
               >
-                For Shoppers
+                For Buyers
               </button>
               <button 
                 onClick={() => handleTabChange('sellers')}

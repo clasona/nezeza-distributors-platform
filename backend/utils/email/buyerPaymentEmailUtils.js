@@ -94,7 +94,7 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
       <p style="color: #555;">If you have any questions or need assistance with your order, please contact us.</p>
       <footer style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 10px; text-align: center; color: #888;">
         VeSoko Team<br>
-        <a href="mailto:support@vesoko.com" style="color: #4CAF50;">support@vesoko.com</a>
+        <a href="mailto:marketplace@vesoko.com" style="color: #4CAF50;">marketplace@vesoko.com</a>
       </footer>
     </div>
   `;

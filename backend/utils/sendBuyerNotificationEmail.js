@@ -38,7 +38,7 @@ const sendBuyerNotificationEmail = async ({
 
       <p>You will receive an update once your order has been shipped. You can also track your order in your account.</p>
 
-      <p>If you have any questions, feel free to contact us at <a href="mailto:support@vesoko.com">support@vesoko.com</a>.</p>
+      <p>If you have any questions, feel free to contact us at <a href="mailto:marketplace@vesoko.com">marketplace@vesoko.com</a>.</p>
 
       <p>Thank you for choosing VeSoko!</p>
       <strong>VeSoko Team</strong>

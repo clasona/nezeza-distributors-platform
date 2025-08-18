@@ -50,7 +50,7 @@ const FAQComponent: React.FC<FAQComponentProps> = ({
     const colors: { [key: string]: string } = {
       general: 'bg-vesoko_background text-vesoko_secondary',
       seller: 'bg-vesoko_green_100 text-green-800',
-      shopper: 'bg-purple-100 text-purple-800',
+      buyer: 'bg-purple-100 text-purple-800',
       payments: 'bg-yellow-100 text-yellow-800',
       shipping: 'bg-indigo-100 text-indigo-800',
       returns: 'bg-red-100 text-red-800',
@@ -64,7 +64,7 @@ const FAQComponent: React.FC<FAQComponentProps> = ({
     const colors: { [key: string]: string } = {
       all: 'bg-gray-100 text-gray-800',
       seller: 'bg-vesoko_primary text-white',
-      shopper: 'bg-vesoko_primary text-white',
+      buyer: 'bg-vesoko_primary text-white',
       wholesaler: 'bg-purple-600 text-white',
       retailer: 'bg-orange-600 text-white',
       manufacturer: 'bg-teal-600 text-white',

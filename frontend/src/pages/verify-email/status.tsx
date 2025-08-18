@@ -62,8 +62,8 @@ const VerifyEmailStatusPage = () => {
               </button>
               <p className='text-sm text-gray-500'>
                 Need help? Contact us at{' '}
-                <Link href='mailto:support@vesoko.com' className='text-vesoko_primary hover:underline'>
-                  support@vesoko.com
+                <Link href='mailto:marketplace@vesoko.com' className='text-vesoko_primary hover:underline'>
+                  marketplace@vesoko.com
                 </Link>
               </p>
             </div>
@@ -177,7 +177,7 @@ const VerifyEmailStatusPage = () => {
                 <p className='text-sm text-gray-500 mt-4'>
                   Still having trouble?{' '}
                   <Link
-                    href='mailto:support@vesoko.com'
+                    href='mailto:marketplace@vesoko.com'
                     className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
                   >
                     Contact Support

@@ -100,8 +100,8 @@ const PostStoreApplicationSubmission = () => {
                   <Mail className='h-5 w-5 text-vesoko_primary' />
                   <div>
                     <p className='font-medium text-gray-900'>Email Support</p>
-                    <Link href='mailto:support@vesoko.com' className='text-vesoko_primary hover:text-vesoko_primary transition-colors'>
-                      support@vesoko.com
+                    <Link href='mailto:marketplace@vesoko.com' className='text-vesoko_primary hover:text-vesoko_primary transition-colors'>
+                      marketplace@vesoko.com
                     </Link>
                   </div>
                 </div>
