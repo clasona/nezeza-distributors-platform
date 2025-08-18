@@ -27,17 +27,5 @@ const sendEmail = async ({ to, subject, html }) => {
     throw error;
   }
 };
-// for testing
-const sendEmailEthereal = async ({ to, subject, html }) => {
-  let testAccount = await nodemailer.createTestAccount();
-  const transporter = nodemailer.createTransport(nodemailerConfig);
-  console.log(to);
-  return transporter.sendMail({
-    from: '"Soko Platform" <admin@gmail.com>', // sender address
-    to,
-    subject,
-    html,
-  });
-};
 
 module.exports = sendEmail;

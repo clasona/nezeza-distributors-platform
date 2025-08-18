@@ -24,14 +24,12 @@ const SupportMessageSchema = new mongoose.Schema(
       required: [true, 'Message content is required'],
       maxlength: [2000, 'Message cannot exceed 2000 characters'],
     },
-    attachments: [
-      {
-        filename: String,
-        url: String,
-        fileType: String,
-        fileSize: Number,
-      },
-    ],
+    // Simplified attachments as array of Cloudinary URLs
+    attachments: {
+      type: [String], // Array of Cloudinary URLs
+      default: []
+    },
+
     isInternal: {
       type: Boolean,
       default: false, // Internal notes between admin staff
@@ -45,7 +43,7 @@ const SupportTicketSchema = new mongoose.Schema(
     ticketNumber: {
       type: String,
       unique: true,
-      required: true,
+      index: true,
     },
     subject: {
       type: String,
@@ -174,15 +172,11 @@ const SupportTicketSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
-    // Attachments for the initial ticket
-    attachments: [
-      {
-        filename: String,
-        url: String,
-        fileType: String,
-        fileSize: Number,
-      },
-    ],
+    // Simplified attachments as array of Cloudinary URLs for the initial ticket
+    attachments: {
+      type: [String], // Array of Cloudinary URLs
+      default: []
+    },
   },
   {
     timestamps: true,

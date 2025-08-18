@@ -209,7 +209,7 @@ const assignTicket = async (req, res) => {
 
     // Send notification email to assigned admin
     await sendTicketAssignedEmail({
-      adminEmail: 'clasona.us@gmail.com',
+      adminEmail: 'shyanne55@ethereal.email',
       //assignedUser.email,
       adminName: `${assignedUser.firstName} ${assignedUser.lastName}`,
       ticketNumber: ticket.ticketNumber,
@@ -294,7 +294,7 @@ const updateTicketAdmin = async (req, res) => {
     // Send status update email to user if status changed
     if (statusChanged) {
       await sendTicketStatusUpdateEmail({
-        userEmail: 'clasona.us@gmail.com',
+        userEmail: 'shyanne55@ethereal.email',
         //ticket.userId.email,
         userName: `${ticket.userId.firstName} ${ticket.userId.lastName}`,
         ticketNumber: ticket.ticketNumber,
@@ -329,7 +329,34 @@ const respondToTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
     const adminId = req.user.userId;
-    const { message, isInternal, attachments } = req.body;
+    const { message, isInternal } = req.body;
+    
+    // Handle file attachments for admin responses
+    let attachments = [];
+    if (req.files && req.files.attachments) {
+      const files = Array.isArray(req.files.attachments) ? req.files.attachments : [req.files.attachments];
+      
+      for (const file of files) {
+        // Generate unique filename to prevent conflicts
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 8);
+        const fileExtension = file.name.split('.').pop();
+        const uniqueFilename = `${timestamp}-${randomString}.${fileExtension}`;
+        
+        const attachment = {
+          filename: file.name, // Original filename for display
+          url: `/uploads/support/${uniqueFilename}`, // Unique filename for storage
+          fileType: file.mimetype,
+          fileSize: file.size
+        };
+        
+        attachments.push(attachment);
+        
+        // Move file to storage directory with unique name
+        const uploadPath = `./public/uploads/support/${uniqueFilename}`;
+        await file.mv(uploadPath);
+      }
+    }
 
     if (!message || message.trim().length === 0) {
       throw new CustomError.BadRequestError('Message content is required');

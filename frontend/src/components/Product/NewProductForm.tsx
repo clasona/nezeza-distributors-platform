@@ -17,7 +17,7 @@ import TextAreaInput from '../FormInputs/TextAreaInput';
 import TextInput from '../FormInputs/TextInput';
 import TagsInput from '../FormInputs/TagsInput';
 import SuccessMessageModal from '../SuccessMessageModal';
-import CloudinaryUploadWidget from '../Cloudinary/UploadWidget';
+import CloudinaryUploadWidget, { CloudinaryFileInfo } from '../Cloudinary/UploadWidget';
 import { 
   Package, 
   DollarSign, 
@@ -376,7 +376,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
               ))}
               
               <CloudinaryUploadWidget
-                onUpload={(urls) => setImageUrls((prev) => [...prev, ...urls])}
+                onUpload={(files) => setImageUrls((prev) => [...prev, ...files.map(f => f.secure_url || f.url)])}
               >
                 <button
                   type='button'
