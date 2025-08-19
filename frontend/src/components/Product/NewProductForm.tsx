@@ -44,6 +44,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
   const categoryOptions = [
     { value: '', label: 'Select a category' },
     { value: 'food', label: 'Food' },
+    { value: 'beverages', label: 'Beverages' },
     { value: 'electronics', label: 'Electronics' },
     { value: 'clothing', label: 'Clothing' },
     { value: 'furniture', label: 'Furniture' },
@@ -165,7 +166,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
       return;
     }
 
-    // Colors are now optional - no validation needed
+    // Colors are optional - no validation needed
     // Required numeric fields validation
     const numericFields = [
       'weight',
@@ -294,7 +295,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
           
           <div className='grid grid-cols-1 gap-6 sm:grid-cols-2'>
             <TextInput
-              label='Quantity'
+              label='Quantity in Stock'
               id='quantity'
               name='quantity'
               register={register}
@@ -302,15 +303,16 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
               type='number'
             />
             <TextInput
-              label='Unit Price'
+              label='Unit Price ($)'
               id='price'
               name='price'
               register={register}
               errors={errors}
               type='number'
+              step='0.01'
             />
             
-            {/* Tax rate */}
+            {/* Tax rate based on state */}
             <TextInput
               label='Tax Rate (%)'
               id='taxRate'
@@ -318,6 +320,8 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
               register={register}
               errors={errors}
               type='number'
+              step='0.01'
+              placeholder='Enter your state tax rate'
             />
             
             {/* Availability checkbox */}
@@ -519,6 +523,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
               register={register}
               errors={errors}
               type='number'
+              step='0.01'
             />
             <TextInput
               label='Height (inches)'
@@ -527,6 +532,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
               register={register}
               errors={errors}
               type='number'
+              step='0.01'
             />
             <TextInput
               label='Width (inches)'
@@ -535,6 +541,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
               register={register}
               errors={errors}
               type='number'
+              step='0.01'
             />
             <TextInput
               label='Length (inches)'
@@ -543,6 +550,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
               register={register}
               errors={errors}
               type='number'
+              step='0.01'
             />
           </div>
         </div>
@@ -594,11 +602,11 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
               <span className='text-red-500'>*</span> Required fields
             </div>
             
-            <div className='flex gap-3'>
+            <div className='flex gap-3 items-center'>
               <button
                 type='button'
                 onClick={() => router.back()}
-                className='px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors duration-200'
+                className='mt-4 sm:mt-6 px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-colors duration-200'
               >
                 Cancel
               </button>
@@ -607,7 +615,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({ onSubmitSuccess }) => {
                 isLoading={false}
                 buttonTitle='Create Product'
                 loadingButtonTitle='Creating Product...'
-                className='px-8 py-3 bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_2 hover:to-vesoko_secondary text-white rounded-lg font-medium transition-all duration-200 shadow-lg'
+                className='bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_2 hover:to-vesoko_secondary text-white rounded-lg font-medium transition-all duration-200 shadow-lg'
               />
             </div>
           </div>

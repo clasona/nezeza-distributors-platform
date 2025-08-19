@@ -17,6 +17,9 @@ const mongoSanitize = require('express-mongo-sanitize');
 // database
 const connectDB = require('./db/connect');
 
+// services
+const gracePeriodService = require('./services/gracePeriodService');
+
 //  routers
 const adminRouter = require('./routes/adminRoutes');
 const adminStoreRouter = require('./routes/adminStoreRoutes');
@@ -42,6 +45,7 @@ const adminSupportRouter = require('./routes/admin/adminSupportRoutes');
 const amdinAnalyticsRoutes = require('./routes/admin/adminAnalyticsRoutes');
 const amdinFinancialRoutes = require('./routes/admin/adminFinancialRoutes');
 const amdinMonitoringRoutes = require('./routes/admin/adminMonitoringRoutes');
+const adminGracePeriodRoutes = require('./routes/admin/adminGracePeriodRoutes');
 const verificationRouter = require('./routes/verificationRoutes');
 const newsletterRouter = require('./routes/newsletterRoutes');
 const contactRouter = require('./routes/contactRoutes');
@@ -124,6 +128,7 @@ app.use('/api/v1/wholesaler/inventory-items', inventoryRouter);
 app.use('/api/v1/admin/analytics', amdinAnalyticsRoutes);
 app.use('/api/v1/admin/financial', amdinFinancialRoutes);
 app.use('/api/v1/admin/monitoring', amdinMonitoringRoutes);
+app.use('/api/v1/admin/grace-period', adminGracePeriodRoutes);
 // email test routes
 app.use('/api/v1/email-test', emailTestRouter);
 // verification routes
@@ -147,6 +152,11 @@ const port = process.env.PORT || 8000;
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URL);
+    
+    // Start grace period monitoring service after database connection
+    gracePeriodService.start();
+    console.log('Grace period monitoring service started');
+    
     app.listen(port, () =>
       console.log(`Server is listening on port ${port}...`)
     );

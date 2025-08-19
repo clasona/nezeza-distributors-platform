@@ -106,8 +106,8 @@ const RegisterPage = () => {
     setStoreType(value);
   };
   const storeTypeOptions = [
-    { value: 'manufacturing', label: 'Manufacturing' },
-    { value: 'wholesale', label: 'Wholesale' },
+    //  { value: 'manufacturing', label: 'Manufacturing' },
+    // { value: 'wholesale', label: 'Wholesale' },
     { value: 'retail', label: 'Retail' },
   ];
 
@@ -324,7 +324,7 @@ const RegisterPage = () => {
                 <label htmlFor='terms' className='text-sm text-gray-600'>
                   I agree to the{' '}
                   <Link
-                    href='/terms'
+                    href={isSeller ? '/sellers/terms-conditions' : '/buyers/terms-conditions'}
                     target='_blank'
                     rel='noopener noreferrer'
                     className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'
@@ -333,7 +333,7 @@ const RegisterPage = () => {
                   </Link>{' '}
                   and{' '}
                   <Link
-                    href='/privacy'
+                    href={isSeller ? '/sellers/privacy-policy' : '/buyers/privacy-policy'}
                     target='_blank'
                     rel='noopener noreferrer'
                     className='text-vesoko_primary hover:text-vesoko_primary font-medium transition-colors duration-200'

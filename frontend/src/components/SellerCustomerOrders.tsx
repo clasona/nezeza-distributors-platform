@@ -1,6 +1,6 @@
 import PageHeader from '@/components/PageHeader';
 import MetricCard from '@/components/Charts/MetricCard';
-import DeleteRowModal from '@/components/Table/DeleteRowModal';
+import ArchiveRowModal from '@/components/Table/ArchiveRowModal';
 import ClearFilters from '@/components/Table/Filters/ClearFilters';
 import DateFilters from '@/components/Table/Filters/DateFilters';
 import StatusFilters from '@/components/Table/Filters/StatusFilters';
@@ -61,11 +61,13 @@ import Button from './FormInputs/Button';
 import Loading from './Loaders/Loading';
 import CustomerMoreOrderDetailsModal from './Order/CustomerMoreOrderDetailsModal';
 import SuccessMessageModal from './SuccessMessageModal';
-import BulkDeleteButton from './Table/BulkDeleteButton';
-import BulkDeleteModal from './Table/BulkDeleteModal';
+import ErrorMessageModal from './ErrorMessageModal';
+import BulkArchiveButton from './Table/BulkArchiveButton';
+import BulkArchiveModal from './Table/BulkArchiveModal';
 import { fetchCustomerById } from '@/utils/customer/fetchCustomerById';
 import { getSingleOrder } from '@/utils/order/getSingleOrder';
 import { getSellerSingleOrder } from '@/utils/order/getSellerSingleOrder';
+import { archiveOrder } from '@/utils/order/archiveOrder';
 import { useSelector } from 'react-redux';
 import { get } from 'http';
 import { getStore } from '@/utils/store/getStore';
@@ -74,9 +76,10 @@ import Image from 'next/image';
 
 const SellerCustomerOrders = () => {
   const [customerOrders, setCustomerOrders] = useState<SubOrderProps[]>([]);
-    const { userInfo, storeInfo } = useSelector((state: stateProps) => state.next);
+  const { userInfo, storeInfo } = useSelector((state: stateProps) => state.next);
   const [filteredOrders, setFilteredOrders] = useState<SubOrderProps[]>([]);
   const [successMessage, setSuccessMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [selectedOrder, setSelectedOrder] = useState<SubOrderProps | null>(null);
   const [showShippingModal, setShowShippingModal] = useState(false);
   const [shippingRates, setShippingRates] = useState<any[]>([]);
@@ -90,8 +93,8 @@ const SellerCustomerOrders = () => {
     value: string;
     label: string;
   } | null>({ value: 'All', label: 'All' });
-  const [sortColumn, setSortColumn] = useState('');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [sortColumn, setSortColumn] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -113,7 +116,6 @@ const SellerCustomerOrders = () => {
 
   //for defining what table headers needed
   const tableColumns: TableColumn[] = [
-    { id: 'expand', title: '', width: '40px', align: 'center' },
     { id: 'fulfillmentStatus', title: 'Status', sortable: true, width: '120px' },
     { id: '_id', title: 'Order ID', sortable: true, width: '140px' },
     { id: 'customer', title: 'Customer', sortable: true, width: '120px' },
@@ -126,19 +128,19 @@ const SellerCustomerOrders = () => {
 
   //for pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5); // Dynamic page size with default of 5
+  const [pageSize, setPageSize] = useState(10); // Dynamic page size with default of 5
 
-  //for bulk deleting
+  //for bulk archiving
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [isBulkArchiveModalOpen, setIsBulkArchiveModalOpen] = useState(false);
 
-  //for table row dropdown actions i.e: update, remove
+  //for table row dropdown actions i.e: update, archive
   const [
     isCustomerMoreOrderDetailsModalOpen,
     setIsCustomerMoreOrderDetailsModalOpen,
   ] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
   const [currentRowData, setCurrentRowData] = useState<(SubOrderProps & { buyer?: UserProps }) | null>(null);
   const [isLoading, setIsLoading] = useState(false); // State for loading
 
@@ -147,8 +149,10 @@ const SellerCustomerOrders = () => {
     setIsLoading(true);
     try {
       const customerOrdersData = await fetchCustomerOrders();
-      setCustomerOrders(customerOrdersData);
-      setFilteredOrders(customerOrdersData); // Initially show all orders
+      // Sort by creation date (newest first) by default
+      const sortedData = sortItems(customerOrdersData, 'createdAt', 'desc');
+      setCustomerOrders(sortedData);
+      setFilteredOrders(sortedData); // Initially show all orders sorted
     } catch (error) {
       handleError(error);
     } finally {
@@ -301,15 +305,33 @@ const SellerCustomerOrders = () => {
   const handleCreateShippingLabel = async (order: SubOrderProps) => {
     setSelectedOrder(order);
     setCreatingLabel(order._id); // Set loading state for this specific order
+    
+    // Clear previous messages
+    setSuccessMessage('');
+    setErrorMessage('');
+    
     try {
       setSuccessMessage('Creating shipping label...');
       
       const response = await createSubOrderLabel(order._id);
-      if (!response || !response.success || !response.transaction) {
-        setSuccessMessage('Failed to create shipping label. Please try again.');
+      
+      // Clear the "creating" message
+      setSuccessMessage('');
+      
+      if (!response || !response.success) {
+        const errorMsg = response?.error || response?.message || 'Failed to create shipping label. Please try again.';
+        setErrorMessage(errorMsg);
+        setTimeout(() => setErrorMessage(''), 6000); // Clear error after 6 seconds
         return;
       }
-      const  transaction  = response.transaction;
+      
+      if (!response.transaction) {
+        setErrorMessage('Shipping label was created but transaction details are missing.');
+        setTimeout(() => setErrorMessage(''), 6000);
+        return;
+      }
+      
+      const transaction = response.transaction;
       setShippingLabel(transaction);
       
       // Update order with tracking info
@@ -330,20 +352,37 @@ const SellerCustomerOrders = () => {
             trackingNumber: response.trackingNumber,
             labelUrl: response.labelUrl,
             trackingUrlProvider: response.trackingUrl,
-            carrier: response.carrier || 'Unknown'
+            carrier: response.provider || 'Unknown'
           }
         } : o
       );
       setCustomerOrders(updatedOrders);
       setFilteredOrders(updatedOrders);
       setSuccessMessage('Shipping label created successfully!');
+      setTimeout(() => setSuccessMessage(''), 4000); // Clear success message after 4 seconds
       
       // Show label options modal
       setShowShippingModal(true);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating shipping label:', error);
-      setSuccessMessage('Failed to create shipping label. Please try again.');
+      
+      // Extract meaningful error message
+      let errorMessage = 'Failed to create shipping label.';
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      setErrorMessage(errorMessage);
+      setTimeout(() => setErrorMessage(''), 8000); // Clear error after 8 seconds
+      
+      // Still call handleError for any additional error handling (logging, etc.)
       handleError(error);
     } finally {
       setCreatingLabel(null); // Clear loading state
@@ -650,62 +689,89 @@ const SellerCustomerOrders = () => {
     }
   };
 
-  const handleDelete = (id: string) => {
-    setFilteredOrders((prevOrders) =>
-      prevOrders.filter((order) => order._id !== id)
-    );
-  };
-
-  const handleDeleteClick = (rowData: SubOrderProps) => {
+  const handleArchiveClick = (rowData: SubOrderProps) => {
     setCurrentRowData(rowData); // Set the selected row data
-    setIsDeleteModalOpen(true); // Open the modal
+    setIsArchiveModalOpen(true); // Open the modal
   };
 
-  const handleConfirmDelete = (id: string) => {
-    setFilteredOrders((prevOrders) =>
-      prevOrders.filter((order) => order._id !== id)
-    );
+  const handleConfirmArchive = async (id: string) => {
+    try {
+      // Call the archive API
+      await archiveOrder(id, { archived: true, fulfillmentStatus: 'Archived' });
+      
+      // Remove from local state
+      setFilteredOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== id)
+      );
+      setCustomerOrders((prevOrders) =>
+        prevOrders.filter((order) => order._id !== id)
+      );
 
-    setSuccessMessage(`Order # ${id} deleted successfully.`);
-
-    //TODO: Delete from database
-    setIsDeleteModalOpen(false);
-    setTimeout(() => setSuccessMessage(''), 4000);
+      setSuccessMessage(`Order # ${id} archived successfully.`);
+      setIsArchiveModalOpen(false);
+      setTimeout(() => setSuccessMessage(''), 4000);
+    } catch (error) {
+      // handleError(error);
+      setErrorMessage(error as string || 'Failed to archive order');
+      setIsArchiveModalOpen(false);
+    }
   };
 
   //for bulk deleting
   const handleSelectRow = (id: string) => {
-    setSelectedRows((prevSelected) =>
-      prevSelected.includes(id)
+    setSelectedRows((prevSelected) => {
+      const newSelected = prevSelected.includes(id)
         ? prevSelected.filter((rowId) => rowId !== id)
-        : [...prevSelected, id]
-    );
+        : [...prevSelected, id];
+      
+      return newSelected;
+    });
   };
   const handleSelectAllRows = () => {
-    if (selectedRows.length === filteredOrders.length) {
-      setSelectedRows([]);
+    // Get currently displayed orders (paginated)
+    const currentPageOrders = filteredOrders
+      .slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    
+    // Check if all current page orders are selected
+    const currentPageOrderIds = currentPageOrders.map(order => order._id);
+    const allCurrentPageSelected = currentPageOrderIds.every(id => selectedRows.includes(id));
+    
+    if (allCurrentPageSelected) {
+      // Deselect all current page orders
+      setSelectedRows(prevSelected => 
+        prevSelected.filter(id => !currentPageOrderIds.includes(id))
+      );
     } else {
-      setSelectedRows(filteredOrders.map((item) => item._id));
+      // Select all current page orders (while keeping other selections)
+      setSelectedRows(prevSelected => {
+        const newSelections = currentPageOrderIds.filter(id => !prevSelected.includes(id));
+        return [...prevSelected, ...newSelections];
+      });
     }
   };
 
-  const handleBulkDelete = async () => {
+  const handleBulkArchive = async () => {
     try {
-      // await Promise.all(
-      //   selectedRows.map((id) => deleteCustomerOrder(userInfo, id))
-      // );
+      // Archive all selected orders
+      await Promise.all(
+        selectedRows.map((id) => archiveOrder(id, { archived: true }))
+      );
 
-      setFilteredOrders((prevInventory) =>
-        prevInventory.filter((item) => !selectedRows.includes(item._id))
+      // Remove archived orders from local state
+      setFilteredOrders((prevOrders) =>
+        prevOrders.filter((order) => !selectedRows.includes(order._id))
+      );
+      setCustomerOrders((prevOrders) =>
+        prevOrders.filter((order) => !selectedRows.includes(order._id))
       );
 
       setSelectedRows([]);
-      setSuccessMessage('Selected items deleted successfully.');
+      setSuccessMessage(`${selectedRows.length} order(s) archived successfully.`);
     } catch (error) {
-      console.error('Error deleting selected items:', error);
-      alert('Error deleting selected items.');
+      console.error('Error archiving selected items:', error);
+      handleError(error);
     } finally {
-      setIsBulkDeleteModalOpen(false);
+      setIsBulkArchiveModalOpen(false);
     }
   };
 
@@ -863,7 +929,7 @@ const SellerCustomerOrders = () => {
         label: 'Archive',
         icon: <Archive className="w-4 h-4" />,
         variant: 'danger',
-        onClick: () => handleDeleteClick(order),
+        onClick: () => handleArchiveClick(order),
       }
     );
 
@@ -1035,8 +1101,8 @@ const SellerCustomerOrders = () => {
 
       {/* Table Search field and Filter Dropdown*/}
       <TableFilters>
-        <BulkDeleteButton
-          onClick={() => setIsBulkDeleteModalOpen(true)}
+        <BulkArchiveButton
+          onClick={() => setIsBulkArchiveModalOpen(true)}
           isDisabled={selectedRows.length === 0}
         />
 
@@ -1224,24 +1290,28 @@ const SellerCustomerOrders = () => {
           onClose={handleCloseUpdateModal}
           onSave={handleSaveUpdatedRow}
         /> */}
-        {/* Delete Row Modal */}
-        {isDeleteModalOpen && currentRowData && (
-          <DeleteRowModal
-            isOpen={isDeleteModalOpen}
+        {/* Archive Row Modal */}
+        {isArchiveModalOpen && currentRowData && (
+          <ArchiveRowModal
+            isOpen={isArchiveModalOpen}
             rowData={currentRowData}
-            onClose={() => setIsDeleteModalOpen(false)}
-            onDelete={() => handleConfirmDelete(currentRowData._id)}
+            onClose={() => setIsArchiveModalOpen(false)}
+            onArchive={() => handleConfirmArchive(currentRowData._id)}
           />
         )}
-        {/* Bulk Delete Confirmation Modal */}
-        <BulkDeleteModal
-          isOpen={isBulkDeleteModalOpen}
-          onClose={() => setIsBulkDeleteModalOpen(false)}
-          onConfirm={handleBulkDelete}
+        {/* Bulk Archive Confirmation Modal */}
+        <BulkArchiveModal
+          isOpen={isBulkArchiveModalOpen}
+          onClose={() => setIsBulkArchiveModalOpen(false)}
+          onConfirm={handleBulkArchive}
         />
         {/* Success Message */}
         {successMessage && (
           <SuccessMessageModal successMessage={successMessage} />
+        )}
+        {/* Error Message */}
+        {errorMessage && (
+          <ErrorMessageModal errorMessage={errorMessage} />
         )}
       </div>
 

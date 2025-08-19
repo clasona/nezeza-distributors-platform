@@ -315,6 +315,14 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <TextInput
+                label="Quantity in Stock"
+                id="quantity"
+                name="quantity"
+                register={register}
+                errors={errors}
+                type="number"
+              />
+              <TextInput
                 label="Unit Price ($)"
                 id="price"
                 name="price"
@@ -322,14 +330,6 @@ const UpdateProductForm: React.FC<UpdateProductFormProps> = ({
                 errors={errors}
                 type="number"
                 step="0.01"
-              />
-              <TextInput
-                label="Quantity in Stock"
-                id="quantity"
-                name="quantity"
-                register={register}
-                errors={errors}
-                type="number"
               />
               <TextInput
                 label="Tax Rate (%)"

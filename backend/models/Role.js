@@ -210,6 +210,8 @@ const initRoles = async () => {
         'bulk_update_tickets',
         'manage_support_team',
         // Add any additional permissions required for administrators.  E.g., 'view_admin_orders', 'create_admin'
+        
+        'manage_grace_periods',
       ],
     },
     {

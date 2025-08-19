@@ -52,7 +52,6 @@ const createShippingLabelForSubOrder = async (subOrderId) => {
       try {
         initialRateDetails = await shippo.rates.get(rateId);
 
-        
         // Fetch the shipment details to get address and parcel information
         if (initialRateDetails.shipment) {
           const shipmentDetails = await shippo.shipments.get(initialRateDetails.shipment);
@@ -70,9 +69,6 @@ const createShippingLabelForSubOrder = async (subOrderId) => {
       });
 
 
-
-
-      
       if (transaction.status !== 'SUCCESS') {
         const errorMessages = Array.isArray(transaction.messages) 
           ? transaction.messages.map(m => m.text || m.message || m).join(', ')
@@ -262,7 +258,7 @@ const updateSubOrderWithTrackingInfo = async (subOrderId, subOrder, transaction,
     await sendOrderStatusUpdateEmailAndNotification({
       buyerId: subOrder.buyerId,
       orderId: subOrderId,
-      fullOrderId: subOrder.fullOrderId,
+      fullOrderId: subOrder.fullOrderId && subOrder.fullOrderId._id ? subOrder.fullOrderId._id : subOrder.fullOrderId,
       status: 'Awaiting Shipment',
       storeName: storeName,
       trackingInfo: {
@@ -395,7 +391,7 @@ const markSubOrderAsShipped = async (subOrderId, trackingNumber, carrier) => {
       await sendOrderStatusUpdateEmailAndNotification({
         buyerId: subOrder.buyerId._id || subOrder.buyerId,
         orderId: subOrderId,
-        fullOrderId: subOrder.fullOrderId,
+        fullOrderId: subOrder.fullOrderId && subOrder.fullOrderId._id ? subOrder.fullOrderId._id : subOrder.fullOrderId,
         status: 'Shipped',
         storeName: storeName,
         trackingInfo: {

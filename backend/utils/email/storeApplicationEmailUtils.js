@@ -1,6 +1,6 @@
 const sendEmail = require('../sendEmail');
 
-const sendStoreApplicationEmail = async ({ email, firstName, lastName }) => {
+const sendStoreApplicationEmail = async ({ application, email, firstName, lastName }) => {
   const adminEmail = 'clasona.us@gmail.com';
   
   // Email to applicant
@@ -61,6 +61,7 @@ const sendStoreApplicationEmail = async ({ email, firstName, lastName }) => {
         
         <div style="background-color: #ffffff; padding: 15px; border-radius: 6px; margin: 15px 0;">
           <h3 style="color: #2c5282; margin-top: 0;">Applicant Details:</h3>
+           <p style="margin: 5px 0;"><strong>Application ID:</strong> ${application._id}</p>
           <p style="margin: 5px 0;"><strong>Name:</strong> ${firstName} ${lastName}</p>
           <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
           <p style="margin: 5px 0;"><strong>Submitted:</strong> ${new Date().toLocaleDateString()}</p>

@@ -571,11 +571,19 @@ const createPaymentIntent = async (req, res) => {
   }
   
   // Calculate comprehensive fee breakdown using our new system
+  // For multi-seller orders, we'll need to calculate fees per seller
+  // For now, assume single seller or use first seller's store for grace period check
+  let primaryStore = null;
+  if (orderItems.length > 0 && orderItems[0].product && orderItems[0].product.storeId) {
+    primaryStore = await Store.findById(orderItems[0].product.storeId);
+  }
+  
   const feeBreakdown = calculateOrderFees({
     productSubtotal: totalAmount,
     taxAmount: totalTax,
     shippingCost: totalShipping,
-    grossUpFees: true // Use gross-up model to protect sellers and platform from Stripe fees
+    grossUpFees: true, // Use gross-up model to protect sellers and platform from Stripe fees
+    store: primaryStore // Pass store for grace period check
   });
   
   console.log('Fee breakdown:', {
@@ -674,7 +682,8 @@ const updateSellerBalances = async (order) => {
         productSubtotal: productSubtotal,
         taxAmount: subOrder.totalTax || 0,
         shippingCost: 0, // Seller doesn't get shipping, platform keeps it
-        grossUpFees: true
+        grossUpFees: true,
+        store: sellerStore // Pass store for grace period check
       });
       
       console.log(`Seller ${sellerId} fee breakdown:`, {

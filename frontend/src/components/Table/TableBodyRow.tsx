@@ -22,6 +22,7 @@ interface TableBodyRowProps {
   onClick?: (rowData: any) => void;
   stripe?: boolean;
   hover?: boolean;
+  rowId?: string; // Add rowId prop to explicitly pass the row ID
 }
 
 const TableBodyRow: React.FC<TableBodyRowProps> = ({
@@ -35,7 +36,8 @@ const TableBodyRow: React.FC<TableBodyRowProps> = ({
   className = '',
   onClick,
   stripe = true,
-  hover = true
+  hover = true,
+  rowId
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -89,15 +91,26 @@ const TableBodyRow: React.FC<TableBodyRowProps> = ({
 
   const handleSelectClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onSelect && rowData._id) {
-      onSelect(rowData._id);
+    // Use rowId first, fallback to rowData._id for backward compatibility
+    const idToUse = rowId || rowData._id;
+    console.log('TableBodyRow handleSelectClick:', {
+      rowId,
+      rowData_id: rowData?._id,
+      idToUse,
+      onSelect: !!onSelect,
+      isSelected
+    });
+    if (onSelect && idToUse) {
+      onSelect(idToUse);
     }
   };
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    if (onSelect && rowData._id) {
-      onSelect(rowData._id);
+    // Use rowId first, fallback to rowData._id for backward compatibility
+    const idToUse = rowId || rowData._id;
+    if (onSelect && idToUse) {
+      onSelect(idToUse);
     }
   };
 
@@ -122,7 +135,6 @@ const TableBodyRow: React.FC<TableBodyRowProps> = ({
                 type="checkbox"
                 checked={isSelected}
                 onChange={handleSelectChange}
-                onClick={handleSelectClick}
                 className="
                   w-4 h-4 text-vesoko_primary bg-gray-100 border-gray-300 rounded 
                   focus:ring-vesoko_primary focus:ring-2 cursor-pointer

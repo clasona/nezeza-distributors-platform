@@ -58,8 +58,8 @@ const SellerInventory = () => {
     value: string;
     label: string;
   } | null>({ value: 'All', label: 'All' });
-  const [sortColumn, setSortColumn] = useState('');
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortColumn, setSortColumn] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -107,8 +107,10 @@ const SellerInventory = () => {
     setIsLoading(true);
     try {
       const inventoryData = await getAllProducts();
-      setInventoryData(inventoryData);
-      setFilteredInventory(inventoryData);
+      // Sort by creation date (newest first) by default
+      const sortedData = sortItems(inventoryData, 'createdAt', 'desc');
+      setInventoryData(sortedData);
+      setFilteredInventory(sortedData);
     } catch (error) {
       handleError(error);
     } finally {

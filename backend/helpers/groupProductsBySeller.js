@@ -56,7 +56,7 @@ const groupProductsBySeller = (fullOrder) => {
       taxRate,
       price,
       title,
-      image,
+      image: image[0],
     });
 
     // Calculate and add to the total amount for the seller's sub-order

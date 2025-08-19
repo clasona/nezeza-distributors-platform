@@ -77,7 +77,7 @@ const sendStoreApprovalEmail = async ({
             <li>Click the "Set Up My Password" button above</li>
             <li>Create a secure password for your account</li>
             <li>Log into your store dashboard</li>
-            <li>Complete your store profile and add your first products</li>
+            <li>Complete your store stripe account setup and add your first products</li>
             <li>Start selling on VeSoko!</li>
           </ol>
         </div>

@@ -43,7 +43,7 @@ const storeSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['food', 'clothing', 'furniture', 'electronics', 'services', 'other'],
+      required: [true, 'Please provide store category'],
     },
     logo: {
       type: String, // URL to store logo image
@@ -68,6 +68,25 @@ const storeSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: false, // Store is active or not
+    },
+    // Grace period tracking for platform fees
+    gracePeriodStart: {
+      type: Date,
+      // Set when store becomes active/approved
+    },
+    gracePeriodEnd: {
+      type: Date,
+      // Calculated as gracePeriodStart + PLATFORM_FEE_GRACE_PERIOD_DAYS
+    },
+    gracePeriodNotificationSent: {
+      type: Boolean,
+      default: false,
+      // Track if we've sent the "fees starting soon" notification
+    },
+    platformFeesActive: {
+      type: Boolean,
+      default: false,
+      // Whether platform fees are currently being charged
     },
   },
   { timestamps: true }

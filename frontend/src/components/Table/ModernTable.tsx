@@ -169,6 +169,7 @@ const ModernTable: React.FC<ModernTableProps> = ({
             hasSelectAll={hasSelectAll}
             selectAllChecked={isAllSelected}
             onSelectAllChange={onSelectAll}
+            isExpandable={isExpandable}
             sticky={stickyHeader}
           />
           
@@ -184,6 +185,7 @@ const ModernTable: React.FC<ModernTableProps> = ({
                   <TableBodyRow
                     key={row.id}
                     rowData={row.data}
+                    rowId={row.id}
                     cells={row.cells}
                     isSelected={!isEmptyRow && selectedRows.includes(row.id)}
                     onSelect={!isEmptyRow ? onSelectRow : undefined}

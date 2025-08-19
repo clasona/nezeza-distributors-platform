@@ -577,7 +577,7 @@ const updateSubOrder = async (req, res) => {
   await sendOrderStatusUpdateEmailAndNotification({
     buyerId: subOrder.buyerId,
     orderId: subOrder._id,
-    fullOrderId: subOrder.fullOrderId,
+    fullOrderId: subOrder.fullOrderId && subOrder.fullOrderId._id ? subOrder.fullOrderId._id : subOrder.fullOrderId,
     status: status,
     trackingInfo: subOrder.trackingInfo,
     subOrderItems: subOrder.products || []
@@ -734,7 +734,7 @@ const updateToShipped = async (req, res) => {
       buyerId: subOrder.buyerId._id,
       buyerName: subOrder.buyerId.firstName,
       orderId: subOrder._id,
-      fullOrderId: subOrder.fullOrderId,
+      fullOrderId: subOrder.fullOrderId && subOrder.fullOrderId._id ? subOrder.fullOrderId._id : subOrder.fullOrderId,
       status: 'Shipped',
       storeName: storeName,
       trackingNumber: subOrder.shippingDetails?.trackingNumber || null,
@@ -809,7 +809,7 @@ const updateToDelivered = async (req, res) => {
     await sendOrderStatusUpdateEmailAndNotification({
       buyerId: subOrder.buyerId._id,
       orderId: subOrder._id,
-      fullOrderId: subOrder.fullOrderId,
+      fullOrderId: subOrder.fullOrderId && subOrder.fullOrderId._id ? subOrder.fullOrderId._id : subOrder.fullOrderId,
       status: 'Delivered',
       storeName: storeName,
       subOrderItems: subOrder.products || []
@@ -894,7 +894,7 @@ const updateToCancelled = async (req, res) => {
   await sendOrderStatusUpdateEmailAndNotification({
     buyerId: subOrder.buyerId._id,
     orderId: subOrder._id,
-    fullOrderId: subOrder.fullOrderId,
+    fullOrderId: subOrder.fullOrderId && subOrder.fullOrderId._id ? subOrder.fullOrderId._id : subOrder.fullOrderId,
     status: 'Cancelled',
     storeName: storeName,
     subOrderItems: subOrder.products || []

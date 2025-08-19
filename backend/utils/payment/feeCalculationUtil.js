@@ -1,31 +1,103 @@
-const PLATFORM_FEE_PERCENTAGE = 0.10; // 10% platform fee
-const STRIPE_PERCENTAGE_FEE = 0.029; // 2.9% Stripe fee
-const STRIPE_FIXED_FEE = 0.30; // $0.30 Stripe fixed fee
+// Get fee constants from environment variables
+const PLATFORM_FEE_PERCENTAGE = parseFloat(process.env.PLATFORM_FEE_PERCENTAGE || '0.10'); // Default 10%
+const STRIPE_PERCENTAGE_FEE = parseFloat(process.env.STRIPE_PERCENTAGE_FEE || '0.029'); // Default 2.9%
+const STRIPE_FIXED_FEE = parseFloat(process.env.STRIPE_FIXED_FEE || '0.30'); // Default $0.30
+const PLATFORM_FEE_GRACE_PERIOD_DAYS = parseInt(process.env.PLATFORM_FEE_GRACE_PERIOD_DAYS || '60'); // Default 60 days
+
+/**
+ * Check if a store is within its grace period (no platform fees)
+ * @param {Object} store - Store object with grace period dates
+ * @returns {boolean} True if store is within grace period
+ */
+function isStoreInGracePeriod(store) {
+  if (!store || !store.gracePeriodStart || !store.gracePeriodEnd) {
+    return false;
+  }
+  
+  const now = new Date();
+  return now >= store.gracePeriodStart && now <= store.gracePeriodEnd;
+}
+
+/**
+ * Calculate days remaining in grace period
+ * @param {Object} store - Store object with grace period dates
+ * @returns {number} Days remaining in grace period (0 if expired)
+ */
+function getGracePeriodDaysRemaining(store) {
+  if (!store || !store.gracePeriodEnd || !isStoreInGracePeriod(store)) {
+    return 0;
+  }
+  
+  const now = new Date();
+  const timeDiff = store.gracePeriodEnd.getTime() - now.getTime();
+  const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  
+  return Math.max(0, daysRemaining);
+}
+
+/**
+ * Initialize grace period for a new store
+ * @param {Date} activationDate - Date when store becomes active
+ * @returns {Object} Grace period dates
+ */
+function initializeGracePeriod(activationDate = new Date()) {
+  const gracePeriodStart = new Date(activationDate);
+  const gracePeriodEnd = new Date(activationDate);
+  gracePeriodEnd.setDate(gracePeriodEnd.getDate() + PLATFORM_FEE_GRACE_PERIOD_DAYS);
+  
+  return {
+    gracePeriodStart,
+    gracePeriodEnd,
+    gracePeriodNotificationSent: false,
+    platformFeesActive: false
+  };
+}
 
 /**
  * Calculate comprehensive fee breakdown for an order
+ * NEW MODEL: Platform fees are included in seller's listing price
  * @param {Object} params - Calculation parameters
- * @param {number} params.productSubtotal - Total product cost (price * quantity)
+ * @param {number} params.productSubtotal - Total product cost (price * quantity) - INCLUDES platform fee
  * @param {number} params.taxAmount - Tax amount (calculated from product subtotal)
  * @param {number} params.shippingCost - Shipping cost for this order/suborder
  * @param {boolean} params.grossUpFees - Whether to gross up fees (default: true)
+ * @param {Object} params.store - Store object to check grace period (optional)
  * @returns {Object} Complete fee breakdown
  */
 function calculateOrderFees({
   productSubtotal,
   taxAmount,
   shippingCost,
-  grossUpFees = true
+  grossUpFees = true,
+  store = null
 }) {
   // Validate inputs
   if (productSubtotal < 0 || taxAmount < 0 || shippingCost < 0) {
     throw new Error('All amounts must be non-negative');
   }
 
-  // Base amounts that seller and customer see
-  const sellerReceives = productSubtotal + taxAmount; // Seller gets product price + tax
+  // Check if store is in grace period (no platform fees)
+  const inGracePeriod = store ? isStoreInGracePeriod(store) : false;
+  const gracePeriodDaysRemaining = store ? getGracePeriodDaysRemaining(store) : 0;
+  
+  // NEW MODEL: Platform fee is already included in the product subtotal
+  // BUT if in grace period, seller gets the full amount
+  let platformCommission, sellerNetRevenue, sellerReceives;
+  
+  if (inGracePeriod) {
+    // During grace period: seller gets full product price, no commission deducted
+    platformCommission = 0;
+    sellerNetRevenue = productSubtotal;
+    sellerReceives = productSubtotal + taxAmount;
+    console.log('Store in grace period - no platform fees applied');
+  } else {
+    // After grace period: normal fee calculation
+    platformCommission = productSubtotal * PLATFORM_FEE_PERCENTAGE; // 10% of listed price
+    sellerNetRevenue = productSubtotal - platformCommission; // What seller actually gets from product sale
+    sellerReceives = sellerNetRevenue + taxAmount; // Seller gets net product revenue + tax
+  }
+  
   const platformShippingRevenue = shippingCost; // Platform keeps all shipping fees
-  const platformCommission = productSubtotal * PLATFORM_FEE_PERCENTAGE; // 10% of product subtotal
 
   // Calculate customer total before Stripe fees
   const customerSubtotal = productSubtotal + taxAmount + shippingCost;
@@ -43,8 +115,8 @@ function calculateOrderFees({
     console.log('Platform commission:', platformCommission);
     console.log('Platform shipping revenue:', platformShippingRevenue);
     console.log('Seller receives:', sellerReceives);
+    console.log('Seller net product revenue:', sellerNetRevenue);
     console.log('Total costs needed:', totalCostsNeeded);
-
 
     // We need to find X where: X - (X * 0.029 + 0.30) = totalCostsNeeded
     // Solving for X: X = (totalCostsNeeded + 0.30) / (1 - 0.029)
@@ -89,9 +161,11 @@ function calculateOrderFees({
     // Seller perspective
     sellerReceives: roundMoney(netSellerReceives),
     sellerBreakdown: {
-      productRevenue: roundMoney(productSubtotal),
-      taxCollected: roundMoney(taxAmount),
-      totalEarnings: roundMoney(netSellerReceives)
+      listedProductPrice: roundMoney(productSubtotal), // What customer sees/pays
+      platformCommissionDeducted: roundMoney(platformCommission), // Platform's cut
+      netProductRevenue: roundMoney(sellerNetRevenue), // What seller gets from product sale
+      taxCollected: roundMoney(taxAmount), // Tax seller receives
+      totalEarnings: roundMoney(netSellerReceives) // Net revenue + tax
     },
     
     // Platform perspective
@@ -203,11 +277,12 @@ function getFrontendFeeDisplay(feeCalculation) {
     
     // Additional info for transparency
     feeExplanation: {
-      platformCommission: `Platform fee (${(feeCalculation.platformFeePercentage * 100)}%)`,
+      platformCommission: `Platform fee (${(feeCalculation.platformFeePercentage * 100)}%) already included in listed price`,
       processingFee: feeCalculation.feeModel === 'gross-up' 
-        ? 'Payment processing fee' 
+        ? 'Payment processing fee to cover transaction costs' 
         : 'Processing fee included',
-      shippingNote: 'Shipping handled by platform'
+      shippingNote: 'Shipping handled by platform',
+      pricingNote: 'Listed prices include platform fees - sellers receive the net amount after platform commission'
     }
   };
 }
@@ -238,7 +313,11 @@ module.exports = {
   calculateMultiSellerOrderFees,
   getFrontendFeeDisplay,
   calculateEstimatedDelivery,
+  isStoreInGracePeriod,
+  getGracePeriodDaysRemaining,
+  initializeGracePeriod,
   PLATFORM_FEE_PERCENTAGE,
   STRIPE_PERCENTAGE_FEE,
-  STRIPE_FIXED_FEE
+  STRIPE_FIXED_FEE,
+  PLATFORM_FEE_GRACE_PERIOD_DAYS
 };

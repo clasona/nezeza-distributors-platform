@@ -1,6 +1,4 @@
-import React from 'react';
-import axios from 'axios';
-
+import axiosInstance from '../axiosInstance';
 import { OrderProps } from '../../../type';
 
 export const archiveOrder = async (
@@ -8,14 +6,10 @@ export const archiveOrder = async (
   updatedOrderData: Partial<OrderProps>
 ) => {
   try {
-    const response = await axios.patch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders/buying/archive/${orderId}`,
-      updatedOrderData,
-      {
-        withCredentials: true,
-      }
+    const response = await axiosInstance.patch(
+      `orders/buying/archive/${orderId}`,
+      updatedOrderData
     );
-
     if (response.status === 200) {
       return response.data;
     } else {
@@ -23,6 +17,6 @@ export const archiveOrder = async (
     }
   } catch (error) {
     console.error('Error archiving order:', error);
-    throw error; // Re-throw the error to allow the caller to handle it
+    throw error;
   }
 };

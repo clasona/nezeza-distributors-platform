@@ -224,30 +224,30 @@ const Orders = () => {
         {/* Header Section */}
         <div className='bg-white shadow-sm border-b'>
           <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-            <div className='flex justify-between items-center py-6'>
-              <div className='flex items-center'>
-                <ShoppingBag className='w-8 h-8 text-vesoko_primary mr-3' />
-                <div>
-                  <h1 className='text-3xl font-bold text-gray-900'>My Orders</h1>
-                  <p className='text-gray-600 mt-1'>Track and manage your purchases</p>
+            <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 sm:py-6 gap-3 sm:gap-4'>
+              <div className='flex items-center min-w-0'>
+                <ShoppingBag className='w-6 sm:w-8 h-6 sm:h-8 text-vesoko_primary mr-2 sm:mr-3 flex-shrink-0' />
+                <div className='min-w-0'>
+                  <h1 className='text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900'>My Orders</h1>
+                  <p className='text-sm sm:text-base text-gray-600 mt-1 hidden sm:block'>Track and manage your purchases</p>
                 </div>
               </div>
               <button
                 onClick={fetchData}
                 disabled={isLoading}
-                className='inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-vesoko_primary hover:bg-vesoko_primary_2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200'
+                className='inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-vesoko_primary hover:bg-vesoko_primary_2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex-shrink-0'
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-                {isLoading ? 'Refreshing...' : 'Refresh'}
+                <span className='whitespace-nowrap'>{isLoading ? 'Refreshing...' : 'Refresh'}</span>
               </button>
             </div>
           </div>
         </div>
 
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8'>
           {/* Stats Section */}
-          <div className='mb-8'>
-            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4'>
+          <div className='mb-4 sm:mb-6'>
+            <div className='grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-1 sm:gap-4'>
               {allOrderStatsObj.length === 0 ? (
                 <div className='col-span-full text-center py-8'>
                   <Package className='w-12 h-12 text-gray-400 mx-auto mb-4' />
@@ -258,20 +258,20 @@ const Orders = () => {
                   <div
                     key={stat.status}
                     onClick={() => handleFilter(stat.status)}
-                    className={`relative cursor-pointer rounded-xl p-4 transition-all duration-200 ${
+                    className={`relative cursor-pointer rounded-md sm:rounded-xl p-2 sm:p-4 transition-all duration-200 min-h-[60px] sm:min-h-[100px] ${
                       filter === stat.status
                         ? 'bg-vesoko_primary text-white shadow-lg transform -translate-y-1'
                         : 'bg-white text-gray-700 hover:bg-gray-50 hover:shadow-md'
                     }`}
                   >
-                    <div className='flex items-center justify-between'>
-                      <div>
-                        <p className={`text-sm font-medium ${
+                    <div className='flex flex-col h-full'>
+                      <div className='flex-1 min-w-0'>
+                        <p className={`text-[10px] sm:text-sm font-medium mb-0.5 sm:mb-1 truncate leading-tight ${
                           filter === stat.status ? 'text-white' : 'text-gray-600'
                         }`}>
                           {stat.status}
                         </p>
-                        <p className={`text-2xl font-bold ${
+                        <p className={`text-sm sm:text-2xl font-bold leading-none ${
                           filter === stat.status ? 'text-white' : 'text-gray-900'
                         }`}>
                           {stat.status === 'All Orders' 
@@ -280,12 +280,14 @@ const Orders = () => {
                           }
                         </p>
                       </div>
-                      <div className={`p-2 rounded-lg ${
+                      <div className={`p-0.5 sm:p-2 rounded mt-1 sm:mt-2 flex-shrink-0 self-end sm:self-center ${
                         filter === stat.status 
                           ? 'bg-white bg-opacity-20' 
                           : 'bg-gray-100'
                       }`}>
-                        {getStatusIcon(stat.status)}
+                        <div className='w-2.5 h-2.5 sm:w-4 sm:h-4'>
+                          {getStatusIcon(stat.status)}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -296,59 +298,36 @@ const Orders = () => {
 
           {/* Orders Section */}
           <div className='bg-white rounded-xl shadow-sm border'>
-            <div className='p-6 border-b border-gray-200'>
-              <div className='flex items-center justify-between'>
-                <h2 className='text-xl font-semibold text-gray-900'>
-                  {filter === 'All Orders' ? `All Orders (${filteredOrders.length})` : `${filter} Orders (${filteredOrders.length})`}
-                </h2>
-                <div className='flex items-center space-x-3'>
-                  <Filter className='w-5 h-5 text-gray-400' />
-                  <label className='text-sm text-gray-600 mr-3'>
-                    Sort by:
-                    <select 
-                      value={sortCriterion} 
-                      onChange={(e) => {
-                        const newSort = e.target.value as 'newest' | 'oldest';
-                        setSortCriterion(newSort);
-                        applySortingAndFiltering(filter, newSort);
-                      }}
-                      className='ml-2 p-1 border border-gray-300 rounded'
-                    >
-                      <option value='newest'>Newest</option>
-                      <option value='oldest'>Oldest</option>
-                    </select>
-                  </label>
-                  <span className='text-sm text-gray-600'>
-                    Showing {filter === 'All Orders' ? 'all' : filter.toLowerCase()} orders
-                  </span>
+            <div className='p-3 sm:p-4 lg:p-6 border-b border-gray-200'>
+              <div className='flex flex-col gap-3 sm:gap-4'>
+                <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+                  <h2 className='text-base sm:text-lg lg:text-xl font-semibold text-gray-900 truncate'>
+                    {filter === 'All Orders' ? `All Orders (${filteredOrders.length})` : `${filter} Orders (${filteredOrders.length})`}
+                  </h2>
+                  <div className='flex flex-col xs:flex-row xs:items-center gap-2 xs:gap-3'>
+                    <div className='flex items-center space-x-2 flex-shrink-0'>
+                      <Filter className='w-4 h-4 text-gray-400 flex-shrink-0' />
+                      <label className='text-xs sm:text-sm text-gray-600 flex items-center whitespace-nowrap'>
+                        Sort:
+                        <select 
+                          value={sortCriterion} 
+                          onChange={(e) => {
+                            const newSort = e.target.value as 'newest' | 'oldest';
+                            setSortCriterion(newSort);
+                            applySortingAndFiltering(filter, newSort);
+                          }}
+                          className='ml-1 sm:ml-2 p-1 border border-gray-300 rounded text-xs sm:text-sm min-w-0 flex-shrink-0'
+                        >
+                          <option value='newest'>Newest</option>
+                          <option value='oldest'>Oldest</option>
+                        </select>
+                      </label>
+                    </div>
+                    <span className='text-xs sm:text-sm text-gray-600 text-right xs:text-left'>
+                      {filteredOrders.length} {filteredOrders.length === 1 ? 'order' : 'orders'}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className='flex items-center space-x-3 mt-3'>
-                <button 
-                  onClick={() => handleFilter('All Orders')} 
-                  className={`px-3 py-1 rounded ${filter === 'All Orders' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
-                >All Orders</button>
-                <button 
-                  onClick={() => handleFilter('Pending')} 
-                  className={`px-3 py-1 rounded ${filter === 'Pending' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
-                >Pending</button>
-                <button 
-                  onClick={() => handleFilter('Placed')} 
-                  className={`px-3 py-1 rounded ${filter === 'Placed' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
-                >Placed</button>
-                <button 
-                  onClick={() => handleFilter('Processing')} 
-                  className={`px-3 py-1 rounded ${filter === 'Processing' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
-                >Processing</button>
-                <button 
-                  onClick={() => handleFilter('Delivered')} 
-                  className={`px-3 py-1 rounded ${filter === 'Delivered' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
-                >Delivered</button>
-                <button 
-                  onClick={() => handleFilter('Archived')} 
-                  className={`px-3 py-1 rounded ${filter === 'Archived' ? 'bg-vesoko_primary text-white' : 'bg-white text-gray-600'}`}
-                >Archived</button>
-              </div>
             </div>
 
             {filteredOrders.length === 0 ? (
@@ -376,138 +355,142 @@ const Orders = () => {
                   const isNewestOrder = sortCriterion === 'newest' && index === 0 && filteredOrders.length > 1;
                   
                   return (
-                    <div key={order._id} className={`p-6 hover:bg-gray-50 transition-colors duration-200 relative ${
+                    <div key={order._id} className={`p-3 sm:p-4 lg:p-6 hover:bg-gray-50 transition-colors duration-200 relative ${
                       isNewestOrder ? 'ring-2 ring-green-200 bg-green-50' : ''
                     }`}>
                       {isNewestOrder && (
-                        <div className='absolute top-0 right-2'>
-                          <span className='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-vesoko_green_100 text-green-800'>
-                            <span className='w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5'></span>
+                        <div className='absolute top-1 sm:top-2 right-1 sm:right-2'>
+                          <span className='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-vesoko_green_100 text-green-800'>
+                            <span className='w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-400 rounded-full mr-1 sm:mr-1.5'></span>
                             Newest
                           </span>
                         </div>
                       )}
-                      <div className='flex items-start justify-between mb-4'>
-                        <div className='flex-1'>
-                          <div className='flex items-center space-x-4 mb-2'>
-                            <h3 className='text-lg font-semibold text-gray-900'>
-                              Order #{order._id}
-                            </h3>
-                            <FormattedStatus status={order.fulfillmentStatus} />
-                          </div>
-                        <div className='grid grid-cols-1 sm:grid-cols-4 gap-4 text-sm text-gray-600'>
-                          <div className='flex items-center'>
-                            <Calendar className='w-4 h-4 mr-2' />
-                            {formatDate(order.createdAt)}
-                          </div>
-                          <div className='flex items-center'>
-                            <DollarSign className='w-4 h-4 mr-2' />
-                            ${order.totalAmount.toFixed(2)}
-                          </div>
-                          <div className='flex items-center'>
-                            <Package className='w-4 h-4 mr-2' />
-                            {order.orderItems.length} item{order.orderItems.length !== 1 ? 's' : ''}
-                          </div>
-                          {order.estimatedDeliveryDate && (
-                            <div className='flex items-center'>
-                              <Clock className='w-4 h-4 mr-2' />
-                              <span className='text-vesoko_primary font-medium'>
-                                Est. {formatDate(order.estimatedDeliveryDate)}
-                              </span>
+                      <div className='space-y-3 sm:space-y-4'>
+                        <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3'>
+                          <div className='flex-1 min-w-0'>
+                            <div className='flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3'>
+                              <h3 className='text-base sm:text-lg font-semibold text-gray-900 truncate'>
+                                Order #{order._id.slice(-8).toUpperCase()}
+                              </h3>
+                              <FormattedStatus status={order.fulfillmentStatus} />
                             </div>
-                          )}
+                            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600'>
+                              <div className='flex items-center'>
+                                <Calendar className='w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2 flex-shrink-0' />
+                                <span className='truncate'>{formatDate(order.createdAt)}</span>
+                              </div>
+                              <div className='flex items-center'>
+                                <DollarSign className='w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2 flex-shrink-0' />
+                                <span>${order.totalAmount.toFixed(2)}</span>
+                              </div>
+                              <div className='flex items-center'>
+                                <Package className='w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2 flex-shrink-0' />
+                                <span>{order.orderItems.length} item{order.orderItems.length !== 1 ? 's' : ''}</span>
+                              </div>
+                              {order.estimatedDeliveryDate && (
+                                <div className='flex items-center'>
+                                  <Clock className='w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2 flex-shrink-0' />
+                                  <span className='text-vesoko_primary font-medium truncate'>
+                                    Est. {formatDate(order.estimatedDeliveryDate)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className='flex flex-col sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto'>
+                            {/* View Details */}
+                            <button
+                              onClick={() => router.push(`/customer/order/${order._id}`)}
+                              className='inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_primary transition-colors duration-200'
+                              title='View order details'
+                            >
+                              <Eye className='w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2' />
+                              <span>Details</span>
+                            </button>
+
+                            {/* Cancel Order */}
+                            {canCancelOrder(order.fulfillmentStatus) && (
+                              <button
+                                onClick={() => handleOpenFullCancelModal(order)}
+                                className='inline-flex items-center justify-center px-3 py-2 border border-red-300 rounded-lg text-xs sm:text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200'
+                                title='Cancel this order'
+                              >
+                                <X className='w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2' />
+                                <span>Cancel</span>
+                              </button>
+                            )}
+
+                            {/* Archive Order */}
+                            {canArchiveOrder(order.fulfillmentStatus) && (
+                              <button
+                                onClick={() => handleArchiveClick(order)}
+                                className='inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200'
+                                title='Archive this order'
+                              >
+                                <Archive className='w-3 sm:w-4 h-3 sm:h-4 mr-1 sm:mr-2' />
+                                <span>Archive</span>
+                              </button>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <div className='flex items-center space-x-2 ml-4'>
-                        {/* View Details */}
-                        <button
-                          onClick={() => router.push(`/customer/order/${order._id}`)}
-                          className='inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-vesoko_primary transition-colors duration-200'
-                          title='View order details'
-                        >
-                          <Eye className='w-4 h-4 mr-2' />
-                          Details
-                        </button>
 
-                        {/* Cancel Order */}
-                        {canCancelOrder(order.fulfillmentStatus) && (
-                          <button
-                            onClick={() => handleOpenFullCancelModal(order)}
-                            className='inline-flex items-center px-3 py-2 border border-red-300 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200'
-                            title='Cancel this order'
-                          >
-                            <X className='w-4 h-4 mr-2' />
-                            Cancel
-                          </button>
-                        )}
-
-                        {/* Archive Order */}
-                        {canArchiveOrder(order.fulfillmentStatus) && (
-                          <button
-                            onClick={() => handleArchiveClick(order)}
-                            className='inline-flex items-center px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200'
-                            title='Archive this order'
-                          >
-                            <Archive className='w-4 h-4 mr-2' />
-                            Archive
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Order Items Preview */}
-                    <div className='bg-gray-50 rounded-lg p-4'>
-                      <div className='flex items-center justify-between mb-3'>
-                        <h4 className='text-sm font-medium text-gray-900'>Order Items</h4>
-                        <span className='text-sm text-gray-500'>
-                          {order.orderItems.length} item{order.orderItems.length !== 1 ? 's' : ''}
-                        </span>
-                      </div>
-                      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
-                        {order.orderItems.slice(0, 3).map((item, index) => (
-                          <div key={index} className='flex items-center space-x-3 bg-white rounded-lg p-3'>
-                            <Image
-                              src={item.product.images[0]}
-                              alt={item.title}
-                              className='w-12 h-12 object-cover rounded-lg'
-                            />
-                            <div className='flex-1 min-w-0'>
-                              <p className='text-sm font-medium text-gray-900 truncate'>
-                                {item.title}
-                              </p>
-                              <p className='text-sm text-gray-500'>
-                                Qty: {item.quantity} × ${item.price.toFixed(2)}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                        {order.orderItems.length > 3 && (
-                          <div className='flex items-center justify-center bg-white rounded-lg p-3 border-2 border-dashed border-gray-300'>
+                        {/* Order Items Preview */}
+                        <div className='bg-gray-50 rounded-lg p-3 sm:p-4 mt-3 sm:mt-4'>
+                          <div className='flex items-center justify-between mb-3'>
+                            <h4 className='text-sm font-medium text-gray-900'>Order Items</h4>
                             <span className='text-sm text-gray-500'>
-                              +{order.orderItems.length - 3} more
+                              {order.orderItems.length} item{order.orderItems.length !== 1 ? 's' : ''}
                             </span>
                           </div>
+                          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
+                            {order.orderItems.slice(0, 3).map((item, index) => (
+                              <div key={index} className='flex items-center space-x-3 bg-white rounded-lg p-3'>
+                                <Image
+                                  src={item.product.images[0]}
+                                  width={48}
+                                  height={48}
+                                  alt={item.title}
+                                  className='w-12 h-12 object-cover rounded-lg'
+                                />
+                                <div className='flex-1 min-w-0'>
+                                  <p className='text-sm font-medium text-gray-900 truncate'>
+                                    {item.title}
+                                  </p>
+                                  <p className='text-sm text-gray-500'>
+                                    Qty: {item.quantity} × ${item.price.toFixed(2)}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                            {order.orderItems.length > 3 && (
+                              <div className='flex items-center justify-center bg-white rounded-lg p-3 border-2 border-dashed border-gray-300'>
+                                <span className='text-sm text-gray-500'>
+                                  +{order.orderItems.length - 3} more
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Shipping Address */}
+                        {order.shippingAddress && (
+                          <div className='mt-3 sm:mt-4 flex items-start space-x-2'>
+                            <Truck className='w-3 sm:w-4 h-3 sm:h-4 text-gray-400 mt-0.5 flex-shrink-0' />
+                            <div className='text-xs sm:text-sm text-gray-600'>
+                              <span className='font-medium'>Shipping to:</span>
+                              <span className='ml-2'>
+                                {[
+                                  order.shippingAddress.street1,
+                                  order.shippingAddress.city,
+                                  [order.shippingAddress.state, order.shippingAddress.zip].filter(Boolean).join(' '),
+                                  order.shippingAddress.country
+                                ].filter(Boolean).join(', ')}
+                              </span>
+                            </div>
+                          </div>
                         )}
                       </div>
-                    </div>
-
-                    {/* Shipping Address */}
-                    {order.shippingAddress && (
-                      <div className='mt-4 flex items-start space-x-2'>
-                        <Truck className='w-4 h-4 text-gray-400 mt-0.5' />
-                        <div className='text-sm text-gray-600'>
-                          <span className='font-medium'>Shipping to:</span>
-                          <span className='ml-2'>
-                            {[
-                              order.shippingAddress.street1,
-                              order.shippingAddress.city,
-                              [order.shippingAddress.state, order.shippingAddress.zip].filter(Boolean).join(' '),
-                              order.shippingAddress.country
-                            ].filter(Boolean).join(', ')}
-                          </span>
-                        </div>
-                      </div>
-                    )}
                     </div>
                   );
                 })}
@@ -541,6 +524,7 @@ const Orders = () => {
           <SuccessMessageModal successMessage={successMessage} />
         )}
         {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
+      </div>
       </div>
     </RootLayout>
   );

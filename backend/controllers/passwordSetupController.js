@@ -1,8 +1,11 @@
 const User = require('../models/User');
+const Store = require('../models/Store');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const crypto = require('crypto');
 const { createHash, attachCookiesToResponse, createTokenUser } = require('../utils');
+const gracePeriodService = require('../services/gracePeriodService');
+const { sendStoreActivationWelcomeEmail } = require('../utils/email/storeActivationEmailUtils');
 
 /**
  * Set up password for approved store application users
@@ -64,6 +67,41 @@ const setupPassword = async (req, res, next) => {
     
     await user.save();
 
+    // Activate the user's store and initialize grace period
+    let gracePeriodInitialized = false;
+    if (user.storeId) {
+      try {
+        const store = await Store.findById(user.storeId);
+        if (store && !store.isActive) {
+          console.log(`Activating store ${store.name} for user ${user.email}`);
+          
+          // Activate store and initialize grace period
+          store.isActive = true;
+          await store.save();
+          
+          // Initialize grace period (60 days of no platform fees)
+          await gracePeriodService.initializeStoreGracePeriod(store._id);
+          gracePeriodInitialized = true;
+          
+          console.log(`✅ Store activated and grace period initialized for ${store.name}`);
+          
+          // Send welcome email to the seller
+          try {
+            await sendStoreActivationWelcomeEmail(store, user);
+            console.log(`✅ Welcome email sent to ${user.email}`);
+          } catch (emailError) {
+            console.error('Error sending store activation welcome email:', emailError);
+            // Don't fail the activation if email sending fails
+          }
+        } else if (store && store.isActive) {
+          console.log(`Store ${store.name} is already active`);
+        }
+      } catch (storeError) {
+        console.error('Error activating store during password setup:', storeError);
+        // Don't fail the password setup if store activation fails
+      }
+    }
+
     // Load user with populated roles for token creation
     const userWithRoles = await User.findById(user._id)
       .populate('roles')
@@ -73,10 +111,15 @@ const setupPassword = async (req, res, next) => {
     const tokenUser = createTokenUser(userWithRoles);
     attachCookiesToResponse({ res, user: tokenUser });
 
+    const successMessage = gracePeriodInitialized 
+      ? 'Password setup successful! Your store is now active and you have 60 days of zero platform fees. You are now logged in.'
+      : 'Password setup successful! You are now logged in.';
+
     res.status(StatusCodes.OK).json({
       success: true,
-      msg: 'Password setup successful! You are now logged in.',
-      user: userWithRoles
+      msg: successMessage,
+      user: userWithRoles,
+      storeActivated: gracePeriodInitialized
     });
 
   } catch (error) {

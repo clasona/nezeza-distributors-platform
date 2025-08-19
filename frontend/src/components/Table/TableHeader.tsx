@@ -20,6 +20,7 @@ interface TableHeaderProps {
   onSelectAllChange?: () => void;
   className?: string;
   sticky?: boolean;
+  isExpandable?: boolean; // Add expandable support
 }
 
 const TableHeader: React.FC<TableHeaderProps> = ({
@@ -31,7 +32,8 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   selectAllChecked = false,
   onSelectAllChange,
   className = '',
-  sticky = true
+  sticky = true,
+  isExpandable = false
 }) => {
   const getSortIcon = (columnId: string) => {
     if (sortColumn !== columnId) {
@@ -53,7 +55,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   return (
     <thead className={`
       bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200
-      ${sticky ? 'sticky top-0 z-20' : ''}
+      ${sticky ? 'sticky' : ''}
       ${className}
     `}>
       <tr>
@@ -74,6 +76,18 @@ const TableHeader: React.FC<TableHeaderProps> = ({
                   transition-colors duration-150
                 "
               />
+            </div>
+          </th>
+        )}
+
+        {/* Expandable Column Header */}
+        {isExpandable && (
+          <th 
+            className="px-6 py-4 w-12"
+            scope="col"
+          >
+            <div className="flex items-center justify-center">
+              {/* Empty header for expand/collapse column */}
             </div>
           </th>
         )}

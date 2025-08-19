@@ -173,7 +173,7 @@ const CustomerMoreOrderDetailsModal = ({
                 </div>
                 
                 <div className='space-y-4'>
-                  <div className='p-4 bg-gray-50 rounded-lg'>
+                  {/* <div className='p-4 bg-gray-50 rounded-lg'>
                     <label className='block text-sm font-medium text-gray-700 mb-2'>Update Status</label>
                     <DropdownInput
                       label=''
@@ -184,7 +184,7 @@ const CustomerMoreOrderDetailsModal = ({
                       errors={errors}
                       className='w-full'
                     />
-                  </div>
+                  </div> */}
                   
                   {/* Shipping Info */}
                   {(orderData.trackingInfo || orderData.shippingDetails) && (
@@ -352,12 +352,12 @@ const CustomerMoreOrderDetailsModal = ({
                   <div key={product._id} className='flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors'>
                   {/* what placeholder should i have in my public? */}
                   <Image
-                    src={product.image || '/placeholder.jpg'}
-                    alt={product.title || 'Product image'}
+                    src={product.images?.[0] ?? '/placeholder.jpg'}
+                    alt={product.description || product.title || 'Product image'}
                     width={64}
                     height={64}
                       className='w-16 h-16 rounded-lg object-cover border border-gray-200'
-                      unoptimized={product.image?.startsWith('https://nezeza-products.s3')}
+                      unoptimized={product.images?.[0]?.startsWith('https://') || product.images?.[0]?.startsWith('/uploads/')}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/placeholder.jpg';

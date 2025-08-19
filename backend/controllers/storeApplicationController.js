@@ -34,6 +34,7 @@ const createStoreApplication = async (req, res, next) => {
     // Send confirmation emails after successful creation
     try {
       await sendStoreApplicationEmail({
+        application: application,
         email: application.primaryContactInfo.email,
         firstName: application.primaryContactInfo.firstName,
         lastName: application.primaryContactInfo.lastName,

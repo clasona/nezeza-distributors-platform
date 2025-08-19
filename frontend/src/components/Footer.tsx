@@ -5,7 +5,8 @@ import Link from 'next/link';
 import logo from '../images/main.png';
 import Image from 'next/image';
 import {
-  Facebook, Twitter, Instagram, Heart, ExternalLink, Home, Users, MessageSquareMore, Store, MessageSquare
+  Facebook, Twitter, Instagram, Heart, ExternalLink, Home, Users, MessageSquareMore, Store, MessageSquare,
+  Linkedin
 } from 'lucide-react';
 import { FaTiktok } from 'react-icons/fa';
 import { subscribeToNewsletter } from '@/utils/newsletter/email';
@@ -54,22 +55,23 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { label: 'Facebook', href: 'https://facebook.com/vesoko', icon: <Facebook className='h-5 w-5' /> },
-    { label: 'X (Twitter)', href: 'https://twitter.com/vesoko', icon: <Twitter className='h-5 w-5' /> },
-    { label: 'Instagram', href: 'https://instagram.com/vesoko', icon: <Instagram className='h-5 w-5' /> },
-    { label: 'TikTok', href: 'https://tiktok.com/@vesoko', icon: <FaTiktok className='h-5 w-5' /> },
+    // { label: 'Facebook', href: 'https://facebook.com/vesoko.com_', icon: <Facebook className='h-5 w-5' /> },
+    // { label: 'X (Twitter)', href: 'https://twitter.com/vesoko.com_', icon: <Twitter className='h-5 w-5' /> },
+    { label: 'Instagram', href: 'https://instagram.com/vesoko.com_', icon: <Instagram className='h-5 w-5' /> },
+    { label: 'TikTok', href: 'https://tiktok.com/@vesoko.com', icon: <FaTiktok className='h-5 w-5' /> },
+    { label: 'Linkedin', href: 'https://linkedin.com/company/vesoko.com', icon: <Linkedin className='h-5 w-5' /> }
   ];
 
   return (
     <footer className="bg-gradient-to-r from-vesoko_primary via-vesoko_background to-vesoko_primary text-[#3d1f00] mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row md:justify-between md:items-center gap-8">
         {/* Logo & Social */}
-        <div className="flex flex-col items-center md:items-start gap-3">
-          <div className="flex items-center gap-2">
-            <Image src={logo} alt="VeSoko Logo" width={48} height={48} className="w-12 h-12 object-contain" />
-            <span className="text-xl font-bold text-[#3d1f00]">VeSoko</span>
-          </div>
-          <div className="flex gap-2 mt-1">
+        <div className="flex flex-col items-center ">
+          {/* <div className="flex items-center gap-2"> */}
+            <Image src={logo} alt="VeSoko Logo" width={80} height={80} className="w-48 h-12 object-contain" />
+            {/* <span className="text-xl font-bold text-[#3d1f00]">VeSoko</span> */}
+          {/* </div> */}
+          <div className="flex gap-2">
             {socialLinks.map((social, idx) => (
               <Link key={idx} href={social.href} aria-label={social.label} target="_blank" rel="noopener noreferrer"
                 className="p-2 bg-white/10 hover:bg-[#ff7a00] rounded-full transition-all duration-300 hover:scale-110 text-[#3d1f00] hover:text-white">
