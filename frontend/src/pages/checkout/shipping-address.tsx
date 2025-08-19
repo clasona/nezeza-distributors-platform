@@ -148,6 +148,16 @@ const CheckoutAddressPage = () => {
   // Auto-validate existing address if available
   useEffect(() => {
     const autoValidateExistingAddress = async () => {
+      // Check if we're in edit mode (user clicked "Change" button)
+      const isEditMode = router.query.edit === 'true';
+      
+      if (isEditMode) {
+        // Force show the form for editing
+        console.log('Edit mode detected, showing form for address editing');
+        setShowForm(true);
+        return;
+      }
+
       // Determine which address to validate (shipping address or user's saved address)
       const existingAddress = shippingAddress || userInfo?.address;
       
@@ -225,7 +235,7 @@ const CheckoutAddressPage = () => {
     if (hasItems && !showForm && !isAutoValidating) {
       autoValidateExistingAddress();
     }
-  }, [cartItemsData?.length, buyNowProduct?.isBuyNow, showForm, isAutoValidating]); // Added buyNowProduct dependency
+  }, [cartItemsData?.length, buyNowProduct?.isBuyNow, showForm, isAutoValidating, router.query.edit]); // Added router.query.edit dependency
 
   // Get state options based on selected country
   const getStateOptions = () => {

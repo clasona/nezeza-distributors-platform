@@ -309,7 +309,7 @@ const CheckoutReviewPage = () => {
       </div>
       <button
         type='button'
-        onClick={() => router.push('/checkout/shipping-address')}
+        onClick={() => router.push('/checkout/shipping-address?edit=true')}
         className='mt-3 sm:mt-0 bg-vesoko_primary text-white font-medium px-4 py-2 rounded hover:bg-vesoko_secondary transition'
       >
         Change

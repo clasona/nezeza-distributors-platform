@@ -3,6 +3,7 @@ import {
   removeUser,
   resetCart,
   resetFavorites,
+  clearShippingAddress,
 } from '@/redux/nextSlice';
 import { updateCart } from '@/utils/cart/updateCart';
 import { LogOut, Loader2 } from 'lucide-react';
@@ -47,6 +48,7 @@ export const LogoutButton = ({
       dispatch(removeStore());
       dispatch(resetCart());
       dispatch(resetFavorites());
+      dispatch(clearShippingAddress());
 
       // Sign out from NextAuth and redirect
       await signOut({ callbackUrl: redirectTo || '/' });
