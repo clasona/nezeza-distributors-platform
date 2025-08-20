@@ -23,19 +23,16 @@ const { getEarliestDeliveryDate } = require('../shipping/extractDeliveryDateFrom
   Create a new order, group items by seller,
   and create sub-orders for each seller
  */
-const createSubOrders = async (fullOrder, selectedShippingOptions, session) => {
+const createSubOrders = async (fullOrder, selectedShippingOptions, groupedItems, session) => {
   // console.log(fullOrder);
-  // Group products by seller and prepare sub-orders data
+  // Use the pre-calculated grouped items instead of recalculating
   // console.log('Creating sub-orders for full order:', fullOrder);
   try {
-    const subOrdersGrouped = groupProductsBySeller({ 
-      orderItems: fullOrder.orderItems, 
-      selectedShippingOptions 
-    }); // Grouped seller data
+    const subOrdersGrouped = groupedItems; // Use pre-calculated grouped seller data
 
     const subOrderData = Object.keys(subOrdersGrouped).map((sellerId) => {
     const subOrder = subOrdersGrouped[sellerId];
-    
+
     // Calculate fee breakdown for this suborder
     const feeBreakdown = calculateOrderFees({
       productSubtotal: subOrder.totalAmount, // This is the seller's product subtotal
@@ -247,7 +244,7 @@ const createOrderUtil = async ({
     const [order] = await Order.create(
       [
         {
-          orderItems: cartItems.map(item => ({ ...item, taxAmount: item.taxAmount || 0 })),
+          orderItems: cartItems.map(item => ({ ...item, taxRate: item.product.taxRate, taxAmount: (item.price * item.quantity * (item.product.taxRate / 100)) || 0 })),
           totalAmount, //TODO: replace with the paymentIntent.metadata.totalAmount ?
           totalTax: feeBreakdown.summary.totalTax,
           totalShipping: feeBreakdown.summary.totalShipping,
@@ -274,8 +271,8 @@ const createOrderUtil = async ({
       await Product.bulkWrite(bulkOps, { session });
     }
 
-    // Pass the created order document and session to createSubOrders
-    const updatedSubOrders = await createSubOrders(order, selectedShippingOptions, session);
+    // Pass the created order document, session, and grouped items to createSubOrders
+    const updatedSubOrders = await createSubOrders(order, selectedShippingOptions, groupedItems, session);
     order.subOrders = updatedSubOrders; // Assign the results back to the order document
 
     // const paymentIntent = await createPaymentIntentUtil(order);

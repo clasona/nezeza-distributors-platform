@@ -77,6 +77,8 @@ function calculateOrderFees({
     throw new Error('All amounts must be non-negative');
   }
 
+  // console.log(`Calculating fees for order: productSubtotal=${productSubtotal}, taxAmount=${taxAmount}, shippingCost=${shippingCost}, grossUpFees=${grossUpFees}`);
+
   // Check if store is in grace period (no platform fees)
   // console.log('Store for fee calculation:', store.name);
   const inGracePeriod = store ? isStoreInGracePeriod(store) : false;

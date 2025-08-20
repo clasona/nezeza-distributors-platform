@@ -834,7 +834,7 @@ const confirmPayment = async (orderId, paymentIntentId) => {
 
     // Process each suborder
     for (let suborder of suborders) {
-      console.log(`🔄 Processing suborder ${suborder._id} for seller store ${suborder.sellerStoreId}`);
+      // console.log(`🔄 Processing suborder ${suborder._id} for seller store ${suborder.sellerStoreId}`);
       
       const sellerStore = await Store.findById(suborder.sellerStoreId);
       if (!sellerStore) {
@@ -842,30 +842,30 @@ const confirmPayment = async (orderId, paymentIntentId) => {
         continue;
       }
       
-      console.log(`📊 Found seller store: ${sellerStore.name} (${sellerStore._id}) owned by ${sellerStore.ownerId}`);
+      // console.log(`📊 Found seller store: ${sellerStore.name} (${sellerStore._id}) owned by ${sellerStore.ownerId}`);
       
       // Get the correct seller ID from store owner, not store ID
       const sellerId = sellerStore.ownerId;
       
       // Check if seller has a Stripe account
       const seller = await stripeModel.findOne({ sellerId: sellerId });
-      console.log(`💳 Stripe account for seller ${sellerId}:`, seller ? `Found: ${seller.stripeAccountId}` : 'Not found');
+      // console.log(`💳 Stripe account for seller ${sellerId}:`, seller ? `Found: ${seller.stripeAccountId}` : 'Not found');
       
       // Update suborder payment status
       suborder.paymentStatus = 'Paid';
       await suborder.save({ session });
-      console.log(`✅ Updated suborder ${suborder._id} payment status to Paid`);
+      // console.log(`✅ Updated suborder ${suborder._id} payment status to Paid`);
 
-      console.log(`💰 Suborder amounts:`, {
-        totalAmount: suborder.totalAmount,
-        totalTax: suborder.totalTax,
-        totalShipping: suborder.totalShipping
-      });
+      // console.log(`💰 Suborder amounts:`, {
+      //   totalAmount: suborder.totalAmount,
+      //   totalTax: suborder.totalTax,
+      //   totalShipping: suborder.totalShipping
+      // });
       
       // Use the original fee breakdown if available, otherwise recalculate
       let feeBreakdown;
-      console.log(`🔍 Suborder count: ${suborder.length}`);
-      console.log(`Original fee breakdown:`, originalFeeBreakdown);
+      // console.log(`🔍 Suborder count: ${suborder.length}`);
+      // console.log(`Original fee breakdown:`, originalFeeBreakdown);
       if (originalFeeBreakdown && suborders.length === 1) {
         // Single suborder - use the original fee breakdown directly
         feeBreakdown = {
@@ -898,10 +898,10 @@ const confirmPayment = async (orderId, paymentIntentId) => {
           }
         };
         
-        console.log(`🔄 Calculated fee breakdown for suborder using utility:`, {
-          sellerReceives: feeBreakdown.sellerReceives,
-          platformCommission: feeBreakdown.platformBreakdown.commission
-        });
+        // console.log(`🔄 Calculated fee breakdown for suborder using utility:`, {
+        //   sellerReceives: feeBreakdown.sellerReceives,
+        //   platformCommission: feeBreakdown.platformBreakdown.commission
+        // });
       }
 
       // Update seller's balance with proper amounts from fee calculation  
@@ -918,11 +918,11 @@ const confirmPayment = async (orderId, paymentIntentId) => {
         { upsert: true, session, new: true }
       );
       
-      console.log(`✅ Updated seller balance for seller ${sellerId}:`, {
-        totalSales: updatedBalance.totalSales,
-        pendingBalance: updatedBalance.pendingBalance,
-        commissionDeducted: updatedBalance.commissionDeducted
-      });
+      // console.log(`✅ Updated seller balance for seller ${sellerId}:`, {
+      //   totalSales: updatedBalance.totalSales,
+      //   pendingBalance: updatedBalance.pendingBalance,
+      //   commissionDeducted: updatedBalance.commissionDeducted
+      // });
       
       // Create transaction record for tracking
       try {
@@ -936,12 +936,12 @@ const confirmPayment = async (orderId, paymentIntentId) => {
           status: 'paid'
         });
         
-        console.log(`💳 Created transaction record for seller ${sellerId}:`, {
-          transactionId: transaction._id,
-          grossAmount: transaction.grossAmount,
-          netAmount: transaction.netAmount,
-          commission: transaction.commission
-        });
+        // console.log(`💳 Created transaction record for seller ${sellerId}:`, {
+        //   transactionId: transaction._id,
+        //   grossAmount: transaction.grossAmount,
+        //   netAmount: transaction.netAmount,
+        //   commission: transaction.commission
+        // });
       } catch (transactionError) {
         console.error(`❌ Failed to create transaction record for seller ${sellerId}:`, transactionError.message);
         // Don't fail the entire process if transaction record creation fails
@@ -1489,16 +1489,17 @@ const confirmWithSavedCard = async (req, res) => {
         console.log(`Order updated successfully - paymentIntentId: ${order.paymentIntentId}, status: ${order.fulfillmentStatus}`);
         
         // Send confirmation emails (same as webhook)
-        try {
-          await sendBuyerPaymentConfirmationEmail({
-            name: customerFirstName,
-            email: customerEmail,
-            orderId: orderId,
-          });
-          console.log('Buyer confirmation email sent successfully.');
-        } catch (emailError) {
-          console.error('Failed to send buyer confirmation email:', emailError.message);
-        }
+        // Email sent by webhook now, so commenting out to avoid duplicates
+        // try {
+        //   await sendBuyerPaymentConfirmationEmail({
+        //     name: customerFirstName,
+        //     email: customerEmail,
+        //     orderId: orderId,
+        //   });
+        //   console.log('Buyer confirmation email sent successfully.');
+        // } catch (emailError) {
+        //   console.error('Failed to send buyer confirmation email:', emailError.message);
+        // }
 
         // Use the centralized confirmPayment function to handle seller balances
         console.log('Calling confirmPayment to process seller balances...');

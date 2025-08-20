@@ -39,10 +39,19 @@ const groupProductsBySeller = ({ orderItems, selectedShippingOptions }) => {
       : sellerStoreId;
 
     // Get taxRate from the product object or item itself
-    const productTaxRate = productId.taxRate || item.taxRate || 0;
+    // Handle case where productId is an object (populated) vs string (ID only)
+    let productTaxRate = 0;
+    if (typeof productId === 'object' && productId.taxRate !== undefined) {
+      productTaxRate = productId.taxRate;
+    } else if (item.taxRate !== undefined) {
+      productTaxRate = item.taxRate;
+    } else if (taxRate !== undefined) {
+      productTaxRate = taxRate;
+    }
 
     // Calculate tax amount if missing (taxRate is an integer for 8%)
     const calculatedTaxAmount = item.taxAmount || (price * quantity * (productTaxRate / 100));
+console.log(`Calculated tax amount for product tax rate ${productTaxRate}: ${calculatedTaxAmount}`);
 
     // Initialize sub-order object
     if (!subOrders[storeId]) {
@@ -51,7 +60,7 @@ const groupProductsBySeller = ({ orderItems, selectedShippingOptions }) => {
       const selectedRateId = sellerShippingOption ? 
         (sellerShippingOption.rateId || sellerShippingOption) : null;
 
-        console.log(`Creating sub-order for store ID: ${storeId}, shipping cost: ${sellerShipping}, selected rate ID: ${selectedRateId}`);
+        // console.log(`Creating sub-order for store ID: ${storeId}, shipping cost: ${sellerShipping}, selected rate ID: ${selectedRateId}`);
       subOrders[storeId] = {
         sellerStoreId,
         products: [],
@@ -69,7 +78,7 @@ const groupProductsBySeller = ({ orderItems, selectedShippingOptions }) => {
     subOrders[storeId].products.push({
       productId,
       quantity,
-      taxRate,
+      taxRate: productTaxRate, // Use the calculated tax rate instead of the original undefined value
       price,
       title,
       image,
@@ -81,6 +90,9 @@ const groupProductsBySeller = ({ orderItems, selectedShippingOptions }) => {
     // Add calculated tax amount
     subOrders[storeId].taxRate = productTaxRate;
     subOrders[storeId].totalTax += calculatedTaxAmount;
+
+    // console.log('------ Added product to sub-order:')
+    // console.log(subOrders[storeId]);
 
   }
 
