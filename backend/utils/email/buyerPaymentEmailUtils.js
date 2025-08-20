@@ -1,5 +1,7 @@
 const sendEmail = require('../sendEmail');
 const moment = require('moment');
+      const Store = require('../../models/Store');
+  const { calculateOrderFees } = require('../payment/feeCalculationUtil');
 // const getOrderDetails = require('./order/getOrderDetails');
 const { formatOrderItems, formatShippingAddress } = require('../formatUtils');
 const Order = require('../../models/Order');
@@ -14,7 +16,7 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
   // Enhanced shipping information
   const shippingMethod = order.shippingMethod || 'Standard Shipping';
   const estimatedDeliveryDate = moment(order.estimatedDeliveryDate).format('MMMM D, YYYY');
-  
+
   const orderSummary = `
     <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="color: #333; margin-top: 0;">📦 Order Information</h3>
@@ -39,15 +41,53 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
     </div>
   `;
 
-  // Calculate fee breakdown for display
-  const { calculateOrderFees } = require('../payment/feeCalculationUtil');
-  const productSubtotal = order.totalAmount - order.totalTax - order.totalShipping;
-  const feeBreakdown = calculateOrderFees({
-    productSubtotal,
-    taxAmount: order.totalTax,
-    shippingCost: order.totalShipping,
-    grossUpFees: true
-  });
+  // Calculate fee breakdown for display - add safety checks
+  const totalAmount = order.totalAmount || 0;
+  const totalTax = order.totalTax || 0;
+  const totalShipping = order.totalShipping || 0;
+  
+  const productSubtotal = totalAmount - totalTax - totalShipping;
+  
+  // For emails, we'll use a simplified approach since we don't need store-specific grace period logic
+  // The important thing is showing the customer what they paid
+  let feeBreakdown;
+  try {
+    // Get unique seller stores from order items for potential multi-seller handling
+    const uniqueStores = [...new Set(order.orderItems.map(item => item.sellerStoreId?.toString()).filter(Boolean))];
+    
+    if (uniqueStores.length === 1) {
+      // Single seller - we can try to get the store for grace period calculation
+
+      const store = await Store.findById(uniqueStores[0]);
+      
+      feeBreakdown = calculateOrderFees({
+        productSubtotal,
+        taxAmount: totalTax,
+        shippingCost: totalShipping,
+        grossUpFees: true,
+        store: store
+      });
+    } else {
+      // Multi-seller or no store info - use simplified calculation without store-specific logic
+      feeBreakdown = calculateOrderFees({
+        productSubtotal,
+        taxAmount: totalTax,
+        shippingCost: totalShipping,
+        grossUpFees: true,
+        store: null // No store means standard fees apply
+      });
+    }
+  } catch (error) {
+    console.error('Error calculating fee breakdown for email:', error);
+    // Fallback fee breakdown - just show what customer paid
+    const customerTotal = totalAmount + totalTax + totalShipping;
+    feeBreakdown = {
+      customerTotal: customerTotal,
+      breakdown: {
+        processingFee: Math.max(0, customerTotal - (productSubtotal + totalTax + totalShipping))
+      }
+    };
+  }
 
   const paymentSummary = `
     <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
@@ -78,7 +118,7 @@ const sendBuyerPaymentConfirmationEmail = async ({ name, email, orderId }) => {
       ${feeBreakdown.breakdown.processingFee > 0 ? `
       <div style="margin-top: 15px; padding: 12px; background-color: #e0f2fe; border-radius: 6px; border-left: 4px solid #0284c7;">
         <p style="margin: 0; font-size: 14px; color: #0c4a6e;">
-          <strong>💡 Why a processing fee?</strong> This small fee ensures our sellers receive their full earnings while covering secure payment processing costs.
+          <strong>💡 Why a processing fee?</strong> This fee helps keep VeSoko running smoothly, covering essentials like insurance, secure payments, platform maintenance, and dedicated customer support.
         </p>
       </div>` : ''}
     </div>

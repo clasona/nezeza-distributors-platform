@@ -3,7 +3,7 @@ const sendEmail = require('../sendEmail');
 /**
  * Base responsive email template with mobile optimization
  */
-const getBaseEmailTemplate = (content, title = 'Soko Support') => {
+const getBaseEmailTemplate = (content, title = 'VeSoko Support') => {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -347,13 +347,13 @@ const getBaseEmailTemplate = (content, title = 'Soko Support') => {
       <div class="email-wrapper">
         <div class="email-container">
           <div class="email-header">
-            <h1>Soko Support</h1>
-            <div class="tagline">Connecting Africa to America</div>
+            <h1>VeSoko Support</h1>
+            <div class="tagline">Connecting Africa to the World</div>
           </div>
           ${content}
           <div class="email-footer">
             <div class="footer-text">
-              Thank you for choosing Soko Platform
+              Thank you for choosing VeSoko Platform
             </div>
             <div class="footer-links">
               <a href="${process.env.CLIENT_URL}/support">Support Center</a> | 
@@ -387,7 +387,7 @@ const sendTicketCreatedEmail = async ({
       </p>
       
       <p class="email-text">
-        Thank you for contacting Soko Support. We have received your support request and created a ticket for you.
+        Thank you for contacting VeSoko Support. We have received your support request and created a ticket for you.
       </p>
       
       <div class="info-box">
@@ -419,7 +419,7 @@ const sendTicketCreatedEmail = async ({
       </div>
       
       <p class="email-text">
-        You can track the status of your ticket by logging into your Soko account and visiting the Support section.
+        You can track the status of your ticket by logging into your VeSoko account and visiting the Support section.
       </p>
     </div>
   `;
@@ -914,7 +914,7 @@ module.exports = {
 //     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
 //       <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 //         <div style="text-align: center; margin-bottom: 30px;">
-//           <h1 style="color: #2563eb; margin: 0; font-size: 24px;">Soko Support</h1>
+//           <h1 style="color: #2563eb; margin: 0; font-size: 24px;">VeSoko Support</h1>
 //         </div>
 
 //         <h2 style="color: #333; margin-bottom: 20px;">Support Ticket Created</h2>
@@ -924,7 +924,7 @@ module.exports = {
 //         </p>
 
 //         <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-//           Thank you for contacting Soko Support. We have received your support request and created a ticket for you.
+//           Thank you for contacting VeSoko Support. We have received your support request and created a ticket for you.
 //         </p>
 
 //         <div style="background-color: #f8fafc; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #2563eb;">
@@ -948,7 +948,7 @@ module.exports = {
 //         </ul>
 
 //         <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
-//           You can track the status of your ticket by logging into your Soko account and visiting the Support section.
+//           You can track the status of your ticket by logging into your VeSoko account and visiting the Support section.
 //         </p>
 
 //         <div style="text-align: center; margin: 30px 0;">
@@ -960,7 +960,7 @@ module.exports = {
 
 //         <p style="color: #666; line-height: 1.6; margin-bottom: 10px;">
 //           Best regards,<br>
-//           The Soko Support Team
+//           The VeSoko Support Team
 //         </p>
 
 //         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
@@ -998,7 +998,7 @@ module.exports = {
 //     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
 //       <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 //         <div style="text-align: center; margin-bottom: 30px;">
-//           <h1 style="color: #2563eb; margin: 0; font-size: 24px;">Soko Support</h1>
+//           <h1 style="color: #2563eb; margin: 0; font-size: 24px;">VeSoko Support</h1>
 //         </div>
 
 //         <h2 style="color: #333; margin-bottom: 20px;">New Response to Your Support Ticket</h2>
@@ -1029,7 +1029,7 @@ module.exports = {
 
 //         <p style="color: #666; line-height: 1.6; margin-bottom: 10px;">
 //           Best regards,<br>
-//           The Soko Support Team
+//           The VeSoko Support Team
 //         </p>
 
 //         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
@@ -1085,7 +1085,7 @@ module.exports = {
 //     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
 //       <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 //         <div style="text-align: center; margin-bottom: 30px;">
-//           <h1 style="color: #2563eb; margin: 0; font-size: 24px;">Soko Support</h1>
+//           <h1 style="color: #2563eb; margin: 0; font-size: 24px;">VeSoko Support</h1>
 //         </div>
 
 //         <h2 style="color: #333; margin-bottom: 20px;">Ticket Status Updated</h2>
@@ -1152,7 +1152,7 @@ module.exports = {
 
 //         <p style="color: #666; line-height: 1.6; margin-bottom: 10px;">
 //           Best regards,<br>
-//           The Soko Support Team
+//           The VeSoko Support Team
 //         </p>
 
 //         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
@@ -1258,7 +1258,7 @@ module.exports = {
 //         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
 
 //         <p style="color: #999; font-size: 12px; text-align: center;">
-//           VeSoko Support System - Automated Alert
+//           VeVeSoko Support System - Automated Alert
 //         </p>
 //       </div>
 //     </div>
@@ -1293,7 +1293,7 @@ module.exports = {
 //     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
 //       <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 //         <div style="text-align: center; margin-bottom: 30px;">
-//           <h1 style="color: #2563eb; margin: 0; font-size: 24px;">Soko Support</h1>
+//           <h1 style="color: #2563eb; margin: 0; font-size: 24px;">VeSoko Support</h1>
 //         </div>
 
 //         <h2 style="color: #333; margin-bottom: 20px;">Ticket Assigned to You</h2>
@@ -1330,7 +1330,7 @@ module.exports = {
 //         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
 
 //         <p style="color: #999; font-size: 12px; text-align: center;">
-//           Soko Support System
+//           VeSoko Support System
 //         </p>
 //       </div>
 //     </div>

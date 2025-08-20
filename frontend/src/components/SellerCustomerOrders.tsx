@@ -85,6 +85,7 @@ const SellerCustomerOrders = () => {
   const [shippingRates, setShippingRates] = useState<any[]>([]);
   const [selectedRate, setSelectedRate] = useState<any>(null);
   const [shippingLabel, setShippingLabel] = useState<any>(null);
+  const [carrier, setCarrier] = useState<string>('Unknown');
   const [labelActionType, setLabelActionType] = useState<'print' | 'save' | 'email' | null>(null);
   const [creatingLabel, setCreatingLabel] = useState<string | null>(null); // Track which order is creating a label
 
@@ -332,6 +333,7 @@ const SellerCustomerOrders = () => {
       }
       
       const transaction = response.transaction;
+      setCarrier(response.carrier || 'Unknown');
       setShippingLabel(transaction);
       
       // Update order with tracking info
@@ -390,13 +392,13 @@ const SellerCustomerOrders = () => {
   };
 
 
-  const handleLabelAction = async () => {
+  const handleLabelAction = async (actionType: 'print' | 'save' | 'email') => {
     if (!shippingLabel || !selectedOrder) return;
 
     // console.log('Handling label action:', shippingLabel, selectedOrder);
 
     try {
-      switch (labelActionType) {
+      switch (actionType) {
         case 'print':
           window.open(shippingLabel.labelUrl, '_blank');
           break;
@@ -1218,10 +1220,7 @@ const SellerCustomerOrders = () => {
               <div className="space-y-3">
                 <button
                   className="w-full px-4 py-3 bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_primary_dark transition-colors font-medium flex items-center justify-center gap-2"
-                  onClick={() => {
-                    setLabelActionType('print');
-                    handleLabelAction();
-                  }}
+                  onClick={() => handleLabelAction('print')}
                 >
                   <Download className="w-5 h-5" />
                   Print Label Now
@@ -1229,10 +1228,7 @@ const SellerCustomerOrders = () => {
                 
                 <button
                   className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center gap-2"
-                  onClick={() => {
-                    setLabelActionType('save');
-                    handleLabelAction();
-                  }}
+                  onClick={() => handleLabelAction('save')}
                 >
                   <Package className="w-5 h-5" />
                   Save for Later
@@ -1240,10 +1236,7 @@ const SellerCustomerOrders = () => {
                 
                 <button
                   className="w-full px-4 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium flex items-center justify-center gap-2"
-                  onClick={() => {
-                    setLabelActionType('email');
-                    handleLabelAction();
-                  }}
+                  onClick={() => handleLabelAction('email')}
                 >
                   <Eye className="w-5 h-5" />
                   Email to Me
@@ -1255,7 +1248,7 @@ const SellerCustomerOrders = () => {
                   <h4 className="font-medium text-gray-900 mb-2">Tracking Information</h4>
                   <div className="text-sm text-gray-600">
                     <p><strong>Tracking Number:</strong> {shippingLabel.trackingNumber}</p>
-                    <p><strong>Carrier:</strong> {selectedOrder?.trackingInfo?.carrier || 'Unknown'}</p>
+                    <p><strong>Carrier:</strong> {carrier}</p>
                   </div>
                 </div>
               )}

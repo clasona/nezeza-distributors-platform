@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const addressSchema = new mongoose.Schema({
-  fullName: {
+  name: {
     type: String,
   },
   street1: {

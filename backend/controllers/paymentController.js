@@ -476,6 +476,8 @@ const hasActiveStripeAccount = async (req, res) => {
     let hasStripeAccount = false;
     let isActive = false;
 
+    console.log('Checking Stripe account for user:', user);
+
     if (user.stripeAccountId) {
       hasStripeAccount = true;
 
@@ -536,7 +538,7 @@ const createPaymentIntent = async (req, res) => {
   let totalAmount = 0;
   let totalShipping = 0;
   let totalTax = 0;
-  console.log('shipping options:', selectedShippingOptions);
+  // console.log('shipping options:', selectedShippingOptions);
 
   const metadata = {
     customerEmail: '',
@@ -571,28 +573,83 @@ const createPaymentIntent = async (req, res) => {
   }
   
   // Calculate comprehensive fee breakdown using our new system
-  // For multi-seller orders, we'll need to calculate fees per seller
-  // For now, assume single seller or use first seller's store for grace period check
-  let primaryStore = null;
-  if (orderItems.length > 0 && orderItems[0].product && orderItems[0].product.storeId) {
-    primaryStore = await Store.findById(orderItems[0].product.storeId);
+  // Group items by seller to properly handle multi-seller fee calculations
+  const itemsBySeller = {};
+  
+  for (const item of orderItems) {
+    const rawStoreId = item.product?.storeId;
+    if (!rawStoreId) continue;
+    
+    // Extract string ID from populated object or use directly if it's already a string
+    const storeId = typeof rawStoreId === 'object' && rawStoreId._id 
+      ? rawStoreId._id.toString() 
+      : rawStoreId.toString();
+    
+    if (!itemsBySeller[storeId]) {
+      itemsBySeller[storeId] = {
+        items: [],
+        subtotal: 0,
+        tax: 0,
+        store: null
+      };
+    }
+    
+    const itemSubtotal = item.price * item.quantity;
+    const rawTaxRate = item.product?.taxRate || 0;
+    const itemTaxRate = rawTaxRate <= 1 ? rawTaxRate : rawTaxRate / 100;
+    const itemTax = itemSubtotal * itemTaxRate;
+    
+    itemsBySeller[storeId].items.push(item);
+    itemsBySeller[storeId].subtotal += itemSubtotal;
+    itemsBySeller[storeId].tax += itemTax;
   }
   
-  const feeBreakdown = calculateOrderFees({
-    productSubtotal: totalAmount,
-    taxAmount: totalTax,
-    shippingCost: totalShipping,
-    grossUpFees: true, // Use gross-up model to protect sellers and platform from Stripe fees
-    store: primaryStore // Pass store for grace period check
-  });
+  let feeBreakdown;
+  const sellerIds = Object.keys(itemsBySeller);
   
-  console.log('Fee breakdown:', {
-    customerPays: feeBreakdown.customerTotal,
-    sellerReceives: feeBreakdown.sellerReceives,
-    platformGets: feeBreakdown.platformRevenue,
-    stripeFee: feeBreakdown.stripeFee,
-    processingFee: feeBreakdown.breakdown.processingFee
-  });
+  if (sellerIds.length === 1) {
+    // Single seller order
+    const sellerId = sellerIds[0];
+    const sellerData = itemsBySeller[sellerId];
+    const store = await Store.findById(sellerId);
+    
+    feeBreakdown = calculateOrderFees({
+      productSubtotal: sellerData.subtotal,
+      taxAmount: sellerData.tax,
+      shippingCost: totalShipping,
+      grossUpFees: true,
+      store: store
+    });
+  } else {
+    // Multi-seller order
+    const suborders = [];
+    for (const sellerId of sellerIds) {
+      const sellerData = itemsBySeller[sellerId];
+      const store = await Store.findById(sellerId);
+      
+      suborders.push({
+        storeId: sellerId,
+        productSubtotal: sellerData.subtotal,
+        taxAmount: sellerData.tax,
+        shippingCost: 0, // Shipping handled separately per seller
+        store: store
+      });
+    }
+    
+    feeBreakdown = calculateMultiSellerOrderFees({
+      suborders,
+      totalShippingCost: totalShipping,
+      grossUpFees: true
+    });
+  }
+  
+  // console.log('Fee breakdown:', {
+  //   customerPays: feeBreakdown.customerTotal,
+  //   sellerReceives: feeBreakdown.sellerReceives,
+  //   platformGets: feeBreakdown.platformRevenue,
+  //   stripeFee: feeBreakdown.stripeFee,
+  //   processingFee: feeBreakdown.breakdown.processingFee
+  // });
 
   // Get user information
   let user = null;
@@ -639,12 +696,12 @@ const createPaymentIntent = async (req, res) => {
       metadata: metadata,
     });
     
-    console.log('Payment intent created successfully:', {
-      customerTotal: feeBreakdown.customerTotal,
-      originalSubtotal: totalAmount + totalTax + totalShipping,
-      processingFee: feeBreakdown.breakdown.processingFee,
-      paymentIntentId: paymentIntent.id
-    });
+    // console.log('Payment intent created successfully:', {
+    //   customerTotal: feeBreakdown.customerTotal,
+    //   originalSubtotal: totalAmount + totalTax + totalShipping,
+    //   processingFee: feeBreakdown.breakdown.processingFee,
+    //   paymentIntentId: paymentIntent.id
+    // });
     
     res
       .status(StatusCodes.OK)
@@ -676,13 +733,13 @@ const updateSellerBalances = async (order) => {
       const sellerId = sellerStore.ownerId; // This is the actual seller user ID
       console.log(`Processing seller balance for store ${sellerStore.name} (${subOrder.sellerStoreId}) owned by ${sellerId}`);
       
-      // Calculate proper fee breakdown for this suborder
-      const productSubtotal = subOrder.totalAmount - (subOrder.totalTax || 0) - (subOrder.totalShipping || 0);
+      // Calculate proper fee breakdown for this suborder using centralized utility
+      const productSubtotal = subOrder.totalAmount; // subOrder.totalAmount is already the product subtotal
       const feeBreakdown = calculateOrderFees({
         productSubtotal: productSubtotal,
         taxAmount: subOrder.totalTax || 0,
         shippingCost: 0, // Seller doesn't get shipping, platform keeps it
-        grossUpFees: true,
+        grossUpFees: false, // Don't gross up at suborder level
         store: sellerStore // Pass store for grace period check
       });
       
@@ -807,6 +864,8 @@ const confirmPayment = async (orderId, paymentIntentId) => {
       
       // Use the original fee breakdown if available, otherwise recalculate
       let feeBreakdown;
+      console.log(`🔍 Suborder count: ${suborder.length}`);
+      console.log(`Original fee breakdown:`, originalFeeBreakdown);
       if (originalFeeBreakdown && suborders.length === 1) {
         // Single suborder - use the original fee breakdown directly
         feeBreakdown = {
@@ -820,23 +879,26 @@ const confirmPayment = async (orderId, paymentIntentId) => {
           platformCommission: feeBreakdown.platformBreakdown.commission
         });
       } else {
-        // Multiple suborders or no original breakdown - calculate based on suborder amounts
-        // Use proper fee calculation logic: seller gets product price + tax, platform gets commission
-        // const productAmount = suborder.totalAmount - (suborder.totalTax || 0) - (suborder.totalShipping || 0);
-        // const taxAmount = suborder.totalTax || 0;
+        // Multiple suborders or no original breakdown - use centralized fee calculation
+        const productSubtotal = suborder.totalAmount; // suborder.totalAmount already excludes tax and shipping
+        const taxAmount = suborder.totalTax || 0;
         
-        // Seller receives product price + tax (no deductions)
-        const sellerReceives = suborder.totalAmount  + suborder.totalTax;
-        // Platform gets 10% commission on product amount only (not tax or shipping)
-        const platformCommission = suborder.totalAmount * 0.1;
-
+        const suborderFeeBreakdown = calculateOrderFees({
+          productSubtotal: productSubtotal,
+          taxAmount: taxAmount,
+          shippingCost: 0, // Shipping is handled separately
+          grossUpFees: false, // Don't gross up at suborder level, already done at main order
+          store: sellerStore
+        });
+        
         feeBreakdown = {
-          sellerReceives: Math.round(sellerReceives * 100) / 100,
+          sellerReceives: suborderFeeBreakdown.sellerReceives,
           platformBreakdown: {
-            commission: Math.round(platformCommission * 100) / 100
+            commission: suborderFeeBreakdown.platformBreakdown?.commission || 0
           }
         };
-        console.log(`🔄 Calculated fee breakdown for suborder:`, {
+        
+        console.log(`🔄 Calculated fee breakdown for suborder using utility:`, {
           sellerReceives: feeBreakdown.sellerReceives,
           platformCommission: feeBreakdown.platformBreakdown.commission
         });
@@ -894,13 +956,17 @@ const confirmPayment = async (orderId, paymentIntentId) => {
       // Get order details for emails
       const buyer = await User.findById(order.buyerId);
       
-      // Send confirmation email to buyer
-      await sendBuyerPaymentConfirmationEmail({
-        name: buyer?.firstName || 'Customer',
-        email: buyer?.email,
-        orderId: orderId,
-      });
-      console.log('Buyer confirmation email sent successfully');
+      // Only send email if buyer exists and has email
+      if (buyer && buyer.email) {
+        await sendBuyerPaymentConfirmationEmail({
+          name: buyer.firstName || 'Customer',
+          email: buyer.email,
+          orderId: orderId,
+        });
+        console.log('Buyer confirmation email sent successfully');
+      } else {
+        console.log('Buyer not found or email missing, skipping confirmation email');
+      }
       
       // Send emails to sellers
       for (const subOrder of suborders) {
@@ -1463,6 +1529,7 @@ const confirmWithSavedCard = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 module.exports = {
   webhookHandler,

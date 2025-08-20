@@ -239,7 +239,7 @@ export interface stateProps {
 
 export interface AddressProps {
   _id?: number;
-  fullName?: string;
+  name?: string;
   street1: string;
   street2?: string;
   city: string;

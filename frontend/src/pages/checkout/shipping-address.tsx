@@ -65,9 +65,9 @@ const CheckoutAddressPage = () => {
   useEffect(() => {
     // On mount or on address/user info change, update the form values
     reset({
-      fullName:
-        shippingAddress?.fullName ||
-        userInfo?.address?.fullName ||
+      name:
+        shippingAddress?.name ||
+        userInfo?.address?.name ||
         userInfo?.firstName ||
         '',
       street1: shippingAddress?.street1 || userInfo?.address?.street1 || '',
@@ -168,7 +168,7 @@ const CheckoutAddressPage = () => {
       }
 
       // Check if address is complete (street2 requirement handled by validation)
-      const hasAllRequiredFields = existingAddress.fullName &&
+      const hasAllRequiredFields = existingAddress.name &&
         existingAddress.street1 &&
         existingAddress.city &&
         existingAddress.state &&
@@ -467,9 +467,9 @@ const CheckoutAddressPage = () => {
 
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
             <TextInput
-              label='Full Name'
-              id='fullName'
-              name='fullName'
+              label='Name'
+              id='name'
+              name='name'
               register={register}
               errors={errors}
               type='text'

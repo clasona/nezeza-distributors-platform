@@ -2,6 +2,7 @@
 
 const sendEmail = require('../sendEmail');
 const moment = require('moment');
+  const { calculateOrderFees } = require('../payment/feeCalculationUtil');
 const { formatOrderItems, formatShippingAddress } = require('../formatUtils');
 const User = require('../../models/User');
 const Store = require('../../models/Store');
@@ -87,13 +88,13 @@ const sendSellerNewOrderNotificationEmail = async ({
   `;
   
   // Calculate seller's actual revenue using our fee breakdown
-  const { calculateOrderFees } = require('../payment/feeCalculationUtil');
   const productSubtotal = sellerSubtotal;
   const feeBreakdown = calculateOrderFees({
     productSubtotal,
     taxAmount: sellerTax,
     shippingCost: 0, // Seller doesn't get shipping revenue
-    grossUpFees: true
+    grossUpFees: true,
+    store: sellerStore,
   });
 
   const itemsSection = `
@@ -127,11 +128,6 @@ const sendSellerNewOrderNotificationEmail = async ({
           </p>
         </div>
         
-        <div style="margin-top: 10px; padding: 10px; background-color: #f0f9ff; border-radius: 6px; border: 1px solid #0284c7;">
-          <p style="margin: 0; font-size: 12px; color: #0c4a6e;">
-            <strong>💡 Transparent Pricing:</strong> You receive 100% of your product price plus tax. Our platform fee covers marketing, support, and secure payment processing.
-          </p>
-        </div>
       </div>
     </div>
   `;

@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
 import { createShipping } from '@/utils/shipping/createShipping';
-import { calculateOrderFees, type FeeBreakdown } from '@/utils/payment/feeCalculationUtils';
+import { calculateOrderFees, calculateMultiSellerFees, type FeeBreakdown } from '@/utils/payment/feeCalculationUtils';
 import { useSelector } from 'react-redux';
 import { AddressProps, stateProps } from '../../../type';
 import Link from 'next/link';
@@ -187,22 +187,78 @@ const CheckoutReviewPage = () => {
     }
   }, [uniqueTaxRates]);
 
-  // Calculate comprehensive fee breakdown - now async
+  // Calculate comprehensive fee breakdown - now async and store-aware
   const [feeBreakdown, setFeeBreakdown] = useState<any>(null);
   const [feeCalculationLoading, setFeeCalculationLoading] = useState(false);
 
   useEffect(() => {
     const calculateFees = async () => {
-      if (subtotal > 0) {
+      if (subtotal > 0 && shippingGroups.length > 0) {
         setFeeCalculationLoading(true);
         try {
-          const breakdown = await calculateOrderFees({
-            productSubtotal: subtotal,
-            taxAmount: tax,
-            shippingCost: shippingTotal,
-            grossUpFees: true // Use gross-up model
+          // Determine if this is a single seller or multi-seller order
+          const uniqueStoreIds = new Set();
+          shippingGroups.forEach(group => {
+            group.items.forEach((item: any) => {
+              const storeId = item.product?.storeId?._id || item.sellerStoreId?._id || item.sellerId;
+              if (storeId) uniqueStoreIds.add(storeId);
+            });
           });
-          setFeeBreakdown(breakdown);
+
+          if (uniqueStoreIds.size === 1) {
+            // Single seller - use single fee calculation with store info
+            const storeId = Array.from(uniqueStoreIds)[0] as string;
+            console.log('Single seller checkout, storeId:', storeId);
+            
+            const breakdown = await calculateOrderFees({
+              productSubtotal: subtotal,
+              taxAmount: tax,
+              shippingCost: shippingTotal,
+              grossUpFees: true,
+              storeId
+            });
+            setFeeBreakdown(breakdown);
+          } else {
+            // Multiple sellers - use multi-seller fee calculation
+            console.log('Multi-seller checkout, unique stores:', uniqueStoreIds.size);
+            
+            // Convert shipping groups to the format expected by multi-seller calculation
+            const cartItems = shippingGroups.flatMap(group => group.items);
+            const shippingRates: { [sellerId: string]: number } = {};
+            
+            // Map shipping costs to seller IDs
+            shippingGroups.forEach(group => {
+              const selectedRateId = selectedOptions[group.groupId];
+              const selectedOption = group.deliveryOptions.find(
+                (opt: any) => opt.rateId === selectedRateId
+              );
+              if (selectedOption) {
+                shippingRates[group.groupId] = selectedOption.price;
+              }
+            });
+
+            const { sellerFees, totals } = await calculateMultiSellerFees(
+              cartItems,
+              {}, // shippingOptions not needed for this calculation
+              shippingRates,
+              true // grossUpFees
+            );
+            
+            // Create a combined breakdown for display
+            const combinedBreakdown = {
+              customerTotal: totals.customerTotal,
+              customerSubtotal: subtotal + tax + shippingTotal,
+              breakdown: {
+                productSubtotal: subtotal,
+                tax: tax,
+                shipping: shippingTotal,
+                processingFee: totals.customerTotal - (subtotal + tax + shippingTotal)
+              },
+              sellerFees, // Include individual seller breakdowns
+              isMultiSeller: true
+            };
+            setFeeBreakdown(combinedBreakdown);
+          }
         } catch (error) {
           console.error('Error calculating fees:', error);
           setFeeBreakdown(null);
@@ -214,7 +270,7 @@ const CheckoutReviewPage = () => {
     };
 
     calculateFees();
-  }, [subtotal, tax, shippingTotal]);
+  }, [subtotal, tax, shippingTotal, shippingGroups, selectedOptions]);
 
   const grandTotal = feeBreakdown?.customerTotal || (subtotal + shippingTotal + tax);
 
@@ -296,7 +352,7 @@ const CheckoutReviewPage = () => {
     <div className='bg-white rounded-lg shadow p-4 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between'>
       <div>
         <div className='text-sm text-gray-500 mb-1'>Delivering to:</div>
-        <div className='font-semibold'>{addr.fullName}</div>
+        <div className='font-semibold'>{addr.name}</div>
         <div>
           {addr.street1}
           {addr.street2 ? `, ${addr.street2}` : ''}

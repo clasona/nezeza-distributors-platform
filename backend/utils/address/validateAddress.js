@@ -120,7 +120,7 @@ const validateAddressWithShippo = async (address, type = 'shipping') => {
     
     // Extract normalized address from validation result
     const normalizedAddress = {
-      fullName: addressToUse.name || address.fullName || address.name,
+      name: addressToUse.name || address.name,
       street1: addressToUse.address_line_1 || address.street1 || address.street,
       street2: addressToUse.address_line_2 || address.street2 || '',
       city: addressToUse.city_locality || address.city,

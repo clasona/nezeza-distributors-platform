@@ -5,6 +5,7 @@ const CustomError = require('../../errors');
 const {
   sendOrderStatusUpdateEmailAndNotification,
 } = require('../sendEmailAndNotification');
+const Order = require('../../models/Order');
 
 const shippo = new Shippo({
   apiKeyHeader: process.env.SHIPPO_API_TOKEN,
@@ -249,6 +250,17 @@ const updateSubOrderWithTrackingInfo = async (subOrderId, subOrder, transaction,
   
   await SubOrder.findByIdAndUpdate(subOrderId, updateData);
   
+  //update fullorder shipping status if needed
+  if (subOrder.fullOrderId) {
+    await Order.findByIdAndUpdate(subOrder.fullOrderId._id, {
+      shippingStatus: 'Awaiting Shipment',
+      'shippingDetails.trackingNumber': transaction.trackingNumber,
+      'shippingDetails.labelUrl': transaction.labelUrl,
+      'shippingDetails.carrier': mappedCarrier,
+      'shippingDetails.trackingUrl': transaction.trackingUrlProvider || '',
+    });
+  }
+
   // Send notification to customer about label creation and status update
   try {
     // Get store name for context
@@ -306,7 +318,7 @@ const validateAndNormalizeAddress = (address, type) => {
   
   // Normalize the address object for Shippo
   return {
-    name: address.fullName || address.name || `${type} Address`,
+    name: address.name || `${type} Address`,
     street1: address.street1 || address.street,
     street2: address.street2 || '',
     city: address.city,

@@ -14,9 +14,8 @@ const SubOrder = require('../../models/SubOrder');
 const {
   groupProductsBySeller,
 } = require('../../helpers/groupProductsBySeller');
-const {
-  errorLoggingMiddleware,
-} = require('../../controllers/admin/adminSystemMonitoringController');
+const { calculateOrderFees, calculateMultiSellerOrderFees } = require('../payment/feeCalculationUtil');
+const { errorLoggingMiddleware } = require('../../controllers/admin/adminSystemMonitoringController');
 const calculateEstimatedDelivery = require('./calculateEstimatedDelivery');
 const { getEarliestDeliveryDate } = require('../shipping/extractDeliveryDateFromRate');
 
@@ -27,56 +26,50 @@ const { getEarliestDeliveryDate } = require('../shipping/extractDeliveryDateFrom
 const createSubOrders = async (fullOrder, selectedShippingOptions, session) => {
   // console.log(fullOrder);
   // Group products by seller and prepare sub-orders data
+  // console.log('Creating sub-orders for full order:', fullOrder);
   try {
-    const subOrdersGrouped = groupProductsBySeller(fullOrder); // Grouped seller data
+    const subOrdersGrouped = groupProductsBySeller({ 
+      orderItems: fullOrder.orderItems, 
+      selectedShippingOptions 
+    }); // Grouped seller data
 
     const subOrderData = Object.keys(subOrdersGrouped).map((sellerId) => {
-      const subOrder = subOrdersGrouped[sellerId];
-      
-      // Use the calculated values from groupProductsBySeller directly
-      // These already include proper totals per seller
-      const subtotal = subOrder.totalAmount; // This is the product subtotal for this seller
-      const sellerTax = subOrder.totalTax; // Tax for this seller's products
-      const sellerShipping = subOrder.totalShipping || 0; // Shipping for this seller (if any)
-      
-      // Final total amount for this suborder (subtotal only, tax and shipping are separate fields)
-      const finalTotalAmount = subtotal;
-      
-      // Add transaction fee (10% platform fee on subtotal)
-      const transactionFee = subtotal * 0.1;
-      
-      // Calculate average tax rate for this seller's products
-      const avgTaxRate = subOrder.products.length > 0 ? 
-        subOrder.products.reduce((sum, product) => sum + (product.taxRate || 0), 0) / subOrder.products.length : 0;
-      
-      // Get the selected shipping option for this seller
-      const selectedShippingOption = selectedShippingOptions ? selectedShippingOptions[sellerId] : null;
-      const selectedRateId = selectedShippingOption ? 
-        (selectedShippingOption.rateId || selectedShippingOption) : null;
-      
-      return {
-        ...subOrder,
-        sellerId,
-        totalAmount: finalTotalAmount, // Store subtotal here
-        taxRate: avgTaxRate, // Store average tax rate for this seller
-        totalTax: sellerTax, // Store tax separately
-        totalShipping: sellerShipping, // Store shipping separately
-        transactionFee,
-        fullOrderId: fullOrder._id, // Add reference to the main order
-        paymentStatus: 'Paid',
-        fulfillmentStatus: 'Placed', // Set initial status to Placed
-        shippingDetails: {
-          rateId: selectedRateId, // Store the selected shipping rate ID
-          carrier: 'TBD', // Will be set when label is created
-          trackingNumber: '', // Will be set when label is created
-          trackingUrl: '',
-          estimatedDeliveryDate: fullOrder.estimatedDeliveryDate,
-          shipmentStatus: 'Pending',
-          shippingAddress: fullOrder.shippingAddress,
-        },
-        // Also store the rateId at the suborder level for easy access
-        selectedRateId: selectedRateId,
-      };
+    const subOrder = subOrdersGrouped[sellerId];
+    
+    // Calculate fee breakdown for this suborder
+    const feeBreakdown = calculateOrderFees({
+      productSubtotal: subOrder.totalAmount, // This is the seller's product subtotal
+      taxAmount: subOrder.totalTax,
+      shippingCost: subOrder.totalShipping || 0,
+      grossUpFees: false, // Gross-up is handled at the main order level
+      store: subOrder.store, // Pass store for grace period check
+    });
+
+    return {
+      ...subOrder,
+      sellerId,
+      totalAmount: feeBreakdown.breakdown.productSubtotal, // Store subtotal here
+      taxRate: subOrder.avgTaxRate, // Use pre-calculated average tax rate
+      totalTax: feeBreakdown.breakdown.tax, // Store tax separately
+      totalShipping: feeBreakdown.breakdown.shipping, // Store shipping separately
+      transactionFee: feeBreakdown.platformBreakdown.commission, // Platform commission
+      fullOrderId: fullOrder._id, // Add reference to the main order
+      buyerId: fullOrder.buyerId, // Reference to the buyer
+      buyerStoreId: fullOrder.buyerStoreId, // Reference to the buyer's store
+      clientSecret: fullOrder.clientSecret, // Reference to the client's secret
+      paymentStatus: 'Paid',
+      fulfillmentStatus: 'Placed', // Set initial status to Placed
+      shippingDetails: {
+        rateId: subOrder.selectedRateId, // Use pre-calculated rateId
+        carrier: 'TBD',
+        trackingNumber: '',
+        trackingUrl: '',
+        estimatedDeliveryDate: fullOrder.estimatedDeliveryDate,
+        shipmentStatus: 'Pending',
+        shippingAddress: fullOrder.shippingAddress,
+      },
+      selectedRateId: subOrder.selectedRateId,
+    };
     });
 
     // Insert all sub-orders in one go and extract their IDs
@@ -147,15 +140,9 @@ const createOrderUtil = async ({
       session
     );
 
-    let orderItems = [];
-    let subtotal = 0;
-    let totalTax = 0;
-    let totalShipping = 0;
-
     const stockUpdates = [];
 
     for (const item of cartItems) {
-      // Determine the product ID for comparison
       const itemProductId =
         item.productId ||
         (item.product && (item.product._id || item.product)) ||
@@ -170,53 +157,32 @@ const createOrderUtil = async ({
         );
       }
 
-      const {
-        title,
-        price,
-        image,
-        _id,
-        taxRate,
-        quantity, // This is the stock quantity from the database
-        storeId: sellerStoreId,
-      } = dbProduct;
-
-      // Check stock availability
-      if (item.quantity > quantity) {
-        // 'quantity' here is from dbProduct, 'item.quantity' is from cart
+      if (item.quantity > dbProduct.quantity) {
         throw new CustomError.BadRequestError(
-          `Not enough stock for product: ${_id}, only ${quantity} available`
+          `Not enough stock for product: ${dbProduct._id}, only ${dbProduct.quantity} available`
         );
       }
 
-      const sellerStore = await Store.findById(sellerStoreId).session(session);
-
-      // Validate buyer's store type can buy from this seller
-      checkWhoIsTheBuyer(buyerStore, sellerStore);
-
-      const itemTax = (price * taxRate) / 100;
-
-      const singleOrderItem = {
-        quantity: item.quantity,
-        title,
-        price,
-        image,
-        product: _id,
-        taxRate,
-        sellerStoreId,
-        taxAmount: itemTax * item.quantity,
-      };
-      orderItems.push(singleOrderItem);
-
-      subtotal += item.quantity * price;
-      totalTax += itemTax * item.quantity;
-      // Shipping is calculated separately and passed as shippingFee parameter
-
-      stockUpdates.push({ productId: _id, quantity: item.quantity });
+      stockUpdates.push({ productId: dbProduct._id, quantity: item.quantity });
     }
 
-    // Use actual shipping fee instead of hardcoded 0
-    totalShipping = shippingFee;
-    const totalAmount = totalTax + totalShipping + subtotal;
+    const groupedItems = groupProductsBySeller({ orderItems: cartItems, selectedShippingOptions });
+    // console.log('Grouped items:', groupedItems);
+
+    // Calculate the total amount using the fee calculation utility for consistency
+    const feeBreakdown = calculateMultiSellerOrderFees(
+      Object.values(groupedItems).map(sellerData => ({
+        store: sellerData.store,
+        productSubtotal: sellerData.totalAmount,
+        taxAmount: sellerData.totalTax,
+        shippingCost: sellerData.totalShipping || 0,
+      })),
+      true // Gross up fees
+    );
+
+    // console.log('Fee breakdown for the entire order:', feeBreakdown);
+
+    const totalAmount = feeBreakdown.customerTotal;
 
     // Use the actual delivery date selected by the user instead of recalculating
     let estimatedDeliveryDate;
@@ -230,7 +196,13 @@ const createOrderUtil = async ({
         
         // Use the exact deliveryTime selected by the user
         if (shippingOption.deliveryTime) {
-          const deliveryDate = new Date(shippingOption.deliveryTime);
+          // If it's a string date like '2025-08-25', append time to avoid timezone issues
+          let dateInput = shippingOption.deliveryTime;
+          if (typeof dateInput === 'string' && dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            dateInput = dateInput + 'T12:00:00.000Z'; // Set to noon UTC to avoid timezone conversion issues
+          }
+          
+          const deliveryDate = new Date(dateInput);
           if (!isNaN(deliveryDate.getTime())) {
             if (!earliestDate || deliveryDate < earliestDate) {
               earliestDate = deliveryDate;
@@ -275,10 +247,10 @@ const createOrderUtil = async ({
     const [order] = await Order.create(
       [
         {
-          orderItems,
+          orderItems: cartItems.map(item => ({ ...item, taxAmount: item.taxAmount || 0 })),
           totalAmount, //TODO: replace with the paymentIntent.metadata.totalAmount ?
-          totalTax,
-          totalShipping,
+          totalTax: feeBreakdown.summary.totalTax,
+          totalShipping: feeBreakdown.summary.totalShipping,
           paymentMethod,
           shippingAddress: parsedShippingAddress,
           billingAddress: parsedBillingAddress,

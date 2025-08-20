@@ -30,13 +30,14 @@ const formatShippingAddress = (address) => {
   const zipCode = address.zipCode || address.zip || '';
   const country = address.country || 'United States';
   const phone = address.phone || '';
+  const name = address.name || 'Recipient'; // Default name if missing
   
   return `
     <div style="line-height: 1.6;">
-      ${address.fullName ? `<strong>${address.fullName}</strong><br/>` : ''}
+      ${name ? `<strong>${name}</strong><br/>` : ''}
       ${street}<br/>
       ${street2 ? `${street2}<br/>` : ''}
-      ${address.city}, ${address.state} ${zipCode}<br/>
+      ${address.city || 'Unknown City'}, ${address.state || 'Unknown State'} ${zipCode}<br/>
       ${country}<br/>
       ${phone ? `📞 ${phone}` : ''}
     </div>

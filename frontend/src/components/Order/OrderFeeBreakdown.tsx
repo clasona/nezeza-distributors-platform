@@ -61,7 +61,7 @@ const OrderFeeBreakdown: React.FC<OrderFeeBreakdownProps> = ({
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 
                                   hidden group-hover:block w-64 p-2 
                                   bg-gray-800 text-white text-xs rounded-lg shadow-lg z-10">
-                      This fee covers payment processing costs to ensure secure transactions.
+                      This processing fee helps keep VeSoko running smoothly, covering essentials like insurance, secure payments, platform maintenance, and dedicated customer support.
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 
                                     w-0 h-0 border-l-4 border-r-4 border-t-4 
                                     border-transparent border-t-gray-800"></div>
@@ -81,22 +81,6 @@ const OrderFeeBreakdown: React.FC<OrderFeeBreakdownProps> = ({
           <span>Total:</span>
           <FormattedPrice amount={feeBreakdown.customerTotal} />
         </div>
-
-        {/* Processing fee explanation */}
-        {feeBreakdown.breakdown.processingFee > 0 && showProcessingFeeExplanation && (
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-start gap-2">
-              <Info size={16} className="text-blue-600 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-blue-700">
-                <p className="font-medium mb-1">About Processing Fees</p>
-                <p>
-                  This small fee helps us maintain secure payment processing and 
-                  ensures that sellers receive their full earnings without deductions.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Detailed breakdown (collapsible) */}
         {showDetailedBreakdown && showDetails && (

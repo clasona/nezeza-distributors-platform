@@ -11,7 +11,7 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
   initialAddress 
 }) => {
   const [address, setAddress] = useState<AddressData>(initialAddress || {
-    fullName: '',
+    name: '',
     street1: '',
     street2: '',
     city: '',
@@ -170,8 +170,8 @@ const AddressValidationExample: React.FC<AddressFormProps> = ({
           </label>
           <input
             type="text"
-            value={address.fullName || ''}
-            onChange={handleInputChange('fullName')}
+            value={address.name || ''}
+            onChange={handleInputChange('name')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-vesoko_primary"
             placeholder="John Doe"
           />

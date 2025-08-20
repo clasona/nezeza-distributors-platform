@@ -1,7 +1,6 @@
 import axiosInstance from '../axiosInstance';
 
 export interface AddressData {
-  fullName?: string;
   name?: string;
   street1?: string;
   street?: string;
@@ -125,7 +124,7 @@ export const normalizeAddress = async (address: AddressData): Promise<{ success:
  */
 export const isAddressComplete = (address: AddressData, type: 'shipping' | 'billing' = 'shipping'): { valid: boolean; missingFields: string[] } => {
   const requiredFields = [
-    { key: 'fullName', alternatives: ['fullName', 'name'], label: 'Full Name' },
+    { key: 'name', alternatives: ['name'], label: 'Name' },
     { key: 'street1', alternatives: ['street1', 'street'], label: 'Street Address' },
     { key: 'city', alternatives: ['city'], label: 'City' },
     { key: 'state', alternatives: ['state'], label: 'State' },
@@ -171,7 +170,7 @@ export const formatAddressForDisplay = (address: AddressData): string => {
   if (!address) return '';
   
   const parts = [
-    address.fullName || address.name,
+    address.name,
     address.street1 || address.street,
     address.street2,
     `${address.city || ''}, ${address.state || ''} ${address.zip || address.zipCode || ''}`.trim(),

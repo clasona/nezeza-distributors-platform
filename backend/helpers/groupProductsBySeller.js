@@ -1,70 +1,88 @@
-const groupProductsBySeller = (fullOrder) => {
+const Product = require("../models/Product");
+
+const groupProductsBySeller = ({ orderItems, selectedShippingOptions }) => {
   const subOrders = {};
   
   // First pass: calculate total amounts per seller
   let totalOrderValue = 0;
   const sellerValues = {};
   
-  fullOrder.orderItems.forEach((item) => {
+  orderItems.forEach((item) => {
     const itemValue = item.price * item.quantity;
     totalOrderValue += itemValue;
     
-    if (!sellerValues[item.sellerStoreId]) {
-      sellerValues[item.sellerStoreId] = 0;
+    // Extract the actual store ID from the sellerStoreId object
+    const storeId = typeof item.sellerStoreId === 'object' && item.sellerStoreId._id 
+      ? item.sellerStoreId._id 
+      : item.sellerStoreId;
+    
+    if (!sellerValues[storeId]) {
+      sellerValues[storeId] = 0;
     }
-    sellerValues[item.sellerStoreId] += itemValue;
+    sellerValues[storeId] += itemValue;
   });
 
-  fullOrder.orderItems.forEach((item) => {
+  for (const item of orderItems) {
     const {
       product: productId,
       price,
       title,
       image,
       taxRate,
-      taxAmount,
       quantity,
       sellerStoreId,
     } = item;
 
+    // Extract the actual store ID from the sellerStoreId object
+    const storeId = typeof sellerStoreId === 'object' && sellerStoreId._id 
+      ? sellerStoreId._id 
+      : sellerStoreId;
+
+    // Get taxRate from the product object or item itself
+    const productTaxRate = productId.taxRate || item.taxRate || 0;
+
+    // Calculate tax amount if missing (taxRate is an integer for 8%)
+    const calculatedTaxAmount = item.taxAmount || (price * quantity * (productTaxRate / 100));
+
     // Initialize sub-order object
-    if (!subOrders[sellerStoreId]) {
-      // Calculate proportional shipping based on seller's portion of total order value
-      const sellerProportion = totalOrderValue > 0 ? (sellerValues[sellerStoreId] / totalOrderValue) : 0;
-      const sellerShipping = (fullOrder.totalShipping || 0) * sellerProportion;
-      
-      subOrders[sellerStoreId] = {
-        fullOrderId: fullOrder._id,
+    if (!subOrders[storeId]) {
+      const sellerShippingOption = selectedShippingOptions[storeId];
+      const sellerShipping = sellerShippingOption ? (sellerShippingOption.cost || sellerShippingOption.price || 0) : 0;
+      const selectedRateId = sellerShippingOption ? 
+        (sellerShippingOption.rateId || sellerShippingOption) : null;
+
+        console.log(`Creating sub-order for store ID: ${storeId}, shipping cost: ${sellerShipping}, selected rate ID: ${selectedRateId}`);
+      subOrders[storeId] = {
         sellerStoreId,
         products: [],
         totalAmount: 0,
         totalTax: 0,
-        totalShipping: Math.round(sellerShipping * 100) / 100, // Round to 2 decimal places
+        totalShipping: sellerShipping,
+        selectedRateId,
         transactionFee: 0,
-        clientSecret: fullOrder.clientSecret,
         paymentStatus: 'Pending',
         fulfillmentStatus: 'Pending',
-        buyerId: fullOrder.buyerId,
-        buyerStoreId: fullOrder.buyerStoreId,
       };
     }
 
     // Add product details to sub-order products list
-    subOrders[sellerStoreId].products.push({
+    subOrders[storeId].products.push({
       productId,
       quantity,
       taxRate,
       price,
       title,
-      image: image[0],
+      image,
     });
 
     // Calculate and add to the total amount for the seller's sub-order
-    subOrders[sellerStoreId].totalAmount += price * quantity;
+    subOrders[storeId].totalAmount += price * quantity;
 
-    // Add tax amount (already calculated per item)
-    subOrders[sellerStoreId].totalTax += taxAmount;
-  });
+    // Add calculated tax amount
+    subOrders[storeId].taxRate = productTaxRate;
+    subOrders[storeId].totalTax += calculatedTaxAmount;
+
+  }
 
   return subOrders;
 };

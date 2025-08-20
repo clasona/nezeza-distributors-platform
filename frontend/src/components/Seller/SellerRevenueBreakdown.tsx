@@ -144,9 +144,9 @@ const SellerRevenueBreakdown: React.FC<SellerRevenueBreakdownProps> = ({
               <p>
                 • We handle all payment processing and shipping logistics at no additional cost to you
               </p>
-              <p>
+              {/* <p>
                 • Customers pay a small processing fee to ensure you receive your full earnings
-              </p>
+              </p> */}
             </div>
           </div>
         )}

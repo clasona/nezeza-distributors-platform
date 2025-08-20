@@ -1,4 +1,5 @@
 const express = require('express');
+const Store = require('../models/Store');
 const router = express.Router();
 const { 
   calculateOrderFees, 
@@ -12,7 +13,7 @@ const {
  */
 router.post('/single', async (req, res) => {
   try {
-    const { productSubtotal, taxAmount, shippingCost, grossUpFees = true } = req.body;
+    const { productSubtotal, taxAmount, shippingCost, grossUpFees = true, storeId } = req.body;
 
     // Validate required fields
     if (typeof productSubtotal !== 'number' || typeof taxAmount !== 'number' || typeof shippingCost !== 'number') {
@@ -29,11 +30,27 @@ router.post('/single', async (req, res) => {
       });
     }
 
+    // Fetch store information if storeId is provided
+    let store = null;
+    if (storeId) {
+      try {
+        store = await Store.findById(storeId);
+        if (!store) {
+          console.warn(`Store not found for ID: ${storeId}`);
+        } else {
+          console.log(`Found store for fee calculation: ${store.name}, grace period: ${store.gracePeriodStart} - ${store.gracePeriodEnd}`);
+        }
+      } catch (storeError) {
+        console.error('Error fetching store for fee calculation:', storeError);
+      }
+    }
+
     const feeCalculation = calculateOrderFees({
       productSubtotal,
       taxAmount,
       shippingCost,
-      grossUpFees
+      grossUpFees,
+      store
     });
 
     res.json({
@@ -78,7 +95,32 @@ router.post('/multi-seller', async (req, res) => {
       }
     }
 
-    const feeCalculation = calculateMultiSellerOrderFees(suborders, grossUpFees);
+    // Fetch store information for each suborder if storeId is provided
+    const Store = require('../models/Store');
+    const processedSuborders = await Promise.all(
+      suborders.map(async (suborder) => {
+        let store = null;
+        if (suborder.storeId) {
+          try {
+            store = await Store.findById(suborder.storeId);
+            if (!store) {
+              console.warn(`Store not found for ID: ${suborder.storeId}`);
+            } else {
+              console.log(`Found store for multi-seller fee calculation: ${store.storeName}, grace period: ${store.gracePeriodStart} - ${store.gracePeriodEnd}`);
+            }
+          } catch (storeError) {
+            console.error('Error fetching store for multi-seller fee calculation:', storeError);
+          }
+        }
+        
+        return {
+          ...suborder,
+          store // Add store object to suborder
+        };
+      })
+    );
+
+    const feeCalculation = calculateMultiSellerOrderFees(processedSuborders, grossUpFees);
 
     res.json({
       success: true,
@@ -113,7 +155,8 @@ router.post('/display', async (req, res) => {
       productSubtotal,
       taxAmount,
       shippingCost,
-      grossUpFees
+      grossUpFees,
+      store: null // No store context for display format
     });
 
     const displayFormat = getFrontendFeeDisplay(feeCalculation);

@@ -10,6 +10,7 @@ export interface FeeCalculationParams {
   taxAmount: number;
   shippingCost: number;
   grossUpFees?: boolean;
+  storeId?: string;
 }
 
 export interface FeeBreakdown {
@@ -96,14 +97,16 @@ export async function calculateOrderFees({
   productSubtotal,
   taxAmount,
   shippingCost,
-  grossUpFees = true
+  grossUpFees = true,
+  storeId
 }: FeeCalculationParams): Promise<FeeBreakdown> {
   try {
     const response = await axiosInstance.post('/fee-calculation/single', {
       productSubtotal,
       taxAmount,
       shippingCost,
-      grossUpFees
+      grossUpFees,
+      storeId
     });
 
     if (response.status === 200) {
@@ -186,13 +189,15 @@ export async function calculateMultiSellerFees(
     }, 0);
     const shippingCost = shippingRates[sellerId] || 0;
     const sellerName = items[0]?.product?.storeId?.storeName || 'Unknown Store';
+    const storeId = items[0]?.product?.storeId?._id || sellerId;
     
     return {
       sellerId,
       sellerName,
       productSubtotal,
       taxAmount,
-      shippingCost
+      shippingCost,
+      storeId
     };
   });
 

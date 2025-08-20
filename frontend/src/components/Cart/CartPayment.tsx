@@ -32,9 +32,9 @@ const CartPayment = () => {
       // Check if any products qualify for free shipping
       // You can customize this logic based on your business rules
       if (item.product && (
-        item.product.freeShipping || // Product has free shipping flag
-        item.product.price >= 25 || // Products over $25 qualify
-        item.product.category === 'electronics' // Certain categories qualify
+        item.product.freeShipping  // Product has free shipping flag
+        // item.product.price >= 25 || // Products over $25 qualify
+        // item.product.category === 'electronics' // Certain categories qualify
       )) {
         hasEligibleProducts = true;
       }
@@ -68,7 +68,7 @@ const CartPayment = () => {
       const userHasCompleteAddress =
         userInfo &&
         userInfo.address &&
-        userInfo.address.fullName &&
+        userInfo.address.name &&
         userInfo.address.street1 &&
         userInfo.address.street2 && 
         userInfo.address.city &&
@@ -91,7 +91,7 @@ const CartPayment = () => {
       }, 800);
     } catch (error: any) {
       handleError(error);
-      setErrorMessage(error?.message || 'An error occurred');
+      setErrorMessage(error || 'An error occurred');
       setTimeout(() => setErrorMessage(''), 4000);
     }
   };
@@ -112,7 +112,7 @@ const CartPayment = () => {
         </div>
       )}
       
-      {!qualifiesForFreeShipping && totalAmount > 0 && (
+      {/* {!qualifiesForFreeShipping && totalAmount > 0 && (
         <div className='flex gap-2 items-start'>
           <span
             className='bg-amber-500 rounded-full p-1 h-6 w-6 text-sm
@@ -127,7 +127,7 @@ const CartPayment = () => {
             )}
           </p>
         </div>
-      )}
+      )} */}
       <p className='flex flex-col sm:flex-row items-center justify-between px-2 font-semibold'>
         Total Price:{' '}
         <span className='font-bold text-lg sm:text-xl'>

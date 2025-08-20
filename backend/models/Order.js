@@ -1,6 +1,57 @@
 const mongoose = require('mongoose');
 const addressSchema = require('./Address');
 
+const shippingSchema = new mongoose.Schema(
+  {
+    rateId: {
+      type: String,
+      required: false, // Make optional since it's set when rate is selected
+    },
+    labelUrl: {
+      type: String,
+      required: false,
+      validate: {
+        validator: function (v) {
+          return !v || validator.isURL(v); // Allow empty or valid URL
+        },
+        message: (props) => `${props.value} is not a valid URL!`,
+      },
+    },
+    carrier: {
+      type: String,
+      required: false, // Make optional until label is created
+      enum: ['DHL', 'FedEx', 'UPS', 'USPS', 'Other', 'TBD'], // Add 'TBD' as valid option
+      default: 'TBD',
+    },
+    trackingNumber: {
+      type: String,
+      required: false, // Make optional until label is created
+      default: '',
+    },
+    trackingUrl: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    estimatedDeliveryDate: {
+      type: Date,
+      required: false,
+    },
+    shipmentStatus: {
+      type: String,
+      required: true,
+      enum: ['Awaiting Shipment', 'Pending', 'In Transit', 'Delivered', 'Exception', 'Cancelled'],
+      default: 'Pending',
+    },
+    shippingAddress: addressSchema, // Add shippingAddress field
+    shippingNotes: {
+      type: String,
+      required: false,
+    },
+  },
+  { timestamps: true }
+);
+
 const SingleOrderItemSchema = mongoose.Schema({
   title: { type: String, required: true },
   image: { type: String, required: true },
@@ -138,6 +189,8 @@ const OrderSchema = mongoose.Schema(
       type: Date,
       required: true,
     },
+    shippingDetails: shippingSchema, // Add shipping details for each item
+
   },
   { timestamps: true }
 );

@@ -10,6 +10,7 @@ const PLATFORM_FEE_GRACE_PERIOD_DAYS = parseInt(process.env.PLATFORM_FEE_GRACE_P
  * @returns {boolean} True if store is within grace period
  */
 function isStoreInGracePeriod(store) {
+  // console.log('Checking grace period for store:', store.gracePeriodEnd, store.gracePeriodStart);
   if (!store || !store.gracePeriodStart || !store.gracePeriodEnd) {
     return false;
   }
@@ -77,7 +78,9 @@ function calculateOrderFees({
   }
 
   // Check if store is in grace period (no platform fees)
+  // console.log('Store for fee calculation:', store.name);
   const inGracePeriod = store ? isStoreInGracePeriod(store) : false;
+  // console.log(`Store in grace period: ${inGracePeriod}`);
   const gracePeriodDaysRemaining = store ? getGracePeriodDaysRemaining(store) : 0;
   
   // NEW MODEL: Platform fee is already included in the product subtotal
@@ -89,7 +92,7 @@ function calculateOrderFees({
     platformCommission = 0;
     sellerNetRevenue = productSubtotal;
     sellerReceives = productSubtotal + taxAmount;
-    console.log('Store in grace period - no platform fees applied');
+    // console.log('Store in grace period - no platform fees applied');
   } else {
     // After grace period: normal fee calculation
     platformCommission = productSubtotal * PLATFORM_FEE_PERCENTAGE; // 10% of listed price
@@ -112,11 +115,10 @@ function calculateOrderFees({
     // Gross-up model: Calculate total needed to cover ALL costs (seller payout + platform costs + stripe fees)
     // Total costs that need to be covered after Stripe fees are deducted:
     const totalCostsNeeded = sellerReceives + platformShippingRevenue + platformCommission;
-    console.log('Platform commission:', platformCommission);
-    console.log('Platform shipping revenue:', platformShippingRevenue);
-    console.log('Seller receives:', sellerReceives);
-    console.log('Seller net product revenue:', sellerNetRevenue);
-    console.log('Total costs needed:', totalCostsNeeded);
+    // console.log('Platform commission:', platformCommission);
+    // console.log('Platform shipping revenue:', platformShippingRevenue);
+    // console.log('Seller receives:', sellerReceives);
+    // console.log('Total costs needed:', totalCostsNeeded);
 
     // We need to find X where: X - (X * 0.029 + 0.30) = totalCostsNeeded
     // Solving for X: X = (totalCostsNeeded + 0.30) / (1 - 0.029)
@@ -124,11 +126,11 @@ function calculateOrderFees({
     processingFee = customerTotal - totalCostsNeeded; // This is the gross-up fee added to customer total
     stripeFee = (customerTotal * STRIPE_PERCENTAGE_FEE) + STRIPE_FIXED_FEE;
 
-    console.log('Gross-up model:');
-    console.log('Total costs needed:', totalCostsNeeded);
-    console.log('Customer total:', customerTotal);
-    console.log('Processing fee (gross-up):', processingFee);
-    console.log('Stripe fee:', stripeFee);
+    // console.log('Gross-up model:');
+    // console.log('Total costs needed:', totalCostsNeeded);
+    // console.log('Customer total:', customerTotal);
+    // console.log('Processing fee (gross-up):', processingFee);
+    // console.log('Stripe fee:', stripeFee);
     
     // Platform gets: commission + shipping (all costs are covered)
     platformRevenue = platformCommission + platformShippingRevenue;
@@ -221,7 +223,8 @@ function calculateMultiSellerOrderFees(suborders, grossUpFees = true) {
       productSubtotal: suborder.productSubtotal,
       taxAmount: suborder.taxAmount,
       shippingCost: suborder.shippingCost,
-      grossUpFees
+      grossUpFees,
+      store: suborder.store // Pass store information for grace period checking
     });
 
     // Aggregate totals
@@ -242,6 +245,10 @@ function calculateMultiSellerOrderFees(suborders, grossUpFees = true) {
     aggregated.suborderBreakdowns.push({
       sellerId: suborder.sellerId,
       sellerName: suborder.sellerName,
+      storeId: suborder.storeId,
+      storeName: suborder.store?.storeName,
+      inGracePeriod: suborder.store ? isStoreInGracePeriod(suborder.store) : false,
+      gracePeriodDaysRemaining: suborder.store ? getGracePeriodDaysRemaining(suborder.store) : 0,
       fees: fees
     });
   }

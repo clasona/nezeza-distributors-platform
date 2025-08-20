@@ -321,8 +321,8 @@ const CustomerMoreOrderDetailsModal = ({
                   </div>
                   <div className='bg-gray-50 p-4 rounded-lg'>
                     <div className='text-sm text-gray-900 space-y-1'>
-                      {orderData.shippingAddress.fullName && (
-                        <div className='font-medium'>{orderData.shippingAddress.fullName}</div>
+                      {orderData.shippingAddress.name && (
+                        <div className='font-medium'>{orderData.shippingAddress.name}</div>
                       )}
                       <div>{orderData.shippingAddress.street1}</div>
                       {orderData.shippingAddress.street2 && (
@@ -352,7 +352,7 @@ const CustomerMoreOrderDetailsModal = ({
                   <div key={product._id} className='flex items-center space-x-4 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors'>
                   {/* what placeholder should i have in my public? */}
                   <Image
-                    src={product.images?.[0] ?? '/placeholder.jpg'}
+                    src={product.image ?? '/placeholder.jpg'}
                     alt={product.description || product.title || 'Product image'}
                     width={64}
                     height={64}

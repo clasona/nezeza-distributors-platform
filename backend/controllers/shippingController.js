@@ -1128,13 +1128,13 @@ const emailShippingLabel = async (req, res) => {
           <div class="email-wrapper">
             <div class="email-container">
               <div class="email-header">
-                <h1>Soko</h1>
-                <div class="tagline">Connecting Africa to America</div>
+                <h1>VeSoko</h1>
+                <div class="tagline">Connecting Africa to the World</div>
               </div>
               ${content}
               <div class="email-footer">
                 <div class="footer-text">
-                  Thank you for choosing Soko Platform
+                  Thank you for choosing VeSoko Platform
                 </div>
               </div>
             </div>

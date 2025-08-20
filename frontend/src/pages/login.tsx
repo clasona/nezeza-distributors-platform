@@ -131,6 +131,7 @@ const LoginPage = () => {
         }
 
         const userData = response.data.user;
+        console.log('User data retrieved:', userData);
 
         // Dispatch comprehensive user data to Redux
         dispatch(

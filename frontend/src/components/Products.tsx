@@ -1,11 +1,5 @@
 import { addToCart, addToFavorites, setBuyNowProduct, setShippingAddress, increaseQuantity, decreaseQuantity, deleteFavoritesProduct, deleteCartProduct } from '@/redux/nextSlice';
 import { handleError } from '@/utils/errorUtils';
-import { createPaymentIntent } from '@/utils/payment/createPaymentIntent';
-import {
-  getManufacturersProducts,
-  getRetailersProducts,
-  getWholesalersProducts,
-} from '@/utils/product/getProductsBySeller';
 import {
   Heart,
   ShoppingCart,
@@ -208,7 +202,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
 
       // Set shipping address from user info
       const shippingAddress: AddressProps = {
-        fullName: `${userInfo.firstName || ''} ${userInfo.lastName || ''}`.trim(),
+        name: `${userInfo.firstName || ''} ${userInfo.lastName || ''}`.trim(),
         street1: userInfo.address.street1,
         street2: userInfo.address.street2 || '',
         city: userInfo.address.city,
