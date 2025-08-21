@@ -203,7 +203,7 @@ const SellersHub = () => {
                   <div className="space-y-6">
                     <div className="text-center">
                       <div className="w-16 h-16 mx-auto mb-4 bg-vesoko_primary rounded-2xl flex items-center justify-center">
-                        <Zap className="w-8 h-8 text-vesoko_primary" />
+                        <Zap className="w-8 h-8 text-white" />
                       </div>
                       <h3 className="text-2xl font-bold mb-2">Phase 1: Active Now!</h3>
                       <p className="text-white/90">

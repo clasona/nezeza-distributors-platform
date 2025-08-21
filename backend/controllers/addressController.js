@@ -32,14 +32,15 @@ const validateShippingAddress = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Address validation error:', error);
+    console.error('Address validation error:', error.message || error);
     
     // Return validation failure instead of 500 error
+    const errorMsg = error.message || 'Address validation failed';
     res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
       valid: false,
-      error: error.message || 'Address validation failed',
-      message: 'Unable to validate address',
+      error: errorMsg,
+      message: errorMsg,
       originalAddress: req.body.address
     });
   }
@@ -76,11 +77,12 @@ const validateBillingAddress = async (req, res) => {
   } catch (error) {
     console.error('Billing address validation error:', error);
     
+    const errorMsg = error.message || 'Billing address validation failed';
     res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
       valid: false,
-      error: error.message || 'Billing address validation failed',
-      message: 'Unable to validate billing address',
+      error: errorMsg,
+      message: errorMsg,
       originalAddress: req.body.address
     });
   }
@@ -114,10 +116,12 @@ const quickValidateAddressController = async (req, res) => {
   } catch (error) {
     console.error('Quick address validation error:', error);
     
+    const errorMsg = error.message || 'Address validation failed';
     res.status(StatusCodes.BAD_REQUEST).json({
       success: false,
       valid: false,
-      error: error.message || 'Address validation failed',
+      error: errorMsg,
+      message: errorMsg,
       originalAddress: req.body.address
     });
   }
@@ -148,9 +152,11 @@ const normalizeAddressFormat = async (req, res) => {
   } catch (error) {
     console.error('Address normalization error:', error);
     
+    const errorMsg = error.message || 'Address normalization failed';
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
-      error: error.message || 'Address normalization failed'
+      error: errorMsg,
+      message: errorMsg
     });
   }
 };

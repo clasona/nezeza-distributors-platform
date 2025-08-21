@@ -27,6 +27,7 @@ interface StoreInfoInputProps {
   getValues: UseFormGetValues<StoreApplicationFormData>;
   onVerificationStatusChange?: (emailVerified: boolean, phoneVerified: boolean) => void;
   setStoreLogoResource?: (resource: any) => void;
+  onAddressValidationComplete?: (isValid: boolean, validatedAddress?: any) => void;
 }
 
 const StoreInfoInput = ({
@@ -37,6 +38,7 @@ const StoreInfoInput = ({
   getValues,
   onVerificationStatusChange,
   setStoreLogoResource: setParentStoreLogoResource,
+  onAddressValidationComplete,
 }: StoreInfoInputProps) => {
   const [storeLogoResource, setStoreLogoResource] = useState<any>(null);
   const [emailValidationStatus, setEmailValidationStatus] = useState<'idle' | 'sending' | 'code-sent' | 'verifying' | 'verified' | 'invalid' | 'code-error'>('idle');
@@ -75,6 +77,7 @@ const StoreInfoInput = ({
   const primaryEmailValue = useWatch({ control, name: 'email' }); // Changed to primary contact email
   const storeEmailValue = useWatch({ control, name: 'storeEmail' }); // Keep this for store email field
   const storePhoneValue = useWatch({ control, name: 'storePhone' });
+  const storeNameValue = useWatch({ control, name: 'storeName' }); // Watch store name for address
 
   // Email verification functions
   const sendEmailVerificationCode = async (email: string) => {
@@ -174,6 +177,14 @@ const StoreInfoInput = ({
     const selectedStoreType = localStorage.getItem('selectedStoreType') || '';
     setValue('storeType', selectedStoreType, { shouldValidate: true });
   }, [setValue]);
+
+  // Auto-sync store name to address name field
+  useEffect(() => {
+    if (storeNameValue) {
+      // Set a hidden field that AddressInput will use for the name when validating
+      setValue('storeAddressName', storeNameValue);
+    }
+  }, [storeNameValue, setValue]);
 
   const storeTypeOptions = [
     { value: 'retail', label: 'Retail' },  // Only retail type is available for now
@@ -366,6 +377,15 @@ const StoreInfoInput = ({
           errors={errors as any}
           control={control as any}
           setValue={setValue as any}
+          // Enable address validation
+          enableValidation={true}
+          validationType='shipping'
+          showValidationButton={true}
+          autoValidateDelay={2500} // Wait 2.5 seconds after user stops typing
+          onValidationComplete={(isValid, validatedAddress) => {
+            console.log('Store address validation:', { isValid, validatedAddress });
+            onAddressValidationComplete?.(isValid, validatedAddress);
+          }}
         />
       </div>
     </>

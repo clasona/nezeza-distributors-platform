@@ -83,6 +83,10 @@ const StoreRegistrationForm = ({
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [verificationError, setVerificationError] = useState('');
   const [documentsError, setDocumentsError] = useState('');
+  const [addressValidationError, setAddressValidationError] = useState('');
+  const [isValidatingAddress, setIsValidatingAddress] = useState(false);
+  const [isAddressValid, setIsAddressValid] = useState(false);
+  const [hasAttemptedAddressValidation, setHasAttemptedAddressValidation] = useState(false);
   const router = useRouter();
 
   const sections = ['Primary Contact', 'Store Info', 'Docs', 'Review & Submit'];
@@ -217,14 +221,24 @@ const StoreRegistrationForm = ({
       // if (!phoneVerified) {
       //   errorMsg = 'Please verify your phone before proceeding.';
       // }
-      if (errorMsg) {
-        setVerificationError(errorMsg);
-        return; // Don't proceed
-      } else {
-        setVerificationError(''); // Clear any previous error
-      }
+      
+      // if (errorMsg) {
+      //   setVerificationError(errorMsg);
+      //   return; // Don't proceed
+      // } else {
+      //   setVerificationError(''); // Clear any previous error
+      // }
     }
     
+    // Store Info section (section 1) - check address validation
+    if (currentSection === 1) {
+      if (hasAttemptedAddressValidation && !isAddressValid) {
+        setAddressValidationError('Please validate your store address and resolve any issues before proceeding.');
+        return; // Don't proceed
+      } else {
+        setAddressValidationError(''); // Clear any previous error
+      }
+    }
 
     // Check that documents are uploaded for Docs section (section 2)
     if (currentSection === 2) {
@@ -283,6 +297,7 @@ const StoreRegistrationForm = ({
         phone: data.storePhone,
         logo: data.storeLogo || (storeLogoResource ? storeLogoResource.secure_url : ''),
         address: {
+          name: data.storeName,
           street: data.storeStreet,
           street1: data.storeStreet, // For Shippo compatibility
           street2: data.storeStreet2 || '', // Optional second address line
@@ -300,7 +315,7 @@ const StoreRegistrationForm = ({
     };
 
     try {
-      console.log('Submitting store application:', storeApplicationData);
+      // console.log('Submitting store application:', storeApplicationData);
       const response = await createStoreApplication(storeApplicationData);
       if (response.status !== 201) {
         setSuccessMessage('');
@@ -472,7 +487,48 @@ const StoreRegistrationForm = ({
                         setVerificationError('');
                       }
                     }}
+                    onAddressValidationComplete={(isValid, validatedAddress) => {
+                      setHasAttemptedAddressValidation(true);
+                      setIsAddressValid(isValid);
+                      if (isValid) {
+                        setAddressValidationError('');
+                      }
+                    }}
                   />
+                  {/* Address Validation Loading State */}
+                  {isValidatingAddress && (
+                    <div className='mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg'>
+                      <div className='flex items-center'>
+                        <div className='flex-shrink-0'>
+                          <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600'></div>
+                        </div>
+                        <div className='ml-3'>
+                          <p className='text-sm font-medium text-blue-800'>
+                            Validating store address...
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Address Validation Error Message */}
+                  {addressValidationError && (
+                    <div className='mt-4 p-4 bg-red-50 border border-red-200 rounded-lg'>
+                      <div className='flex items-center'>
+                        <div className='flex-shrink-0'>
+                          <svg className='h-5 w-5 text-red-400' viewBox='0 0 20 20' fill='currentColor'>
+                            <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z' clipRule='evenodd' />
+                          </svg>
+                        </div>
+                        <div className='ml-3'>
+                          <p className='text-sm font-medium text-red-800'>
+                            {addressValidationError}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Verification Error Message */}
                   {verificationError && (
                     <div className='mt-4 p-4 bg-red-50 border border-red-200 rounded-lg'>
@@ -574,10 +630,22 @@ const StoreRegistrationForm = ({
               {currentSection < sections.length - 1 && (
                 <button
                   type='button'
-                  className='bg-vesoko_primary text-white px-6 py-2 rounded-lg hover:bg-vesoko_primary transition-colors duration-200'
+                  className={`px-6 py-2 rounded-lg transition-colors duration-200 ${
+                    isValidatingAddress
+                      ? 'bg-blue-400 cursor-not-allowed text-white'
+                      : 'bg-vesoko_primary hover:bg-vesoko_primary text-white'
+                  }`}
                   onClick={handleNext}
+                  disabled={isValidatingAddress}
                 >
-                  Next
+                  {isValidatingAddress && currentSection === 1 ? (
+                    <div className='flex items-center gap-2'>
+                      <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white'></div>
+                      Validating Address...
+                    </div>
+                  ) : (
+                    'Next'
+                  )}
                 </button>
               )}
               {currentSection === sections.length - 1 && (

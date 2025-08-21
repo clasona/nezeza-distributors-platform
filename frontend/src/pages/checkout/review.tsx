@@ -462,7 +462,7 @@ const CheckoutReviewPage = () => {
                     {item.image && (
                       <Image
                         src={item.product.images[0]}
-                        alt={item.product.name}
+                        alt={item.product.name ? item.product.name : 'Product Image'}
                         width={56}
                         height={56}
                         className='w-14 h-14 object-cover rounded'

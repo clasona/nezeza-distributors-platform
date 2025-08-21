@@ -37,9 +37,10 @@ router.post('/single', async (req, res) => {
         store = await Store.findById(storeId);
         if (!store) {
           console.warn(`Store not found for ID: ${storeId}`);
-        } else {
-          console.log(`Found store for fee calculation: ${store.name}, grace period: ${store.gracePeriodStart} - ${store.gracePeriodEnd}`);
-        }
+        } 
+        // else {
+        //   // console.log(`Found store for fee calculation: ${store.name}, grace period: ${store.gracePeriodStart} - ${store.gracePeriodEnd}`);
+        // }
       } catch (storeError) {
         console.error('Error fetching store for fee calculation:', storeError);
       }

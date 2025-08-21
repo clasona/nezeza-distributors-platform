@@ -30,25 +30,70 @@ export interface AddressValidationResponse {
 }
 
 /**
+ * Helper function to convert country names back to codes for API validation
+ */
+const countryNameToCode = (countryName: string): string => {
+  if (!countryName) return '';
+  
+  const nameToCodeMap: Record<string, string> = {
+    'united states': 'US',
+    'canada': 'CA',
+    'rwanda': 'RW'
+  };
+  
+  return nameToCodeMap[countryName.toLowerCase()] || countryName.toUpperCase();
+};
+
+/**
+ * Helper function to convert state names back to abbreviations for US states
+ */
+const stateNameToCode = (stateName: string, countryCode: string): string => {
+  if (!stateName || countryCode !== 'US') return stateName;
+  
+  const nameToCodeMap: Record<string, string> = {
+    'alabama': 'AL', 'alaska': 'AK', 'american samoa': 'AS', 'arizona': 'AZ', 'arkansas': 'AR',
+    'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE', 'district of columbia': 'DC',
+    'federated states of micronesia': 'FM', 'florida': 'FL', 'georgia': 'GA', 'guam': 'GU', 'hawaii': 'HI',
+    'idaho': 'ID', 'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS', 'kentucky': 'KY',
+    'louisiana': 'LA', 'maine': 'ME', 'marshall islands': 'MH', 'maryland': 'MD', 'massachusetts': 'MA',
+    'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS', 'missouri': 'MO', 'montana': 'MT',
+    'nebraska': 'NE', 'nevada': 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM',
+    'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', 'northern mariana islands': 'MP',
+    'ohio': 'OH', 'oklahoma': 'OK', 'oregon': 'OR', 'palau': 'PW', 'pennsylvania': 'PA',
+    'puerto rico': 'PR', 'rhode island': 'RI', 'south carolina': 'SC', 'south dakota': 'SD',
+    'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT', 'vermont': 'VT', 'virgin islands': 'VI',
+    'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV', 'wisconsin': 'WI', 'wyoming': 'WY'
+  };
+  
+  return nameToCodeMap[stateName.toLowerCase()] || stateName;
+};
+
+/**
  * Validate a shipping address using Shippo API
  * This should be called before saving/using an address for shipping calculations
  */
 export const validateShippingAddress = async (address: AddressData): Promise<AddressValidationResponse> => {
   try {
-    const response = await axiosInstance.post('/address/validate/shipping', { address });
+    // Convert normalized names back to codes for API validation
+    const countryCode = countryNameToCode(address.country || '');
+    const stateCode = stateNameToCode(address.state || '', countryCode);
+    
+    const addressForValidation = {
+      ...address,
+      country: countryCode,
+      state: stateCode
+    };
+    
+    const response = await axiosInstance.post('/address/validate/shipping', { address: addressForValidation });
     return response.data;
   } catch (error: any) {
     console.error('Shipping address validation error:', error);
     
-    // Return the error response from the backend if available
-    if (error.response?.data) {
-      return error.response.data;
-    }
-    
+    // Since axios interceptor converts errors to strings, handle both cases
     return {
       success: false,
       valid: false,
-      error: error.message || 'Failed to validate shipping address',
+      error: typeof error === 'string' ? error : (error.message || 'Failed to validate shipping address'),
       originalAddress: address
     };
   }
@@ -145,12 +190,8 @@ export const isAddressComplete = (address: AddressData, type: 'shipping' | 'bill
   }
 
   // Basic format validation for US addresses
-  if (address.country === 'US' || !address.country) {
-    const state = address.state;
-    if (state && !/^[A-Z]{2}$/i.test(state)) {
-      missingFields.push('Valid State (2-letter code)');
-    }
-
+  const isUSAddress = address.country === 'US' || address.country === 'united states' || !address.country;
+  if (isUSAddress) {
     const zip = address.zip || address.zipCode;
     if (zip && !/^\d{5}(-\d{4})?$/.test(zip)) {
       missingFields.push('Valid ZIP Code (12345 or 12345-6789)');

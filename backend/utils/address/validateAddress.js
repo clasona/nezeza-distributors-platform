@@ -31,10 +31,12 @@ const validateAddressWithShippo = async (address, type = 'shipping') => {
     // Add optional fields if they exist
     if (address.street2) {
       params.append('address_line_2', address.street2);
-    }
+    } 
     if (address.organization) {
       params.append('organization', address.organization);
     }
+
+    // console.log(`------------Validating ${type} address with Shippo:`, params.toString());
 
     // Call Shippo validation endpoint
     const response = await axios.get(`https://api.goshippo.com/v2/addresses/validate?${params.toString()}`, {
@@ -45,8 +47,16 @@ const validateAddressWithShippo = async (address, type = 'shipping') => {
       timeout: 10000 // 10 second timeout
     });
 
+    //   const response = await axios.get(`https://api.goshippo.com/v2/addresses/validate?address_line_1=320J%20Outerbelt%20Street&city_locality=Columbus&state_province=OH&postal_code=43213&country_code=US&organization=Shippo`, {
+    //   headers: {
+    //     'Authorization': `ShippoToken ${process.env.SHIPPO_API_TOKEN}`,
+    //     'Content-Type': 'application/json'
+    //   },
+    //   timeout: 10000 // 10 second timeout
+    // });
+
     const validationResult = response.data;
-    // console.log(`Shippo validation result for ${type}:`, JSON.stringify(validationResult, null, 2));
+    // console.log(`------------Shippo validation result for ${type}:`, JSON.stringify(validationResult, null, 2));
 
     // Check if validation was successful - Shippo v2 uses different structure
     if (!validationResult || !validationResult.analysis || !validationResult.analysis.validation_result) {
@@ -73,11 +83,26 @@ const validateAddressWithShippo = async (address, type = 'shipping') => {
         r.description?.toLowerCase().includes('missing secondary')
       );
       
-      // For missing secondary info, this is actually an error that requires user action
+      // For missing secondary info, try institutional address fallback
       if (missingSecondaryErrors.length > 0) {
         console.log(`${type} address missing required secondary info:`, missingSecondaryErrors.map(r => r.description));
         
-        // Return specific error message asking user to provide apartment/suite number
+        // Try common institutional names for college/university addresses
+        const institutionalFallback = await tryInstitutionalAddressFallback(address, params);
+        if (institutionalFallback.success) {
+          console.log(`${type} address validated using institutional fallback:`, institutionalFallback.institutionName);
+          return {
+            success: true,
+            valid: true,
+            address: institutionalFallback.address,
+            originalAddress: address,
+            message: `Address validated for ${institutionalFallback.institutionName}`,
+            warnings: [`Address completed automatically for ${institutionalFallback.institutionName}`],
+            corrections: []
+          };
+        }
+        
+        // If institutional fallback didn't work, return specific error message
         const errorMessage = `This address requires additional information (apartment, suite, unit, etc.). Please add this information to the "Address Line 2" field.`;
         
         throw new CustomError.BadRequestError(errorMessage);
@@ -190,6 +215,110 @@ const validateAddressWithShippo = async (address, type = 'shipping') => {
     console.error(`Address validation error for ${type}:`, error.message);
     throw new CustomError.BadRequestError(`Unable to validate ${type} address. Please check the address and try again.`);
   }
+};
+
+/**
+ * Try to validate an address using common institutional names for colleges/universities
+ * This helps handle student addresses where they don't know to include institution names
+ * @param {Object} address - The original address
+ * @param {URLSearchParams} originalParams - The original parameters
+ * @returns {Object} - Fallback validation result
+ */
+const tryInstitutionalAddressFallback = async (address, originalParams) => {
+  // Common institutional name patterns based on address characteristics
+  const institutionalPatterns = [
+    // Specific known institutions
+    { pattern: /300.*summit.*st.*hartford.*ct/i, names: ['Trinity', 'Trinity College'] },
+    { pattern: /yale.*new.*haven.*ct/i, names: ['Yale', 'Yale University'] },
+    { pattern: /harvard.*cambridge.*ma/i, names: ['Harvard', 'Harvard University'] },
+    { pattern: /mit.*cambridge.*ma/i, names: ['MIT', 'Massachusetts Institute of Technology'] },
+    
+    // Generic patterns for college addresses
+    { pattern: /.*university.*drive|.*university.*ave|.*college.*st|.*campus.*dr/i, names: ['University', 'College'] },
+    { pattern: /.*dormitory|.*residence.*hall|.*student.*housing/i, names: ['University', 'Student Housing'] },
+  ];
+  
+  // Create address string for pattern matching
+  const addressString = `${address.street1 || address.street} ${address.city} ${address.state}`;
+  
+  // Find matching pattern
+  let institutionNames = [];
+  for (const pattern of institutionalPatterns) {
+    if (pattern.pattern.test(addressString)) {
+      institutionNames = pattern.names;
+      break;
+    }
+  }
+  
+  // If no pattern match, try generic institution names
+  if (institutionNames.length === 0) {
+    // Check if it's in a college town or has college-like characteristics
+    const collegeTowns = ['Hartford', 'New Haven', 'Cambridge', 'Princeton', 'Stanford', 'Berkeley'];
+    if (collegeTowns.some(town => address.city?.toLowerCase().includes(town.toLowerCase()))) {
+      institutionNames = ['University', 'College'];
+    }
+  }
+  
+  // Try each institutional name
+  for (const institutionName of institutionNames) {
+    try {
+      const testParams = new URLSearchParams(originalParams);
+      testParams.set('name', institutionName);
+      
+      console.log(`Trying institutional fallback with name: ${institutionName}`);
+      
+      const response = await axios.get(`https://api.goshippo.com/v2/addresses/validate?${testParams.toString()}`, {
+        headers: {
+          'Authorization': `ShippoToken ${process.env.SHIPPO_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 5000 // Shorter timeout for fallback attempts
+      });
+      
+      const validationResult = response.data;
+      
+      if (validationResult?.analysis?.validation_result) {
+        const validation = validationResult.analysis.validation_result;
+        const isValid = validation.value === 'valid' || validation.value === 'partially_valid';
+        
+        if (isValid) {
+          // Success! Create normalized address from the recommended address
+          const addressToUse = validationResult.recommended_address || validationResult.original_address;
+          
+          const normalizedAddress = {
+            name: address.fullName || address.name || 'Student',
+            street1: addressToUse.address_line_1 || address.street1 || address.street,
+            street2: addressToUse.address_line_2 || address.street2 || '',
+            city: addressToUse.city_locality || address.city,
+            state: addressToUse.state_province || address.state,
+            zip: addressToUse.postal_code || address.zip || address.zipCode,
+            country: addressToUse.country_code || address.country || 'US',
+            phone: address.phone || '',
+            email: address.email || '',
+            // Keep original fields for backward compatibility
+            street: addressToUse.address_line_1 || address.street1 || address.street,
+            zipCode: addressToUse.postal_code || address.zip || address.zipCode,
+            // Add validation metadata
+            isValidated: true,
+            validatedAt: new Date(),
+            institutionalMatch: institutionName
+          };
+          
+          return {
+            success: true,
+            address: normalizedAddress,
+            institutionName: institutionName
+          };
+        }
+      }
+    } catch (error) {
+      // Continue to next institution name if this one fails
+      console.log(`Institutional fallback failed for ${institutionName}:`, error.message);
+      continue;
+    }
+  }
+  
+  return { success: false };
 };
 
 /**

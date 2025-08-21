@@ -25,9 +25,10 @@ axiosInstance.interceptors.response.use(
   (error: AxiosError<ErrorResponse>) => {
     let errorMessage = 'An unexpected error occurred.';
 
-      if (error.response) {
-        const errorData: ErrorResponse = error.response.data;
-      errorMessage = errorData.msg || `Server error: ${error.response.status}`;
+    if (error.response) {
+      const errorData: any = error.response.data;
+      // Try different field names that the backend might use
+      errorMessage = errorData.error || errorData.message || errorData.msg || `Server error: ${error.response.status}`;
     } else if (error.request) {
       errorMessage = 'Network error. Please check your connection.';
     } else {

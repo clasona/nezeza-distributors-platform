@@ -20,6 +20,7 @@ export type StoreApplicationFormData = {
   storeEmail: string;
   storePhone: string;
   storeLogo?: string;
+  storeAddressName?: string; // Hidden field for address validation
   storeStreet: string;
   storeStreet2?: string;
   storeCity: string;

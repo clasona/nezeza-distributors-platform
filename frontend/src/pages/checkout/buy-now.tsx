@@ -25,9 +25,6 @@ const CheckoutBuyNowPage = () => {
 
   // Redirect to the shipping address page for proper address validation
   useEffect(() => {
-    console.log('Buy Now Page - useEffect triggered');
-    console.log('buyNowProduct:', buyNowProduct);
-    console.log('userInfo:', userInfo);
     
     if (!buyNowProduct || !buyNowProduct.isBuyNow) {
       console.log('No buy now product or isBuyNow is false, redirecting to home');

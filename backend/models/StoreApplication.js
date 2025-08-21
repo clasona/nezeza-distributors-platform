@@ -90,6 +90,7 @@ const StoreInfoSchema = new mongoose.Schema({
   // },
   // In PrimaryContactInfoSchema
   address: {
+    name: { type: String, required: false },
     street: { type: String, required: true },
     street1: { type: String }, // For Shippo API compatibility
     street2: { type: String }, // For Shippo API compatibility
