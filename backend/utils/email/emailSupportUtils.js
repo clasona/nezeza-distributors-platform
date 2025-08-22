@@ -1,3 +1,4 @@
+const getClientUrl = require('../getClientUrl');
 const sendEmail = require('../sendEmail');
 
 /**
@@ -356,9 +357,9 @@ const getBaseEmailTemplate = (content, title = 'VeSoko Support') => {
               Thank you for choosing VeSoko Platform
             </div>
             <div class="footer-links">
-              <a href="${process.env.CLIENT_URL}/support">Support Center</a> | 
-              <a href="${process.env.CLIENT_URL}/contact">Contact Us</a> | 
-              <a href="${process.env.CLIENT_URL}/unsubscribe">Unsubscribe</a>
+              <a href="${getClientUrl(req)}/support">Support Center</a> | 
+              <a href="${getClientUrl(req)}/contact">Contact Us</a> | 
+              <a href="${getClientUrl(req)}/unsubscribe">Unsubscribe</a>
             </div>
           </div>
         </div>
@@ -412,7 +413,7 @@ const sendTicketCreatedEmail = async ({
       
       <div class="button-container">
         <a href="${
-          process.env.CLIENT_URL
+          getClientUrl(req)
         }/support/tickets/${ticketNumber}" class="btn">
           View Ticket
         </a>
@@ -472,9 +473,7 @@ const sendTicketResponseEmail = async ({
       </div>
       
       <div class="button-container">
-        <a href="${
-          process.env.CLIENT_URL
-        }/support/tickets/${ticketNumber}" class="btn btn-success">
+        <a href="${getClientUrl(req)}/support/tickets/${ticketNumber}" class="btn btn-success">
           View & Respond
         </a>
       </div>
@@ -581,7 +580,7 @@ const sendTicketStatusUpdateEmail = async ({
         newStatus !== 'closed'
           ? `
         <div class="button-container">
-          <a href="${process.env.CLIENT_URL}/support/tickets/${ticketNumber}" class="btn">
+          <a href="${getClientUrl(req)}/support/tickets/${ticketNumber}" class="btn">
             View Ticket
           </a>
         </div>
@@ -668,9 +667,7 @@ const sendAdminTicketNotificationEmail = async ({
       </div>
       
       <div class="button-container">
-        <a href="${
-          process.env.ADMIN_URL || process.env.CLIENT_URL
-        }/admin/support/tickets/${ticketNumber}" 
+        <a href="${getClientUrl(req)}/admin/support/tickets/${ticketNumber}" 
            class="btn btn-danger">
           Review Ticket
         </a>
@@ -733,9 +730,7 @@ const sendTicketAssignedEmail = async ({
       </div>
       
       <div class="button-container">
-        <a href="${
-          process.env.ADMIN_URL || process.env.CLIENT_URL
-        }/admin/support/tickets/${ticketNumber}" 
+        <a href="${getClientUrl(req)}/admin/support/tickets/${ticketNumber}" 
            class="btn">
           Handle Ticket
         </a>
@@ -804,9 +799,7 @@ const sendTicketEscalationEmail = async ({
       </div>
       
       <div class="button-container">
-        <a href="${
-          process.env.ADMIN_URL || process.env.CLIENT_URL
-        }/admin/support/tickets/${ticketNumber}" 
+        <a href="${getClientUrl(req)}/admin/support/tickets/${ticketNumber}" 
            class="btn btn-danger">
           Review Escalated Ticket
         </a>
@@ -866,7 +859,7 @@ const sendSLABreachWarningEmail = async ({
       </p>
       
       <div class="button-container">
-        <a href="${process.env.CLIENT_URL}/support/tickets/${ticketNumber}" class="btn btn-warning">
+        <a href="${getClientUrl(req)}/support/tickets/${ticketNumber}" class="btn btn-warning">
           Respond Now
         </a>
       </div>

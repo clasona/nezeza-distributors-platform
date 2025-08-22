@@ -39,6 +39,7 @@ const CustomError = require('../errors');
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const TempOrderData = require('../models/TempOrderData');
+const getClientUrl = require('../utils/getClientUrl');
 
 // Unique webhook endpoint signing secret
 // Replace this endpoint secret with your endpoint's unique secret
@@ -299,8 +300,8 @@ const createStripeConnectAccount = async (req, res) => {
 
         const accountLink = await stripe.accountLinks.create({
           account: seller.stripeAccountId,
-          refresh_url: `${process.env.CLIENT_URL}/${sellerStoreType}`,
-          return_url: `${process.env.CLIENT_URL}/${sellerStoreType}`,
+          refresh_url: `${getClientUrl(req)}/${sellerStoreType}`,
+          return_url: `${getClientUrl(req)}/${sellerStoreType}`,
           type: 'account_onboarding',
         });
         return res.status(StatusCodes.OK).json({
@@ -311,7 +312,7 @@ const createStripeConnectAccount = async (req, res) => {
       } else {
         // Account already exists and details are submitted (onboarding complete)
         return res.status(StatusCodes.OK).json({
-          url: `${process.env.CLIENT_URL}/${sellerStoreType}`, // Redirect to seller's dashboard
+          url: `${getClientUrl(req)}/${sellerStoreType}`, // Redirect to seller's dashboard
           message: 'Stripe account already exists and is onboarded.',
           hasStripeAccount: true,
           isActive: true, // Assuming submitted details means active for this check
@@ -383,8 +384,8 @@ const createStripeConnectAccount = async (req, res) => {
     // Generate Stripe onboarding link
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccount.id,
-      refresh_url: `${process.env.CLIENT_URL}/sellers/stripe/onboarding-refresh`, // A dedicated refresh endpoint/page
-      return_url: `${process.env.CLIENT_URL}/sellers/stripe/onboarding-success`, // A dedicated success endpoint/page
+      refresh_url: `${getClientUrl(req)}/sellers/stripe/onboarding-refresh`, // A dedicated refresh endpoint/page
+      return_url: `${getClientUrl(req)}/sellers/stripe/onboarding-success`, // A dedicated success endpoint/page
       type: 'account_onboarding',
       collect: 'eventually_due', // Recommended for Express accounts to collect all necessary info eventually
     });

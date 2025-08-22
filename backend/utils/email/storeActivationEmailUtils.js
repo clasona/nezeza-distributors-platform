@@ -2,6 +2,7 @@ const sgMail = require('@sendgrid/mail');
 const sendEmail = require('../sendEmail');
 
 const { PLATFORM_FEE_GRACE_PERIOD_DAYS } = require('../payment/feeCalculationUtil');
+const getClientUrl = require('../getClientUrl');
 
 /**
  * Send store activation and grace period welcome email
@@ -97,8 +98,8 @@ async function sendStoreActivationWelcomeEmail(store, owner) {
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.CLIENT_URL}/retailer" class="btn">🏪 Go to Your Dashboard</a>
-            <a href="${process.env.CLIENT_URL}/retailer/inventory/new-product" class="btn btn-secondary">📦 Add Your First Product</a>
+            <a href="${getClientUrl(req)}/retailer" class="btn">🏪 Go to Your Dashboard</a>
+            <a href="${getClientUrl(req)}/retailer/inventory/new-product" class="btn btn-secondary">📦 Add Your First Product</a>
           </div>
           
           <div class="feature-list">
@@ -107,7 +108,7 @@ async function sendStoreActivationWelcomeEmail(store, owner) {
             <ul>
               <li>📧 <strong>Email Support:</strong> team@vesoko.com</li>
               <li>📞 <strong>Phone:</strong> +250 123 456 789</li>
-              <li>📚  <a href="${process.env.CLIENT_URL}/sellers" class="btn"><strong>Seller Hub:</strong></a> Comprehensive guides and tutorials</li>
+              <li>📚  <a href="${getClientUrl(req)}/sellers" class="btn"><strong>Seller Hub:</strong></a> Comprehensive guides and tutorials</li>
             </ul>
           </div>
           

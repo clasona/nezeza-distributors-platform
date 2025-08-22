@@ -1,6 +1,7 @@
 const sendEmail = require('../sendEmail');
 
 const { PLATFORM_FEE_PERCENTAGE } = require('../payment/feeCalculationUtil');
+const getClientUrl = require('../getClientUrl');
 
 /**
  * Send grace period ending notification to seller (2 days before fees start)
@@ -78,8 +79,8 @@ async function sendGracePeriodEndingNotification(store, owner, daysRemaining = 2
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.CLIENT_URL}/retailer" class="btn">Visit Your Dashboard</a>
-            <a href="${process.env.CLIENT_URL}/sellers" class="btn">Learn More About Pricing</a>
+            <a href="${getClientUrl(req)}/retailer" class="btn">Visit Your Dashboard</a>
+            <a href="${getClientUrl(req)}/sellers" class="btn">Learn More About Pricing</a>
           </div>
           
           <div class="warning-box">
@@ -209,7 +210,7 @@ async function sendPlatformFeesActivatedNotification(store, owner) {
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.CLIENT_URL}/retailer" class="btn">View Your Dashboard</a>
+            <a href="${getClientUrl(req)}/retailer" class="btn">View Your Dashboard</a>
           </div>
           
           <div class="info-box">
@@ -255,9 +256,9 @@ async function sendPlatformFeesActivatedNotification(store, owner) {
     - Customer support and dispute resolution
     - Analytics and sales reporting
     - Mobile-friendly storefront
-    
-    Visit your dashboard: ${process.env.CLIENT_URL}/seller-dashboard
-    
+
+    Visit your dashboard: ${getClientUrl(req)}/seller-dashboard
+
     Thank you for choosing VeSoko as your marketplace partner!
     
     Best regards,

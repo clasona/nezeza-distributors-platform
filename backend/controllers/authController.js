@@ -17,6 +17,7 @@ const {
 const {
   errorLoggingMiddleware,
 } = require('../controllers/admin/adminSystemMonitoringController');
+const getClientUrl = require('../utils/getClientUrl');
 
 const register = async (req, res, next) => {
   const { firstName, lastName, email, password, storeType } = req.body;
@@ -83,7 +84,8 @@ const register = async (req, res, next) => {
     // Add the current password to the previousPasswords array
     user.previousPasswords.push(user.password);
     await user.save();
-    const origin = process.env.CLIENT_URL;
+    //an array of possible values for the origin
+    const origin = getClientUrl(req);
 
     // send verification email
     await sendVerificationEmail({
@@ -436,9 +438,9 @@ const resendVerificationEmail = async (req, res) => {
     const verificationToken = crypto.randomBytes(40).toString('hex');
     user.verificationToken = verificationToken;
     await user.save();
-    
-    const origin = process.env.CLIENT_URL;
-    
+
+    const origin = getClientUrl(req);
+
     // Send verification email
     await sendVerificationEmail({
       name: user.firstName,
@@ -471,7 +473,7 @@ const forgotPassword = async (req, res) => {
   if (user) {
     const passwordToken = crypto.randomBytes(70).toString('hex');
     // send email
-    const origin = process.env.CLIENT_URL;
+    const origin = getClientUrl(req);
     await sendResetPasswordEmail({
       name: user.firstName,
       email: user.email,

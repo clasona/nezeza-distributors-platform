@@ -68,10 +68,17 @@ app.use(helmet());
 // app.use(cors());
 //app.use(cors());
 
+const allowedOrigins = [
+  'https://test.soko.online',
+  'https://test.vesoko.com',
+  'https://www.vesoko.com',
+  'https://vesoko.com',
+];
+
 // app.use(express.static('client'));
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: [...allowedOrigins, process.env.CORS_ORIGIN],
     credentials: true,
     // allowedHeaders: [
     //   'Content-Type',

@@ -1,3 +1,4 @@
+const getClientUrl = require('./getClientUrl');
 const sendEmail = require('./sendEmail');
 const sendSellerNotificationEmail = ({
   buyerName,
@@ -36,9 +37,7 @@ const sendSellerNotificationEmail = ({
     }</p>
 
       <p>Please log in to your seller dashboard to confirm and fulfill the order:</p>
-      <a href="${
-        process.env.CLIENT_URL
-      }/login">Go to Seller Dashboard</a>
+      <a href="${getClientUrl(req)}/login">Go to Seller Dashboard</a>
 
       <p>If you have any questions, contact our support team at <a href="mailto:marketplace@vesoko.com">marketplace@vesoko.com</a>.</p>
 

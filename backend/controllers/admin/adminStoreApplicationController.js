@@ -13,6 +13,7 @@ const {
   sendStoreDeclineEmail,
   sendAdminNotificationEmail,
 } = require('../../utils/email/storeApprovalEmailUtils');
+const getClientUrl = require('../../utils/getClientUrl');
 
 //createApplication ?
 
@@ -139,7 +140,8 @@ const approveStoreApplication = async (req, res, next) => {
     await session.commitTransaction();
 
     // Send approval email with password setup instructions
-    const origin = process.env.CLIENT_URL;
+    const origin = getClientUrl(req);
+
     try {
       await sendStoreApprovalEmail({
         email: applicantEmail,

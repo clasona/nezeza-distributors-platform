@@ -12,6 +12,7 @@ import ErrorMessageModal from '../ErrorMessageModal';
 import SuccessMessageModal from '../SuccessMessageModal';
 import { getUserPaymentMethods } from '@/utils/payment/getUserPaymentMethods';
 import { confirmWithSavedCard } from '@/utils/payment/confirmWithSavedCard';
+import { getClientUrl } from '@/utils/getClientUrl';
 
 interface CheckoutFormProps {
   clientSecret: string;
@@ -108,7 +109,7 @@ const CheckoutForm = ({ clientSecret, paymentIntentId }: CheckoutFormProps) => {
         elements,
         clientSecret,
         confirmParams: {
-          return_url: `${process.env.NEXT_PUBLIC_CLIENT_URL}/payment-success?payment_intent_id=${paymentIntentIdFromSecret}`,
+          return_url: `${getClientUrl()}/payment-success?payment_intent_id=${paymentIntentIdFromSecret}`,
         },
       });
 

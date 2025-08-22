@@ -8,8 +8,9 @@ const User = require('../../models/User');
 const Store = require('../../models/Store');
 const Order = require('../../models/Order');
 const SubOrder = require('../../models/SubOrder'); // To get suborder details for full cancellation
+const getClientUrl = require('../getClientUrl');
 
-const client_url = process.env.CLIENT_URL || 'http://localhost:3000';
+const client_url = getClientUrl() || 'http://localhost:3000';
 
 const sendSellerNewOrderNotificationEmail = async ({
   sellerStoreId,
