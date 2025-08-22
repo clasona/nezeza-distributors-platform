@@ -59,8 +59,15 @@ const SelectStoreType = () => {
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-vesoko_primary50 via-white to-purple-50'>
-      <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+    <div className='min-h-screen bg-gradient-to-br from-vesoko_background_light via-white to-vesoko_primary/10 relative overflow-hidden'>
+      {/* Background decorative elements */}
+      <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+        <div className='absolute -top-40 -right-40 w-80 h-80 bg-vesoko_primary/5 rounded-full blur-3xl'></div>
+        <div className='absolute -bottom-40 -left-40 w-96 h-96 bg-vesoko_secondary/5 rounded-full blur-3xl'></div>
+        <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-vesoko_primary/3 to-vesoko_secondary/3 rounded-full blur-3xl'></div>
+      </div>
+      
+      <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10'>
         {/* Header */}
         <div className='text-center mb-12'>
           <Link 
@@ -88,10 +95,12 @@ const SelectStoreType = () => {
         </div>
 
         {/* Phase Information */}
-        <div className='mb-12 bg-gradient-to-r from-vesoko_primary50 to-green-50 rounded-2xl p-8 border border-blue-200'>
+        <div className='mb-12 bg-gradient-to-r from-vesoko_background to-vesoko_background_light rounded-2xl p-8 border border-vesoko_primary/20 shadow-lg backdrop-blur-sm relative overflow-hidden'>
+          {/* Subtle pattern overlay */}
+          <div className='absolute inset-0 bg-gradient-to-br from-vesoko_primary/5 to-transparent rounded-2xl'></div>
           <div className='grid md:grid-cols-2 gap-8'>
             <div className='flex items-start gap-4'>
-              <div className='inline-flex items-center justify-center w-12 h-12 bg-blue-500 rounded-full text-white font-bold text-lg'>
+              <div className='inline-flex items-center justify-center w-12 h-12 bg-vesoko_primary rounded-full text-white font-bold text-lg'>
                 1
               </div>
               <div>
@@ -108,7 +117,7 @@ const SelectStoreType = () => {
             </div>
             
             <div className='flex items-start gap-4'>
-              <div className='inline-flex items-center justify-center w-12 h-12 bg-orange-500 rounded-full text-white font-bold text-lg'>
+              <div className='inline-flex items-center justify-center w-12 h-12 bg-vesoko_secondary rounded-full text-white font-bold text-lg'>
                 2
               </div>
               <div>
@@ -136,22 +145,26 @@ const SelectStoreType = () => {
               <div
                 key={type.value}
                 onClick={() => !type.disabled && setSelectedType(type.value)}
-                className={`relative group rounded-2xl border-2 p-8 transition-all duration-300 ${
+                className={`relative group rounded-2xl border-2 p-8 transition-all duration-300 backdrop-blur-sm ${
                   type.disabled
-                    ? 'cursor-not-allowed opacity-60 bg-gray-50 border-gray-300'
+                    ? 'cursor-not-allowed opacity-60 bg-gray-50/90 border-gray-300'
                     : isSelected 
-                      ? 'cursor-pointer border-vesoko_green_500 bg-vesoko_green_50 shadow-xl shadow-vesoko_green_500/20 transform hover:scale-105' 
-                      : 'cursor-pointer border-gray-200 bg-white hover:border-vesoko_primary hover:shadow-lg transform hover:scale-105'
+                      ? 'cursor-pointer border-vesoko_green_500 bg-gradient-to-br from-vesoko_green_50/80 to-white/90 shadow-2xl shadow-vesoko_green_500/20 transform hover:scale-105 ring-2 ring-vesoko_green_500/20' 
+                      : 'cursor-pointer border-gray-200/50 bg-white/80 hover:border-vesoko_primary hover:bg-white/90 hover:shadow-2xl hover:shadow-vesoko_primary/10 transform hover:scale-105'
                 }`}
               >
+                {/* Background gradient overlay for non-disabled cards */}
+                {!type.disabled && (
+                  <div className='absolute inset-0 bg-gradient-to-br from-vesoko_primary/2 to-vesoko_secondary/2 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+                )}
                 {/* Badge */}
-                <div className='absolute -top-3 left-1/2 transform -translate-x-1/2'>
-                  <span className={`inline-block px-4 py-1 rounded-full text-xs font-semibold ${
+                <div className='absolute -top-3 left-1/2 transform -translate-x-1/2 z-10'>
+                  <span className={`inline-block px-4 py-1 rounded-full text-xs font-semibold shadow-lg ${
                     type.disabled
-                      ? 'bg-gray-500 text-white'
+                      ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-white'
                       : type.value === 'retail' 
-                        ? 'bg-orange-500 text-white' 
-                        : 'bg-blue-500 text-white'
+                        ? 'bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark text-white' 
+                        : 'bg-gradient-to-r from-vesoko_secondary to-vesoko_secondary_light text-white'
                   }`}>
                     {type.badge}
                   </span>
@@ -205,15 +218,19 @@ const SelectStoreType = () => {
           <button
             onClick={handleContinue}
             disabled={!selectedType}
-            className={`group inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 ${
+            className={`group relative inline-flex items-center gap-3 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 overflow-hidden ${
               selectedType
-                ? 'bg-vesoko_primary hover:bg-vesoko_primary_dark text-white shadow-lg hover:shadow-xl transform hover:scale-105'
+                ? 'bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_dark hover:to-vesoko_primary text-white shadow-xl hover:shadow-2xl transform hover:scale-105 ring-2 ring-vesoko_primary/20'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
-            {selectedType ? 'Continue Application' : 'Select a Store Type'}
+            {/* Shimmer effect for active button */}
             {selectedType && (
-              <ArrowRight className='h-5 w-5 group-hover:translate-x-1 transition-transform duration-300' />
+              <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out'></div>
+            )}
+            <span className='relative z-10'>{selectedType ? 'Continue Application' : 'Select a Store Type'}</span>
+            {selectedType && (
+              <ArrowRight className='h-5 w-5 group-hover:translate-x-1 transition-transform duration-300 relative z-10' />
             )}
           </button>
           
@@ -226,12 +243,23 @@ const SelectStoreType = () => {
 
         {/* Progress Indicator */}
         <div className='mt-16 max-w-md mx-auto'>
-          <div className='flex items-center justify-between text-sm text-gray-600 mb-2'>
-            <span>Progress</span>
-            <span>25%</span>
+          <div className='flex items-center justify-between text-sm text-gray-600 mb-3'>
+            <span className='font-medium'>Progress</span>
+            <span className='font-semibold text-vesoko_primary'>25%</span>
           </div>
-          <div className='w-full bg-gray-200 rounded-full h-2'>
-            <div className='bg-vesoko_primary h-2 rounded-full transition-all duration-500' style={{ width: '25%' }}></div>
+          <div className='relative w-full bg-gradient-to-r from-gray-100 to-gray-200 rounded-full h-3 shadow-inner'>
+            <div 
+              className='bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark h-3 rounded-full transition-all duration-500 shadow-lg relative overflow-hidden'
+              style={{ width: '25%' }}
+            >
+              {/* Shimmer effect */}
+              <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 animate-pulse'></div>
+              {/* Glow effect */}
+              <div className='absolute inset-0 bg-vesoko_primary rounded-full blur-sm opacity-40'></div>
+            </div>
+          </div>
+          <div className='text-center mt-3'>
+            <span className='text-xs text-gray-500'>Step 1 of 4 completed</span>
           </div>
         </div>
       </div>

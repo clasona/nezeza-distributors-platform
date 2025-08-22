@@ -109,14 +109,7 @@ const PostStoreApplicationSubmission = () => {
                   <Phone className='h-5 w-5 text-vesoko_primary' />
                   <div>
                     <p className='font-medium text-gray-900'>Call Us</p>
-                    <Link href='tel:+15551234567' className='text-vesoko_primary hover:text-vesoko_primary transition-colors'>+1 (959) 999-0661</Link>
-                  </div>
-                </div>
-                <div className='flex items-center gap-3'>
-                  <MessageSquare className='h-5 w-5 text-vesoko_dark_green' />
-                  <div>
-                    <p className='font-medium text-gray-900'>WhatsApp</p>
-                    <Link href='https://wa.me/18608169330' target='_blank' rel='noopener noreferrer' className='text-vesoko_dark_green hover:text-vesoko_primary transition-colors'>+1 (860) 816-9330</Link>
+                    <Link href='tel:+18448376560' className='text-vesoko_primary hover:text-vesoko_primary transition-colors'>+1 844 837 6560</Link>
                   </div>
                 </div>
               </div>

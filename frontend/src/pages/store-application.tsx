@@ -222,12 +222,12 @@ const StoreRegistrationForm = ({
       //   errorMsg = 'Please verify your phone before proceeding.';
       // }
       
-      // if (errorMsg) {
-      //   setVerificationError(errorMsg);
-      //   return; // Don't proceed
-      // } else {
-      //   setVerificationError(''); // Clear any previous error
-      // }
+      if (errorMsg) {
+        setVerificationError(errorMsg);
+        return; // Don't proceed
+      } else {
+        setVerificationError(''); // Clear any previous error
+      }
     }
     
     // Store Info section (section 1) - check address validation
@@ -345,8 +345,15 @@ const StoreRegistrationForm = ({
   };
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-vesoko_primary50 via-white to-purple-50'>
-      <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12'>
+    <div className='min-h-screen bg-gradient-to-br from-vesoko_background_light via-white to-vesoko_primary/10 relative overflow-hidden'>
+      {/* Background decorative elements */}
+      <div className='absolute inset-0 overflow-hidden pointer-events-none'>
+        <div className='absolute -top-32 -right-32 w-64 h-64 bg-vesoko_primary/5 rounded-full blur-3xl'></div>
+        <div className='absolute -bottom-32 -left-32 w-80 h-80 bg-vesoko_secondary/5 rounded-full blur-3xl'></div>
+        <div className='absolute top-1/3 left-1/3 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-vesoko_primary/3 to-vesoko_secondary/3 rounded-full blur-3xl'></div>
+      </div>
+      
+      <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10'>
         {/* Header */}
         <div className='text-center mb-12'>
           <Link 
@@ -374,11 +381,15 @@ const StoreRegistrationForm = ({
         </div>
 
         <form
-          className='bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden'
+          className='bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-gray-200/50 overflow-hidden relative'
           onSubmit={handleSubmit(onSubmit)}
         >
+          {/* Subtle gradient overlay */}
+          <div className='absolute inset-0 bg-gradient-to-br from-vesoko_primary/2 to-vesoko_secondary/2 rounded-3xl pointer-events-none'></div>
           {/* Progress Bar */}
-          <div className='bg-gradient-to-r from-vesoko_primary to-vesoko_primary px-8 py-6'>
+          <div className='bg-gradient-to-r from-vesoko_primary via-vesoko_primary_dark to-vesoko_primary px-8 py-6 relative overflow-hidden'>
+            {/* Subtle shimmer effect */}
+            <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full animate-pulse'></div>
             <div className='flex items-center justify-between mb-4'>
               {sections.map((section, index) => {
                 const isActive = index === currentSection;
@@ -617,11 +628,11 @@ const StoreRegistrationForm = ({
             </button>
 
             {/* Buttons for navigation */}
-            <div className='flex justify-end mt-8'>
+            <div className='flex justify-end mt-8 relative z-10'>
               {currentSection > 0 && (
                 <button
                   type='button'
-                  className='px-6 py-2 bg-gray-200 text-gray-700 rounded-lg mr-4 hover:bg-gray-300 transition-colors duration-200'
+                  className='px-8 py-3 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-xl mr-4 hover:from-gray-200 hover:to-gray-300 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 font-medium'
                   onClick={() => setCurrentSection(currentSection - 1)}
                 >
                   Previous
@@ -630,35 +641,47 @@ const StoreRegistrationForm = ({
               {currentSection < sections.length - 1 && (
                 <button
                   type='button'
-                  className={`px-6 py-2 rounded-lg transition-colors duration-200 ${
+                  className={`relative px-8 py-3 rounded-xl font-semibold transition-all duration-300 overflow-hidden ${
                     isValidatingAddress
-                      ? 'bg-blue-400 cursor-not-allowed text-white'
-                      : 'bg-vesoko_primary hover:bg-vesoko_primary text-white'
+                      ? 'bg-gradient-to-r from-blue-400 to-blue-500 cursor-not-allowed text-white shadow-lg'
+                      : 'bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_dark hover:to-vesoko_primary text-white shadow-lg hover:shadow-xl transform hover:scale-105'
                   }`}
                   onClick={handleNext}
                   disabled={isValidatingAddress}
                 >
-                  {isValidatingAddress && currentSection === 1 ? (
-                    <div className='flex items-center gap-2'>
-                      <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white'></div>
-                      Validating Address...
-                    </div>
-                  ) : (
-                    'Next'
+                  {/* Shimmer effect for active button */}
+                  {!isValidatingAddress && (
+                    <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out'></div>
                   )}
+                  <span className='relative z-10'>
+                    {isValidatingAddress && currentSection === 1 ? (
+                      <div className='flex items-center gap-2'>
+                        <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white'></div>
+                        Validating Address...
+                      </div>
+                    ) : (
+                      'Next'
+                    )}
+                  </span>
                 </button>
               )}
               {currentSection === sections.length - 1 && (
                 <button
                   type='submit'
                   disabled={isSubmitting}
-                  className={`${
+                  className={`relative px-8 py-3 rounded-xl font-bold text-lg transition-all duration-300 overflow-hidden ${
                     isSubmitting
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-vesoko_primary hover:bg-vesoko_secondary'
-                  } text-white px-6 py-2 rounded-lg transition-colors duration-200`}
+                      ? 'bg-gradient-to-r from-gray-400 to-gray-500 cursor-not-allowed text-white shadow-lg'
+                      : 'bg-gradient-to-r from-vesoko_primary to-vesoko_primary_dark hover:from-vesoko_primary_dark hover:to-vesoko_primary text-white shadow-xl hover:shadow-2xl transform hover:scale-105 ring-2 ring-vesoko_primary/20'
+                  }`}
                 >
-                  {isSubmitting ? 'Submitting...' : 'SUBMIT APPLICATION'}
+                  {/* Shimmer effect for submit button */}
+                  {!isSubmitting && (
+                    <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out'></div>
+                  )}
+                  <span className='relative z-10'>
+                    {isSubmitting ? 'Submitting...' : 'SUBMIT APPLICATION'}
+                  </span>
                 </button>
               )}
             </div>

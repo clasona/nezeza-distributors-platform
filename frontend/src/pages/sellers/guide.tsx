@@ -532,11 +532,8 @@ const SellersGuide = () => {
               <Phone className='h-12 w-12 text-vesoko_primary mx-auto mb-6' />
               <h3 className='text-xl font-semibold text-gray-900 mb-4'>Call Us</h3>
               <p className='text-gray-600 mb-2'>Speak directly with our support team</p>
-              <Link href='tel:+19599990661' className='text-vesoko_primary hover:text-vesoko_primary font-medium text-lg transition-colors block mb-4'>+1 (959) 999-0661</Link>
+              <Link href='tel:+18448376560' className='text-vesoko_primary hover:text-vesoko_primary font-medium text-lg transition-colors block mb-4'>+1 844 837 6560</Link>
               <MessageSquare className='h-12 w-12 text-vesoko_dark_green mx-auto mb-6' />
-              <h3 className='text-xl font-semibold text-gray-900 mb-4'>WhatsApp</h3>
-              <p className='text-gray-600 mb-2'>Chat with us on WhatsApp</p>
-              <Link href='https://wa.me/18608169330' target='_blank' rel='noopener noreferrer' className='text-vesoko_dark_green hover:text-vesoko_primary font-medium text-lg transition-colors block'>+1 (860) 816-9330</Link>
             </div>
           </div>
 

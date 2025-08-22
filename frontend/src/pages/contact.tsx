@@ -67,7 +67,7 @@ const Contact = () => {
     {
       icon: <Phone className="w-6 h-6" />,
       title: "Call Us",
-      details: ["+1 (959) 999-0661", "+1 (270) 363-7134"],
+      details: ["+1 844-VESOKO", "+1 844 837 6560"],
       description: "Monday - Friday, 9 AM - 6 PM EST"
     },
     // {
@@ -313,13 +313,22 @@ const Contact = () => {
                     <p className="text-white/90 mb-4">
                       Check out our FAQ section for immediate answers to common questions.
                     </p>
+                    <div className="flex flex-row gap-2">
                     <Link
-                      href="/faq"
+                      href="/sellers/faq"
                       className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-colors duration-300"
                     >
                       <MessageSquare className="w-4 h-4" />
-                      Visit FAQ
+                      Visit FAQ for Sellers
                     </Link>
+                    <Link
+                      href="/buyers/faq"
+                      className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg font-medium hover:bg-white/30 transition-colors duration-300"
+                    >
+                      <MessageSquare className="w-4 h-4" />
+                      Visit FAQ for Buyers
+                    </Link>
+                    </div>
                   </div>
                 </div>
               </div>
