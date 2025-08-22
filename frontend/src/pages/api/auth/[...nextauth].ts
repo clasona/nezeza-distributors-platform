@@ -45,6 +45,8 @@ const authOptions = {
     signIn: '/login',
     error: '/login', // Redirect to login page on auth errors
   },
+  // Trust host for both domains
+  trustHost: true,
   providers: [
     CredentialsProvider({
       id: 'credentials',
