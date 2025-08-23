@@ -449,6 +449,40 @@ const Header = ({
           />
         </div>
       </div>
+      
+      {/* Expansion Notice Banner - Vivid and Eye-catching */}
+      <div className='bg-gradient-to-r from-emerald-600 via-emerald-700 to-emerald-600 py-2 sm:py-3 px-3 sm:px-4 border-t-2 border-emerald-300/40 relative overflow-hidden'>
+        {/* Animated background shimmer */}
+        <div className='absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] animate-[shimmer_3s_ease-in-out_infinite]'></div>
+        
+        <div className='max-w-7xl mx-auto text-center relative z-10'>
+          <div className='flex items-center justify-center gap-2 sm:gap-3 text-emerald-50'>
+            <span className='text-sm sm:text-lg animate-bounce'>🌍</span>
+            <span className='text-xs sm:text-sm font-bold tracking-wide uppercase drop-shadow-sm'>
+              🚀 New African Products Added Regularly!
+            </span>
+            <span className='text-sm sm:text-lg animate-bounce animation-delay-150'>✨</span>
+          </div>
+        </div>
+        
+        {/* Decorative elements */}
+        <div className='absolute left-4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-white/60 rounded-full animate-ping'></div>
+        <div className='absolute right-4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-white/60 rounded-full animate-ping animation-delay-300'></div>
+      </div>
+      
+      {/* Add custom keyframes for shimmer animation */}
+      <style jsx>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%) skewX(-12deg); }
+          100% { transform: translateX(300%) skewX(-12deg); }
+        }
+        .animation-delay-150 {
+          animation-delay: 0.15s;
+        }
+        .animation-delay-300 {
+          animation-delay: 0.3s;
+        }
+      `}</style>
     </div>
   );
 };
