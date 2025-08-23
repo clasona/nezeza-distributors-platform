@@ -26,10 +26,15 @@ export interface TransactionHistory {
 // In a real implementation, you'd want to track transactions in a separate model
 export const getTransactionHistory = async (sellerId: string): Promise<TransactionHistory | null> => {
   try {
+    console.log('🔍 [getTransactionHistory] Making API call to:', `/payment/seller-revenue/${sellerId}`);
     // Get seller balance which includes payout history
     const response = await axiosInstance.get(`/payment/seller-revenue/${sellerId}`);
     
+    console.log('🔍 [getTransactionHistory] API response status:', response.status);
+    console.log('🔍 [getTransactionHistory] API response data:', response.data);
+    
     if (response.status !== 200 || !response.data) {
+      console.warn('⚠️ [getTransactionHistory] Invalid response or no data');
       return null;
     }
 

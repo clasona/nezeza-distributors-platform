@@ -4,7 +4,7 @@ import { ErrorResponse } from './types/ErrorResponse';
 import { getServerUrl } from './getServerUrl';
 
 const BACKEND_URL = getServerUrl() || process.env.NEXT_PUBLIC_BACKEND_URL;
-console.log("Using BACKEND_URL:", BACKEND_URL);
+// console.log("Using BACKEND_URL:", BACKEND_URL);
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: `${BACKEND_URL}/api/v1`, // Base URL

@@ -477,7 +477,7 @@ const hasActiveStripeAccount = async (req, res) => {
     let hasStripeAccount = false;
     let isActive = false;
 
-    console.log('Checking Stripe account for user:', user);
+    // console.log('Checking Stripe account for user:', user);
 
     if (user.stripeAccountId) {
       hasStripeAccount = true;
@@ -1107,6 +1107,7 @@ const getSellerRevenue = async (req, res) => {
     if (!sellerStore) {
       throw new CustomError.BadRequestError('No store found for this seller');
     }
+
     if (sellerStore.ownerId.toString() !== req.user.userId) {
       throw new CustomError.UnauthorizedError(
         'Not  authorized to view the dashboard'

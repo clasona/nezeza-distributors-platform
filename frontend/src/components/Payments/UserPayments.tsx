@@ -1,20 +1,18 @@
 import Heading from '@/components/Heading';
-import MetricCard from '@/components/Charts/MetricCard';
-import SalesChart from '@/components/Charts/SalesChart';
-import DonutChart from '@/components/Charts/DonutChart';
 import ModernTable from '@/components/Table/ModernTable';
-import RequestPayoutModal from './RequestPayoutModal';
-import { hasActiveStripeConnectAccount } from '@/utils/stripe/hasStripeConnectAccount';
+import formatDate from '@/utils/formatDate';
+import formatPrice from '@/utils/formatPrice';
 import { getSellerRevenue, SellerBalance } from '@/utils/payment/getSellerRevenue';
 import { getTransactionHistory, Transaction, TransactionHistory } from '@/utils/payment/getTransactionHistory';
+import { getRealTransactionHistory, RealTransaction, RealTransactionHistory } from '@/utils/transaction/getTransactionHistory';
 import { fetchSellerAnalytics, SellerAnalyticsData } from '@/utils/seller/sellerAnalytics';
+import { hasActiveStripeConnectAccount } from '@/utils/stripe/hasStripeConnectAccount';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../../type';
-import formatPrice from '@/utils/formatPrice';
-import formatDate from '@/utils/formatDate';
-import toast from 'react-hot-toast';
+import RequestPayoutModal from './RequestPayoutModal';
 
 // Icons (you can replace these with your preferred icon library)
 const DollarIcon = () => (
@@ -47,6 +45,7 @@ const UserPayments = () => {
   const [loading, setLoading] = useState(true);
   const [sellerBalance, setSellerBalance] = useState<SellerBalance | null>(null);
   const [transactionHistory, setTransactionHistory] = useState<TransactionHistory | null>(null);
+  const [realTransactionHistory, setRealTransactionHistory] = useState<RealTransactionHistory | null>(null);
   const [analyticsData, setAnalyticsData] = useState<SellerAnalyticsData | null>(null);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -73,27 +72,44 @@ const UserPayments = () => {
 
   const fetchPaymentData = async () => {
     if (!storeInfo?._id) {
+      console.log('❌ No storeInfo._id available:', storeInfo);
       setLoading(false);
       return;
     }
+
+    console.log('🔍 Fetching payment data for store ID:', storeInfo._id);
+    console.log('👤 Current userInfo:', userInfo);
+    console.log('🏪 Current storeInfo:', storeInfo);
 
     try {
       setLoading(true);
       
       // Fetch seller balance
+      console.log('📊 Fetching seller balance...');
       const balanceData = await getSellerRevenue(storeInfo._id);
+      console.log('💰 Seller balance response:', balanceData);
       setSellerBalance(balanceData);
 
-      // Fetch transaction history
+      // Fetch mock transaction history (for backward compatibility)
+      console.log('📈 Fetching mock transaction history...');
       const transactionData = await getTransactionHistory(storeInfo._id);
+      console.log('📋 Mock transaction history response:', transactionData);
       setTransactionHistory(transactionData);
 
+      // Fetch real transaction history from Transaction model
+      console.log('🔄 Fetching REAL transaction history from Transaction model...');
+      const realTransactionData = await getRealTransactionHistory(storeInfo._id);
+      console.log('📋 REAL transaction history response:', realTransactionData);
+      setRealTransactionHistory(realTransactionData);
+
       // Fetch analytics data
+      console.log('📊 Fetching analytics data...');
       const analytics = await fetchSellerAnalytics('30d', storeInfo._id);
+      console.log('📈 Analytics response:', analytics);
       setAnalyticsData(analytics);
       
     } catch (error) {
-      console.error('Error fetching payment data:', error);
+      console.error('❌ Error fetching payment data:', error);
       toast.error('Failed to load payment data');
     } finally {
       setLoading(false);
@@ -188,6 +204,53 @@ const UserPayments = () => {
 
   return (
     <div className='space-y-8'>
+      {/* Debugging Info - Remove this in production */}
+      <div className='bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4'>
+        <h3 className='text-lg font-bold text-yellow-800 mb-3'>🐛 Debug Information</h3>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
+          <div>
+            <h4 className='font-semibold text-yellow-700'>Store Info:</h4>
+            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
+              {JSON.stringify(storeInfo, null, 2)}
+            </pre>
+          </div>
+          <div>
+            <h4 className='font-semibold text-yellow-700'>User Info:</h4>
+            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
+              {JSON.stringify({
+                _id: userInfo?._id,
+                firstName: userInfo?.firstName,
+                lastName: userInfo?.lastName,
+                email: userInfo?.email,
+                storeId: userInfo?.storeId
+              }, null, 2)}
+            </pre>
+          </div>
+          <div>
+            <h4 className='font-semibold text-yellow-700'>Seller Balance:</h4>
+            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
+              {JSON.stringify(sellerBalance, null, 2)}
+            </pre>
+          </div>
+          <div>
+            <h4 className='font-semibold text-yellow-700'>Mock Transaction History:</h4>
+            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
+              {JSON.stringify(transactionHistory, null, 2)}
+            </pre>
+          </div>
+          <div>
+            <h4 className='font-semibold text-yellow-700'>REAL Transaction History:</h4>
+            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
+              {JSON.stringify(realTransactionHistory, null, 2)}
+            </pre>
+          </div>
+        </div>
+        <div className='mt-3 text-xs text-yellow-600'>
+          <p><strong>API Endpoint:</strong> GET /payment/seller-revenue/{storeInfo?._id}</p>
+          <p><strong>Store ID being used:</strong> {storeInfo?._id || 'NOT AVAILABLE'}</p>
+          <p><strong>Loading state:</strong> {loading ? 'Loading...' : 'Completed'}</p>
+        </div>
+      </div>
       {/* Modern Header */}
       <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 border border-white/20 animate-fade-in'>
         <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
@@ -403,20 +466,20 @@ const UserPayments = () => {
             </p>
           </div>
           <div className='p-4 sm:p-6'>
-            {transactionHistory && transactionHistory.transactions.length > 0 ? (
+            {realTransactionHistory && realTransactionHistory.transactions.length > 0 ? (
               <ModernTable
-                rows={transactionHistory.transactions.map((transaction) => ({
+                rows={realTransactionHistory.transactions.map((transaction) => ({
                   id: transaction._id || Math.random().toString(36).substr(2, 9),
                   data: transaction,
                   cells: transactionColumns.map(col => ({
-                    content: col.render(transaction)
+                    content: col.render(transaction as any)
                   }))
                 }))}
                 columns={transactionColumns}
                 loading={loading}
                 onRowClick={(row) => {
                   // You can add a modal to show transaction details
-                  console.log('Transaction clicked:', row.data);
+                  console.log('Real transaction clicked:', row.data);
                 }}
               />
             ) : (
@@ -432,28 +495,34 @@ const UserPayments = () => {
         </div>
 
         {/* Transaction Summary */}
-        {transactionHistory?.summary && (
+        {realTransactionHistory?.summary && (
           <div className='bg-gray-50 p-4 sm:p-6 rounded-xl border border-gray-200'>
             <h4 className='text-lg font-semibold text-gray-800 mb-4'>
-              Summary
+              Real Transaction Summary
             </h4>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+            <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
               <div className='text-center'>
                 <p className='text-sm text-gray-600'>Total Sales</p>
                 <p className='text-xl font-semibold text-green-600'>
-                  {formatPrice(transactionHistory.summary.totalSales)}
+                  {formatPrice(realTransactionHistory.summary.totalSales)}
                 </p>
               </div>
               <div className='text-center'>
-                <p className='text-sm text-gray-600'>Total Payouts</p>
+                <p className='text-sm text-gray-600'>Gross Amount</p>
                 <p className='text-xl font-semibold text-blue-600'>
-                  {formatPrice(transactionHistory.summary.totalPayouts)}
+                  {formatPrice(realTransactionHistory.summary.totalGrossAmount)}
                 </p>
               </div>
               <div className='text-center'>
                 <p className='text-sm text-gray-600'>Commission Paid</p>
                 <p className='text-xl font-semibold text-orange-600'>
-                  {formatPrice(transactionHistory.summary.totalCommission)}
+                  {formatPrice(realTransactionHistory.summary.totalCommission)}
+                </p>
+              </div>
+              <div className='text-center'>
+                <p className='text-sm text-gray-600'>Total Transactions</p>
+                <p className='text-xl font-semibold text-purple-600'>
+                  {realTransactionHistory.summary.totalTransactions}
                 </p>
               </div>
             </div>
