@@ -72,9 +72,6 @@ const sendSellerNewOrderNotificationEmail = async ({
 
   // Enhanced shipping and order details
   const estimatedDeliveryDate = moment(order.estimatedDeliveryDate).format('MMMM D, YYYY');
-  const buyerContactInfo = order.buyerId ? (
-    order.buyerId.email ? `<p><strong>Buyer Email:</strong> ${order.buyerId.email}</p>` : ''
-  ) : '';
   const shippingAddressFormatted = formatShippingAddress(order.shippingAddress);
   
   // Enhanced order summary with shipping details
@@ -82,8 +79,7 @@ const sendSellerNewOrderNotificationEmail = async ({
     <div style="background-color: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <h3 style="color: #333; margin-top: 0;">📦 Order Information</h3>
       <p><strong>Order Date:</strong> ${orderDate}</p>
-      <p><strong>Buyer:</strong> ${buyerName}</p>
-      ${buyerContactInfo}
+      <p><strong>Customer:</strong> ${buyerName}</p>
       <p><strong>Order Status:</strong> <span style="color: #28a745;">New Order - Action Required</span></p>
     </div>
   `;

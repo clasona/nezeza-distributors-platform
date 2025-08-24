@@ -239,9 +239,9 @@ export default function DocumentUploadWidget({
                   </button>
                 )}
               </div>
-              <p className="text-xs text-amber-600">
+              {/* <p className="text-xs text-amber-600">
                 ⚠️ PDF converted to viewable image format due to access restrictions
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

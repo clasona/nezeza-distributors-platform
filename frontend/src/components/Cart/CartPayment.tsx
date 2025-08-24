@@ -84,6 +84,10 @@ const CartPayment = () => {
         // console the shipping address for debugging
         console.log('Shipping Address:', userInfo.address);
       }
+
+      //update the cartitems ins redux
+      dispatch(setCartItems(filteredCartItems)); 
+      console.log('Proceeding to checkout with items:', filteredCartItems);
       
       setSuccessMessage('Preparing checkout...');
       setTimeout(() => {
@@ -98,7 +102,7 @@ const CartPayment = () => {
 
   return (
     <div className='flex flex-col gap-4 p-2 sm:p-4'>
-      {qualifiesForFreeShipping && (
+      {/* {qualifiesForFreeShipping && (
         <div className='flex gap-2 items-start'>
           <span
             className='bg-vesoko_primary rounded-full p-1 h-6 w-6 text-sm
@@ -110,7 +114,7 @@ const CartPayment = () => {
             🎉 Your order qualifies for FREE Shipping! Continue for more details
           </p>
         </div>
-      )}
+      )} */}
       
       {/* {!qualifiesForFreeShipping && totalAmount > 0 && (
         <div className='flex gap-2 items-start'>
@@ -138,10 +142,7 @@ const CartPayment = () => {
       <div className='flex flex-col items-center text-center justify-center'>
         <button
           onClick={handleCheckout}
-          className={`w-full sm:w-auto p-2 text-sm font-semibold bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_secondary hover:text-white duration-300 ${
-            !userInfo ? ' cursor-not-allowed bg-vesoko_gray_600 opacity-50' : ''
-          }`}
-          disabled={!userInfo}
+          className={`w-full sm:w-auto p-2 text-sm font-semibold bg-vesoko_primary text-white rounded-lg hover:bg-vesoko_secondary hover:text-white duration-300`}
         >
           {!userInfo ? 'Login to Continue' : 'Review & Choose Shipping'}
         </button>

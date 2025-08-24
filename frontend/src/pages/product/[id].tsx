@@ -1,32 +1,27 @@
-import SuccessMessageModal from '@/components/SuccessMessageModal';
 import ErrorMessageModal from '@/components/ErrorMessageModal';
+import ReviewsModal from '@/components/Reviews/ReviewsModal';
+import SuccessMessageModal from '@/components/SuccessMessageModal';
 import { Button } from '@/components/ui/button';
-import { addToCart, addToFavorites, setBuyNowProduct, setShippingAddress, increaseQuantity, decreaseQuantity, deleteFavoritesProduct, deleteCartProduct } from '@/redux/nextSlice';
+import { addToCart, addToFavorites, decreaseQuantity, deleteCartProduct, deleteFavoritesProduct, increaseQuantity, setBuyNowProduct, setShippingAddress } from '@/redux/nextSlice';
+import { handleError } from '@/utils/errorUtils';
 import {
   AlertTriangle,
   CheckCircle,
-  Heart,
-  ShoppingCart,
-  Star,
-  Truck,
   ChevronLeft,
   ChevronRight,
-  Plus,
+  Heart,
   Minus,
-  ArrowLeft,
-  Package,
-  Shield,
-  Award,
+  Plus,
+  ShoppingCart,
+  Star,
+  Truck
 } from 'lucide-react';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ProductProps, stateProps, AddressProps } from '../../../type';
+import { AddressProps, ProductProps, stateProps } from '../../../type';
 import { getSingleProduct } from '../../utils/product/getSingleProduct';
-import ReviewsModal from '@/components/Reviews/ReviewsModal';
-import FormattedPrice from '@/components/FormattedPrice';
-import { handleError } from '@/utils/errorUtils';
 
 const ProductDetails = () => {
   const { userInfo, cartItemsData, favoritesItemsData } = useSelector((state: stateProps) => state.next);
@@ -328,10 +323,10 @@ const ProductDetails = () => {
 
             {/* Product Dimensions */}
             <div className='mt-2 flex flex-wrap gap-4 text-gray-700 text-sm md:text-base'>
-              <p>Weight: {product.weight}kg</p>
-              <p>Height: {product.height}cm</p>
-              <p>Width: {product.width}cm</p>
-              <p>Length: {product.length}cm</p>
+              <p>Weight: {product.weight}lbs</p>
+              <p>Height: {product.height}in</p>
+              <p>Width: {product.width}in</p>
+              <p>Length: {product.length}in</p>
             </div>
 
             {/* Color Selection */}

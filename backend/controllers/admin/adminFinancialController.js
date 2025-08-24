@@ -293,10 +293,10 @@ const getSellerBalances = async (req, res) => {
 };
 
 /**
- * Process payout to seller
- * @route POST /api/v1/admin/financial/process-payout
+ * Transfer funds to seller
+ * @route POST /api/v1/admin/financial/transfer-funds
  */
-const processPayout = async (req, res) => {
+const transferFundsToConnectedAccount = async (req, res) => {
   try {
     const { sellerId, amount, notes } = req.body;
     const adminId = req.user.userId;
@@ -319,7 +319,7 @@ const processPayout = async (req, res) => {
     }
 
     // Get seller's Stripe account
-    const seller = await stripeModel.findOne({ sellerId: sellerId });
+    const seller = await stripeModel.findOne({ storeId: sellerId });
     if (!seller || !seller.stripeAccountId) {
       throw new CustomError.BadRequestError(
         'Seller does not have a connected Stripe account'
@@ -333,13 +333,12 @@ const processPayout = async (req, res) => {
       destination: seller.stripeAccountId,
       metadata: {
         sellerId: sellerId.toString(),
-        adminId: adminId.toString(),
-        notes: notes || '',
-      },
+        type: 'marketplace_payout',
+        step: 'transfer'
+      }
     });
 
     // Update seller balance
-    sellerBalance.availableBalance -= amount;
     sellerBalance.updatedAt = new Date();
 
     // Add payout record
@@ -351,6 +350,7 @@ const processPayout = async (req, res) => {
       amount,
       stripeTransferId: transfer.id,
       processedBy: adminId,
+      status: 'transfer_completed',
       processedAt: new Date(),
       notes,
     });
@@ -359,9 +359,112 @@ const processPayout = async (req, res) => {
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: 'Payout processed successfully',
+      message: 'Transfer processed successfully',
       data: {
         transferId: transfer.id,
+        amount,
+        remainingBalance: sellerBalance.availableBalance,
+      },
+    });
+  } catch (error) {
+    console.error('Error processing payout:', error);
+    if (error.type && error.type.includes('Stripe')) {
+      res.status(StatusCodes.BAD_REQUEST).json({
+        message: 'Stripe error: ' + error.message,
+      });
+    } else {
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Failed to process payout',
+        error: error.message,
+      });
+    }
+  }
+};
+
+/**
+ * Process payout to seller
+ * @route POST /api/v1/admin/financial/process-payout
+ */
+const processPayout = async (req, res) => {
+  try {
+    const { sellerId, amount, notes } = req.body;
+    const adminId = req.user.userId;
+
+    if (!sellerId) {
+      throw new CustomError.BadRequestError(
+        'Seller ID is required'
+      );
+    }
+
+    // Get seller balance
+    const sellerBalance = await SellerBalance.findOne({ sellerId });
+    if (!sellerBalance) {
+      throw new CustomError.NotFoundError('Seller balance not found');
+    }
+
+    // Validate amount
+    if (amount > sellerBalance.availableBalance) {
+      throw new CustomError.BadRequestError('Insufficient available balance');
+    }
+
+    // Get seller's Stripe account
+    const seller = await stripeModel.findOne({ storeId: sellerId });
+    if (!seller || !seller.stripeAccountId) {
+      throw new CustomError.BadRequestError(
+        'Seller does not have a connected Stripe account'
+      );
+    }
+
+   const payouts = sellerBalance.payouts || [];
+   const payout_to_use = payouts.length > 0 ? payouts[payouts.length - 1] : null;
+   const payoutIndex = payouts.length > 0 ? payouts.length - 1 : -1;
+    const transferId = payout_to_use ? payout_to_use.stripeTransferId : null;
+    const transferAmount = payout_to_use ? payout_to_use.amount : null;
+    const transferStatus = payout_to_use ? payout_to_use.status : null;
+
+    if (transferStatus !== 'transfer_completed') {
+      throw new CustomError.BadRequestError('No completed transfer found for this seller');
+    }
+
+    // Create Stripe payout (if needed, depending on your Stripe setup)
+     const payout = await stripe.payouts.create({
+      amount: Math.round(transferAmount * 100), // Convert to cents
+      currency: 'usd',
+     metadata: {
+        sellerId: sellerId.toString(),
+        type: 'marketplace_payout',
+        step: 'payout',
+        transfer_id: transferId
+      }
+    }, {
+      stripeAccount: seller.stripeAccountId, // This makes the payout on behalf of the connected account
+    });
+
+    // Update seller balance
+    sellerBalance.availableBalance -= transferAmount;
+    sellerBalance.updatedAt = new Date();
+
+    // Add payout record and update status
+    if (payoutIndex >= 0) {
+      // Update the existing payout record
+      if (!sellerBalance.payouts[payoutIndex].stripePayoutId) {
+        sellerBalance.payouts[payoutIndex].stripePayoutId = payout.id;
+      }
+      sellerBalance.payouts[payoutIndex].status = 'payout_completed';
+      sellerBalance.payouts[payoutIndex].processedAt = new Date();
+      sellerBalance.payouts[payoutIndex].notes = notes || sellerBalance.payouts[payoutIndex].notes;
+      
+      // Mark the payouts array as modified so Mongoose detects the changes
+      sellerBalance.markModified('payouts');
+    }
+
+    await sellerBalance.save();
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: 'Payout processed successfully',
+      data: {
+        transferId: payout.id,
         amount,
         remainingBalance: sellerBalance.availableBalance,
       },
@@ -629,6 +732,7 @@ const convertToCSV = (data) => {
 module.exports = {
   getFinancialOverview,
   getSellerBalances,
+  transferFundsToConnectedAccount,
   processPayout,
   getRefundManagement,
   generateFinancialReport,

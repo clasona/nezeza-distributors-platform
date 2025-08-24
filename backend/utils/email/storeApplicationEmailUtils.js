@@ -1,7 +1,7 @@
 const sendEmail = require('../sendEmail');
 
 const sendStoreApplicationEmail = async ({ application, email, firstName, lastName }) => {
-  const adminEmail = 'clasona.us@gmail.com';
+  const adminEmail = 'marketplace@vesoko.com';
   
   // Email to applicant
   const applicantSubject = 'VeSoko Store Application Received - Thank You!';

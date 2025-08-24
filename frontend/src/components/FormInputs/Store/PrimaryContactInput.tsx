@@ -239,8 +239,7 @@ const PrimaryContactInput = ({
         errors={errors as any}
         type='date'
       />
-      {/* Commented out for now - not requesting primary contact address
-      <StoreFormHeading heading='Residence Address' />
+      {/* <StoreFormHeading heading='Residence Address' />
       <AddressInput
         streetFieldName='residenceStreet'
         street2FieldName='residenceStreet2'
@@ -252,8 +251,7 @@ const PrimaryContactInput = ({
         errors={errors as any}
         control={control as any}
         setValue={setValue as any}
-      />
-      */}
+      /> */}
     </div>
   );
 };

@@ -10,6 +10,7 @@ const {
 const {
   getFinancialOverview,
   getSellerBalances,
+  transferFundsToConnectedAccount,
   processPayout,
   getRefundManagement,
   generateFinancialReport,
@@ -39,6 +40,19 @@ router
     authenticateUser,
     authorizePermissions('view_admin_report'),
     getSellerBalances
+  );
+
+  /**
+ * @route   POST /api/v1/admin/financial/transfer-funds
+ * @desc    Process payout to seller
+ * @access  Private (Admin only)
+ */
+router
+  .route('/transfer-funds')
+  .post(
+    authenticateUser,
+    authorizePermissions('view_admin_report'),
+    transferFundsToConnectedAccount
   );
 
 /**

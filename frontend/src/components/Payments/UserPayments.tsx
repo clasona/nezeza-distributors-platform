@@ -72,44 +72,29 @@ const UserPayments = () => {
 
   const fetchPaymentData = async () => {
     if (!storeInfo?._id) {
-      console.log('❌ No storeInfo._id available:', storeInfo);
       setLoading(false);
       return;
     }
 
-    console.log('🔍 Fetching payment data for store ID:', storeInfo._id);
-    console.log('👤 Current userInfo:', userInfo);
-    console.log('🏪 Current storeInfo:', storeInfo);
-
     try {
       setLoading(true);
-      
       // Fetch seller balance
-      console.log('📊 Fetching seller balance...');
       const balanceData = await getSellerRevenue(storeInfo._id);
-      console.log('💰 Seller balance response:', balanceData);
       setSellerBalance(balanceData);
 
       // Fetch mock transaction history (for backward compatibility)
-      console.log('📈 Fetching mock transaction history...');
       const transactionData = await getTransactionHistory(storeInfo._id);
-      console.log('📋 Mock transaction history response:', transactionData);
       setTransactionHistory(transactionData);
 
       // Fetch real transaction history from Transaction model
-      console.log('🔄 Fetching REAL transaction history from Transaction model...');
       const realTransactionData = await getRealTransactionHistory(storeInfo._id);
-      console.log('📋 REAL transaction history response:', realTransactionData);
       setRealTransactionHistory(realTransactionData);
 
       // Fetch analytics data
-      console.log('📊 Fetching analytics data...');
       const analytics = await fetchSellerAnalytics('30d', storeInfo._id);
-      console.log('📈 Analytics response:', analytics);
       setAnalyticsData(analytics);
       
     } catch (error) {
-      console.error('❌ Error fetching payment data:', error);
       toast.error('Failed to load payment data');
     } finally {
       setLoading(false);
@@ -201,56 +186,8 @@ const UserPayments = () => {
       </div>
     );
   }
-
   return (
     <div className='space-y-8'>
-      {/* Debugging Info - Remove this in production */}
-      <div className='bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4'>
-        <h3 className='text-lg font-bold text-yellow-800 mb-3'>🐛 Debug Information</h3>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 text-sm'>
-          <div>
-            <h4 className='font-semibold text-yellow-700'>Store Info:</h4>
-            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
-              {JSON.stringify(storeInfo, null, 2)}
-            </pre>
-          </div>
-          <div>
-            <h4 className='font-semibold text-yellow-700'>User Info:</h4>
-            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
-              {JSON.stringify({
-                _id: userInfo?._id,
-                firstName: userInfo?.firstName,
-                lastName: userInfo?.lastName,
-                email: userInfo?.email,
-                storeId: userInfo?.storeId
-              }, null, 2)}
-            </pre>
-          </div>
-          <div>
-            <h4 className='font-semibold text-yellow-700'>Seller Balance:</h4>
-            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
-              {JSON.stringify(sellerBalance, null, 2)}
-            </pre>
-          </div>
-          <div>
-            <h4 className='font-semibold text-yellow-700'>Mock Transaction History:</h4>
-            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
-              {JSON.stringify(transactionHistory, null, 2)}
-            </pre>
-          </div>
-          <div>
-            <h4 className='font-semibold text-yellow-700'>REAL Transaction History:</h4>
-            <pre className='text-xs bg-yellow-100 p-2 rounded mt-1 overflow-auto max-h-32'>
-              {JSON.stringify(realTransactionHistory, null, 2)}
-            </pre>
-          </div>
-        </div>
-        <div className='mt-3 text-xs text-yellow-600'>
-          <p><strong>API Endpoint:</strong> GET /payment/seller-revenue/{storeInfo?._id}</p>
-          <p><strong>Store ID being used:</strong> {storeInfo?._id || 'NOT AVAILABLE'}</p>
-          <p><strong>Loading state:</strong> {loading ? 'Loading...' : 'Completed'}</p>
-        </div>
-      </div>
       {/* Modern Header */}
       <div className='bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 border border-white/20 animate-fade-in'>
         <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>

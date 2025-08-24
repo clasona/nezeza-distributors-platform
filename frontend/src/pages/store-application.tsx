@@ -18,6 +18,8 @@ import { useCallback } from 'react';
 import AutoSaveIndicator from '@/components/AutoSaveIndicator';
 import RestoreDataModal from '@/components/RestoreDataModal';
 import { validateShippingAddress, AddressData } from '@/utils/address/validateAddress';
+import { useSelector } from 'react-redux';
+import { stateProps } from '../../type';
 
 interface StoreRegistrationFormProps {
   onSubmitSuccess?: (data: any) => void; // Callback after successful submission
@@ -88,8 +90,16 @@ const StoreRegistrationForm = ({
   const [isAddressValid, setIsAddressValid] = useState(false);
   const [hasAttemptedAddressValidation, setHasAttemptedAddressValidation] = useState(false);
   const router = useRouter();
+  
+  // Get userInfo from Redux to check authentication
+  const { userInfo } = useSelector((state: stateProps) => state.next);
 
   const sections = ['Primary Contact', 'Store Info', 'Docs', 'Review & Submit'];
+  
+  // Function to handle login redirect
+  const handleLoginRedirect = () => {
+    router.push('/login?redirect=/store-application');
+  };
 
   // Custom auto-save that includes document resources
   const saveFormData = useCallback(() => {

@@ -79,7 +79,7 @@ const OrderFeeDisplay: React.FC<OrderFeeDisplayProps> = ({
             <div className='group relative'>
               <Info className='w-4 h-4 text-gray-400 cursor-help' />
               <div className='absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap'>
-                Small fee to ensure sellers receive full payment
+                This processing fee helps keep VeSoko running smoothly, covering essentials like insurance, secure payments, platform maintenance, and dedicated customer support.
               </div>
             </div>
           </div>

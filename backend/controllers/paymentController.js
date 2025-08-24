@@ -34,6 +34,9 @@ const {
   sendOrderConfirmationEmailAndNotification,
   sendSellerNewOrderEmailAndNotification,
 } = require('../utils/sendEmailAndNotification');
+const {
+  sendAdminPayoutRequestNotificationEmail,
+} = require('../utils/email/emailSupportUtils');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 
@@ -1044,7 +1047,7 @@ const sellerRequestPayOut = async (req, res) => {
 
     // Check seller balance
     const balance = await SellerBalance.findOne({ sellerId });
-    console.log('Current balance:', balance);
+    // console.log('Current balance:', balance);
     
     if (!balance) {
       return res
@@ -1081,7 +1084,44 @@ const sellerRequestPayOut = async (req, res) => {
       { new: true }
     );
 
-    console.log('Updated balance:', updatedBalance);
+    // console.log('Updated balance:', updatedBalance);
+
+    // Send email notification to admin about the payout request
+    try {
+      // Get seller and store information for the email
+      const seller = await User.findById(sellerId);
+      const store = await Store.findOne({ ownerId: sellerId });
+      
+      if (seller && store) {
+        await sendAdminPayoutRequestNotificationEmail({
+          sellerId: sellerId,
+          sellerName: `${seller.firstName || ''} ${seller.lastName || ''}`.trim() || 'Unknown Seller',
+          sellerEmail: seller.email || 'No email provided',
+          amount: amount,
+          requestId: payoutRequest.requestId,
+          availableBalance: updatedBalance.availableBalance,
+          storeName: store.name || 'Unknown Store',
+        });
+        console.log('Admin payout request notification email sent successfully');
+      } else {
+        console.log('Seller or store not found, skipping admin notification email');
+      }
+      // create test hardcoded values
+      // const testEmailData = {
+      //   sellerId: 'test_seller_id',
+      //   sellerName: 'Test Seller',
+      //   sellerEmail: 'test.seller@example.com',
+      //   amount: 100,
+      //   requestId: 'test_request_id',
+      //   availableBalance: 500,
+      //   storeName: 'Test Store',
+      // };
+
+      // await sendAdminPayoutRequestNotificationEmail(testEmailData);
+    } catch (emailError) {
+      console.error('Failed to send admin payout request notification email:', emailError.message);
+      // Don't fail the entire request if email fails
+    }
 
     res.status(200).json({ 
       msg: 'Payout request sent. Awaiting admin approval.',

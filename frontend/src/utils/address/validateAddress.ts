@@ -169,7 +169,7 @@ export const normalizeAddress = async (address: AddressData): Promise<{ success:
  */
 export const isAddressComplete = (address: AddressData, type: 'shipping' | 'billing' = 'shipping'): { valid: boolean; missingFields: string[] } => {
   const requiredFields = [
-    { key: 'name', alternatives: ['name'], label: 'Name' },
+    { key: 'name', alternatives: ['name'], label: 'Store Name' },
     { key: 'street1', alternatives: ['street1', 'street'], label: 'Street Address' },
     { key: 'city', alternatives: ['city'], label: 'City' },
     { key: 'state', alternatives: ['state'], label: 'State' },

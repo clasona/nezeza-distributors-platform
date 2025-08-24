@@ -75,10 +75,17 @@ const OrderRevenueBreakdown: React.FC<OrderRevenueBreakdownProps> = ({
           <FormattedPrice amount={feeBreakdown.platformBreakdown.commission} />
         </span>
       </div>
+      {/* Shipping Fees */}
       <div className='flex justify-between'>
-        <span className='text-gray-600'>Platform Services:</span>
+        <span className='text-gray-600'>Shipping Fees:</span>
         <span className='font-medium text-blue-600'>
-          <FormattedPrice amount={feeBreakdown.platformBreakdown.shippingRevenue + feeBreakdown.platformBreakdown.stripeFeesCovered} />
+          <FormattedPrice amount={feeBreakdown.platformBreakdown.shippingRevenue} />
+        </span>
+      </div>
+      <div className='flex justify-between'>
+        <span className='text-gray-600'>Processing Fees:</span>
+        <span className='font-medium text-red-600'>
+          <FormattedPrice amount={feeBreakdown.platformBreakdown.stripeFeesCovered} />
         </span>
       </div>
       <div className='text-xs text-gray-500 mt-2 pt-2 border-t'>

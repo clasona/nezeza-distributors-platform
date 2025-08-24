@@ -170,7 +170,7 @@ const AddressInput = ({
     countriesWeOperateIn
       .filter(country => country.name !== 'Select country')
       .map((country) => ({
-        value: country.name.toLowerCase(),
+        value: country.code, // Use country code as value
         label: country.name,
         statesPath: country.states,
       }))
@@ -189,7 +189,7 @@ const AddressInput = ({
       }
 
       const country = countriesWeOperateIn.find(
-        (c) => c.name.toLowerCase() === selectedCountry
+        (c) => c.code === selectedCountry
       );
 
       if (country && country.states) {
@@ -198,9 +198,9 @@ const AddressInput = ({
           const response = await import(`@/pages/data/${country.states}`);
           const states = response.default;
           const options = states.map((state: any) => ({
-            value: state.name.toLowerCase(),
+            value: state.abbreviation || state.code, // Use abbreviation/code as value
             label: state.name,
-            code: state.code, // If available
+            code: state.abbreviation || state.code, // Store the code
           }));
           setStateOptions(options);
         } catch (error) {
@@ -317,14 +317,12 @@ const AddressInput = ({
             setValue(cityFieldName, result.address.city);
           }
           if (result.address.state !== address.state) {
-            // Normalize the returned state for UI display
-            const normalizedState = normalizeStateForUI(result.address.state ?? '', result.address.country ?? '');
-            setValue(stateFieldName, normalizedState);
+            // Store the validated state code directly
+            setValue(stateFieldName, result.address.state);
           }
           if (result.address.country !== address.country) {
-            // Normalize the returned country for UI display
-            const normalizedCountry = normalizeCountryForUI(result.address.country ?? '');
-            setValue(countryFieldName, normalizedCountry);
+            // Store the validated country code directly
+            setValue(countryFieldName, result.address.country);
           }
           if (result.address.zip !== address.zip) {
             setValue(zipFieldName, result.address.zip);

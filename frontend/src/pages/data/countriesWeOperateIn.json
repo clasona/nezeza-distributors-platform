@@ -1,5 +1,4 @@
 [
     { "name": "Select country", "code": "", "states": "" },
-  { "name": "Rwanda", "code": "RW", "states": "rwandan_provinces" },
   { "name": "United States", "code": "US", "states": "us_states" }
 ]

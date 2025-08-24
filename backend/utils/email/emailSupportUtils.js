@@ -827,6 +827,337 @@ const sendTicketEscalationEmail = async ({
 };
 
 /**
+ * Send admin notification for seller payout request
+ */
+const sendAdminPayoutRequestNotificationEmail = async ({
+  sellerId,
+  sellerName,
+  sellerEmail,
+  amount,
+  requestId,
+  availableBalance,
+  storeName,
+}) => {
+  const adminEmails = ['marketplace@vesoko.com', 'clasona.us@gmail.com'];
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>💰 Payout Request - ${requestId}</title>
+      <style>
+        /* Reset styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        /* Base styles */
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          line-height: 1.6;
+          color: #333333;
+          background-color: #f5f5f5;
+          margin: 0;
+          padding: 0;
+          width: 100% !important;
+          min-width: 100%;
+          -webkit-text-size-adjust: 100%;
+          -ms-text-size-adjust: 100%;
+        }
+        
+        /* Container */
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .email-wrapper {
+          padding: 20px;
+          background-color: #f5f5f5;
+        }
+        
+        /* Header */
+        .email-header {
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          padding: 30px 20px;
+          text-align: center;
+          color: white;
+        }
+        
+        .email-header h1 {
+          font-size: 28px;
+          font-weight: 700;
+          margin: 0;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .email-header .tagline {
+          font-size: 14px;
+          opacity: 0.9;
+          margin-top: 5px;
+        }
+        
+        /* Content */
+        .email-content {
+          padding: 40px 30px;
+        }
+        
+        .email-title {
+          font-size: 24px;
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 20px;
+          line-height: 1.3;
+        }
+        
+        .email-text {
+          font-size: 16px;
+          color: #4b5563;
+          line-height: 1.6;
+          margin-bottom: 20px;
+        }
+        
+        /* Info boxes */
+        .info-box {
+          background: white; 
+          border-left: 4px solid #2563eb;
+          padding: 20px;
+          margin: 25px 0;
+          border-radius: 0 6px 6px 0;
+        }
+        
+        .info-box h3 {
+          font-size: 18px;
+          font-weight: 600;
+          color: #1f2937;
+          margin-bottom: 12px;
+        }
+        
+        .info-item {
+          margin: 8px 0;
+          font-size: 15px;
+          color: #374151;
+        }
+        
+        .info-item strong {
+          color: #1f2937;
+          font-weight: 600;
+        }
+        
+        /* Alert boxes */
+        .alert {
+          padding: 16px 20px;
+          border-radius: 8px;
+          margin: 20px 0;
+          border-left: 4px solid;
+        }
+        
+        .alert-warning {
+          background-color: #fef3c7;
+          border-color: #f59e0b;
+          color: #92400e;
+        }
+        
+        .alert-info {
+          background-color: #eff6ff;
+          border-color: #3b82f6;
+          color: #1e40af;
+        }
+        
+        /* Buttons */
+        .button-container {
+          text-align: center;
+          margin: 35px 0;
+        }
+        
+        .btn {
+          display: inline-block;
+          padding: 16px 32px;
+          background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+          color: white !important;
+          text-decoration: none;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          text-align: center;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+          min-width: 200px;
+        }
+        
+        .btn-warning {
+          background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+        }
+        
+        /* Footer */
+        .email-footer {
+          background-color: #f9fafb;
+          padding: 30px;
+          text-align: center;
+          border-top: 1px solid #e5e7eb;
+        }
+        
+        .footer-text {
+          font-size: 14px;
+          color: #6b7280;
+          margin-bottom: 15px;
+        }
+        
+        .footer-links {
+          font-size: 12px;
+          color: #9ca3af;
+        }
+        
+        .footer-links a {
+          color: #2563eb;
+          text-decoration: none;
+        }
+        
+        /* Responsive styles */
+        @media only screen and (max-width: 600px) {
+          .email-wrapper {
+            padding: 10px !important;
+          }
+          
+          .email-container {
+            width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+          }
+          
+          .email-header {
+            padding: 25px 15px !important;
+          }
+          
+          .email-header h1 {
+            font-size: 24px !important;
+          }
+          
+          .email-content {
+            padding: 25px 20px !important;
+          }
+          
+          .email-title {
+            font-size: 20px !important;
+            line-height: 1.2 !important;
+          }
+          
+          .email-text {
+            font-size: 15px !important;
+          }
+          
+          .info-box {
+            padding: 15px !important;
+            margin: 20px 0 !important;
+          }
+          
+          .info-box h3 {
+            font-size: 16px !important;
+          }
+          
+          .btn {
+            padding: 14px 24px !important;
+            font-size: 15px !important;
+            min-width: 180px !important;
+            display: block !important;
+            width: 100% !important;
+            max-width: 280px !important;
+            margin: 0 auto !important;
+          }
+          
+          .button-container {
+            margin: 25px 0 !important;
+          }
+          
+          .email-footer {
+            padding: 20px 15px !important;
+          }
+          
+          .footer-text {
+            font-size: 13px !important;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-wrapper">
+        <div class="email-container">
+          <div class="email-header">
+            <h1>VeSoko Support</h1>
+            <div class="tagline">Connecting Africa to the World</div>
+          </div>
+          <div class="email-content">
+            <div class="alert alert-warning">
+              <strong>💰 Payout Request Alert</strong><br>
+              A seller has requested a payout and requires admin approval.
+            </div>
+            
+            <h2 class="email-title">New Seller Payout Request</h2>
+            
+            <div class="info-box">
+              <h3>Payout Request Details:</h3>
+              <div class="info-item"><strong>Request ID:</strong> ${requestId}</div>
+              <div class="info-item"><strong>Seller:</strong> ${sellerName} (${sellerEmail})</div>
+              <div class="info-item"><strong>Store:</strong> ${storeName}</div>
+              <div class="info-item"><strong>Requested Amount:</strong> $${amount.toFixed(2)}</div>
+              <div class="info-item"><strong>Remaining Available Balance:</strong> $${availableBalance.toFixed(2)}</div>
+              <div class="info-item"><strong>Requested At:</strong> ${new Date().toLocaleString()}</div>
+            </div>
+            
+            <div class="alert alert-info">
+              <strong>Action Required:</strong> Please review and process this payout request in the admin dashboard.
+            </div>
+            
+            <div class="button-container">
+              <a href="${clientUrl}/admin/" 
+                 class="btn btn-warning">
+                Review Payout Request
+              </a>
+            </div>
+            
+            <p class="email-text">
+              The seller's balance has been updated and the requested amount has been moved to pending. 
+              Please process the payout using the financial management system.
+            </p>
+          </div>
+          <div class="email-footer">
+            <div class="footer-text">
+              Thank you for choosing VeSoko Platform
+            </div>
+            <div class="footer-links">
+              <a href="${clientUrl}/support">Support Center</a> | 
+              <a href="${clientUrl}/contact">Contact Us</a> | 
+              <a href="${clientUrl}/unsubscribe">Unsubscribe</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  try {
+    for (const adminEmail of adminEmails) {
+      await sendEmail({
+        to: adminEmail.trim(),
+        subject: `💰 Seller Payout Request - $${amount.toFixed(2)} - ${sellerName}`,
+        html,
+      });
+    }
+    console.log(`Payout request notification sent to admin team`);
+  } catch (error) {
+    console.error('Error sending admin payout notification email:', error);
+  }
+};
+
+/**
  * Send SLA breach warning email
  */
 const sendSLABreachWarningEmail = async ({
@@ -889,6 +1220,7 @@ module.exports = {
   sendTicketStatusUpdateEmail,
   sendAdminTicketNotificationEmail,
   sendTicketAssignedEmail,
+  sendAdminPayoutRequestNotificationEmail,
   sendTicketEscalationEmail,
   sendSLABreachWarningEmail,
 };
