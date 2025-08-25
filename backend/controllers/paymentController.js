@@ -685,15 +685,47 @@ const createPaymentIntent = async (req, res) => {
   
   // Store only the temp order data ID in metadata
   metadata.tempOrderDataId = tempOrderData._id.toString();
-  metadata.totalAmount = feeBreakdown.customerTotal; // Customer pays this total
+  // Handle different structures for single vs multi-seller for customerTotal
+  if (feeBreakdown.customerTotal !== undefined) {
+    // Single seller structure
+    metadata.totalAmount = feeBreakdown.customerTotal;
+  } else if (feeBreakdown.totalCustomerAmount !== undefined) {
+    // Multi-seller structure - if it exists
+    metadata.totalAmount = feeBreakdown.totalCustomerAmount;
+  } else {
+    // Fallback - this shouldn't happen but just in case
+    metadata.totalAmount = totalAmount + totalTax + totalShipping;
+    console.warn('Using fallback customerTotal calculation');
+  }
   metadata.subtotal = totalAmount;
   metadata.totalTax = totalTax;
   metadata.totalShipping = totalShipping;
-  metadata.processingFee = feeBreakdown.breakdown.processingFee;
+  // Handle different structures for single vs multi-seller
+  if (feeBreakdown.breakdown && feeBreakdown.breakdown.processingFee !== undefined) {
+    // Single seller structure
+    metadata.processingFee = feeBreakdown.breakdown.processingFee;
+  } else if (feeBreakdown.summary && feeBreakdown.summary.totalProcessingFee !== undefined) {
+    // Multi-seller structure
+    metadata.processingFee = feeBreakdown.summary.totalProcessingFee;
+  } else {
+    // Fallback
+    metadata.processingFee = 0;
+  }
   
   try {
+    // Use the appropriate customerTotal field based on single vs multi-seller structure
+    let customerTotal;
+    if (feeBreakdown.customerTotal !== undefined) {
+      // Single seller structure
+      customerTotal = feeBreakdown.customerTotal;
+    } else {
+      // Fallback for any edge cases
+      customerTotal = totalAmount + totalTax + totalShipping;
+      console.warn('Using fallback customerTotal for payment intent amount');
+    }
+    
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(feeBreakdown.customerTotal * 100), // Use grossed-up total
+      amount: Math.round(customerTotal * 100), // Use the appropriate total
       currency: 'usd',
       payment_method_types: ['card'],
       setup_future_usage: 'off_session', // This saves the card

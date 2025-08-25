@@ -199,11 +199,13 @@ function calculateOrderFees({
 
 /**
  * Calculate fees for multiple items (full order with suborders)
- * @param {Array} suborders - Array of suborder objects
- * @param {boolean} grossUpFees - Whether to gross up fees
+ * @param {Object} params - Parameters object
+ * @param {Array} params.suborders - Array of suborder objects
+ * @param {number} params.totalShippingCost - Total shipping cost for the order
+ * @param {boolean} params.grossUpFees - Whether to gross up fees
  * @returns {Object} Aggregated fee breakdown
  */
-function calculateMultiSellerOrderFees(suborders, grossUpFees = true) {
+function calculateMultiSellerOrderFees({ suborders, totalShippingCost = 0, grossUpFees = true }) {
   const aggregated = {
     customerTotal: 0,
     customerSubtotal: 0,
@@ -219,6 +221,8 @@ function calculateMultiSellerOrderFees(suborders, grossUpFees = true) {
       totalCommission: 0
     }
   };
+
+  // console.log('suborders for multi-seller fee calculation:', suborders);
 
   for (const suborder of suborders) {
     const fees = calculateOrderFees({

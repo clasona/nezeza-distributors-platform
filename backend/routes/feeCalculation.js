@@ -104,10 +104,11 @@ router.post('/multi-seller', async (req, res) => {
         if (suborder.storeId) {
           try {
             store = await Store.findById(suborder.storeId);
+            // console.log(`Processing suborder for store ID: ${store._id}`);
             if (!store) {
               console.warn(`Store not found for ID: ${suborder.storeId}`);
             } else {
-              console.log(`Found store for multi-seller fee calculation: ${store.storeName}, grace period: ${store.gracePeriodStart} - ${store.gracePeriodEnd}`);
+              // console.log(`Found store for multi-seller fee calculation: ${store.name}, grace period: ${store.gracePeriodStart} - ${store.gracePeriodEnd}`);
             }
           } catch (storeError) {
             console.error('Error fetching store for multi-seller fee calculation:', storeError);
@@ -121,7 +122,11 @@ router.post('/multi-seller', async (req, res) => {
       })
     );
 
-    const feeCalculation = calculateMultiSellerOrderFees(processedSuborders, grossUpFees);
+    // console.log('suborders for multi-seller fee calculation:', processedSuborders);
+    const feeCalculation = calculateMultiSellerOrderFees({ 
+      suborders: processedSuborders, 
+      grossUpFees 
+    });
 
     res.json({
       success: true,

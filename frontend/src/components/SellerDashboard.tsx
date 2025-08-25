@@ -391,15 +391,15 @@ const SellerDashboard = () => {
                 href: '/retailer/inventory/new-product',
                 icon: <Package className='w-6 h-6' />,
                 label: 'Add Product',
-                gradient: 'from-vesoko_primary500 to-vesoko_primary_dark',
-                hoverGradient: 'hover:from-vesoko_primary600 hover:to-vesoko_secondary'
+                gradient: 'from-vesoko_primary to-vesoko_primary_dark',
+                hoverGradient: 'hover:from-vesoko_primary_dark hover:to-vesoko_secondary'
               },
               {
                 href: '/retailer/orders/customer-orders',
                 icon: <MdShoppingCart className='w-6 h-6' />,
                 label: 'View Customer Orders',
-                gradient: 'from-green-500 to-green-600',
-                hoverGradient: 'hover:from-green-600 hover:to-vesoko_primary_dark'
+                gradient: 'from-vesoko_green_500 to-vesoko_green_600',
+                hoverGradient: 'hover:from-vesoko_green_600 hover:to-vesoko_green_800'
               },
               {
                 href: '/retailer/customers',
@@ -412,20 +412,20 @@ const SellerDashboard = () => {
                 href: '/retailer/support',
                 icon: <MdAttachMoney className='w-6 h-6' />,
                 label: 'Support',
-                gradient: 'from-orange-500 to-orange-600',
-                hoverGradient: 'hover:from-orange-600 hover:to-orange-700'
+                gradient: 'from-vesoko_secondary to-vesoko_secondary_light',
+                hoverGradient: 'hover:from-vesoko_secondary_light hover:to-vesoko_primary_dark'
               }
             ].map((action, index) => (
               <Link
                 key={action.label}
                 href={action.href}
-                className={`group relative overflow-hidden bg-gradient-to-r ${action.gradient} ${action.hoverGradient} rounded-xl p-6 text-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg`}
+                className={`group relative overflow-hidden bg-gradient-to-r ${action.gradient} ${action.hoverGradient} rounded-xl p-6 text-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-md`}
               >
                 <div className='flex flex-col items-center space-y-3'>
-                  <div className='w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-colors duration-300'>
+                  <div className='w-12 h-12 bg-white/25 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:bg-white/35 transition-colors duration-300 shadow-sm'>
                     {action.icon}
                   </div>
-                  <span className='text-sm font-semibold text-center'>{action.label}</span>
+                  <span className='text-sm font-semibold text-center drop-shadow-sm'>{action.label}</span>
                 </div>
                 
                 {/* Background decoration */}

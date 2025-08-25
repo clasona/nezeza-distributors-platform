@@ -167,15 +167,16 @@ const createOrderUtil = async ({
     // console.log('Grouped items:', groupedItems);
 
     // Calculate the total amount using the fee calculation utility for consistency
-    const feeBreakdown = calculateMultiSellerOrderFees(
-      Object.values(groupedItems).map(sellerData => ({
+    const feeBreakdown = calculateMultiSellerOrderFees({
+      suborders: Object.values(groupedItems).map(sellerData => ({
         store: sellerData.store,
         productSubtotal: sellerData.totalAmount,
         taxAmount: sellerData.totalTax,
         shippingCost: sellerData.totalShipping || 0,
       })),
-      true // Gross up fees
-    );
+      totalShippingCost: shippingFee,
+      grossUpFees: true // Gross up fees
+    });
 
     // console.log('Fee breakdown for the entire order:', feeBreakdown);
 
@@ -240,6 +241,8 @@ const createOrderUtil = async ({
         throw new CustomError.BadRequestError('Invalid billing address format');
       }
     }
+
+    // console.log('cartItems:', cartItems);
 
     const [order] = await Order.create(
       [
