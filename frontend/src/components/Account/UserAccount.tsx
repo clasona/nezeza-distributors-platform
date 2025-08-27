@@ -1,6 +1,7 @@
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import TextInput from '@/components/FormInputs/TextInput';
+import AddressInput from '@/components/FormInputs/AddressInput';
 import { useForm } from 'react-hook-form';
 import defaultUserImage from '@/images/defaultUserImage.png';
 import Image from 'next/image';
@@ -16,6 +17,7 @@ import PageHeader from '../PageHeader';
 import { UserProps } from '../../../type';
 import { useDispatch } from 'react-redux';
 import { addUser } from '@/redux/nextSlice';
+import usStates from '@/pages/data/us_states.json';
 
 interface UserAccountProps {
   userInfo: UserProps;
@@ -27,9 +29,14 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
     formState: { errors },
     setValue,
     getValues,
+    control,
+    reset,
   } = useForm();
   // const router = useRouter();
   const [isSendingReset, setIsSendingReset] = useState(false);
+  const [isAddressValid, setIsAddressValid] = useState(false);
+  const [hasAttemptedAddressValidation, setHasAttemptedAddressValidation] = useState(false);
+  const [isFormInitialized, setIsFormInitialized] = useState(false);
   const handleSendResetPasswordEmail = async () => {
     setIsSendingReset(true);
     setErrorMessage('');
@@ -86,33 +93,81 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
   const [currentUserData, setCurrentUserData] = useState<any>(null);
   const dispatch = useDispatch();
 
+  // Helper function to normalize state names using the JSON data
+  const normalizeStateName = (stateInput: string, countryCode: string = ''): string => {
+    if (!stateInput) return '';
+    
+    // Only normalize US states
+    const isUSAddress = countryCode.toUpperCase() === 'US';
+    if (!isUSAddress) return stateInput.toLowerCase();
+    
+    // Find state by abbreviation or name from JSON
+    const state = usStates.find(s => 
+      s.abbreviation === stateInput.toUpperCase() || 
+      s.name.toLowerCase() === stateInput.toLowerCase()
+    );
+    
+    return state ? state.name.toLowerCase() : stateInput.toLowerCase();
+  };
+
+  // Helper function to convert state names back to abbreviations using JSON data
+  const stateNameToCode = (stateName: string, countryCode: string): string => {
+    if (!stateName || countryCode !== 'US') return stateName;
+    
+    // Find state by name from JSON
+    const state = usStates.find(s => 
+      s.name.toLowerCase() === stateName.toLowerCase()
+    );
+    
+    return state ? state.abbreviation : stateName;
+  };
+
   const fetchUserData = useCallback(async () => {
     if (!userInfo?._id) return; // Ensure userId exists before fetching
     try {
       const userData = await getUserById(userInfo._id);
       setCurrentUserData(userData);
-      // Set form values
-      setValue('firstName', userData.firstName || '');
-      setValue('lastName', userData.lastName || '');
-      setValue('email', userData.email || '');
-      setValue('phone', userData.phone || '');
-      setValue('dateOfBirth', userData.dateOfBirth || '');
-      setValue('countryOfCitizenship', userData.countryOfCitizenship || '');
-      // Address fields
-      setValue('street1', userData.address?.street1 || '');
-      setValue('street2', userData.address?.street2 || '');
-      setValue('city', userData.address?.city || '');
-      setValue('state', userData.address?.state || '');
-      setValue('zip', userData.address?.zip || '');
-      setValue('country', userData.address?.country || '');
     } catch (error) {
       console.error('Failed to fetch user data', error);
     }
-  }, [userInfo?._id, setValue]);
+  }, [userInfo?._id]);
+
+  // Memoize initial form data to prevent infinite re-renders
+  const initialFormData = useMemo(() => {
+    if (!currentUserData) return null;
+    
+    const rawCountry = currentUserData.address?.country || '';
+    const rawState = currentUserData.address?.state || '';
+    
+    return {
+      firstName: currentUserData.firstName || '',
+      lastName: currentUserData.lastName || '',
+      email: currentUserData.email || '',
+      phone: currentUserData.phone || '',
+      dateOfBirth: currentUserData.dateOfBirth || '',
+      countryOfCitizenship: currentUserData.countryOfCitizenship || '',
+      // Address fields - keep codes for AddressInput compatibility
+      name: `${currentUserData.firstName || ''} ${currentUserData.lastName || ''}`.trim(),
+      street1: currentUserData.address?.street1 || '',
+      street2: currentUserData.address?.street2 || '',
+      city: currentUserData.address?.city || '',
+      state: rawState, // Keep original state code/abbreviation
+      zip: currentUserData.address?.zip || '',
+      country: rawCountry, // Keep original country code
+    };
+  }, [currentUserData]);
 
   useEffect(() => {
     fetchUserData();
   }, [fetchUserData]);
+
+  // Initialize form with user data only once
+  useEffect(() => {
+    if (initialFormData && !isFormInitialized) {
+      reset(initialFormData);
+      setIsFormInitialized(true);
+    }
+  }, [initialFormData, isFormInitialized]); // Remove 'reset' to prevent infinite loops
 
   const handlePasswordChange = async () => {
     const currentPassword = getValues('currentPassword');
@@ -151,6 +206,23 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
       setValue('confirmPassword', '');
     } catch {
       setErrorMessage('Error changing password.');
+    };
+  };
+
+  // Handle address validation completion from AddressInput
+  const handleAddressValidation = (isValid: boolean, validatedAddress?: any, error?: string) => {
+    setHasAttemptedAddressValidation(true);
+    setIsAddressValid(isValid);
+    
+    if (isValid && validatedAddress) {
+      console.log('Address validated by AddressInput:', validatedAddress);
+      setErrorMessage(''); // Clear any previous errors
+      // AddressInput has already updated the form fields, so we can proceed
+    } else {
+      setIsAddressValid(false);
+      if (error) {
+        setErrorMessage(error);
+      }
     }
   };
 
@@ -158,18 +230,20 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
     const updatedFields: any = {};
     setSaving(true);
 
-    // Extract address fields and group them
+    // Address data should already be in the right format (codes)
+    // since AddressInput manages this internally
     const addressFields = {
+      name: data.name, // Full name from firstName + lastName
       street1: data.street1,
       street2: data.street2,
       city: data.city,
-      state: data.state,
+      state: data.state, // Already in code format from AddressInput
       zip: data.zip,
-      country: data.country,
+      country: data.country, // Already in code format from AddressInput
     };
 
     // Remove address fields from main data and create structured data
-    const { street1: _street1, street2: _street2, city: _city, state: _state, zip: _zip, country: _country, ...otherData } = data;
+    const { name: _name, street1: _street1, street2: _street2, city: _city, state: _state, zip: _zip, country: _country, ...otherData } = data;
     
     const newUserData = {
       ...otherData,
@@ -360,7 +434,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
                 type="date"
                 isRequired={false}
               />
-              
+{/*               
               <TextInput
                 label="Country of Citizenship"
                 id="countryOfCitizenship"
@@ -369,69 +443,65 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
                 errors={errors}
                 type="text"
                 isRequired={false}
-              />
+              /> */}
             </div>
           </div>
 
           {/* Address Section */}
           <div className="mb-6">
             <h2 className="text-lg font-bold mb-4">Address Information</h2>
-            <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-8">
-              <TextInput
-                label="Street Address 1"
-                id="street1"
-                name="street1"
+            <div className="grid grid-cols-1 gap-y-4">
+              <AddressInput
+                addresseeFieldName='name'
+                streetFieldName='street1'
+                street2FieldName='street2'
+                cityFieldName='city'
+                stateFieldName='state'
+                countryFieldName='country'
+                zipFieldName='zip'
                 register={register}
+                setValue={setValue}
                 errors={errors}
-                type="text"
-                isRequired={false}
+                control={control}
+                enableValidation={true}
+                validationType='shipping'
+                showValidationButton={true}
+                onValidationComplete={handleAddressValidation}
               />
-              <TextInput
-                label="Street Address 2 (Optional)"
-                id="street2"
-                name="street2"
-                register={register}
-                errors={errors}
-                type="text"
-                isRequired={false}
-              />
-              <TextInput
-                label="City"
-                id="city"
-                name="city"
-                register={register}
-                errors={errors}
-                type="text"
-                isRequired={false}
-              />
-              <TextInput
-                label="State/Province"
-                id="state"
-                name="state"
-                register={register}
-                errors={errors}
-                type="text"
-                isRequired={false}
-              />
-              <TextInput
-                label="ZIP/Postal Code"
-                id="zip"
-                name="zip"
-                register={register}
-                errors={errors}
-                type="text"
-                isRequired={false}
-              />
-              <TextInput
-                label="Country"
-                id="country"
-                name="country"
-                register={register}
-                errors={errors}
-                type="text"
-                isRequired={false}
-              />
+              
+              {/* Address validation requirement notice */}
+              {hasAttemptedAddressValidation && !isAddressValid && (
+                <div className='p-3 bg-amber-50 border border-amber-200 rounded-lg mt-2'>
+                  <div className='flex items-start'>
+                    <div className='flex-shrink-0'>
+                      <svg className='h-5 w-5 text-amber-400' viewBox='0 0 20 20' fill='currentColor'>
+                        <path fillRule='evenodd' d='M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z' clipRule='evenodd' />
+                      </svg>
+                    </div>
+                    <div className='ml-3'>
+                      <p className='text-sm text-amber-800'>
+                        Please validate your address before saving. Click "Validate Address" and resolve any issues.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
+          </div>
+
+          <div className="flex flex-col items-center justify-center mb-4">
+            {successMessage && (<SuccessMessageModal successMessage={successMessage} />)}
+            {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
+            <SubmitButton
+              isLoading={isSaving}
+              buttonTitle={hasAttemptedAddressValidation && !isAddressValid ? 'Please Validate Address First' : 'Save Changes'}
+              loadingButtonTitle="Saving..."
+              className={`${hasAttemptedAddressValidation && !isAddressValid
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-vesoko_primary hover:bg-vesoko_primary_dark'
+              } text-white font-medium py-2 px-4 rounded-lg transition-all duration-200`}
+              disabled={isSaving || (hasAttemptedAddressValidation && !isAddressValid)}
+            />
           </div>
 
           {/* Change Password Section (send reset link to email) */}
@@ -442,7 +512,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
                 type="button"
                 onClick={handleSendResetPasswordEmail}
                 disabled={isSendingReset}
-                className={`w-full h-12 bg-vesoko_primary hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center ${isSendingReset ? 'opacity-70 cursor-not-allowed' : ''}`}
+                className={`w-full h-12 bg-vesoko_secondary_light hover:bg-vesoko_primary/90 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center ${isSendingReset ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 {isSendingReset ? 'Sending Link...' : 'Send Password Reset Link'}
               </button>
@@ -450,15 +520,7 @@ const UserAccount = ({ userInfo }: UserAccountProps) => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center mb-4">
-            {successMessage && (<SuccessMessageModal successMessage={successMessage} />)}
-            {errorMessage && <ErrorMessageModal errorMessage={errorMessage} />}
-            <SubmitButton
-              isLoading={isSaving}
-              buttonTitle="Save Changes"
-              loadingButtonTitle="Saving..."
-            />
-          </div>
+          
         </form>
       </div>
     </div>

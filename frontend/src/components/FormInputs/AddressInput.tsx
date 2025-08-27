@@ -498,26 +498,6 @@ const AddressInput = ({
         }
         // isLoading={loadingStates}
       />
-      {/* <DropdownInput
-        label='Country'
-        id={countryFieldName}
-        name={countryFieldName}
-        options={countryOptions}
-        register={register}
-        errors={errors}
-      />
-      <DropdownInput
-        label='State/Province'
-        id={stateFieldName}
-        name={stateFieldName}
-        options={stateOptions}
-        register={register}
-        errors={errors}
-        disabled={
-          stateOptions.length === 0 || loadingStates || !selectedCountry
-        }
-        isLoading={loadingStates}
-      /> */}
 
       <TextInput
         label='Zip Code'

@@ -12,6 +12,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { stateProps } from '../../../type';
+import usStates from '@/pages/data/us_states.json';
 
 const CheckoutAddressPage = () => {
   const router = useRouter();
@@ -61,43 +62,21 @@ const CheckoutAddressPage = () => {
     return countryInput.toLowerCase();
   };
 
-  // Helper function to normalize state abbreviations/names to the format expected by AddressInput
+  // Helper function to normalize state names using the JSON data
   const normalizeState = (stateInput: string, countryCode: string = ''): string => {
     if (!stateInput) return '';
     
-    // Check if this is a US address (handle both codes and full names)
-    const countryLower = countryCode.toLowerCase();
-    const isUSAddress = countryLower === 'us' || 
-                       countryLower === 'usa' || 
-                       countryLower === 'united states' || 
-                       countryCode.toUpperCase() === 'US';
+    // Only normalize US states
+    const isUSAddress = countryCode.toUpperCase() === 'US';
+    if (!isUSAddress) return stateInput.toLowerCase();
     
-    // Only normalize US states for now - can expand for other countries
-    if (isUSAddress) {
-      // US state abbreviation to name mapping
-      const usStateMap: Record<string, string> = {
-        'AL': 'alabama', 'AK': 'alaska', 'AS': 'american samoa', 'AZ': 'arizona', 'AR': 'arkansas',
-        'CA': 'california', 'CO': 'colorado', 'CT': 'connecticut', 'DE': 'delaware', 'DC': 'district of columbia',
-        'FM': 'federated states of micronesia', 'FL': 'florida', 'GA': 'georgia', 'GU': 'guam', 'HI': 'hawaii',
-        'ID': 'idaho', 'IL': 'illinois', 'IN': 'indiana', 'IA': 'iowa', 'KS': 'kansas', 'KY': 'kentucky',
-        'LA': 'louisiana', 'ME': 'maine', 'MH': 'marshall islands', 'MD': 'maryland', 'MA': 'massachusetts',
-        'MI': 'michigan', 'MN': 'minnesota', 'MS': 'mississippi', 'MO': 'missouri', 'MT': 'montana',
-        'NE': 'nebraska', 'NV': 'nevada', 'NH': 'new hampshire', 'NJ': 'new jersey', 'NM': 'new mexico',
-        'NY': 'new york', 'NC': 'north carolina', 'ND': 'north dakota', 'MP': 'northern mariana islands',
-        'OH': 'ohio', 'OK': 'oklahoma', 'OR': 'oregon', 'PW': 'palau', 'PA': 'pennsylvania',
-        'PR': 'puerto rico', 'RI': 'rhode island', 'SC': 'south carolina', 'SD': 'south dakota',
-        'TN': 'tennessee', 'TX': 'texas', 'UT': 'utah', 'VT': 'vermont', 'VI': 'virgin islands',
-        'VA': 'virginia', 'WA': 'washington', 'WV': 'west virginia', 'WI': 'wisconsin', 'WY': 'wyoming'
-      };
-      
-      const upperInput = stateInput.toUpperCase();
-      if (usStateMap[upperInput]) {
-        return usStateMap[upperInput];
-      }
-    }
+    // Find state by abbreviation or name from JSON
+    const state = usStates.find(s => 
+      s.abbreviation === stateInput.toUpperCase() || 
+      s.name.toLowerCase() === stateInput.toLowerCase()
+    );
     
-    // If it's not an abbreviation, assume it's a name and normalize to lowercase
-    return stateInput.toLowerCase();
+    return state ? state.name.toLowerCase() : stateInput.toLowerCase();
   };
 
   // Helper function to convert country names back to codes for shipping validation
@@ -113,26 +92,16 @@ const CheckoutAddressPage = () => {
     return nameToCodeMap[countryName.toLowerCase()] || countryName.toUpperCase();
   };
 
-  // Helper function to convert state names back to abbreviations for US states
+  // Helper function to convert state names back to abbreviations using JSON data
   const stateNameToCode = (stateName: string, countryCode: string): string => {
     if (!stateName || countryCode !== 'US') return stateName;
     
-    const nameToCodeMap: Record<string, string> = {
-      'alabama': 'AL', 'alaska': 'AK', 'american samoa': 'AS', 'arizona': 'AZ', 'arkansas': 'AR',
-      'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE', 'district of columbia': 'DC',
-      'federated states of micronesia': 'FM', 'florida': 'FL', 'georgia': 'GA', 'guam': 'GU', 'hawaii': 'HI',
-      'idaho': 'ID', 'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS', 'kentucky': 'KY',
-      'louisiana': 'LA', 'maine': 'ME', 'marshall islands': 'MH', 'maryland': 'MD', 'massachusetts': 'MA',
-      'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS', 'missouri': 'MO', 'montana': 'MT',
-      'nebraska': 'NE', 'nevada': 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM',
-      'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', 'northern mariana islands': 'MP',
-      'ohio': 'OH', 'oklahoma': 'OK', 'oregon': 'OR', 'palau': 'PW', 'pennsylvania': 'PA',
-      'puerto rico': 'PR', 'rhode island': 'RI', 'south carolina': 'SC', 'south dakota': 'SD',
-      'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT', 'vermont': 'VT', 'virgin islands': 'VI',
-      'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV', 'wisconsin': 'WI', 'wyoming': 'WY'
-    };
+    // Find state by name from JSON
+    const state = usStates.find(s => 
+      s.name.toLowerCase() === stateName.toLowerCase()
+    );
     
-    return nameToCodeMap[stateName.toLowerCase()] || stateName;
+    return state ? state.abbreviation : stateName;
   };
 
   // Memoize address data to prevent infinite re-renders
@@ -383,7 +352,7 @@ const CheckoutAddressPage = () => {
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
             <AddressInput
               addresseeFieldName='name'
-              streetFieldName='street1'
+            streetFieldName='street1'
               street2FieldName='street2'
               cityFieldName='city'
               stateFieldName='state'

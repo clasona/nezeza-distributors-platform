@@ -1,36 +1,44 @@
 import { getSellerTypeBaseurl } from '@/lib/utils';
-import { ChevronDown, Menu, Star, Tag, Truck, Clock, SquareArrowOutUpRight, X, Utensils } from 'lucide-react';
+import { ChevronDown, Menu, Star, Tag, Truck, Clock, SquareArrowOutUpRight, X, Utensils, ArrowUpDown, ArrowUp, ArrowDown, DollarSign, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { stateProps } from '../../../type';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 interface HeaderBottomProps {
   showSidebar: boolean;
   setShowSidebar: (showSidebar: boolean) => void;
   onCategorySelect?: (category: string) => void;
   onFilterSelect?: (filter: string) => void;
+  onSortSelect?: (sort: string) => void;
 }
 
 const HeaderBottom = ({ 
   showSidebar, 
   setShowSidebar, 
   onCategorySelect,
-  onFilterSelect 
+  onFilterSelect,
+  onSortSelect 
 }: HeaderBottomProps) => {
   const { userInfo, storeInfo } = useSelector(
     (state: stateProps) => state.next
   );
   const router = useRouter();
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
+  const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
   const mobileFiltersRef = useRef<HTMLDivElement>(null);
   
   // Get current category from URL
   const currentCategory = router.query.category as string || 'all';
   const currentFilter = router.query.filter as string || '';
+  const currentSort = router.query.sort as string || '';
 
   // Categories from your product form
   const categories = [
@@ -67,13 +75,99 @@ const HeaderBottom = ({
       icon: Clock,
       action: () => handleFilterClick('new_releases')
     },
+    { 
+      key: 'trending', 
+      label: 'Trending', 
+      icon: TrendingUp,
+      action: () => handleFilterClick('trending')
+    },
+    { 
+      key: 'best_sellers', 
+      label: 'Best Sellers', 
+      icon: Star,
+      action: () => handleFilterClick('best_sellers')
+    },
   ];
+
+  const sortOptions = [
+    { 
+      key: '', 
+      label: 'Relevance', 
+      icon: ArrowUpDown,
+      description: 'Default sorting by relevance'
+    },
+    { 
+      key: 'price_low_high', 
+      label: 'Price: Low to High', 
+      icon: ArrowUp,
+      description: 'Sort by price ascending'
+    },
+    { 
+      key: 'price_high_low', 
+      label: 'Price: High to Low', 
+      icon: ArrowDown,
+      description: 'Sort by price descending'
+    },
+    { 
+      key: 'rating_high_low', 
+      label: 'Customer Rating', 
+      icon: Star,
+      description: 'Sort by highest rated products'
+    },
+    { 
+      key: 'newest', 
+      label: 'Newest First', 
+      icon: Clock,
+      description: 'Sort by newest products'
+    },
+    { 
+      key: 'name_a_z', 
+      label: 'Name: A to Z', 
+      icon: ArrowUp,
+      description: 'Sort alphabetically A-Z'
+    },
+    { 
+      key: 'name_z_a', 
+      label: 'Name: Z to A', 
+      icon: ArrowDown,
+      description: 'Sort alphabetically Z-A'
+    },
+  ];
+
+  // Handle scroll behavior for sticky header
+  useEffect(() => {
+    const controlHeaderVisibility = () => {
+      if (typeof window !== 'undefined') {
+        const currentScrollY = window.scrollY;
+        
+        // Always keep visible, but close dropdowns when scrolling fast
+        if (Math.abs(currentScrollY - lastScrollY) > 50) {
+          // Close any open dropdowns when scrolling fast
+          setShowCategoriesDropdown(false);
+          setShowSortDropdown(false);
+          setShowMobileFilters(false);
+        }
+        
+        // Always show the header (keep it sticky)
+        setIsVisible(true);
+        setLastScrollY(currentScrollY);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', controlHeaderVisibility, { passive: true });
+      return () => window.removeEventListener('scroll', controlHeaderVisibility);
+    }
+  }, [lastScrollY]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setShowCategoriesDropdown(false);
+      }
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+        setShowSortDropdown(false);
       }
       if (mobileFiltersRef.current && !mobileFiltersRef.current.contains(event.target as Node)) {
         setShowMobileFilters(false);
@@ -118,7 +212,7 @@ const HeaderBottom = ({
     // Navigate to home page with filter
     router.push({
       pathname: '/',
-      query: { filter }
+      query: { ...router.query, filter }
     });
     
     // Scroll to products
@@ -126,6 +220,29 @@ const HeaderBottom = ({
     
     // Call callback if provided
     onFilterSelect?.(filter);
+  };
+
+  const handleSortClick = (sort: string) => {
+    setShowSortDropdown(false);
+    
+    // Navigate to home page with sort
+    const query = { ...router.query };
+    if (sort) {
+      query.sort = sort;
+    } else {
+      delete query.sort;
+    }
+    
+    router.push({
+      pathname: '/',
+      query
+    });
+    
+    // Scroll to products
+    scrollToProducts();
+    
+    // Call callback if provided
+    onSortSelect?.(sort);
   };
 
   const handleCustomerServiceClick = () => {
@@ -153,7 +270,7 @@ const HeaderBottom = ({
 
   // Check if any filters are active
   const hasActiveFilters = () => {
-    return currentCategory !== 'all' || currentFilter !== '' || router.query.search;
+    return currentCategory !== 'all' || currentFilter !== '' || currentSort !== '' || router.query.search;
   };
 
   // Get current category display text
@@ -162,8 +279,14 @@ const HeaderBottom = ({
     return category ? category.label : 'All Categories';
   };
 
+  // Get current sort display text
+  const getCurrentSortLabel = () => {
+    const sort = sortOptions.find(opt => opt.key === currentSort);
+    return sort ? sort.label : 'Sort By';
+  };
+
   return (
-    <div className='w-full bg-gradient-to-r from-white via-gray-50 to-white border-b border-gray-200 shadow-sm backdrop-blur-sm sticky top-16 sm:top-20 z-40'>
+    <div className={`w-full bg-gradient-to-r from-white via-gray-50 to-white border-b border-gray-200 shadow-sm backdrop-blur-sm sticky top-16 sm:top-20 z-40 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className='max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3'>
         <div className='flex items-center justify-between'>
           {/* Left side - Categories and Filters */}
@@ -228,58 +351,133 @@ const HeaderBottom = ({
               )}
             </div>
 
-            {/* Quick Filters Button for Mobile */}
-            <div className='flex sm:hidden'>
-              <button
-                onClick={() => setShowMobileFilters(!showMobileFilters)}
-                className='flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 bg-white hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary min-h-[36px] touch-manipulation'
+       {/* Sort Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className='group flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 bg-white hover:bg-vesoko_background border border-gray-200 hover:border-vesoko_primary rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:text-vesoko_primary_dark transition-all duration-300 shadow-sm hover:shadow-md transform hover:scale-105 min-h-[36px] touch-manipulation'
+                >
+                  <ArrowUpDown className='w-3 h-3 sm:w-4 sm:h-4 group-hover:text-vesoko_primary transition-colors duration-300 flex-shrink-0' />
+                  <span className='truncate max-w-[80px] sm:max-w-[120px]'>{getCurrentSortLabel()}</span>
+                  <ChevronDown className='w-3 h-3 sm:w-4 sm:h-4 transition-all duration-300 flex-shrink-0 group-hover:text-vesoko_primary' />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className='w-64 max-w-xs bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-xl z-50 animate-slide-up'>
+                <DropdownMenuLabel className='text-gray-900 font-semibold px-3 py-2 text-xs'>SORT BY</DropdownMenuLabel>
+                <DropdownMenuSeparator className='bg-gray-200' />
+                {sortOptions.map((option) => {
+                  const IconComponent = option.icon;
+                  const isSelected = option.key === currentSort;
+                  return (
+                    <DropdownMenuItem
+                      key={option.key}
+                      onClick={() => handleSortClick(option.key)}
+                      className={`flex items-center gap-2 px-2 py-2 rounded-lg transition-all duration-300 min-h-[36px] touch-manipulation text-xs ${
+                        isSelected
+                          ? 'bg-vesoko_primary text-white shadow-sm'
+                          : 'text-gray-700 hover:bg-gray-50 hover:text-vesoko_primary'
+                      }`}
+                    >
+                      <IconComponent className={`w-4 h-4 flex-shrink-0 ${isSelected ? 'text-white' : 'text-gray-500'}`} />
+                      <div className='flex-1 min-w-0'>
+                        <div className='font-medium text-xs truncate'>{option.label}</div>
+                        <div className={`text-[10px] truncate ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>{option.description}</div>
+                      </div>
+                      {isSelected && (
+                        <span className='text-white font-bold flex-shrink-0 text-xs'>✓</span>
+                      )}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+      {/* Quick Filters Button for Mobile */}
+      <div className='flex sm:hidden' ref={mobileFiltersRef}>
+        <DropdownMenu open={showMobileFilters} onOpenChange={setShowMobileFilters}>
+          <DropdownMenuTrigger asChild>
+            <button
+              onClick={() => setShowMobileFilters(!showMobileFilters)}
+              className='flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 bg-white hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary min-h-[36px] touch-manipulation'
+            >
+              <Menu className='w-3 h-3 flex-shrink-0' />
+              <span>Filters</span>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side='bottom' align='start' className='w-[90vw] max-w-sm bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-2xl z-[100] animate-slide-up p-4' style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+
+            <DropdownMenuLabel className='text-gray-900 font-semibold px-3 py-2 text-xs mt-2'>QUICK FILTERS</DropdownMenuLabel>
+            <DropdownMenuSeparator className='bg-gray-200' />
+            {quickFilters.map((filter) => {
+              const IconComponent = filter.icon;
+              const isActive = currentFilter === filter.key;
+              return (
+                <DropdownMenuItem
+                  key={filter.key}
+                  onClick={() => { setShowMobileFilters(false); filter.action(); }}
+                  className={`flex items-center gap-2 px-2 py-2 rounded-lg transition-all duration-300 min-h-[32px] touch-manipulation text-xs ${
+                    isActive
+                      ? 'bg-vesoko_primary text-white shadow-sm'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-vesoko_primary'
+                  }`}
+                >
+                  <IconComponent className='w-4 h-4 flex-shrink-0' />
+                  <span className='font-medium text-xs truncate'>{filter.label}</span>
+                  {isActive && <span className='ml-auto text-white font-bold text-xs'>✓</span>}
+                </DropdownMenuItem>
+              );
+            })}
+            {hasActiveFilters() && (
+              <DropdownMenuSeparator className='bg-gray-200 mt-2' />
+            )}
+            {hasActiveFilters() && (
+              <DropdownMenuItem
+                onClick={() => { setShowMobileFilters(false); handleClearFilters(); }}
+                className='mt-2 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300'
               >
-                <Menu className='w-3 h-3 flex-shrink-0' />
-                <span>Filters</span>
-              </button>
-            </div>
+                <X className='w-4 h-4 flex-shrink-0' />
+                <span>Clear All Filters</span>
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+          
 
             {/* Quick Filters - Mobile Optimized (Show fewer on mobile) */}
             <div className='hidden sm:flex items-center gap-1 lg:gap-2'>
-              {quickFilters.slice(0, 2).map((filter) => {
-                const IconComponent = filter.icon;
-                const isActive = currentFilter === filter.key;
-                return (
-                  <button
-                    key={filter.key}
-                    onClick={filter.action}
-                    className={`flex items-center gap-1 lg:gap-2 px-2 lg:px-3 py-1.5 rounded-lg text-xs lg:text-sm font-medium transition-all duration-300 transform hover:scale-105 min-h-[36px] touch-manipulation ${
-                      isActive 
-                        ? 'bg-vesoko_primary text-white shadow-md' 
-                        : 'bg-white hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary'
-                    }`}
-                  >
-                    <IconComponent className='w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0' />
-                    <span className='hidden lg:inline'>{filter.label}</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className='flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs lg:text-sm font-medium bg-white hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary min-h-[36px] touch-manipulation transition-all duration-300'>
+                    <Tag className='w-3 h-3 lg:w-4 lg:h-4 flex-shrink-0' />
+                    <span className='hidden lg:inline'>Quick Filters</span>
+                    <ChevronDown className='w-3 h-3 flex-shrink-0' />
                   </button>
-                );
-              })}
-              {/* Show all filters on larger screens */}
-              <div className='hidden lg:flex items-center gap-2'>
-                {quickFilters.slice(2).map((filter) => {
-                  const IconComponent = filter.icon;
-                  const isActive = currentFilter === filter.key;
-                  return (
-                    <button
-                      key={filter.key}
-                      onClick={filter.action}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
-                        isActive 
-                          ? 'bg-vesoko_primary text-white shadow-md' 
-                          : 'bg-white hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary'
-                      }`}
-                    >
-                      <IconComponent className='w-4 h-4' />
-                      <span>{filter.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className='w-56 max-w-xs bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-xl z-50 animate-slide-up'>
+                  <DropdownMenuLabel className='text-gray-900 font-semibold px-3 py-2 text-xs'>QUICK FILTERS</DropdownMenuLabel>
+                  <DropdownMenuSeparator className='bg-gray-200' />
+                  {quickFilters.map((filter) => {
+                    const IconComponent = filter.icon;
+                    const isActive = currentFilter === filter.key;
+                    return (
+                      <DropdownMenuItem
+                        key={filter.key}
+                        onClick={filter.action}
+                        className={`flex items-center gap-2 px-2 py-2 rounded-lg transition-all duration-300 min-h-[32px] touch-manipulation text-xs ${
+                          isActive
+                            ? 'bg-vesoko_primary text-white shadow-sm'
+                            : 'text-gray-700 hover:bg-gray-50 hover:text-vesoko_primary'
+                        }`}
+                      >
+                        <IconComponent className='w-4 h-4 flex-shrink-0' />
+                        <span className='font-medium text-xs truncate'>{filter.label}</span>
+                        {isActive && <span className='ml-auto text-white font-bold text-xs'>✓</span>}
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
@@ -329,53 +527,7 @@ const HeaderBottom = ({
           </div>
         </div>
       </div>
-      {/* Mobile Filters Overlay */}
-      {showMobileFilters && (
-        <div className='fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4' ref={mobileFiltersRef}>
-          <div className='bg-white rounded-lg shadow-lg max-w-sm w-full mx-4 p-4'>
-            <div className='flex justify-between items-center mb-4'>
-              <h2 className='text-lg font-semibold text-gray-900'>Quick Filters</h2>
-              <button
-                onClick={() => setShowMobileFilters(false)}
-                className='text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200'
-              >
-                <X className='w-5 h-5' />
-              </button>
-            </div>
-
-            <div className='space-y-2'>
-              {quickFilters.map((filter) => {
-                const IconComponent = filter.icon;
-                const isActive = currentFilter === filter.key;
-                return (
-                  <button
-                    key={filter.key}
-                    onClick={() => { setShowMobileFilters(false); filter.action(); }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
-                      isActive
-                        ? 'bg-vesoko_primary text-white shadow-md'
-                        : 'bg-gray-50 hover:bg-vesoko_background text-gray-700 hover:text-vesoko_primary_dark border border-gray-200 hover:border-vesoko_primary'
-                    }`}
-                  >
-                    <IconComponent className='w-5 h-5 flex-shrink-0' />
-                    <span>{filter.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {hasActiveFilters() && (
-              <button
-                onClick={() => { setShowMobileFilters(false); handleClearFilters(); }}
-                className='mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 border border-red-200 hover:border-red-300'
-              >
-                <X className='w-4 h-4 flex-shrink-0' />
-                <span>Clear All Filters</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Mobile Filters Overlay is now handled by DropdownMenu above. */}
     </div>
   );
 };

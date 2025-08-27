@@ -15,29 +15,66 @@ const Home = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<string>('all');
   const [currentFilter, setCurrentFilter] = useState<string>('');
+  const [currentSort, setCurrentSort] = useState<string>('');
   
   // Track if search query update is from URL to prevent infinite loop
   const isUpdatingFromURL = useRef(false);
+
+  // Sort products based on sort option
+  const sortProducts = useCallback((products: ProductProps[], sortOption: string) => {
+    const productsCopy = [...products];
+    
+    switch (sortOption) {
+      case 'price_low_high':
+        return productsCopy.sort((a, b) => (a.price || 0) - (b.price || 0));
+      case 'price_high_low':
+        return productsCopy.sort((a, b) => (b.price || 0) - (a.price || 0));
+      case 'rating_high_low':
+        return productsCopy.sort((a, b) => {
+          if (b.rating !== a.rating) {
+            return b.rating - a.rating;
+          }
+          return (b.numOfReviews || 0) - (a.numOfReviews || 0);
+        });
+      case 'newest':
+        return productsCopy.sort((a, b) => {
+          const dateA = new Date(a.createdAt || 0).getTime();
+          const dateB = new Date(b.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
+      case 'name_a_z':
+        return productsCopy.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+      case 'name_z_a':
+        return productsCopy.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+      default:
+        // Default sorting by rating (highest first), then by number of reviews
+        return productsCopy.sort((a, b) => {
+          if (b.rating !== a.rating) {
+            return b.rating - a.rating;
+          }
+          return (b.numOfReviews || 0) - (a.numOfReviews || 0);
+        });
+    }
+  }, []);
 
   // Fetch products based on filters
   const fetchProducts = useCallback(async (filters?: {
     searchQuery?: string;
     category?: string;
     filter?: string;
+    sort?: string;
   }) => {
     try {
       setIsSearching(true);
-      const data = await getRetailersProducts(filters);
-      
-      // Sort products by rating (highest first), then by number of reviews
-      const sortedProducts = (data || []).sort((a: ProductProps, b: ProductProps) => {
-        // First sort by rating (descending)
-        if (b.rating !== a.rating) {
-          return b.rating - a.rating;
-        }
-        // If ratings are equal, sort by number of reviews (descending)
-        return (b.numOfReviews || 0) - (a.numOfReviews || 0);
+      const data = await getRetailersProducts({
+        searchQuery: filters?.searchQuery,
+        category: filters?.category,
+        filter: filters?.filter
+        // Note: sorting is handled client-side for now
       });
+      
+      // Apply client-side sorting
+      const sortedProducts = sortProducts(data || [], filters?.sort || '');
       
       setProducts(sortedProducts);
     } catch (error) {
@@ -46,20 +83,22 @@ const Home = () => {
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  }, [sortProducts]);
 
   // Handle URL parameters and fetch products accordingly
   useEffect(() => {
-    const { category, filter, search } = router.query;
+    const { category, filter, search, sort } = router.query;
     
     const filters = {
       searchQuery: search as string || '',
       category: category as string || 'all',
-      filter: filter as string || ''
+      filter: filter as string || '',
+      sort: sort as string || ''
     };
     
     setCurrentCategory(filters.category);
     setCurrentFilter(filters.filter);
+    setCurrentSort(filters.sort);
     
     // Sync search query state with URL parameter and mark as URL update
     isUpdatingFromURL.current = true;
@@ -123,6 +162,11 @@ const Home = () => {
     setCurrentFilter(filter);
     // URL update is handled by HeaderBottom component
   }, []);
+
+  const handleSortSelect = useCallback((sort: string) => {
+    setCurrentSort(sort);
+    // URL update is handled by HeaderBottom component
+  }, []);
   // Scroll to products
   const handleBuyClick = () => {
     const productsTop = document.querySelector('.products-top');
@@ -158,13 +202,17 @@ const Home = () => {
   };
   return (
     <div className='flex flex-col min-h-screen bg-vesoko_primary'>
-      <Header onSearchChange={handleSearchChange} searchQuery={searchQuery} />
-      <HeaderBottom 
-        showSidebar={false}
-        setShowSidebar={() => {}}
-        onCategorySelect={handleCategorySelect}
-        onFilterSelect={handleFilterSelect}
-      />
+      {/* Sticky header outside main scrollable area */}
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-lg border-b border-gray-200">
+        <Header onSearchChange={handleSearchChange} searchQuery={searchQuery} />
+        <HeaderBottom 
+          showSidebar={false}
+          setShowSidebar={() => {}}
+          onCategorySelect={handleCategorySelect}
+          onFilterSelect={handleFilterSelect}
+          onSortSelect={handleSortSelect}
+        />
+      </div>
       <main className='flex-1'>
         <div className='bg-gradient-to-br from-vesoko_primary via-vesoko_background_light to-white'>
           <Banner onBuyClick={handleBuyClick} />
