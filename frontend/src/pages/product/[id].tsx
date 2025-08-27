@@ -347,33 +347,35 @@ const ProductDetails = () => {
             )}
 
             {/* Quantity Selector */}
-            <div className='mt-6'>
-              <p className='font-medium text-gray-700 mb-2'>Quantity:</p>
-              <div className='flex items-center gap-3'>
-                <button
-                  onClick={handleDecreaseQuantity}
-                  disabled={quantity <= 1}
-                  className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_primary hover:bg-vesoko_background transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-                >
-                  <Minus size={16} />
-                </button>
-                <span className='mx-4 text-lg font-semibold min-w-[2rem] text-center'>
-                  {quantity}
-                </span>
-                <button
-                  onClick={handleIncreaseQuantity}
-                  disabled={quantity >= product.quantity}
-                  className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_primary hover:bg-vesoko_background transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-                >
-                  <Plus size={16} />
-                </button>
-                {product.quantity <= 20 && (
-                  <span className='text-sm text-gray-500 ml-2'>
-                    ({product.quantity} available)
+            {product.availability && (
+              <div className='mt-6'>
+                <p className='font-medium text-gray-700 mb-2'>Quantity:</p>
+                <div className='flex items-center gap-3'>
+                  <button
+                    onClick={handleDecreaseQuantity}
+                    disabled={quantity <= 1}
+                    className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_primary hover:bg-vesoko_background transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <span className='mx-4 text-lg font-semibold min-w-[2rem] text-center'>
+                    {quantity}
                   </span>
-                )}
+                  <button
+                    onClick={handleIncreaseQuantity}
+                    disabled={quantity >= product.quantity}
+                    className='w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-vesoko_primary hover:bg-vesoko_background transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                  >
+                    <Plus size={16} />
+                  </button>
+                  {product.quantity <= 20 && (
+                    <span className='text-sm text-gray-500 ml-2'>
+                      ({product.quantity} available)
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Actions */}
             <div className='mt-8 space-y-4'>

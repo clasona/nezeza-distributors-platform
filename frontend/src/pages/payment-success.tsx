@@ -179,10 +179,10 @@ const SuccessPage = () => {
             </Link>
             <span className='hidden sm:inline text-gray-400'>|</span>
             <Link
-              href='tel:+1234567890'
+              href='tel:+18448376560'
               className='text-vesoko_primary hover:text-vesoko_primary font-medium'
             >
-              📞 (123) 456-7890
+              📞 +1 (844) 837-6560
             </Link>
           </div>
         </div>

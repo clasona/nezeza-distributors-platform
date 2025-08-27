@@ -397,7 +397,7 @@ const Products = ({ products, isLoading: propIsLoading }: ProductsProps) => {
                     ))}
                   </div>
                 )}
-                {product.quantity < 1 && (
+                {!product.availability || product.quantity < 1 && (
                   <div className='absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center'>
                     <p className='bg-white p-2 text-vesoko_red_600 text-lg font-semibold'>
                       Out of Stock

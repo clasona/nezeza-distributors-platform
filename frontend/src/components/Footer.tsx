@@ -59,7 +59,7 @@ const Footer = () => {
     // { label: 'X (Twitter)', href: 'https://twitter.com/vesoko.com_', icon: <Twitter className='h-5 w-5' /> },
     { label: 'Instagram', href: 'https://instagram.com/vesoko.com_', icon: <Instagram className='h-5 w-5' /> },
     { label: 'TikTok', href: 'https://tiktok.com/@vesoko.com', icon: <FaTiktok className='h-5 w-5' /> },
-    { label: 'Linkedin', href: 'https://linkedin.com/company/vesoko.com', icon: <Linkedin className='h-5 w-5' /> }
+    { label: 'Linkedin', href: 'https://www.linkedin.com/company/vesoko-com/about/', icon: <Linkedin className='h-5 w-5' /> }
   ];
 
   return (
