@@ -50,6 +50,7 @@ const createSubOrders = async (fullOrder, selectedShippingOptions, groupedItems,
       totalTax: feeBreakdown.breakdown.tax, // Store tax separately
       totalShipping: feeBreakdown.breakdown.shipping, // Store shipping separately
       transactionFee: feeBreakdown.platformBreakdown.commission, // Platform commission
+      processingFee: feeBreakdown.platformBreakdown.processingFee, // Payment processing fee
       fullOrderId: fullOrder._id, // Add reference to the main order
       buyerId: fullOrder.buyerId, // Reference to the buyer
       buyerStoreId: fullOrder.buyerStoreId, // Reference to the buyer's store
@@ -251,6 +252,8 @@ const createOrderUtil = async ({
           totalAmount, //TODO: replace with the paymentIntent.metadata.totalAmount ?
           totalTax: feeBreakdown.summary.totalTax,
           totalShipping: feeBreakdown.summary.totalShipping,
+          transactionFee: feeBreakdown.summary.totalCommission,
+          processingFee: feeBreakdown.summary.totalProcessingFee,
           paymentMethod,
           shippingAddress: parsedShippingAddress,
           billingAddress: parsedBillingAddress,

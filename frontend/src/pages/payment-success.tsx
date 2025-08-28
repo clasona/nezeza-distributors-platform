@@ -191,5 +191,4 @@ const SuccessPage = () => {
   );
 };
 
-SuccessPage.noLayout = true;
 export default SuccessPage;

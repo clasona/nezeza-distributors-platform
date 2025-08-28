@@ -21,6 +21,7 @@ const getOrderDetails = async (orderId) => {
           totalTax: order.totalTax,
           totalShipping: order.totalShipping,
           transactionFee: order.transactionFee,
+          processingFee: order.processingFee,
           paymentStatus: order.paymentStatus,
           paymentMethod: order.paymentMethod,
           fulfillmentStatus: order.fulfillmentStatus,

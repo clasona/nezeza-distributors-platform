@@ -46,6 +46,7 @@ import logo from '../../images/main.png';
 import { LogoutButton } from '../LogoutButton';
 import SearchField2 from '../header/SearchField2';
 import { getUserByEmail } from '@/utils/user/getUserByEmail';
+import { useRouter } from 'next/router';
 
 interface HeaderProps {
   onSearchChange?: (query: string) => void;
@@ -57,12 +58,13 @@ const Header = ({
   searchQuery = '',
 }: HeaderProps) => {
   const { data: session } = useSession();
+  const router = useRouter();
   const { cartItemsData, favoritesItemsData, userInfo, storeInfo } =
     useSelector((state: stateProps) => state.next);
   const [currentUserData, setCurrentUserData] = useState<UserProps | null>(
     null
   );
-  // const [searchQuery, setSearchQuery] = useState('');
+  const [globalSearchQuery, setGlobalSearchQuery] = useState<string>('');
 
   const dispatch = useDispatch();
 
@@ -108,23 +110,48 @@ const Header = ({
     fetchUserByEmail();
   }, [session, dispatch]);
 
-  // useEffect(() => {
-  //   const flteredBySearching = myOrders.filter((order) => {
-  //     const searchMatch = Object.values(order)
-  //       .join(' ')
-  //       .toLowerCase()
-  //       .includes(searchQuery.toLowerCase());
-  //     const statusMatch =
-  //       statusFilter === 'Status' || order.fulfillmentStatus === statusFilter;
-  //     return searchMatch && statusMatch;
-  //   });
+  // Handle global search - works from any page
+  const handleGlobalSearch = (query: string) => {
+    setGlobalSearchQuery(query);
+    
+    // If we're on the home page, use the provided callback
+    if (router.pathname === '/' && onSearchChange) {
+      onSearchChange(query);
+      return;
+    }
+    
+    // For other pages, just update the search state
+    // Don't redirect immediately while typing
+  };
 
-  //   setFilteredOrders(flteredBySearching);
-  // }, [searchQuery, statusFilter, myOrders]);
+  // Handle suggestion selection - this redirects to home page
+  const handleSuggestionSelect = (selectedSuggestion: string) => {
+    setGlobalSearchQuery(selectedSuggestion);
+    
+    // If we're on the home page, use the provided callback
+    if (router.pathname === '/' && onSearchChange) {
+      onSearchChange(selectedSuggestion);
+      return;
+    }
+    
+    // If we're on any other page, navigate to home with search query
+    if (selectedSuggestion.trim()) {
+      router.push({
+        pathname: '/',
+        query: { search: selectedSuggestion.trim() }
+      });
+    }
+  };
 
-  // const handleSearchChange = (query: string) => {
-  //   setSearchQuery(query); // Update the search query
-  // };
+  // Get the current search value (either from props or global state)
+  const getCurrentSearchValue = () => {
+    // If we're on the home page, use the passed searchQuery
+    if (router.pathname === '/') {
+      return searchQuery;
+    }
+    // Otherwise use our global search state or URL query
+    return globalSearchQuery || (router.query.search as string) || '';
+  };
 
   return (
     <div className='w-full bg-gradient-to-r from-vesoko_primary via-vesoko_secondary to-vesoko_primary text-white sticky top-0 z-50 shadow-lg backdrop-blur-sm'>
@@ -135,12 +162,12 @@ const Header = ({
           href={'/'}
           className='flex-shrink-0 group transition-all duration-300 hover:scale-105'
         >
-          <div className='flex items-center justify-center w-[100px] h-[50px] xs:w-[120px] xs:h-[60px] sm:w-[180px] sm:h-[70px] lg:w-[200px] lg:h-[80px] relative'>
+          <div className='flex items-center justify-center w-[140px] h-[70px] xs:w-[160px] xs:h-[80px] sm:w-[220px] sm:h-[90px] lg:w-[260px] lg:h-[100px] relative'>
             <Image
               src={logo}
               alt='VeSoko Logo'
-              width={220}
-              height={90}
+              width={280}
+              height={110}
               className='object-contain w-full h-full filter brightness-110 group-hover:brightness-125 transition-all duration-300'
               priority
             />
@@ -148,13 +175,14 @@ const Header = ({
           </div>
         </Link>
         
-        {/* Searchbar - Enhanced design */}
+        {/* Searchbar - Enhanced design - Global Search */}
         <div className='hidden sm:flex flex-grow mx-4 lg:mx-8 max-w-2xl'>
           <div className='w-full relative'>
             <SearchField2
               searchFieldPlaceholder='authentic African products...'
-              onSearchChange={onSearchChange}
-              value={searchQuery}
+              onSearchChange={handleGlobalSearch}
+              onSuggestionSelect={handleSuggestionSelect}
+              value={getCurrentSearchValue()}
             />
           </div>
         </div>
@@ -439,13 +467,14 @@ const Header = ({
         </div>
       </div>
       
-      {/* Mobile search bar row - Enhanced design */}
+      {/* Mobile search bar row - Enhanced design - Global Search */}
       <div className='sm:hidden bg-gradient-to-r from-vesoko_primary via-vesoko_secondary to-vesoko_primary px-4 pb-4 pt-2 border-t border-white/10'>
         <div className='relative'>
           <SearchField2
             searchFieldPlaceholder='authentic African products...'
-            onSearchChange={onSearchChange}
-            value={searchQuery}
+            onSearchChange={handleGlobalSearch}
+            onSuggestionSelect={handleSuggestionSelect}
+            value={getCurrentSearchValue()}
           />
         </div>
       </div>

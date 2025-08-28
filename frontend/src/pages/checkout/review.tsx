@@ -437,6 +437,19 @@ const CheckoutReviewPage = () => {
       <h2 className='text-2xl font-bold mb-4 text-vesoko_primary text-center'>
         Review &amp; Choose Delivery Options
       </h2>
+      {/* Back navigation at top */}
+      <div className='max-w-3xl mx-auto mb-4'>
+        <Link href={buyNowProduct && buyNowProduct.isBuyNow ? '/' : '/cart'}>
+          <div className='inline-flex items-center gap-2 text-white bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors duration-200 backdrop-blur-sm border border-white/30'>
+            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+            </svg>
+            <span className='font-medium'>
+              {buyNowProduct && buyNowProduct.isBuyNow ? 'Back to Products' : 'Back to Cart'}
+            </span>
+          </div>
+        </Link>
+      </div>
       <div className='max-w-3xl mx-auto flex flex-col gap-4'>
         {address && renderAddress(address)}
         {/* Grouped by Shipping Group, each with multiple delivery choices */}
@@ -574,14 +587,6 @@ const CheckoutReviewPage = () => {
               Please select a delivery option for each group.
             </div>
           )}
-        </div>
-        {/* add option to go back */}
-        <div className='mt-4 text-center'>
-          <Link href={buyNowProduct && buyNowProduct.isBuyNow ? '/' : '/cart'}>
-            <p className='text-white hover:underline'>
-              &larr; {buyNowProduct && buyNowProduct.isBuyNow ? 'Back to Products' : 'Back to Cart'}
-            </p>
-          </Link>
         </div>
       </div>
     </div>

@@ -110,6 +110,10 @@ const OrderSchema = mongoose.Schema(
       type: Number,
       //required: true,
     },
+    processingFee: {
+      type: Number,
+      //required: true,
+    },
     orderItems: [SingleOrderItemSchema],
     paymentStatus: {
       type: String,
