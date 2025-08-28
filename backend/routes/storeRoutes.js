@@ -10,10 +10,15 @@ const {
   createStore,
   getStoreDetails,
   updateStoreDetails,
+  getStoreProducts,
   deactivateStore,
 } = require('../controllers/storeController');
 
 router.route('/').post(authenticateUser, createStore);
+
+// Route for getting store products (publicly accessible)
+router.route('/:id/products').get(getStoreProducts);
+
 router
   .route('/:id')
   .get(

@@ -14,6 +14,7 @@ import {
   Plus,
   ShoppingCart,
   Star,
+  Store,
   Truck
 } from 'lucide-react';
 import Image from 'next/image';
@@ -296,6 +297,24 @@ const ProductDetails = () => {
           <div>
             <h1 className='text-2xl md:text-3xl font-bold'>{product.title}</h1>
             <p className='text-gray-600 mt-2'>{product.description}</p>
+
+            {/* Store Link */}
+            {product.storeId && (
+              <div className='mt-3 mb-4'>
+                <button
+                  onClick={() => {
+                    const storeId = typeof product.storeId === 'object' ? product.storeId._id : product.storeId;
+                    router.push(`/store/${storeId}`);
+                  }}
+                  className='inline-flex items-center text-vesoko_primary hover:text-vesoko_primary_dark font-medium text-sm transition-colors group'
+                >
+                  <Store size={16} className='mr-2 group-hover:scale-110 transition-transform' />
+                  <span className='hover:underline'>
+                    Visit Store: {typeof product.storeId === 'object' ? product.storeId.name : 'Store'}
+                  </span>
+                </button>
+              </div>
+            )}
 
             {/* Price */}
             <p className='text-xl md:text-2xl font-semibold mt-4'>

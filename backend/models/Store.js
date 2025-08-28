@@ -11,6 +11,12 @@ const storeSchema = new mongoose.Schema(
       minlength: 3,
       maxlength: 50,
     },
+    // slug: {
+    //   type: String,
+    //   unique: true,
+    //   required: true,
+    //   lowercase: true,
+    // },
     email: {
       type: String,
       unique: true,

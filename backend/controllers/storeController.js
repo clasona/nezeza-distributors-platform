@@ -1,5 +1,6 @@
 const Store = require('../models/Store');
 const User = require('../models/User');
+const Product = require('../models/Product');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const { attachCookiesToResponse, createTokenUser } = require('../utils');
@@ -110,6 +111,35 @@ const updateStoreDetails = async (req, res) => {
   res.status(StatusCodes.OK).json({ store: store });
 };
 
+const getStoreProducts = async (req, res) => {
+  try {
+    const { id: storeId } = req.params;
+    
+    // First check if the store exists
+    const store = await Store.findById(storeId);
+    if (!store) {
+      throw new CustomError.NotFoundError(`No store with id: ${storeId}`);
+    }
+
+    // Get all products for this store and populate the storeId field
+    const products = await Product.find({ storeId })
+      .populate('storeId', 'name email storeType')
+      .sort({ createdAt: -1 }); // Sort by newest first
+
+    res.status(StatusCodes.OK).json({ 
+      products,
+      count: products.length,
+      store: {
+        _id: store._id,
+        name: store.name,
+        storeType: store.storeType
+      }
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 const deactivateStore = async (req, res) => {
   res.send('Store deactivated');
 };
@@ -118,5 +148,6 @@ module.exports = {
   createStore,
   getStoreDetails,
   updateStoreDetails,
+  getStoreProducts,
   deactivateStore,
 };

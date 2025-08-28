@@ -285,7 +285,7 @@ const getSingleProduct = async (req, res) => {
   // const userId = req.user.userId;
   const { id: productId } = req.params;
 
-  const product = await Product.findOne({ _id: productId }).populate('reviews');
+  const product = await Product.findOne({ _id: productId }).populate('reviews').populate('storeId');
 
   // const user = await User.findById(userId);
 
