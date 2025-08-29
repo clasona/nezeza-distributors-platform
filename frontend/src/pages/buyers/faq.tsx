@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Head from 'next/head';
+import SEOHead from '@/components/SEOHead';
 import Header from '@/components/header/Header';
 import { ShoppingBag, HelpCircle, ChevronDown, ChevronRight, AlertCircle, CreditCard, Truck, Shield } from 'lucide-react';
 import Link from 'next/link';
@@ -193,11 +193,22 @@ const CustomerFAQ = () => {
 
   return (
     <>
-      <Head>
-        <title>Buyer FAQ | VeSoko - Frequently Asked Questions</title>
-        <meta name="description" content="Find answers to common shopping questions on VeSoko. Get help with orders, returns, payments, and shipping." />
-        <meta name="keywords" content="buyer FAQ, shopping help, order questions, VeSoko help, returns, shipping" />
-      </Head>
+      <SEOHead
+        title="Buyer FAQ - VeSoko Help Center"
+        description="Find answers to frequently asked questions about shopping on VeSoko. Get help with orders, returns, payments, shipping, and account management for buying authentic African products."
+        keywords={[
+          'VeSoko buyer FAQ',
+          'shopping help',
+          'order questions',
+          'returns policy',
+          'shipping information',
+          'payment help',
+          'account support',
+          'African products shopping',
+          'customer support',
+          'VeSoko help'
+        ]}
+      />
 
       <Header />
       

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronRightIcon, EnvelopeIcon, GlobeAltIcon, UserGroupIcon, BuildingStorefrontIcon, SparklesIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { PlayIcon } from '@heroicons/react/24/solid';
+import SEOHead from '@/components/SEOHead';
 import logo from '../images/main.png';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -73,7 +74,24 @@ const ComingSoonPage = () => {
   // Green accent: #1db954 (optional)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f7ede2] via-white to-[#ff7a00]/10">
+    <>
+      <SEOHead
+        title="VeSoko Coming Soon - African Products Marketplace"
+        description="VeSoko is launching soon! The premier marketplace for authentic African products connecting buyers and sellers across the United States. Join our waitlist for exclusive early access."
+        keywords={[
+          'VeSoko coming soon',
+          'African marketplace launch',
+          'authentic African products',
+          'African sellers marketplace',
+          'African products US',
+          'marketplace waitlist',
+          'African business platform',
+          'African culture marketplace',
+          'early access VeSoko'
+        ]}
+        ogImage="/images/vesoko-coming-soon-og.jpg"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-[#f7ede2] via-white to-[#ff7a00]/10">
       {/* Header */}
       <header className="px-4 py-6 bg-gradient-to-r from-[#3d1f00] via-[#ff7a00]/80 to-[#3d1f00] shadow-md">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -342,7 +360,8 @@ const ComingSoonPage = () => {
           </footer>
         </div>
       </main>
-    </div>
+      </div>
+    </>
   );
 };
 ComingSoonPage.noLayout =true

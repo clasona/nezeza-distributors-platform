@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Allow access to key pages
+Allow: /about
+Allow: /contact
+Allow: /buyers/faq
+Allow: /buyers/privacy-policy
+Allow: /buyers/terms-conditions
+
+# Disallow private/account pages
+Disallow: /admin/
+Disallow: /manufacturer/
+Disallow: /customer/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /cart
+Disallow: /checkout/
+Disallow: /payment-status
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://vesoko.com/sitemap.xml

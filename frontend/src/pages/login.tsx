@@ -1,4 +1,5 @@
 import SubmitButton from '@/components/FormInputs/SubmitButton';
+import SEOHead from '@/components/SEOHead';
 import {
   addStore,
   addUser,
@@ -395,7 +396,20 @@ const LoginPage = () => {
   const isAnyLoading = loadingStates.isLoading || loadingStates.isGoogleLoading;
 
   return (
-    <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
+    <>
+      <SEOHead
+        title="Login to VeSoko"
+        description="Sign in to your VeSoko account to access authentic African products, manage your store, or continue shopping from trusted African sellers."
+        noIndex={true}
+        keywords={[
+          'VeSoko login',
+          'sign in',
+          'user account',
+          'seller login',
+          'African products login'
+        ]}
+      />
+      <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100'>
           <div className='text-center mb-8'>
@@ -535,7 +549,8 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

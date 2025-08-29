@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import SEOHead from '@/components/SEOHead';
 import { forgotPassword } from '@/utils/auth/forgotPassword';
 
 const ForgotPasswordPage = () => {
@@ -27,7 +28,19 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
+    <>
+      <SEOHead
+        title="Forgot Password - VeSoko"
+        description="Reset your VeSoko password. Enter your email address and we'll send you instructions to reset your password and regain access to your account."
+        noIndex={true}
+        keywords={[
+          'VeSoko forgot password',
+          'reset password',
+          'password recovery',
+          'account recovery'
+        ]}
+      />
+      <div className='w-full bg-gradient-to-br from-vesoko_primary to-vesoko_background min-h-screen flex items-center justify-center px-4 py-8'>
       <div className='w-full max-w-md'>
         <div className='bg-white rounded-2xl shadow-2xl p-8 border border-gray-100'>
           <div className='text-center mb-8'>
@@ -108,7 +121,8 @@ const ForgotPasswordPage = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

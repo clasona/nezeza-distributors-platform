@@ -1,6 +1,7 @@
 import CartPayment from '@/components/Cart/CartPayment';
 import CartProduct from '@/components/Cart/CartProduct';
 import ResetCart from '@/components/Cart/ResetCart';
+import SEOHead from '@/components/SEOHead';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { ShoppingCart, ArrowLeft, Package } from 'lucide-react';
@@ -10,7 +11,19 @@ const CartPage = () => {
   const { cartItemsData } = useSelector((state: stateProps) => state.next);
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8'>
+    <>
+      <SEOHead
+        title="Shopping Cart - VeSoko"
+        description="Review your selected authentic African products in your VeSoko shopping cart. View items, adjust quantities, and proceed to secure checkout."
+        noIndex={true}
+        keywords={[
+          'shopping cart',
+          'review order',
+          'African products cart',
+          'checkout'
+        ]}
+      />
+      <div className='min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         {/* Header */}
         <div className='mb-8'>
@@ -86,7 +99,8 @@ const CartPage = () => {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

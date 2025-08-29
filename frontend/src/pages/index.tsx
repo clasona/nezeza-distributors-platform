@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Banner from '@/components/Banner';
 import Products from '@/components/Products';
+import SEOHead from '@/components/SEOHead';
 import { getRetailersProducts } from '@/utils/product/getProductsBySeller';
+import { generateOrganizationStructuredData } from '@/utils/seo';
 import { ProductProps } from '../../type';
 import Header from '@/components/header/Header';
 import HeaderBottom from '@/components/header/HeaderBottom';
@@ -200,8 +202,31 @@ const Home = () => {
       }
     }, 100);
   };
+
+  // Generate structured data for the homepage
+  const structuredData = generateOrganizationStructuredData();
+
   return (
-    <div className='flex flex-col min-h-screen bg-vesoko_primary'>
+    <>
+      <SEOHead
+        title="VeSoko - Authentic African Products Marketplace"
+        description="Discover authentic African products on VeSoko, the premier marketplace connecting African sellers to global markets. Shop genuine goods from trusted manufacturers and sellers worldwide."
+        keywords={[
+          'buy African products online',
+          'African marketplace US',
+          'authentic African goods',
+          'African manufacturers',
+          'African wholesale products',
+          'genuine African items',
+          'African culture products',
+          'African food products',
+          'African clothing online',
+          'African art and crafts'
+        ]}
+        ogImage="/images/vesoko-homepage-og.jpg"
+        structuredData={structuredData}
+      />
+      <div className='flex flex-col min-h-screen bg-vesoko_primary'>
       {/* Sticky header outside main scrollable area */}
       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-lg border-b border-gray-200">
         <Header onSearchChange={handleSearchChange} searchQuery={searchQuery} />
@@ -324,7 +349,8 @@ const Home = () => {
         </div>
       </main>
       <Footer />
-    </div>
+      </div>
+    </>
   );
 };
 

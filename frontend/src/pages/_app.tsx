@@ -2,6 +2,7 @@ import RootLayout from '@/components/RootLayout';
 import SessionBridge from '@/components/SessionBridge';
 import { persistor, store } from '@/redux/store';
 import '@/styles/globals.css';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { SessionProvider } from 'next-auth/react';
 import type { AppProps as NextAppProps } from 'next/app';
 import { Provider } from 'react-redux';
@@ -41,6 +42,10 @@ export default function App({
           </SessionProvider>
         </PersistGate>
       </Provider>
+      {/* Google Analytics - Only in production */}
+      {process.env.NODE_ENV === 'production' && (
+        <GoogleAnalytics gaId="G-7H4BYLVE9K" />
+      )}
     </div>
   );
 }

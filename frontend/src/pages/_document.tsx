@@ -4,6 +4,21 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        {/* SEO Meta Tags */}
+        <meta charSet="utf-8" />
+        <meta name="robots" content="index, follow" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        
+        {/* DNS Prefetch for performance */}
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="//analytics.vesoko.com" />
+        
+        {/* Preconnect for critical resources */}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        
+        {/* Site verification */}
         <meta name="google-site-verification" content="ICh9hq1y7fKfaVRc5sfzCUA_V0SBWJyCgfEKiK79J0o" />
         <script defer data-domain="vesoko.com,test.vesoko.com" src="https://analytics.vesoko.com/js/script.file-downloads.hash.outbound-links.pageview-props.revenue.tagged-events.js"></script>
         <script
@@ -12,16 +27,28 @@ export default function Document() {
               "window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }",
           }}
         />
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-7H4BYLVE9K"></script>
+        
+        {/* Structured Data for Organization */}
         <script
+          type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-7H4BYLVE9K');
-            `,
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "VeSoko",
+              "description": "The premier marketplace for authentic African products, connecting African sellers to global markets.",
+              "url": "https://vesoko.com",
+              "logo": "https://vesoko.com/images/vesoko-logo.png",
+              "sameAs": [
+                // Add social media URLs when available
+              ],
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "contactType": "Customer Service",
+                "email": "marketplace@vesoko.com",
+                "telephone": "+1-844-837-6560"
+              }
+            })
           }}
         />
       </Head>

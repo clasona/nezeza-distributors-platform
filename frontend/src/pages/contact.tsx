@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import Head from 'next/head';
+import SEOHead from '@/components/SEOHead';
 import Header from '@/components/header/Header';
 import Footer from '@/components/Footer';
 import { MapPin, Phone, Mail, Clock, Send, MessageSquare, Users, Building, Globe } from 'lucide-react';
@@ -117,13 +117,21 @@ const Contact = () => {
 
   return (
     <>
-      <Head>
-        <title>Contact VeSoko - Get in Touch with Our Team</title>
-        <meta name="description" content="Contact VeSoko for inquiries about selling, partnerships, support, or general questions. We're here to help connect African products to global markets." />
-        <meta property="og:title" content="Contact VeSoko - Get in Touch with Our Team" />
-        <meta property="og:description" content="Contact VeSoko for inquiries about selling, partnerships, support, or general questions." />
-        <meta property="og:type" content="website" />
-      </Head>
+      <SEOHead
+        title="Contact VeSoko - Get in Touch with Our Team"
+        description="Contact VeSoko for inquiries about selling African products, partnerships, customer support, or general questions. We're here to help connect African products to global markets."
+        keywords={[
+          'contact VeSoko',
+          'African marketplace support',
+          'seller inquiries',
+          'partnership opportunities',
+          'customer service',
+          'business development',
+          'African products contact',
+          'VeSoko support team'
+        ]}
+        ogType="website"
+      />
 
       <div className="flex flex-col min-h-screen bg-vesoko_primary">        
         <main className="flex-1">
