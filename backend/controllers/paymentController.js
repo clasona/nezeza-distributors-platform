@@ -778,7 +778,7 @@ const updateSellerBalances = async (order) => {
         grossUpFees: false, // Don't gross up at suborder level
         store: sellerStore // Pass store for grace period check
       });
-      
+
       console.log(`Seller ${sellerId} fee breakdown:`, {
         productSubtotal: productSubtotal,
         sellerReceives: feeBreakdown.sellerReceives,
@@ -791,7 +791,7 @@ const updateSellerBalances = async (order) => {
         { sellerId: sellerId },
         {
           $inc: {
-            totalSales: feeBreakdown.sellerReceives, // What seller actually receives
+            totalSales: feeBreakdown.sellerReceives + feeBreakdown.platformBreakdown.commission, // Total sales includes what seller receives + commission  
             pendingBalance: feeBreakdown.sellerReceives, // Add to pending
             commissionDeducted: feeBreakdown.platformBreakdown.commission, // Track commission
             netRevenue: feeBreakdown.sellerReceives // Net after all deductions
@@ -928,9 +928,11 @@ const confirmPayment = async (orderId, paymentIntentId) => {
         });
         
         feeBreakdown = {
+          customerTotal: suborderFeeBreakdown.sellerReceives + (suborderFeeBreakdown.platformBreakdown?.commission || 0),
           sellerReceives: suborderFeeBreakdown.sellerReceives,
           platformBreakdown: {
-            commission: suborderFeeBreakdown.platformBreakdown?.commission || 0
+            commission: suborderFeeBreakdown.platformBreakdown?.commission || 0,
+            processingFee: suborderFeeBreakdown.platformBreakdown?.processingFee || 0
           }
         };
         
@@ -945,7 +947,7 @@ const confirmPayment = async (orderId, paymentIntentId) => {
         { sellerId: sellerId },
         {
           $inc: {
-            totalSales: feeBreakdown.sellerReceives,
+            totalSales: feeBreakdown.sellerReceives + (feeBreakdown.platformBreakdown?.commission || 0), // Total sales includes what seller receives + commission
             pendingBalance: feeBreakdown.sellerReceives,
             commissionDeducted: feeBreakdown.platformBreakdown?.commission || 0,
             netRevenue: feeBreakdown.sellerReceives
